@@ -1,0 +1,6 @@
+---
+description: CLAUDE.md är projektets enda källa och ska läsas först
+alwaysApply: true
+---
+
+CLAUDE.md i projektroten är enda källan. Läs den först.

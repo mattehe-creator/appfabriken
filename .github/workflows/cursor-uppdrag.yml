@@ -1,0 +1,64 @@
+# Skickar ett uppdrag till Cursors molnagent.
+# En ny fil i uppdrag/ (pushad till main) blir ett uppdrag. Filens innehåll är uppgiften.
+# Agenten arbetar på en egen gren cursor/... och öppnar en pull request. Modell: raden modell: i filen, annars composer-latest.
+# Bygget testar grenen. Claude granskar och mergar enligt CLAUDE.md punkt 3 och 10.
+name: Cursor-uppdrag
+
+on:
+  push:
+    branches: [main]
+    paths: ["uppdrag/*.md"]
+
+permissions:
+  contents: read
+
+jobs:
+  skicka:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+
+      - name: Skicka nya uppdrag
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          REPO_URL: https://github.com/${{ github.repository }}
+        run: |
+          if [ -z "$CURSOR_API_KEY" ]; then
+            echo "::error::Hemligheten CURSOR_API_KEY saknas."
+            exit 1
+          fi
+          nya=$(git diff --name-only --no-renames --diff-filter=A HEAD~1 HEAD -- 'uppdrag/*.md')
+          if [ -z "$nya" ]; then
+            echo "Inga nya uppdrag i den här pushen."
+            exit 0
+          fi
+
+          # Modeller som kontot har (för felsökning och val av modell).
+          for v in v1 v0; do
+            svar=$(curl -sS -w '\n%{http_code}' -H "Authorization: Bearer $CURSOR_API_KEY" "https://api.cursor.com/$v/models")
+            kod=$(echo "$svar" | tail -1)
+            if [ "$kod" = "200" ]; then API=$v; echo "::notice::API $v, modeller: $(echo "$svar" | head -n -1 | tr -d '\n' | cut -c1-900)"; break; fi
+            echo "GET /$v/models gav $kod"
+          done
+          if [ -z "$API" ]; then echo "::error::Cursors API svarar inte på /v1 eller /v0."; exit 1; fi
+
+          for fil in $nya; do
+            namn=$(basename "$fil" .md)
+            modell=$(grep -m1 '^modell:' "$fil" | sed 's/^modell:[[:space:]]*//')
+            text=$(cat "$fil")
+            [ -z "$modell" ] && modell=composer-latest
+            body=$(jq -n --arg text "$text" --arg repo "$REPO_URL" --arg modell "$modell" '
+              {prompt: {text: $text},
+               model: {id: $modell},
+               repos: [{url: $repo, startingRef: "main"}],
+               autoCreatePR: true}')
+            svar=$(curl -sS -w '\n%{http_code}' -X POST "https://api.cursor.com/$API/agents" \
+              -H "Authorization: Bearer $CURSOR_API_KEY" -H "Content-Type: application/json" -d "$body")
+            kod=$(echo "$svar" | tail -1)
+            echo "$fil -> $kod"
+            echo "$svar" | head -n -1 | jq -c '.' 2>/dev/null || echo "$svar" | head -n -1
+            case "$kod" in 2*) echo "::notice::Skickat $fil: $(echo "$svar" | head -n -1 | tr -d '\n' | cut -c1-600)";; *) echo "::error::Uppdraget $fil kunde inte skickas ($kod): $(echo "$svar" | head -n -1 | tr -d '\n' | cut -c1-900)"; exit 1;; esac
+          done

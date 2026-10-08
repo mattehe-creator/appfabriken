@@ -1,0 +1,107 @@
+# Testar alla moduler och bygger debug-APK för varje appmodul.
+# På main läggs APK:erna i releasen "senaste-main", så att de kan installeras från telefonen.
+# Ändras bara av Claude (CLAUDE.md punkt 11).
+name: Bygg
+
+on:
+  push:
+    branches: ["**"]
+    paths-ignore: ["**.md"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bygg-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bygg:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Finns bygget?
+        id: finns
+        run: |
+          if [ -f settings.gradle.kts ]; then echo "ja=1" >> "$GITHUB_OUTPUT"; else echo "::notice::Inget Gradle-bygge ännu."; fi
+
+      - uses: actions/setup-java@v5
+        if: steps.finns.outputs.ja
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v5
+        if: steps.finns.outputs.ja
+        with:
+          gradle-version: "9.7.1"
+
+      - name: Tester
+        if: steps.finns.outputs.ja
+        run: gradle --no-daemon testDebugUnitTest
+
+      - name: Misslyckade tester
+        if: failure() && steps.finns.outputs.ja
+        run: |
+          python3 - <<'PY'
+          import glob, xml.etree.ElementTree as ET
+          for f in glob.glob("**/build/test-results/**/*.xml", recursive=True):
+              for tc in ET.parse(f).getroot().iter("testcase"):
+                  for fel in list(tc.findall("failure")) + list(tc.findall("error")):
+                      text = (fel.get("message") or fel.text or "").strip().replace("\n", " ")[:300]
+                      print(f"::error::{tc.get('classname')}.{tc.get('name')}: {text}")
+          PY
+
+      # Valfri fast debug-nyckel, så att en ny APK kan installeras över den gamla.
+      - name: Signeringsnyckel
+        if: steps.finns.outputs.ja
+        env:
+          DEBUG_KEYSTORE_BASE64: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$DEBUG_KEYSTORE_BASE64" ]; then
+            echo "::warning::DEBUG_KEYSTORE_BASE64 saknas. APK:n byggs med en tillfällig nyckel och kan inte installeras över en tidigare."
+            exit 0
+          fi
+          mkdir -p ~/.android
+          echo "$DEBUG_KEYSTORE_BASE64" | base64 -d > ~/.android/debug.keystore
+
+      - name: Bygg APK
+        if: steps.finns.outputs.ja
+        run: gradle --no-daemon assembleDebug
+
+      - name: Samla APK
+        if: steps.finns.outputs.ja
+        run: |
+          mkdir -p ut
+          for apk in */build/outputs/apk/debug/*-debug.apk; do
+            [ -f "$apk" ] || continue
+            modul=${apk%%/*}
+            cp "$apk" "ut/${modul}-${GITHUB_SHA::7}.apk"
+          done
+          ls ut
+
+      - uses: actions/upload-artifact@v6
+        if: steps.finns.outputs.ja
+        with:
+          name: apk-${{ github.sha }}
+          path: ut/*.apk
+          retention-days: 14
+
+      - name: Release senaste-main
+        if: steps.finns.outputs.ja && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          noter="main ${GITHUB_SHA::7}, byggd $(TZ=Europe/Stockholm date '+%Y-%m-%d %H:%M')."
+          if ! gh release view senaste-main >/dev/null 2>&1; then
+            gh release create senaste-main --prerelease --title "Senaste main" --notes "$noter" --target "$GITHUB_SHA"
+          else
+            gh release edit senaste-main --notes "$noter"
+          fi
+          for gammal in $(gh release view senaste-main --json assets --jq '.assets[].name'); do
+            gh release delete-asset senaste-main "$gammal" --yes
+          done
+          gh release upload senaste-main ut/*.apk --clobber
