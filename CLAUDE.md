@@ -78,14 +78,16 @@ Kontrollera vid varje PR:
 - Har databasschemat ändrats utan migration och test av migrationen?
 - Går testerna igenom, och testar de beteendet i uppgiften och inte bara att koden körs?
 
-## 9. Får inte ändras utan Mattias godkännande
+## 9. Beslut
 
-- Detta dokument.
-- applicationId, appnamn och pris.
-- Databasschema efter första release.
-- Nya behörigheter, nätverk eller beroenden.
+Claude beslutar och driver arbetet utan att fråga Mattias: beroenden, behörigheter, databasschema, arkitektur, merge till main och nästa uppdrag. Beslut av betydelse skrivs i BESLUTSLOGG.md, och Mattias får en kort rapport.
+
+Bara detta kräver Mattias:
 - Allt i Play Console: publicering, priser, butikstexter, svar på recensioner.
+- applicationId och appnamn vid första publiceringen.
 - Signeringsnyckeln. Den finns bara hos Mattias och i Play App Signing, aldrig i repot.
+
+Kod skrivs i första hand av den lokala modellen. Cursor skriver bara det som är för tungt för den. Claude skriver ingen appkod.
 
 ## 10. Arbetsregler
 
