@@ -21,7 +21,7 @@ Framgång mäts per app efter 90 dagar i produktion: installationer, andel som k
 
 1. Claude skriver ett **uppdrag** som en ny fil i `uppdrag/` på main: bakgrund, uppgift, "Klart när", "Gör inte". En funktion per uppdrag.
 2. Workflowet `cursor-uppdrag` skickar uppdraget till Cursor. Cursor delar upp det i **uppgifter**, en fil per uppgift i `uppgifter/ny/`, och öppnar en PR med enbart uppgiftsfilerna. Claude mergar den efter kontroll mot uppdraget.
-3. Körskriptet på datorn tar den äldsta uppgiften i `uppgifter/ny/`, flyttar den till `uppgifter/pågår/`, arbetar på grenen `lokal/<uppgiftsnamn>`, kör testerna och öppnar en PR.
+3. Körskriptet på datorn tar den äldsta uppgiften i `uppgifter/ny/`, flyttar den till `uppgifter/pagar/`, arbetar på grenen `lokal/<uppgiftsnamn>`, kör testerna och öppnar en PR.
 4. Cursor granskar PR:en. Godkänd: uppgiften flyttas till `uppgifter/klar/`. Underkänd: Cursor skriver vad som saknas i PR:en och uppgiften går tillbaka till `uppgifter/ny/` med försök 2. Underkänd igen: Cursor gör uppgiften själv.
 5. Claude kontrollerar direktiven, väntar på grönt bygge och mergar till main. Nattgranskningen gör detta när något väntar.
 
@@ -105,6 +105,6 @@ Kontrollera vid varje PR:
 - `<app>/APP.md` — regler för en enskild app.
 - `<app>/butik/` — butikstexter, skärmbilder och Data safety-svar.
 - `uppdrag/` — uppdrag från Claude till Cursor, ett per fil.
-- `uppgifter/` — uppgifter för den lokala modellen, i mapparna `ny/`, `pågår/` och `klar/`. Formatet står i `uppgifter/MALL.md`.
+- `uppgifter/` — uppgifter för den lokala modellen, i mapparna `ny/`, `pagar/` och `klar/`. Formatet står i `uppgifter/MALL.md`.
 - `verktyg/` — körskriptet för den lokala modellen.
 - `.github/workflows/` — bygget (`bygg.yml`) och utskicket av uppdrag (`cursor-uppdrag.yml`). Ändras bara av Claude.
