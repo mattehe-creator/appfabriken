@@ -2,4 +2,14 @@
 <resources>
     <string name="app_name">Warranty Vault</string>
     <string name="tom_lista">No purchases yet. Add your first receipt to keep track of warranties and return deadlines.</string>
+    <string name="lagg_till">Add</string>
+    <string name="lagg_till_titel">Add purchase</string>
+    <string name="andra_titel">Edit purchase</string>
+    <string name="falt_vad">What did you buy?</string>
+    <string name="falt_var">Where (optional)</string>
+    <string name="falt_garanti_manader">Warranty (months)</string>
+    <string name="spara">Save</string>
+    <string name="avbryt">Cancel</string>
+    <string name="andra">Edit</string>
+    <string name="ta_bort">Delete</string>
 </resources>

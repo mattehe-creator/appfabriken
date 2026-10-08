@@ -111,3 +111,6 @@ Kontrollera vid varje PR:
 - `settings.gradle.kts`, rotens `build.gradle.kts`, `gradle.properties` och `gradle/wrapper/` — Gradle-rotbygget för hela portföljen.
 - `karna/` — Android-biblioteket `:karna` (gemensamt tema, tillgänglighet och senare Pro/export).
 - `garantivalvet/` — appmodulen `:garantivalvet` (Garantivalvet / Warranty Vault).
+- `garantivalvet/schemas/` — exporterade Room-scheman per databasversion (genereras av KSP).
+- `garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/data/` — Room-entitet, DAO, databas och repository för köp.
+- `garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/ui/` — Compose-skärmar, navigeringstillstånd och ViewModel för köp.

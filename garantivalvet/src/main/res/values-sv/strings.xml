@@ -2,4 +2,14 @@
 <resources>
     <string name="app_name">Garantivalvet</string>
     <string name="tom_lista">Inga köp än. Lägg till ditt första kvitto för att hålla koll på garantier och reklamationsfrister.</string>
+    <string name="lagg_till">Lägg till</string>
+    <string name="lagg_till_titel">Lägg till köp</string>
+    <string name="andra_titel">Ändra köp</string>
+    <string name="falt_vad">Vad köpte du?</string>
+    <string name="falt_var">Var (valfritt)</string>
+    <string name="falt_garanti_manader">Garantitid (månader)</string>
+    <string name="spara">Spara</string>
+    <string name="avbryt">Avbryt</string>
+    <string name="andra">Ändra</string>
+    <string name="ta_bort">Ta bort</string>
 </resources>
