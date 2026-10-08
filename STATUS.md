@@ -21,8 +21,9 @@ Mattias sköter företaget, D-U-N-S-numret och Play Console som organisationskon
 Ett 3080 Ti har 12 GB VRAM, vilket ligger under det som brukar anges som bekvämt för agentkodning (16–24 GB). En MoE-modell som Qwen3-Coder 30B-A3B går att köra med experterna delvis i RAM, men långsammare. Därför byggs flödet för små uppgifter, och Cursor tar över efter två misslyckanden.
 
 1. Klart 2026-10-08: Ollama och Aider 0.86.2 är installerade, med `qwen3-coder:30b`. Provet i en tom mapp: modellen laddas på under 10 s, och en liten fil tar 5–7 s. Aider valde redigeringsformatet whole.
-2. Provkör två eller tre modeller på samma provuppgift i `:garantivalvet` och mät: blev testet grönt, hur lång tid tog det. Claude skriver provuppgiften.
-3. Claude skriver körskriptet `verktyg/kor-uppgift.ps1`: hämta äldsta uppgift, skapa gren, kör Aider, kör testerna, pusha och öppna PR. Mattias startar det via Schemaläggaren i Windows med villkoret "när datorn är inaktiv", och det stoppas när datorn används igen.
+2. Provuppgiften ligger i `uppgifter/ny/2026-10-08-01-garantitid.md` (garantitid och status, ren Kotlin). Den körs först med `qwen3-coder:30b` och Aiders standardformat. Fler modeller eller OpenCode provas bara om resultatet är dåligt.
+3. Körskriptet `verktyg/kor-uppgift.ps1` finns (2026-10-08). Första körningen gör Mattias för hand. När den fungerar läggs det i Schemaläggaren i Windows med villkoret "när datorn är inaktiv".
+4. Cursors granskning av den lokala modellens PR:er automatiseras efter provkörningen. Tills dess granskar Claude dem.
 
 Klart när: en uppgift har gått hela vägen från uppdrag till mergad kod utan att Mattias rört koden.
 
