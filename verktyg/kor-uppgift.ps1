@@ -124,7 +124,16 @@ $minuter = [math]::Round(((Get-Date) - $start).TotalMinutes, 1)
 & $testFil
 $testOk = ($LASTEXITCODE -eq 0)
 
+# Aider committar normalt själv. Ligger ändringar i de tillåtna filerna kvar okommittade, committas de här.
+$kvar = git status --porcelain -- $tillatna
+if ($kvar) {
+    Kor git (@("add", "--") + $tillatna)
+    Kor git @("commit", "-q", "-m", "Lokal modell: $namn (okommittade ändringar efter Aider)")
+}
+
 $andrade = git diff --name-only "main...HEAD" | Where-Object { $_ -notlike "uppgifter/*" }
+$saknas = $tillatna | Where-Object { $andrade -notcontains $_ }
+if ($saknas) { $testOk = $false; Write-Host "Filer som uppgiften kräver men som inte ändrats: $($saknas -join ', ')" -ForegroundColor Yellow }
 $utanfor = $andrade | Where-Object { $tillatna -notcontains $_ }
 
 $resultat = if ($testOk) { "gröna" } else { "RÖDA" }
@@ -141,6 +150,7 @@ if ($IngenPush) {
 # --- Push och PR ---
 Kor git @("push", "-q", "-u", "origin", $gren)
 $utanforText = if ($utanfor) { $utanfor -join ", " } else { "inga" }
+$saknasText = if ($saknas) { $saknas -join ", " } else { "inga" }
 $format = if ($EditFormat) { $EditFormat } else { "standard" }
 $kropp = @"
 Lokal modell körde uppgiften ``$iPagar``.
@@ -149,10 +159,14 @@ Lokal modell körde uppgiften ``$iPagar``.
 - Tid: $minuter min
 - Tester (``$testRad``): $resultat
 - Filer utanför uppgiften: $utanforText
+- Filer som saknas: $saknasText
 
 Granska mot uppgiften och CLAUDE.md punkt 8.
 "@
-$prArg = @("pr", "create", "--base", "main", "--head", $gren, "--title", "Lokal: $namn", "--body", $kropp)
+# Texten går via fil, eftersom PowerShell 5.1 tar bort citattecken i argument till andra program.
+$kroppFil = Join-Path $loggMapp "pr-$stampel.md"
+$kropp | Set-Content -Encoding UTF8 $kroppFil
+$prArg = @("pr", "create", "--base", "main", "--head", $gren, "--title", "Lokal: $namn", "--body-file", $kroppFil)
 if (-not $testOk -or $utanfor) { $prArg += "--draft" }
 Kor gh $prArg
 
