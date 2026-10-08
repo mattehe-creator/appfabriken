@@ -108,3 +108,6 @@ Kontrollera vid varje PR:
 - `uppgifter/` — uppgifter för den lokala modellen, i mapparna `ny/`, `pagar/` och `klar/`. Formatet står i `uppgifter/MALL.md`.
 - `verktyg/` — körskriptet för den lokala modellen.
 - `.github/workflows/` — bygget (`bygg.yml`) och utskicket av uppdrag (`cursor-uppdrag.yml`). Ändras bara av Claude.
+- `settings.gradle.kts`, rotens `build.gradle.kts`, `gradle.properties` och `gradle/wrapper/` — Gradle-rotbygget för hela portföljen.
+- `karna/` — Android-biblioteket `:karna` (gemensamt tema, tillgänglighet och senare Pro/export).
+- `garantivalvet/` — appmodulen `:garantivalvet` (Garantivalvet / Warranty Vault).
