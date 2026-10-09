@@ -125,7 +125,11 @@ foreach ($kandidat in (Get-ChildItem "uppgifter\ny\*.md" -ErrorAction SilentlyCo
     if ($saknade) { Write-Host "Hoppar över $($kandidat.BaseName): väntar på $($saknade -join ', ')."; continue }
     $uppgift = $kandidat; break
 }
-if (-not $uppgift) { Status "vilar" "Ingen uppgift är redo."; Write-Host "Ingen uppgift att köra just nu."; Stop-Transcript | Out-Null; exit 3 }
+if (-not $uppgift) {
+    $antal = @(Get-ChildItem "uppgifter\ny\*.md" -ErrorAction SilentlyContinue).Count
+    $orsak = if ($antal -eq 0) { "Kön är tom. Väntar på att Cursor delar upp nästa uppdrag." } else { "$antal uppgifter väntar på granskning eller på andra uppgifter." }
+    Status "vilar" $orsak; Write-Host $orsak; Stop-Transcript | Out-Null; exit 3
+}
 
 $namn = $uppgift.BaseName
 $gren = "lokal/$namn"

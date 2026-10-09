@@ -10,7 +10,7 @@ while ($korda -lt $Max -and (Get-Date) -lt $slut) {
     $kod = $LASTEXITCODE
     if ($kod -eq 0) { $korda++; continue }
     if ($kod -eq 3) {
-        Write-Host "Väntar 10 minuter på granskning. Stäng fönstret för att sluta." -ForegroundColor DarkGreen
+        Write-Host "Försöker igen om 10 minuter. Stäng fönstret för att sluta." -ForegroundColor DarkGreen
         Start-Sleep -Seconds 600
         continue
     }
