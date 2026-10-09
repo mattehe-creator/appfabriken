@@ -1,10 +1,19 @@
-﻿# Kör uppgifter med kor-uppgift.ps1 tills ingen uppgift är redo, eller högst -Max stycken.
-# Startas av Schemaläggaren (se installera-schema.ps1). Avbryts av Windows när datorn används igen.
-param([int]$Max = 10)
+﻿# Kör uppgifter med kor-uppgift.ps1 i följd. När ingen uppgift är redo (de väntar på granskning)
+# väntar den 10 minuter och försöker igen, i högst -VantaTimmar. Stängs fönstret, eller används
+# datorn när Schemaläggaren har startat den, så stoppas den.
+param([int]$Max = 20, [double]$VantaTimmar = 4)
 $skript = Join-Path $PSScriptRoot "kor-uppgift.ps1"
-for ($i = 1; $i -le $Max; $i++) {
+$slut = (Get-Date).AddHours($VantaTimmar)
+$korda = 0
+while ($korda -lt $Max -and (Get-Date) -lt $slut) {
     & powershell -NoProfile -ExecutionPolicy Bypass -File $skript
     $kod = $LASTEXITCODE
-    if ($kod -eq 3) { break }          # ingen uppgift redo
-    if ($kod -ne 0) { break }          # fel: stanna och låt loggen visa varför
+    if ($kod -eq 0) { $korda++; continue }
+    if ($kod -eq 3) {
+        Write-Host "Väntar 10 minuter på granskning. Stäng fönstret för att sluta." -ForegroundColor DarkGreen
+        Start-Sleep -Seconds 600
+        continue
+    }
+    Write-Host "Körningen stannade med fel ($kod). Se loggen i $env:LOCALAPPDATA\appfabriken\logg." -ForegroundColor Red
+    break
 }
