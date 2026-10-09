@@ -17,6 +17,7 @@
     <string name="status_galler">In warranty</string>
     <string name="status_gar_ut_snart">Warranty ending soon</string>
     <string name="status_utgangen">Expired</string>
+    <string name="status_reklamation_galler">Reclaiming rights apply</string>
     <string name="lista_garanti_slut">Warranty ends %1$s</string>
     
     <!-- Formulär -->
@@ -53,4 +54,11 @@
     <string name="paminnelse_installning_rubrik">Remind me before warranty ends</string>
     <string name="paminnelse_installning_beskrivning">Daily notification when a warranty ends within 30 days</string>
     <string name="paminnelse_behorighet_nekad">Notifications are off. Enable them in system settings to get reminders.</string>
+    
+    <!-- Reklamationsrätt -->
+    <string name="detalj_reklamation_till">Reclaiming rights until %1$s</string>
+    <string name="detalj_reklamation_rubrik">Reclaiming rights</string>
+    <string name="detalj_reklamation_forklaring">You can claim defects within three years from the purchase. Defects found within two years are assumed to have existed at the time of purchase. Calculated from the purchase date and applies to goods purchased from a trader.</string>
+    <string name="detalj_reklamation_vagledning">This information is for guidance only and does not constitute legal advice.</string>
+    <string name="detalj_reklamation_aldre_lag">Purchases before May 1, 2022 are subject to older rules.</string>
 </resources>

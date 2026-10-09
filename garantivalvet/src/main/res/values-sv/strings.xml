@@ -17,6 +17,7 @@
     <string name="status_galler">I garanti</string>
     <string name="status_gar_ut_snart">Garantin löper snart ut</string>
     <string name="status_utgangen">Utgången</string>
+    <string name="status_reklamation_galler">Reklamationsrätt gäller</string>
     <string name="lista_garanti_slut">Garantin går ut %1$s</string>
     
     <!-- Formulär -->
@@ -53,4 +54,11 @@
     <string name="paminnelse_installning_rubrik">Påminn mig innan garantin går ut</string>
     <string name="paminnelse_installning_beskrivning">Daglig notis när en garanti går ut inom 30 dagar</string>
     <string name="paminnelse_behorighet_nekad">Notiser är avstängda. Slå på dem i systeminställningarna för att få påminnelser.</string>
+    
+    <!-- Reklamationsrätt -->
+    <string name="detalj_reklamation_till">Reklamationsrätt till %1$s</string>
+    <string name="detalj_reklamation_rubrik">Reklamationsrätt</string>
+    <string name="detalj_reklamation_forklaring">Du kan reklamera fel som visar sig inom tre år från köpet. Fel som visar sig inom två år antas ha funnits vid köpet. Räknas från köpdatum och gäller varor köpta av en näringsidkare.</string>
+    <string name="detalj_reklamation_vagledning">Detta är vägledning och inte juridisk rådgivning.</string>
+    <string name="detalj_reklamation_aldre_lag">Köp före 1 maj 2022 omfattas av äldre regler.</string>
 </resources>
