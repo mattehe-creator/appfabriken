@@ -41,6 +41,7 @@ import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.garantivalvet.regler.formateraPrisKr
 import se.tmconnect.garantivalvet.regler.garantiSlut
 import se.tmconnect.garantivalvet.regler.garantiStatus
+import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -151,8 +152,28 @@ fun KopDetaljSkarm(
             kvittoUri?.let { uri ->
                 val context = LocalContext.current
                 val bitmap = remember(uri) {
-                    context.contentResolver.openInputStream(uri)?.use { stream ->
-                        BitmapFactory.decodeStream(stream)
+                    try {
+                        // Läs först måtten utan att ladda hela bilden
+                        val options = BitmapFactory.Options().apply {
+                            inJustDecodeBounds = true
+                        }
+                        
+                        context.contentResolver.openInputStream(uri)?.use { input ->
+                            BitmapFactory.decodeStream(input, null, options)
+                        }
+                        
+                        // Beräkna inSampleSize baserat på storlek (max 480 px på längsta sidan)
+                        val sampleSize = beraknaInSampleSize(options.outWidth, options.outHeight, maxSida = 480)
+                        
+                        // Läs bilden med rätt inSampleSize
+                        context.contentResolver.openInputStream(uri)?.use { input ->
+                            val decodeOptions = BitmapFactory.Options().apply {
+                                inSampleSize = sampleSize
+                            }
+                            BitmapFactory.decodeStream(input, null, decodeOptions)
+                        }
+                    } catch (_: Exception) {
+                        null
                     }
                 }
                 bitmap?.let { decoded ->
