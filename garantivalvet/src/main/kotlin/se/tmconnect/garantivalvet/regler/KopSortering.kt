@@ -16,15 +16,15 @@ fun sorteraEfterGaranti(lista: List<Kop>, idag: LocalDate): List<Kop> {
         }
     }
     
-    // Sortera aktiva efter garantislut (äldst först) och sedan efter vad
+    // Sortera aktiva efter garantislut (närmaste först) och sedan efter vad
     aktiva.sortWith(
-        compareByDescending<Kop> { garantiSlut(it.kopdatum, it.garantiManader) }
+        compareBy<Kop> { garantiSlut(it.kopdatum, it.garantiManader) }
             .thenBy { it.vad }
     )
     
     // Sortera utgångna efter garantislut (senast först) och sedan efter vad
     utgångna.sortWith(
-        compareBy<Kop> { garantiSlut(it.kopdatum, it.garantiManader) }
+        compareByDescending<Kop> { garantiSlut(it.kopdatum, it.garantiManader) }
             .thenBy { it.vad }
     )
     
