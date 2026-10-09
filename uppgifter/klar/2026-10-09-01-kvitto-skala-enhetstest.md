@@ -26,3 +26,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*KvittoSkalningTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-09 (borttagen felplacerad KvittoSkalningTest.kt i rot)
