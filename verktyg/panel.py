@@ -20,6 +20,7 @@ STATUS = DATA / "status.json"
 AIDER = DATA / "logg" / "aider-senaste.log"
 
 _cache = {"tid": 0.0, "github": {}}
+_commit = {}  # sha -> (författare, datum, rubrik); en commit ändras aldrig
 _lock = threading.Lock()
 
 
@@ -36,11 +37,57 @@ def gh(path):
 def aktor(gren="", forfattare="", meddelande=""):
     if gren.startswith("lokal/"):
         return "lokal"
-    if gren.startswith("cursor/") or "cursor" in forfattare.lower():
+    # github-actions verkställer Cursors beslut (cursor-beslut), så det räknas som Cursor.
+    if gren.startswith("cursor/") or "cursor" in forfattare.lower() or "github-actions" in forfattare.lower():
         return "cursor"
     if forfattare == "Claude" or "Claude-Session" in meddelande:
         return "claude"
     return "mattias"
+
+
+def commit(sha):
+    if sha not in _commit:
+        c = gh(f"repos/{REPO}/commits/{sha}")
+        if not c:
+            return None
+        _commit[sha] = (c["commit"]["author"]["name"], c["commit"]["author"]["date"],
+                        c["commit"]["message"].split("\n")[0])
+    return _commit[sha]
+
+
+def cursor_lage(prs, korningar):
+    """Vad Cursor gör nu, och Cursors beslut på lokal/-grenar (de syns inte i mains historik)."""
+    nu, beslut = [], []
+    runs = korningar.get("workflow_runs", [])
+    for p in prs:
+        gren = p["head"]["ref"]
+        if not gren.startswith("lokal/"):
+            continue
+        huvud = commit(p["head"]["sha"])
+        if not huvud:
+            continue
+        forf, datum, rubrik = huvud
+        if "cursor" in forf.lower():
+            beslut.append({"tid": datum, "vem": "cursor", "text": "Cursor: " + rubrik})
+        elif p["state"] == "open":
+            startad = [r for r in runs if r["name"] == "Cursor-granskning"
+                       and r.get("display_title", "").endswith(gren) and r["created_at"] >= datum]
+            if startad:
+                nu.append({"tid": startad[0]["created_at"],
+                           "text": f"Granskar PR #{p['number']} ({gren[6:]})"})
+            else:
+                nu.append({"tid": datum, "text": f"PR #{p['number']} väntar på bygge innan granskning"})
+    for r in runs:
+        if r["name"] == "Cursor-uppdrag" and r["status"] != "completed":
+            nu.append({"tid": r["created_at"], "text": "Skickar uppdrag: " + r["display_title"]})
+    # Uppdrag som skickats men där Cursor inte öppnat någon PR än
+    cursor_prs = [p["created_at"] for p in prs if p["head"]["ref"].startswith("cursor/")]
+    for r in runs:
+        if r["name"] == "Cursor-uppdrag" and r["conclusion"] == "success" \
+                and not any(t >= r["created_at"] for t in cursor_prs) \
+                and time.time() - time.mktime(time.strptime(r["created_at"], "%Y-%m-%dT%H:%M:%SZ")) < 6 * 3600:
+            nu.append({"tid": r["created_at"], "text": "Arbetar med uppdrag: " + r["display_title"]})
+    return nu, beslut
 
 
 def hamta_github():
@@ -68,9 +115,6 @@ def hamta_github():
                           "vem": aktor(forfattare=c["commit"]["author"]["name"], meddelande=m),
                           "text": m.split("\n")[0]})
     for r in korningar.get("workflow_runs", []):
-        if r["name"] == "Cursor-granskning" and r["conclusion"] == "success":
-            handelser.append({"tid": r["created_at"], "vem": "cursor",
-                              "text": "Cursor började granska " + r.get("head_branch", "")})
         if r["name"] == "Cursor-uppdrag" and r["conclusion"] == "success":
             handelser.append({"tid": r["created_at"], "vem": "claude",
                               "text": "Claude skickade uppdrag till Cursor: " + r["display_title"]})
@@ -78,12 +122,16 @@ def hamta_github():
         vem = aktor(gren=p["head"]["ref"])
         handelser.append({"tid": p["created_at"], "vem": vem,
                           "text": f"PR #{p['number']} öppnad: {p['title']}"})
+        lokal = p["head"]["ref"].startswith("lokal/")
         if p["state"] == "closed" and not p.get("merged_at"):
-            handelser.append({"tid": p["closed_at"], "vem": "claude",
+            handelser.append({"tid": p["closed_at"], "vem": "cursor" if lokal else "claude",
                               "text": f"PR #{p['number']} underkänd och stängd"})
         if p.get("merged_at"):
-            handelser.append({"tid": p["merged_at"], "vem": "claude",
-                              "text": f"Claude granskade och mergade PR #{p['number']}"})
+            handelser.append({"tid": p["merged_at"], "vem": "cursor" if lokal else "claude",
+                              "text": f"PR #{p['number']} mergad" + (" efter Cursors godkännande" if lokal
+                                                                       else " efter Claudes granskning")})
+    cursor_nu, cursor_beslut = cursor_lage(prs, korningar)
+    handelser += cursor_beslut
     handelser.sort(key=lambda h: h["tid"], reverse=True)
 
     data = {
@@ -94,6 +142,7 @@ def hamta_github():
                 for p in prs],
         "handelser": handelser[:25],
         "fragor": fragor,
+        "cursor": sorted(cursor_nu, key=lambda h: h["tid"]),
     }
     with _lock:
         _cache.update(tid=time.time(), github=data)
@@ -121,14 +170,14 @@ SIDA = r"""<!doctype html><html lang="sv"><head><meta charset="utf-8">
 :root{--g:#00ff66;--g2:#0a8f3c;--bg:#000;--p:rgba(0,10,3,.82);--c:#7fd7ff;--k:#ffb347;--m:#d9d9d9}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--g);font:14px/1.45 Consolas,"Cascadia Mono",monospace;overflow:hidden}
 canvas{position:fixed;inset:0;z-index:0}
-main{position:relative;z-index:1;display:grid;grid-template-columns:1.4fr 1fr;grid-template-rows:auto 1fr auto;gap:14px;height:100vh;padding:16px}
+main{position:relative;z-index:1;display:grid;grid-template-columns:1.4fr 1fr;grid-template-rows:auto auto 1fr auto;gap:14px;height:100vh;padding:16px}
 section{background:var(--p);border:1px solid var(--g2);padding:12px;overflow:auto;box-shadow:0 0 18px rgba(0,255,102,.15)}
 h1{margin:0;font-size:18px;letter-spacing:.2em;text-shadow:0 0 8px var(--g)}h2{margin:0 0 8px;font-size:13px;letter-spacing:.15em;color:var(--g2)}
 #topp{grid-column:1/3;display:flex;gap:24px;align-items:center;flex-wrap:wrap}
 #fas{padding:2px 10px;border:1px solid var(--g);text-transform:uppercase}
 #fas.kodar,#fas.testar{animation:puls 1.2s infinite}@keyframes puls{50%{box-shadow:0 0 14px var(--g)}}
 #fas.fel{color:#ff5555;border-color:#ff5555}
-#kod{grid-row:2/4;white-space:pre-wrap;word-break:break-word}
+#kod{grid-row:2/5;white-space:pre-wrap;word-break:break-word}
 #kod .rad{opacity:.95}#kod .ny{animation:in .6s}@keyframes in{from{color:#fff;text-shadow:0 0 10px #fff}}
 .cursor::after{content:"█";animation:blink 1s steps(1) infinite}@keyframes blink{50%{opacity:0}}
 ul{list-style:none;margin:0;padding:0}li{margin:0 0 6px}
@@ -138,6 +187,7 @@ ul{list-style:none;margin:0;padding:0}li{margin:0 0 6px}
 </style></head><body><canvas id="regn"></canvas><main>
 <section id="topp"><h1>APPFABRIKEN</h1><span id="fas">...</span><span id="uppgift"></span><span id="text" class="liten"></span></section>
 <section id="kod"><h2>LOKAL MODELL // AIDER</h2><div id="rader"></div><span class="cursor"></span></section>
+<section id="cur"><h2>CURSOR // NU</h2><ul id="cursornu"></ul><div class="liten" style="margin-top:6px">Detaljer: <a href="https://cursor.com/agents" target="_blank" style="color:var(--c)">cursor.com/agents</a> · <a href="https://github.com/mattehe-creator/appfabriken/actions" target="_blank" style="color:var(--c)">GitHub Actions</a></div></section>
 <section><h2>HÄNDELSER</h2><ul id="handelser"></ul></section>
 <section><h2>KÖ OCH PR</h2><div class="liten">Frågor till Mattias</div><ul id="fragor"></ul><div class="liten">Uppgifter som väntar</div><ul id="ko"></ul><div class="liten" style="margin-top:8px">Pull requests</div><ul id="prs"></ul></section>
 </main><script>
@@ -162,6 +212,7 @@ document.getElementById("rader").innerHTML=r.map((l,i)=>`<div class="rad${i>=r.l
 sist=r;const k=document.getElementById("kod");k.scrollTop=k.scrollHeight}}catch(e){}}
 async function github(){try{const d=await (await fetch("/api/github")).json();
 document.getElementById("handelser").innerHTML=d.handelser.map(h=>`<li class="${kls(h.vem)}"><span class="tag">${vemNamn[h.vem]}</span><span class="liten">${new Date(h.tid).toLocaleString("sv-SE",{dateStyle:"short",timeStyle:"short"})}</span> ${esc(h.text)}</li>`).join("");
+document.getElementById("cursornu").innerHTML=(d.cursor||[]).length?d.cursor.map(h=>`<li class="cursor-a"><span class="liten">sedan ${new Date(h.tid).toLocaleTimeString("sv-SE",{timeStyle:"short"})}</span> ${esc(h.text)}</li>`).join(""):"<li class='liten'>Vilar. Inget skickat till Cursor just nu.</li>";
 document.getElementById("fragor").innerHTML=d.fragor.length?d.fragor.map(f=>`<li class="claude">${esc(f)}</li>`).join(""):"<li class='liten'>Inga</li>";
 document.getElementById("ko").innerHTML=d.ko.length?d.ko.map(k=>`<li>${esc(k.replace(".md",""))}</li>`).join(""):"<li class='liten'>Tom</li>";
 document.getElementById("prs").innerHTML=d.prs.map(p=>`<li class="${kls(p.vem)}"><span class="tag">#${p.nr}</span>${esc(p.titel)} <span class="liten">(${p.lage})</span></li>`).join("")}catch(e){}}

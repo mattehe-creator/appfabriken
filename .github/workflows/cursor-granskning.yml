@@ -2,6 +2,7 @@
 # Cursor arbetar på samma gren och skriver sitt beslut i granskning/<uppgift>.md. Se ARBETSFLODE.md.
 # Claude mergar efter att ha granskat Cursors beslut. Ändras bara av Claude.
 name: Cursor-granskning
+run-name: Granska ${{ github.event.workflow_run.head_branch }}
 
 on:
   workflow_run:

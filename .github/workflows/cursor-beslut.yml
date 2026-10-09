@@ -2,6 +2,7 @@
 # Godkänd + grönt bygge: PR:en mergas. Underkänd: PR:en stängs och försök 2 läggs i uppgifter/ny/ på main.
 # Claude granskar Cursors beslut i efterhand och rättar om det behövs (ARBETSFLODE.md). Ändras bara av Claude.
 name: Cursor-beslut
+run-name: Beslut ${{ github.event.workflow_run.head_branch || github.ref_name }}
 
 on:
   workflow_run:
