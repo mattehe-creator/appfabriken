@@ -49,3 +49,5 @@ gradle :garantivalvet:testDebugUnitTest
 - Begära notisbehörighet vid appstart.
 - Ändra databasschemat.
 - Duplicera `KopListRad` eller hårdkoda UI-text.
+
+utfall: godkänd 2026-10-09 (felplacerad MainActivity i rot borttagen, mutableStateOf/setValue-import, nekad-text under reglage)

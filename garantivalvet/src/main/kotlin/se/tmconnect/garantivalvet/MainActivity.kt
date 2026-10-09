@@ -1,7 +1,9 @@
 package se.tmconnect.garantivalvet
 
+import android.Manifest
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,6 +13,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import java.time.LocalDate
 import se.tmconnect.garantivalvet.data.GarantiDatabas
@@ -59,6 +63,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Resultatkontrakt för notisbehörighet
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            viewModel.sattPaminnelser(true)
+            behorighetNekad = false
+        } else {
+            behorighetNekad = true
+        }
+    }
+
+    private var behorighetNekad by mutableStateOf(false)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         hanteraPaminnelseIntent(intent)
@@ -69,6 +87,7 @@ class MainActivity : ComponentActivity() {
                 val kopLista by viewModel.kopLista.collectAsState()
                 val aktivSkarm by viewModel.aktivSkarm.collectAsState()
                 val valtKop by viewModel.valtKop.collectAsState()
+                val paminnelserPa by viewModel.paminnelserPa.collectAsState()
 
                 when (aktivSkarm) {
                     KopSkarm.Lista -> {
@@ -76,6 +95,23 @@ class MainActivity : ComponentActivity() {
                             kopLista = kopLista,
                             onLaggTill = viewModel::visaLaggTill,
                             onOppna = viewModel::visaDetalj,
+                            paminnelserPa = paminnelserPa,
+                            onPaminnelserAndras = { pa ->
+                                if (pa) {
+                                    // För Android 13+ behöver vi begära behörighet
+                                    if (Build.VERSION.SDK_INT >= 33) {
+                                        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                    } else {
+                                        // För äldre versioner går det direkt
+                                        viewModel.sattPaminnelser(true)
+                                    }
+                                } else {
+                                    // Avslå påminnelser direkt
+                                    viewModel.sattPaminnelser(false)
+                                    behorighetNekad = false
+                                }
+                            },
+                            behorighetNekad = behorighetNekad
                         )
                     }
 
