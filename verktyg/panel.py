@@ -134,11 +134,20 @@ def hamta_github():
     handelser += cursor_beslut
     handelser.sort(key=lambda h: h["tid"], reverse=True)
 
+    # En godkänd PR som krockar med main kan inte mergas av cursor-beslut (workflowet fallerar tyst).
+    krock = set()
+    for p in prs:
+        if p["state"] == "open":
+            d = gh(f"repos/{REPO}/pulls/{p['number']}") or {}
+            if d.get("mergeable_state") == "dirty":
+                krock.add(p["number"])
+
     data = {
         "ko": sorted(f["name"] for f in ny if f.get("name", "").endswith(".md")),
         "prs": [{"nr": p["number"], "titel": p["title"], "vem": aktor(gren=p["head"]["ref"]),
                  "lage": "mergad" if p.get("merged_at") else ("stängd" if p["state"] == "closed"
-                         else ("utkast" if p.get("draft") else "väntar på granskning"))}
+                         else ("KROCKAR MED MAIN, Claude måste lösa" if p["number"] in krock
+                               else ("utkast" if p.get("draft") else "väntar på granskning")))}
                 for p in prs],
         "handelser": handelser[:25],
         "fragor": fragor,
