@@ -118,6 +118,7 @@ foreach ($kandidat in (Get-ChildItem "uppgifter\ny\*.md" -ErrorAction SilentlyCo
     if ($beror -and $beror -notmatch '^ingen') {
         foreach ($b in ($beror -split ',')) {
             $b = $b.Trim(); if (-not $b) { continue }
+            if ($b -like "cursor:*") { $saknade += $b; continue }   # väntar på Cursors kod
             if (-not $b.EndsWith('.md')) { $b = "$b.md" }
             if (-not (Test-Path "uppgifter\klar\$b")) { $saknade += $b }
         }

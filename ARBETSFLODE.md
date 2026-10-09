@@ -13,6 +13,12 @@ Kompletterar CLAUDE.md punkt 3. Gäller från 2026-10-09.
 4. **Claude granskar Cursor i efterhand.** Claudes timvisa körning stickprovar det som mergats och stängts sedan förra gången. Var Cursors beslut fel rättar Claude det (en ny uppgift eller ett uppdrag) och skriver varför i BESLUTSLOGG.md. Claude tar också över PR:er där workflowet inte kunde avgöra.
 5. Cursors egna PR:er (`cursor/...`) granskas och mergas av Claude, som tidigare.
 
+## Uppdrag i två steg
+
+Från och med uppdraget efter kvittofoto skriver Claude uppdragen så att Cursor:
+1. först öppnar en liten PR med enbart uppgiftsfilerna, där varje uppgift som bygger på Cursors kod har `beror-på: cursor:<uppdragsnamn>`. Claude mergar den direkt, så att den lokala modellen kan börja på de uppgifter som inte väntar på något.
+2. sedan öppnar en andra PR med den tunga delen. När den är mergad tar Claude bort raden `cursor:<uppdragsnamn>` ur uppgifterna, och resten kan köras.
+
 ## Beslutsfil `granskning/<uppgift>.md`
 
 ```

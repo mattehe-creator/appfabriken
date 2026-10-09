@@ -24,3 +24,4 @@
 - Cursor godkände PR #9 (formulärskärm) med två fel som Claude rättade: tom eller ogiltig garantitid sparades som 0 månader i stället för att ge `fel_garanti`, och Spara var avstängd vid tomt vad så att `fel_vad_saknas` aldrig visades (uppgiftens första exempel). Cursor ska pröva uppgiftens exempel mot koden, inte bara att fälten finns. (Claude)
 - Cursors granskningsbeslut verkställs direkt av workflowet `cursor-beslut` (merge eller försök 2), så att den lokala modellen inte väntar på Claudes timvisa körning. Claude granskar Cursors beslut i efterhand. (Claude, efter att Mattias påpekat väntetiden)
 - Uppdraget kvittofoto skickat till Cursor (migration 1→2 med kolumnen kvitto_fil, intern lagring utan behörigheter, room-testing som testberoende). (Claude)
+- Uppdrag delas i två steg: Cursor lämnar först uppgiftsfilerna, sedan den tunga koden, så att den lokala modellen kan börja tidigare. Uppgifter som väntar på Cursors kod märks beror-på: cursor:<uppdrag>. (Claude)
