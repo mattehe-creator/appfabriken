@@ -52,4 +52,20 @@ class KvittoSkalningTest {
         assertEquals(-100, resultat.first)
         assertEquals(200, resultat.second)
     }
+    
+    @Test
+    fun testInSampleSizeStorBild() {
+        // Testa beraknaInSampleSize med maxSida = 480
+        // Indata: bredd 4000, höjd 3000. Förväntat: 8 (bilden blir 500 x 375).
+        val resultat = beraknaInSampleSize(4000, 3000, maxSida = 480)
+        assertEquals(8, resultat)
+    }
+    
+    @Test
+    fun testInSampleSizeLitenBild() {
+        // Testa beraknaInSampleSize med maxSida = 480
+        // Indata: bredd 400, höjd 300. Förväntat: 1 (ingen nedskalning).
+        val resultat = beraknaInSampleSize(400, 300, maxSida = 480)
+        assertEquals(1, resultat)
+    }
 }
