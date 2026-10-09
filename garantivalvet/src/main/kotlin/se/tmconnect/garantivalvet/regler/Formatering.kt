@@ -11,14 +11,15 @@ fun formateraPrisKr(prisOre: Long?, locale: Locale = Locale.forLanguageTag("sv-S
     }
     
     val prisKr = prisOre / 100.0
-    val formatter = java.text.NumberFormat.getCurrencyInstance(locale)
+    
+    // Format the number with appropriate thousands separator and decimal separator
+    val formatter = java.text.NumberFormat.getNumberInstance(locale)
     formatter.minimumFractionDigits = 2
     formatter.maximumFractionDigits = 2
     
-    val formattedPrice = formatter.format(prisKr)
+    val formattedNumber = formatter.format(prisKr)
     
-    // Remove the currency symbol and add " kr"
-    return formattedPrice.replace(Regex("[^0-9,\\.\\s]"), "").trim() + " kr"
+    return "$formattedNumber kr"
 }
 
 fun formateraDatum(datum: LocalDate, locale: Locale = Locale.forLanguageTag("sv-SE")): String {
