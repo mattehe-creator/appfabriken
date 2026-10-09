@@ -1,5 +1,6 @@
 package se.tmconnect.garantivalvet
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,8 +14,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import java.time.LocalDate
 import se.tmconnect.garantivalvet.data.GarantiDatabas
+import se.tmconnect.garantivalvet.data.InstallningarLager
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
+import se.tmconnect.garantivalvet.paminnelse.PaminnelseWorker
 import se.tmconnect.garantivalvet.ui.KopDetaljSkarm
 import se.tmconnect.garantivalvet.ui.KopFormularSkarm
 import se.tmconnect.garantivalvet.ui.KopListaSkarm
@@ -28,7 +31,13 @@ class MainActivity : ComponentActivity() {
     private val viewModel: KopViewModel by viewModels {
         val databas = GarantiDatabas.hamta(applicationContext)
         val kvittoLager = KvittoLager(applicationContext)
-        KopViewModelFactory(KopRepository(databas.kopDao(), kvittoLager), kvittoLager)
+        val installningarLager = InstallningarLager(applicationContext)
+        KopViewModelFactory(
+            KopRepository(databas.kopDao(), kvittoLager),
+            kvittoLager,
+            installningarLager,
+            applicationContext,
+        )
     }
 
     // Resultatkontrakt för bildval
@@ -52,6 +61,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        hanteraPaminnelseIntent(intent)
+        viewModel.synkaPaminnelseJobb()
         enableEdgeToEdge()
         setContent {
             AppfabrikTema {
@@ -169,6 +180,20 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        hanteraPaminnelseIntent(intent)
+    }
+
+    private fun hanteraPaminnelseIntent(intent: Intent?) {
+        val kopId = intent?.getLongExtra(PaminnelseWorker.EXTRA_KOP_ID, -1L) ?: return
+        if (kopId >= 0L) {
+            viewModel.visaDetalj(kopId)
+            intent.removeExtra(PaminnelseWorker.EXTRA_KOP_ID)
         }
     }
 }

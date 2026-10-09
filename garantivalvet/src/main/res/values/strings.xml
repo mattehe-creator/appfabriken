@@ -43,4 +43,14 @@
     <string name="kvitto_oppna">Open receipt</string>
     <string name="kvitto_dela">Share</string>
     <string name="kvitto_stang">Close</string>
+
+    <!-- Påminnelser -->
+    <string name="paminnelse_kanal_namn">Warranty reminders</string>
+    <string name="paminnelse_notis_titel">Warranty ending soon</string>
+    <string name="paminnelse_notis_text">Warranty for %1$s ends on %2$s</string>
+    <string name="paminnelse_notis_samlad_titel">Warranties ending soon</string>
+    <string name="paminnelse_notis_samlad_text">%1$d purchases have warranties ending within 30 days</string>
+    <string name="paminnelse_installning_rubrik">Remind me before warranty ends</string>
+    <string name="paminnelse_installning_beskrivning">Daily notification when a warranty ends within 30 days</string>
+    <string name="paminnelse_behorighet_nekad">Notifications are off. Enable them in system settings to get reminders.</string>
 </resources>

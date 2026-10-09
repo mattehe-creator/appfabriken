@@ -12,6 +12,9 @@ interface KopDao {
     @Query("SELECT * FROM kop ORDER BY skapad DESC")
     fun allaFlow(): Flow<List<Kop>>
 
+    @Query("SELECT * FROM kop")
+    suspend fun alla(): List<Kop>
+
     @Query("SELECT * FROM kop WHERE id = :id")
     suspend fun hamta(id: Long): Kop?
 
