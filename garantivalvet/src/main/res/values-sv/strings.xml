@@ -12,4 +12,25 @@
     <string name="avbryt">Avbryt</string>
     <string name="andra">Ändra</string>
     <string name="ta_bort">Ta bort</string>
+    
+    <!-- Lista / status -->
+    <string name="status_galler">I garanti</string>
+    <string name="status_gar_ut_snart">Garantin löper snart ut</string>
+    <string name="status_utgangen">Utgången</string>
+    <string name="lista_garanti_slut">Garantin går ut %1$s</string>
+    
+    <!-- Formulär -->
+    <string name="falt_datum">Köpdatum</string>
+    <string name="falt_pris">Pris</string>
+    <string name="falt_anteckning">Anteckningar (valfritt)</string>
+    <string name="fel_vad_saknas">Skriv vad du har köpt</string>
+    <string name="fel_garanti">Garantitiden ska vara 0–120 månader</string>
+    <string name="fel_datum">Köpdatumet kan inte ligga i framtiden</string>
+    <string name="fel_pris">Skriv priset som en siffra, till exempel 1 299,50</string>
+    
+    <!-- Borttagning -->
+    <string name="bekrafta_ta_bort_titel">Ta bort köp</string>
+    <string name="bekrafta_ta_bort_text">Är du säker på att du vill ta bort detta köp?</string>
+    <string name="ja_ta_bort">Ja, ta bort</string>
+    <string name="nej">Nej</string>
 </resources>
