@@ -1,7 +1,9 @@
 package se.tmconnect.garantivalvet
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -59,6 +61,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Resultatkontrakt för notisbehörighet
+    private val requestNotificationPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            viewModel.sattPaminnelser(true)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         hanteraPaminnelseIntent(intent)
@@ -69,6 +80,9 @@ class MainActivity : ComponentActivity() {
                 val kopLista by viewModel.kopLista.collectAsState()
                 val aktivSkarm by viewModel.aktivSkarm.collectAsState()
                 val valtKop by viewModel.valtKop.collectAsState()
+                val paminnelserPa by viewModel.paminnelserPa.collectAsState()
+                
+                var behorighetNekad by remember { mutableStateOf(false) }
 
                 when (aktivSkarm) {
                     KopSkarm.Lista -> {
@@ -76,6 +90,26 @@ class MainActivity : ComponentActivity() {
                             kopLista = kopLista,
                             onLaggTill = viewModel::visaLaggTill,
                             onOppna = viewModel::visaDetalj,
+                            paminnelserPa = paminnelserPa,
+                            onPaminnelserAndras = { pa ->
+                                if (pa) {
+                                    // För Android 13+ behöver vi be om behörighet
+                                    if (Build.VERSION.SDK_INT >= 33) {
+                                        if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
+                                            == PackageManager.PERMISSION_GRANTED) {
+                                            viewModel.sattPaminnelser(true)
+                                        } else {
+                                            requestNotificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                                        }
+                                    } else {
+                                        // För äldre versioner behöver vi inte be om behörighet
+                                        viewModel.sattPaminnelser(true)
+                                    }
+                                } else {
+                                    viewModel.sattPaminnelser(false)
+                                }
+                            },
+                            behorighetNekad = behorighetNekad,
                         )
                     }
 

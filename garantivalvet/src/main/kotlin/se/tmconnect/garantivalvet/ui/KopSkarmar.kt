@@ -13,6 +13,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -34,12 +35,27 @@ fun KopListaSkarm(
     kopLista: List<Kop>,
     onLaggTill: () -> Unit,
     onOppna: (Long) -> Unit,
+    paminnelserPa: Boolean,
+    onPaminnelserAndras: (Boolean) -> Unit,
+    behorighetNekad: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(title = { Text(text = stringResource(R.string.app_name)) })
+            TopAppBar(
+                title = { 
+                    Column {
+                        Text(text = stringResource(R.string.app_name))
+                        if (behorighetNekad) {
+                            Text(
+                                text = stringResource(R.string.paminnelse_behorighet_nekad),
+                                style = androidx.compose.material3.MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
+                }
+            )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onLaggTill) {
@@ -65,6 +81,27 @@ fun KopListaSkarm(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.paminnelse_installning_rubrik),
+                            style = androidx.compose.material3.MaterialTheme.typography.titleSmall
+                        )
+                        Text(
+                            text = stringResource(R.string.paminnelse_installning_beskrivning),
+                            style = androidx.compose.material3.MaterialTheme.typography.bodySmall
+                        )
+                        Switch(
+                            checked = paminnelserPa,
+                            onCheckedChange = onPaminnelserAndras,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+                }
                 items(kopLista, key = { it.id }) { kop ->
                     KopListRad(
                         kop = kop,
