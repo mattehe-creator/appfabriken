@@ -33,4 +33,14 @@
     <string name="bekrafta_ta_bort_text">Är du säker på att du vill ta bort detta köp?</string>
     <string name="ja_ta_bort">Ja, ta bort</string>
     <string name="nej">Nej</string>
+    
+    <!-- Kvittofunktioner -->
+    <string name="kvitto_valj_bild">Välj bild</string>
+    <string name="kvitto_ta_foto">Ta foto</string>
+    <string name="kvitto_ta_bort">Ta bort kvitto</string>
+    <string name="kvitto_fornhandsvisning">Förhandsvisning av kvitto</string>
+    <string name="kvitto_har_kvitto">Har kvitto</string>
+    <string name="kvitto_oppna">Öppna kvitto</string>
+    <string name="kvitto_dela">Dela</string>
+    <string name="kvitto_stang">Stäng</string>
 </resources>
