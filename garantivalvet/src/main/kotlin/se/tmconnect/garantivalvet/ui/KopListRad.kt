@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +37,16 @@ fun KopListRad(
             .clickable(onClick = onClick)
             .padding(12.dp),
     ) {
-        Text(text = kop.vad, style = MaterialTheme.typography.bodyLarge)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(text = kop.vad, style = MaterialTheme.typography.bodyLarge)
+            if (kop.kvittoFil != null) {
+                Icon(
+                    imageVector = Icons.Filled.Check,
+                    contentDescription = stringResource(R.string.kvitto_har_kvitto),
+                    modifier = Modifier.padding(start = 4.dp),
+                )
+            }
+        }
         kop.varKopt?.let { 
             Text(text = it, style = MaterialTheme.typography.bodyMedium)
         }

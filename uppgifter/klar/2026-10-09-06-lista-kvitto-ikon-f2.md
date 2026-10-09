@@ -32,3 +32,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*KopSorteringTest"
 - Ändra andra filer (inklusive `KopSkarmar.kt` och `build.gradle.kts`).
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-09 (Cursor implementerade kvittoikon i KopListRad.kt — lokal modell ändrade inte produktionskod)
