@@ -97,7 +97,16 @@ if ($aktuell -like "lokal/*" -and -not (git ls-remote --heads origin $aktuell)) 
 }
 if (git status --porcelain) { Avbryt "Repot har ändringar som inte är committade. Rensa först." }
 Kor git @("checkout", "-q", "main")
-Kor git @("pull", "-q", "--ff-only")
+Kor git @("fetch", "-q", "origin", "main")
+# Lokal main ska alltid vara lika med origin/main. Har den egna commits (main på GitHub squash-mergas,
+# så historiken går isär) sparas de på en gren och main sätts till origin/main.
+$egna = (git rev-list --count origin/main..main).Trim()
+if ($egna -ne "0") {
+    $sparad = "sparad/lokal-main-$stampel"
+    Write-Host "Lokal main hade $egna egna commits. Sparas på $sparad, main sätts till origin/main." -ForegroundColor Yellow
+    Kor git @("branch", "-q", $sparad, "main")
+}
+Kor git @("reset", "-q", "--hard", "origin/main")
 
 # Välj den första uppgiften som inte redan körts (gren finns) och vars beroenden är klara på main.
 $uppgift = $null
