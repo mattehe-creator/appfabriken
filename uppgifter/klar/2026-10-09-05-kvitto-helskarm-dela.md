@@ -32,3 +32,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*StringsNycklarTest"
 - Lägga till beroenden.
 - Ändra databasschemat.
 - Nya manifestbehörigheter.
+
+utfall: underkänd 2026-10-09 av Cursor (PR #23). Ersatt av 2026-10-09-05-kvitto-helskarm-dela-f2.md
