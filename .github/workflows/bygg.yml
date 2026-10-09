@@ -54,11 +54,16 @@ jobs:
 
       - name: Tester
         if: steps.finns.outputs.ja
-        run: gradle --no-daemon testDebugUnitTest
+        run: |
+          set -o pipefail
+          gradle --no-daemon testDebugUnitTest 2>&1 | tee gradle-test.log
 
       - name: Misslyckade tester
         if: failure() && steps.finns.outputs.ja
         run: |
+          # Kompileringsfel och Gradles felbeskrivning som annoteringar, så att Cursor och Claude ser dem utan loggen.
+          grep -E '^e: ' gradle-test.log | head -20 | sed 's/^/::error::/' || true
+          grep -A6 'What went wrong' gradle-test.log | head -10 | sed 's/^/::error::/' || true
           python3 - <<'PY'
           import glob, xml.etree.ElementTree as ET
           for f in glob.glob("**/build/test-results/**/*.xml", recursive=True):

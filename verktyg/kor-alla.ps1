@@ -10,7 +10,16 @@ $skript = Join-Path $PSScriptRoot "kor-uppgift.ps1"
 $slut = (Get-Date).AddHours($VantaTimmar)
 $korda = 0
 $felIRad = 0
+$sistVakt = [datetime]::MinValue
+# GitHubs schema (cron) körs inte pålitligt. Den här loopen tickar redan var 3:e minut, så den startar
+# vaktmästaren (.github/workflows/vaktmastare.yml) högst var 10:e minut. Fel här stoppar ingenting.
+function Vakta {
+    if (((Get-Date) - $script:sistVakt).TotalMinutes -lt 10) { return }
+    $script:sistVakt = Get-Date
+    try { & gh api -X POST repos/mattehe-creator/appfabriken/actions/workflows/vaktmastare.yml/dispatches -f ref=main 2>&1 | Out-Null } catch { }
+}
 while ($korda -lt $Max -and (Get-Date) -lt $slut) {
+    Vakta
     & powershell -NoProfile -ExecutionPolicy Bypass -File $skript
     $kod = $LASTEXITCODE
     if ($kod -eq 0) {
@@ -21,6 +30,7 @@ while ($korda -lt $Max -and (Get-Date) -lt $slut) {
     if ($kod -eq 3) {
         Write-Host "Ingen uppgift redo. Försöker igen om 3 minuter. Stäng fönstret för att sluta." -ForegroundColor DarkGreen
         Start-Sleep -Seconds 180
+        Vakta
         continue
     }
     $felIRad++

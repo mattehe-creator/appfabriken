@@ -1,8 +1,8 @@
 # Vaktmästaren: ser till att ingen lokal PR blir stående. Körs var 20:e minut.
 # Alla andra workflows startar av en händelse (bygge klart, push). Om en händelse uteblir eller ett steg
-# föll, händer ingenting mer och kön står still. Vaktmästaren hittar PR:er som inte rörts på 30 minuter:
+# föll, händer ingenting mer och kön står still. Vaktmästaren hittar PR:er som inte rörts på 15 minuter (schemat är opålitligt, så den lokala körslingan startar den också):
 #  - Cursor har beslutat: beslutet verkställs igen (merge, sammanslagning med main, omstart eller försök 2).
-#  - Cursor har inte granskat: ett nytt bygge startas, och det startar granskningen.
+#  - Cursor har inte svarat inom 15 minuter: granskningen startas om med en ny agent.
 # Ändras bara av Claude.
 name: Vaktmästare
 run-name: Vaktmästare
@@ -32,13 +32,17 @@ jobs:
             --jq '.[] | select(.headRefName | startswith("lokal/")) | [.number, .headRefName, .updatedAt] | @tsv' \
           | while IFS=$'\t' read -r nr gren upd; do
               alder=$(( nu - $(date -d "$upd" +%s) ))
-              if [ "$alder" -lt 1800 ]; then echo "PR #$nr ($gren): rörd för $((alder/60)) min sedan, väntar."; continue; fi
               namn="${gren#lokal/}"
               if gh api "repos/$REPO/contents/granskning/$namn.md?ref=$gren" >/dev/null 2>&1; then
+                if [ "$alder" -lt 900 ]; then echo "PR #$nr ($gren): rörd för $((alder/60)) min sedan, väntar."; continue; fi
                 echo "PR #$nr ($gren): stilla i $((alder/60)) min, beslut finns. Verkställer igen."
                 gh workflow run cursor-beslut.yml --repo "$REPO" -f gren="$gren"
               else
-                echo "PR #$nr ($gren): stilla i $((alder/60)) min, ingen granskning. Startar bygge och granskning."
-                gh workflow run bygg.yml --repo "$REPO" --ref "$gren"
+                # Cursors granskning tar normalt 2-3 minuter. Efter 15 minuter utan beslut har agenten fallit
+                # eller hängt sig: starta en ny. Efter 3 timmar ges det upp och Claude får avgöra.
+                if [ "$alder" -lt 900 ]; then echo "PR #$nr ($gren): väntar på Cursor ($((alder/60)) min)."; continue; fi
+                if [ "$alder" -gt 10800 ]; then echo "::error::PR #$nr ($gren) har saknat granskning i över 3 timmar. Claude måste titta."; continue; fi
+                echo "PR #$nr ($gren): ingen granskning efter $((alder/60)) min. Startar om Cursors granskning."
+                gh workflow run cursor-granskning.yml --repo "$REPO" -f gren="$gren"
               fi
             done

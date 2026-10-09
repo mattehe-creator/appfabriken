@@ -2,36 +2,46 @@
 # Cursor arbetar på samma gren och skriver sitt beslut i granskning/<uppgift>.md. Se ARBETSFLODE.md.
 # Claude mergar efter att ha granskat Cursors beslut. Ändras bara av Claude.
 name: Cursor-granskning
-run-name: Granska ${{ github.event.workflow_run.head_branch }}
+run-name: Granska ${{ github.event.workflow_run.head_branch || inputs.gren }}
 
 on:
   workflow_run:
     workflows: ["Bygg"]
     types: [completed]
+  # Vaktmästaren (och den lokala körslingan) startar om granskningen när Cursor inte svarat.
+  workflow_dispatch:
+    inputs:
+      gren:
+        description: "lokal/-gren som ska granskas"
+        required: true
 
 permissions:
   contents: read
   pull-requests: read
+  actions: read
 
 jobs:
   granska:
-    if: startsWith(github.event.workflow_run.head_branch, 'lokal/')
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.workflow_run.head_branch, 'lokal/')
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.workflow_run.head_branch }}
+          ref: ${{ github.event.workflow_run.head_branch || inputs.gren }}
 
       - name: Skicka granskning till Cursor
         env:
           CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
           GH_TOKEN: ${{ github.token }}
-          GREN: ${{ github.event.workflow_run.head_branch }}
+          GREN: ${{ github.event.workflow_run.head_branch || inputs.gren }}
           BYGGE: ${{ github.event.workflow_run.conclusion }}
           REPO_URL: https://github.com/${{ github.repository }}
         run: |
           namn="${GREN#lokal/}"
+          if [ -z "$BYGGE" ]; then
+            BYGGE=$(gh run list --repo "${{ github.repository }}" --branch "$GREN" --workflow Bygg --limit 1 --json conclusion --jq '.[0].conclusion')
+          fi
           if [ -f "granskning/$namn.md" ]; then
             echo "Cursor har redan granskat $GREN."; exit 0
           fi
