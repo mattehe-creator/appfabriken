@@ -6,7 +6,6 @@ name: Bygg
 on:
   push:
     branches: ["**"]
-    paths-ignore: ["**.md"]
   workflow_dispatch:
 
 permissions:
@@ -22,11 +21,25 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
+      # lokal/-grenar byggs alltid, även när bara .md ändrats (tom körning eller FRAGA.md),
+      # annars startar aldrig Cursor-granskningen och kön står still. Andra grenar hoppar
+      # över bygget när en push bara rör .md-filer.
       - name: Finns bygget?
         id: finns
+        env:
+          FORE: ${{ github.event.before }}
         run: |
-          if [ -f settings.gradle.kts ]; then echo "ja=1" >> "$GITHUB_OUTPUT"; else echo "::notice::Inget Gradle-bygge ännu."; fi
+          if [ ! -f settings.gradle.kts ]; then echo "::notice::Inget Gradle-bygge ännu."; exit 0; fi
+          if [ "${{ github.event_name }}" = "push" ] && [[ "${{ github.ref_name }}" != lokal/* ]] \
+             && [ -n "$FORE" ] && [ "$FORE" != "0000000000000000000000000000000000000000" ] \
+             && git cat-file -e "$FORE" 2>/dev/null \
+             && ! git diff --name-only "$FORE" HEAD | grep -qv '\.md$'; then
+            echo "::notice::Bara .md ändrade, bygget hoppas över."; exit 0
+          fi
+          echo "ja=1" >> "$GITHUB_OUTPUT"
 
       - uses: actions/setup-java@v5
         if: steps.finns.outputs.ja
