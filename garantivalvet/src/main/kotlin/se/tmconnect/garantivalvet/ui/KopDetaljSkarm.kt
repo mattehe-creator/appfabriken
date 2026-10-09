@@ -82,25 +82,25 @@ fun KopDetaljSkarm(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             kop.varKopt?.let { 
-                Text(text = stringResource(R.string.falt_var) + ": $it")
+                Text(text = "Var: $it")
             }
             
-            Text(text = stringResource(R.string.falt_kopdatum) + ": ${formateraDatum(kop.kopdatum)}")
+            Text(text = "Köpdatum: ${formateraDatum(kop.kopdatum)}")
             
             kop.prisOre?.let {
-                Text(text = stringResource(R.string.falt_pris) + ": ${formateraPrisKr(it)}")
+                Text(text = "Pris: ${formateraPrisKr(it)}")
             }
             
-            Text(text = stringResource(R.string.falt_garanti_manader) + ": ${kop.garantiManader}")
+            Text(text = "Garantimånader: ${kop.garantiManader}")
             
             val garantiStatus = garantiStatus(kop, LocalDate.now())
             Text(
-                text = stringResource(R.string.falt_garanti_slut) + ": $garantiStatus",
+                text = "Garantislut: $garantiStatus",
                 style = MaterialTheme.typography.bodyLarge
             )
             
             kop.anteckning?.let { 
-                Text(text = stringResource(R.string.falt_anteckning) + ": $it")
+                Text(text = "Anteckning: $it")
             }
             
             Button(onClick = onAndra, modifier = Modifier.fillMaxWidth()) {
