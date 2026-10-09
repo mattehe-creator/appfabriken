@@ -40,6 +40,7 @@ import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.regler.FormularFel
 import se.tmconnect.garantivalvet.regler.tolkaPrisTillOre
 import se.tmconnect.garantivalvet.regler.valideraKopFormular
+import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -198,8 +199,24 @@ fun KopFormularSkarm(
                 // Förhandsvisning av kvitto
                 val bitmap = remember(kvittoUri) {
                     try {
+                        // Läs först måtten utan att ladda hela bilden
+                        val options = BitmapFactory.Options().apply {
+                            inJustDecodeBounds = true
+                        }
+                        
                         context.contentResolver.openInputStream(kvittoUri)?.use { input ->
-                            BitmapFactory.decodeStream(input)
+                            BitmapFactory.decodeStream(input, null, options)
+                        }
+                        
+                        // Beräkna inSampleSize baserat på storlek (max 480 px på längsta sidan)
+                        val sampleSize = beraknaInSampleSize(options.outWidth, options.outHeight, maxSida = 480)
+                        
+                        // Läs bilden med rätt inSampleSize
+                        context.contentResolver.openInputStream(kvittoUri)?.use { input ->
+                            val decodeOptions = BitmapFactory.Options().apply {
+                                inSampleSize = sampleSize
+                            }
+                            BitmapFactory.decodeStream(input, null, decodeOptions)
                         }
                     } catch (_: Exception) {
                         null
