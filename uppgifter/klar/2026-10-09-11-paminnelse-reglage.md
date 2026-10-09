@@ -36,3 +36,5 @@ gradle :garantivalvet:testDebugUnitTest
 - Lägga till beroenden.
 - Begära notisbehörighet vid appstart.
 - Ändra databasschemat.
+
+utfall: underkänd 2026-10-09 av Cursor (PR #28). Ersatt av 2026-10-09-11-paminnelse-reglage-f2.md
