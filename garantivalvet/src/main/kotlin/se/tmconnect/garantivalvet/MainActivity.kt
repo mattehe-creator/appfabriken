@@ -21,6 +21,7 @@ import se.tmconnect.garantivalvet.ui.KopListaSkarm
 import se.tmconnect.garantivalvet.ui.KopSkarm
 import se.tmconnect.garantivalvet.ui.KopViewModel
 import se.tmconnect.garantivalvet.ui.KopViewModelFactory
+import se.tmconnect.garantivalvet.ui.KvittoHelskarm
 import se.tmconnect.karna.tema.AppfabrikTema
 
 class MainActivity : ComponentActivity() {
@@ -117,7 +118,14 @@ class MainActivity : ComponentActivity() {
                     }
 
                     is KopSkarm.KvittoHelskarm -> {
-                        // Helskärms-UI byggs i uppgift 2026-10-09-05-kvitto-helskarm-dela.md
+                        val kop = valtKop
+                        val kvittoUri = kop?.let { viewModel.sparatKvittoUri(it) }
+                        if (kop != null && kvittoUri != null) {
+                            KvittoHelskarm(
+                                kvittoUri = kvittoUri,
+                                onTillbaka = { viewModel.visaDetalj(kop.id) },
+                            )
+                        }
                     }
 
                     is KopSkarm.Andra -> {

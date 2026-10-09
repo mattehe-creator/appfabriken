@@ -45,3 +45,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra databasschemat.
 - Nya manifestbehörigheter.
 - Nya strängnycklar (använd befintliga `kvitto_*`).
+
+utfall: godkänd 2026-10-09 (Cursor flyttade implementation från repots rot till modulvägar, lade till stäng-knapp, rättade zoom/imports; tog bort rotfiler)
