@@ -1,5 +1,6 @@
 package se.tmconnect.garantivalvet.ui
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -9,17 +10,22 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import se.tmconnect.garantivalvet.data.InstallningarLager
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
+import se.tmconnect.garantivalvet.paminnelse.PaminnelsePlanerare
 import se.tmconnect.garantivalvet.regler.sorteraEfterGaranti
 
 class KopViewModel(
     private val repository: KopRepository,
     private val kvittoLager: KvittoLager,
+    private val installningarLager: InstallningarLager,
+    private val appContext: Context,
     private val idag: LocalDate = LocalDate.now(),
 ) : ViewModel() {
     val kopLista: StateFlow<List<Kop>> =
@@ -30,6 +36,14 @@ class KopViewModel(
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = emptyList(),
             )
+
+    /** Om dagliga påminnelser om garantislut är aktiverade. */
+    val paminnelserPa: StateFlow<Boolean> =
+        installningarLager.paminnelserPa.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false,
+        )
 
     private val _aktivSkarm = MutableStateFlow<KopSkarm>(KopSkarm.Lista)
     val aktivSkarm: StateFlow<KopSkarm> = _aktivSkarm.asStateFlow()
@@ -43,6 +57,25 @@ class KopViewModel(
     val tillfalligtKvittoUri: StateFlow<Uri?> = _tillfalligtKvittoUri.asStateFlow()
 
     private var kvittoSkaTasBortVidSpara = false
+
+    /**
+     * Slår på eller av dagliga påminnelser och synkar WorkManager-jobbet.
+     * Notisbehörighet ska vara hanterad i UI innan [pa] sätts till true.
+     */
+    fun sattPaminnelser(pa: Boolean) {
+        viewModelScope.launch {
+            installningarLager.sattPaminnelserPa(pa)
+            PaminnelsePlanerare.synka(appContext, pa)
+        }
+    }
+
+    /** Schemalägger påminnelsejobb vid appstart om inställningen är på. */
+    fun synkaPaminnelseJobb() {
+        viewModelScope.launch {
+            val pa = installningarLager.paminnelserPa.first()
+            PaminnelsePlanerare.synka(appContext, pa)
+        }
+    }
 
     fun visaLista() {
         _aktivSkarm.value = KopSkarm.Lista
@@ -219,11 +252,13 @@ class KopViewModel(
 class KopViewModelFactory(
     private val repository: KopRepository,
     private val kvittoLager: KvittoLager,
+    private val installningarLager: InstallningarLager,
+    private val appContext: Context,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(KopViewModel::class.java)) {
-            return KopViewModel(repository, kvittoLager) as T
+            return KopViewModel(repository, kvittoLager, installningarLager, appContext) as T
         }
         throw IllegalArgumentException("Okänd ViewModel: ${modelClass.name}")
     }

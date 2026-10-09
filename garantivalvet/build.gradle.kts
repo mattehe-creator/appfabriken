@@ -65,4 +65,7 @@ dependencies {
     testImplementation("androidx.test:core:1.6.1")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     testImplementation("androidx.room:room-testing:$roomVersion")
+
+    implementation("androidx.work:work-runtime-ktx:2.10.1")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 }
