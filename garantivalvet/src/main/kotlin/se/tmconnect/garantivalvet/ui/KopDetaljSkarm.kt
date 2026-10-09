@@ -1,11 +1,16 @@
 package se.tmconnect.garantivalvet.ui
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -24,8 +29,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import java.io.InputStream
 import java.time.LocalDate
 import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
@@ -39,6 +46,8 @@ import se.tmconnect.garantivalvet.regler.garantiStatus
 @Composable
 fun KopDetaljSkarm(
     kop: Kop,
+    kvittoUri: Uri?,
+    onOppnaKvitto: () -> Unit,
     onAndra: () -> Unit,
     onTaBort: () -> Unit,
     onTillbaka: () -> Unit,
@@ -137,6 +146,27 @@ fun KopDetaljSkarm(
                     text = stringResource(R.string.falt_anteckning) + ": $it",
                     style = MaterialTheme.typography.bodyLarge,
                 )
+            }
+
+            // Visa kvittominiatyr om den finns
+            kvittoUri?.let {
+                val bitmap by remember(kvittoUri) {
+                    val inputStream: InputStream? = 
+                        localContext.current.contentResolver.openInputStream(kvittoUri)
+                    val bitmap = inputStream?.use { BitmapFactory.decodeStream(it) }
+                    mutableStateOf(bitmap)
+                }
+
+                if (bitmap != null) {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = stringResource(R.string.kvitto_fornhandsvisning),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .size(160.dp)
+                            .clickable { onOppnaKvitto() }
+                    )
+                }
             }
 
             Button(onClick = onAndra, modifier = Modifier.fillMaxWidth()) {
