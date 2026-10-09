@@ -38,3 +38,4 @@ gradle :garantivalvet:testDebugUnitTest --tests "*KopDaoTest"
 - Lägga till beroenden.
 - Ändra databasschemat.
 
+utfall: godkänd 2026-10-09 (smart cast i KopDetaljSkarm, återställning av KopFormularSkarm och MainActivity mot main, höjd 160 dp)

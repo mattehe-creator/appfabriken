@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -50,6 +51,10 @@ fun KopFormularSkarm(
     initialPris: String?,
     initialAnteckning: String?,
     initialKopdatum: LocalDate,
+    kvittoUri: Uri?,
+    onValjBild: () -> Unit,
+    onTaFoto: () -> Unit,
+    onTaBortKvitto: () -> Unit,
     onSpara: (vad: String, varKopt: String?, kopdatum: LocalDate, garantiManader: Int, prisOre: Long?, anteckning: String?) -> Unit,
     onAvbryt: () -> Unit,
     modifier: Modifier = Modifier,
@@ -186,6 +191,55 @@ fun KopFormularSkarm(
                 label = { Text(text = stringResource(R.string.falt_anteckning)) },
                 modifier = Modifier.fillMaxWidth(),
             )
+            
+            // Kvittoknappar
+            val context = LocalContext.current
+            if (kvittoUri != null) {
+                // Förhandsvisning av kvitto
+                val bitmap = remember(kvittoUri) {
+                    try {
+                        context.contentResolver.openInputStream(kvittoUri)?.use { input ->
+                            BitmapFactory.decodeStream(input)
+                        }
+                    } catch (_: Exception) {
+                        null
+                    }
+                }
+                
+                if (bitmap != null) {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = stringResource(R.string.kvitto_fornhandsvisning),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                
+                // Knapp: ta bort kvitto
+                Button(
+                    onClick = onTaBortKvitto,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = stringResource(R.string.kvitto_ta_bort))
+                }
+            } else {
+                // Knappar: välj bild och ta foto
+                Button(
+                    onClick = onValjBild,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = stringResource(R.string.kvitto_valj_bild))
+                }
+                
+                Button(
+                    onClick = onTaFoto,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = stringResource(R.string.kvitto_ta_foto))
+                }
+            }
             
             // Knapp: spara
             Button(

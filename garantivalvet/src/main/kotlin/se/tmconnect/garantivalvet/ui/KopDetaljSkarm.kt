@@ -1,6 +1,5 @@
 package se.tmconnect.garantivalvet.ui
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.foundation.Image
@@ -11,7 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -34,7 +33,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import java.io.InputStream
 import java.time.LocalDate
 import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
@@ -150,25 +148,21 @@ fun KopDetaljSkarm(
                 )
             }
 
-            // Visa kvittominiatyr om den finns
-            kvittoUri?.let {
+            kvittoUri?.let { uri ->
                 val context = LocalContext.current
-                val bitmap by remember(kvittoUri) {
-                    val inputStream: InputStream? = 
-                        context.contentResolver.openInputStream(kvittoUri)
-                    val bitmap = inputStream?.use { BitmapFactory.decodeStream(it) }
-                    mutableStateOf(bitmap)
+                val bitmap = remember(uri) {
+                    context.contentResolver.openInputStream(uri)?.use { stream ->
+                        BitmapFactory.decodeStream(stream)
+                    }
                 }
-
-                // Använd en annan metod för att hantera bitmap-variabeln
-                if (bitmap != null) {
+                bitmap?.let { decoded ->
                     Image(
-                        bitmap = bitmap.asImageBitmap(),
+                        bitmap = decoded.asImageBitmap(),
                         contentDescription = stringResource(R.string.kvitto_fornhandsvisning),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .size(160.dp)
-                            .clickable { onOppnaKvitto() }
+                            .height(160.dp)
+                            .clickable(onClick = onOppnaKvitto),
                     )
                 }
             }

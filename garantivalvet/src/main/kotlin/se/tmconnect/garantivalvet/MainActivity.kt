@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,6 +28,25 @@ class MainActivity : ComponentActivity() {
         val databas = GarantiDatabas.hamta(applicationContext)
         val kvittoLager = KvittoLager(applicationContext)
         KopViewModelFactory(KopRepository(databas.kopDao(), kvittoLager), kvittoLager)
+    }
+
+    // Resultatkontrakt för bildval
+    private val pickImageContract = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia(),
+    ) { uri: Uri? ->
+        uri?.let {
+            viewModel.sattTillfalligtKvitto(it)
+        }
+    }
+
+    // Resultatkontrakt för kamera
+    private var kameraUri: Uri? = null
+    private val takePictureContract = registerForActivityResult(
+        ActivityResultContracts.TakePicture(),
+    ) { success ->
+        if (success && kameraUri != null) {
+            viewModel.sattTillfalligtKvitto(kameraUri!!)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +90,18 @@ class MainActivity : ComponentActivity() {
                             initialPris = null,
                             initialAnteckning = null,
                             initialKopdatum = LocalDate.now(),
+                            kvittoUri = viewModel.kvittoUriForFormular(null),
+                            onValjBild = {
+                                pickImageContract.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                                )
+                            },
+                            onTaFoto = {
+                                val uri = viewModel.skapaKameraKvittoUri()
+                                kameraUri = uri
+                                takePictureContract.launch(uri)
+                            },
+                            onTaBortKvitto = viewModel::markeraKvittoForBorttagning,
                             onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning ->
                                 viewModel.sparaNyttKop(
                                     vad = vad,
@@ -98,6 +131,18 @@ class MainActivity : ComponentActivity() {
                                 initialPris = kop.prisOre?.let { (it / 100.0).toString() },
                                 initialAnteckning = kop.anteckning,
                                 initialKopdatum = kop.kopdatum,
+                                kvittoUri = viewModel.kvittoUriForFormular(kop),
+                                onValjBild = {
+                                    pickImageContract.launch(
+                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                                    )
+                                },
+                                onTaFoto = {
+                                    val uri = viewModel.skapaKameraKvittoUri()
+                                    kameraUri = uri
+                                    takePictureContract.launch(uri)
+                                },
+                                onTaBortKvitto = viewModel::markeraKvittoForBorttagning,
                                 onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning ->
                                     viewModel.uppdateraKop(
                                         kop.copy(
