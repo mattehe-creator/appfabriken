@@ -35,3 +35,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*FormateringTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Hårdkoda strängar i Compose (formateraren returnerar färdig text).
+
+utfall: godkänd 2026-10-09 (Claude tog bort filer utanför uppgiften och ersatte hårt mellanslag)
