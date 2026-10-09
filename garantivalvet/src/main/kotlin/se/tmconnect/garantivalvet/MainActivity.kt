@@ -18,6 +18,7 @@ import se.tmconnect.garantivalvet.ui.KopListaSkarm
 import se.tmconnect.garantivalvet.ui.KopSkarm
 import se.tmconnect.garantivalvet.ui.KopViewModel
 import se.tmconnect.garantivalvet.ui.KopViewModelFactory
+import se.tmconnect.garantivalvet.ui.KvittoHelskarm
 import se.tmconnect.karna.tema.AppfabrikTema
 
 class MainActivity : ComponentActivity() {
