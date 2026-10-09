@@ -41,7 +41,7 @@ class KvittoLager(
         val inSampleSize = beraknaInSampleSize(bredd, hojd)
         
         // Läs bilden med rätt inSampleSize
-        val original = context.contentResolver.openInputStream(kallaUri)?.use { input ->
+        val bitmap = context.contentResolver.openInputStream(kallaUri)?.use { input ->
             BitmapFactory.Options().apply {
                 inSampleSize = inSampleSize
             }.let { opts ->
@@ -49,15 +49,15 @@ class KvittoLager(
             }
         } ?: return null
 
-        val (malBredd, malHojd) = beraknaNedskaladStorlek(original.width, original.height)
-        val skalad = if (malBredd != original.width || malHojd != original.height) {
-            Bitmap.createScaledBitmap(original, malBredd, malHojd, true).also {
-                if (it !== original) {
-                    original.recycle()
+        val (malBredd, malHojd) = beraknaNedskaladStorlek(bitmap.width, bitmap.height)
+        val skalad = if (malBredd != bitmap.width || malHojd != bitmap.height) {
+            Bitmap.createScaledBitmap(bitmap, malBredd, malHojd, true).also {
+                if (it !== bitmap) {
+                    bitmap.recycle()
                 }
             }
         } else {
-            original
+            bitmap
         }
 
         val filnamn = "${UUID.randomUUID()}.jpg"
