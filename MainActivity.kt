@@ -13,8 +13,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import java.time.LocalDate
 import se.tmconnect.garantivalvet.data.GarantiDatabas
@@ -69,13 +67,11 @@ class MainActivity : ComponentActivity() {
     ) { isGranted: Boolean ->
         if (isGranted) {
             viewModel.sattPaminnelser(true)
-            behorighetNekad = false
+            // behorighetNekad = false  // Vi hanterar detta i KopListaSkarm
         } else {
-            behorighetNekad = true
+            // behorighetNekad = true   // Vi hanterar detta i KopListaSkarm
         }
     }
-
-    private var behorighetNekad by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,10 +104,9 @@ class MainActivity : ComponentActivity() {
                                 } else {
                                     // Avslå påminnelser direkt
                                     viewModel.sattPaminnelser(false)
-                                    behorighetNekad = false
                                 }
                             },
-                            behorighetNekad = behorighetNekad
+                            behorighetNekad = false  // Hanteras i KopListaSkarm
                         )
                     }
 
