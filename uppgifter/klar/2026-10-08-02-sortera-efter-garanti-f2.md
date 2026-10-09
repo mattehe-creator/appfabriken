@@ -39,3 +39,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*KopSorteringTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-09 (hela implementationen och tester — lokala modellen committade tomma filer)
