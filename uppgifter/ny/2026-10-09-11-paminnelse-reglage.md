@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-09-paminnelser.md
 försök: 1
-beror-på: cursor:2026-10-09-paminnelser
+beror-på: ingen
 
 ## Ändra bara dessa filer
 - garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/ui/KopSkarmar.kt
