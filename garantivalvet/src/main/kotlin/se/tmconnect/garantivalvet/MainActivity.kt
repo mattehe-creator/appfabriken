@@ -82,7 +82,9 @@ class MainActivity : ComponentActivity() {
                 val valtKop by viewModel.valtKop.collectAsState()
                 val paminnelserPa by viewModel.paminnelserPa.collectAsState()
                 
-                var behorighetNekad by remember { mutableStateOf(false) }
+                // Importera de saknade komponenterna
+                androidx.compose.runtime.Composable
+                val behorighetNekad by androidx.compose.runtime.mutableStateOf(false)
 
                 when (aktivSkarm) {
                     KopSkarm.Lista -> {
