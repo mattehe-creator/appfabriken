@@ -67,7 +67,7 @@ fun KopListaSkarm(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(kopLista, key = { it.id }) { kop ->
-                    KopRadSkelett(
+                    KopListRad(
                         kop = kop,
                         onClick = { onOppna(kop.id) },
                     )

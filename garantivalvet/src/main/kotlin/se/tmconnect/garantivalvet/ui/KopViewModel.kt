@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.data.KopRepository
+import se.tmconnect.garantivalvet.regler.sorteraEfterGaranti
 
 class KopViewModel(
     private val repository: KopRepository,
