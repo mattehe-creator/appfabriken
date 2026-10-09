@@ -2,11 +2,10 @@ package se.tmconnect.garantivalvet.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
+import se.tmconnect.garantivalvet.regler.GarantiStatus
 import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.garantivalvet.regler.garantiSlut
 import se.tmconnect.garantivalvet.regler.garantiStatus
@@ -30,6 +30,7 @@ fun KopListRad(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .heightIn(min = 48.dp)
             .clickable(onClick = onClick)
             .padding(12.dp),
     ) {
@@ -52,15 +53,15 @@ fun KopListRad(
             )
             
             val statusText = when (status) {
-                se.tmconnect.garantivalvet.regler.GarantiStatus.GALLER -> stringResource(R.string.status_galler)
-                se.tmconnect.garantivalvet.regler.GarantiStatus.GAR_UT_SNART -> stringResource(R.string.status_gar_ut_snart)
-                se.tmconnect.garantivalvet.regler.GarantiStatus.UTGANGEN -> stringResource(R.string.status_utgangen)
+                GarantiStatus.GALLER -> stringResource(R.string.status_galler)
+                GarantiStatus.GAR_UT_SNART -> stringResource(R.string.status_gar_ut_snart)
+                GarantiStatus.UTGANGEN -> stringResource(R.string.status_utgangen)
             }
-            
+
             val statusColor = when (status) {
-                se.tmconnect.garantivalvet.regler.GarantiStatus.GALLER -> MaterialTheme.colorScheme.primary
-                se.tmconnect.garantivalvet.regler.GarantiStatus.GAR_UT_SNART -> MaterialTheme.colorScheme.tertiary
-                se.tmconnect.garantivalvet.regler.GarantiStatus.UTGANGEN -> MaterialTheme.colorScheme.error
+                GarantiStatus.GALLER -> MaterialTheme.colorScheme.primary
+                GarantiStatus.GAR_UT_SNART -> MaterialTheme.colorScheme.tertiary
+                GarantiStatus.UTGANGEN -> MaterialTheme.colorScheme.error
             }
             
             Text(
