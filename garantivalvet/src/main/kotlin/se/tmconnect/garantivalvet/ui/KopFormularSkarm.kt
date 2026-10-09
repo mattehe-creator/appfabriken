@@ -60,7 +60,7 @@ fun KopFormularSkarm(
     
     var visarDatumväljare by remember { mutableStateOf(false) }
     val datumVäljare = rememberDatePickerState(
-        initialSelectedDate = kopdatum
+        initialSelectedDateMillis = kopdatum.toEpochDay() * 86400000
     )
     
     // Valideringsfel
