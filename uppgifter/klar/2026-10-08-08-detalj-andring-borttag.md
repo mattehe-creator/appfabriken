@@ -32,3 +32,4 @@ gradle :garantivalvet:testDebugUnitTest --tests "*KopDaoTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+utfall: godkänd 2026-10-09 (rotfiler bort, MainActivity, garantiStatus, strängresurser)
