@@ -1,7 +1,7 @@
 package se.tmconnect.garantivalvet.regler
 
 import org.junit.Test
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 
 class KvittoSkalningTest {
 
