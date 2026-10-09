@@ -74,6 +74,16 @@ if (-not (Test-Path $localProps)) {
 }
 
 # --- Utgå från senaste main ---
+# En körning som Windows stoppade mitt i (datorn användes igen) lämnar en opushad lokal/-gren
+# med halvfärdiga ändringar. Den kastas, och uppgiften körs om från början nästa gång.
+$aktuell = (git rev-parse --abbrev-ref HEAD).Trim()
+if ($aktuell -like "lokal/*" -and -not (git ls-remote --heads origin $aktuell)) {
+    Write-Host "Avbruten körning på $aktuell kastas." -ForegroundColor Yellow
+    Kor git @("reset", "-q", "--hard")
+    Kor git @("clean", "-q", "-fd")
+    Kor git @("checkout", "-q", "main")
+    Kor git @("branch", "-q", "-D", $aktuell)
+}
 if (git status --porcelain) { Avbryt "Repot har ändringar som inte är committade. Rensa först." }
 Kor git @("checkout", "-q", "main")
 Kor git @("pull", "-q", "--ff-only")
