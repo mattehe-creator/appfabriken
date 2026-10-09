@@ -26,3 +26,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*KopSorteringTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: underkänd 2026-10-09 av Cursor (PR #19). Ersatt av 2026-10-09-06-lista-kvitto-ikon-f2.md
