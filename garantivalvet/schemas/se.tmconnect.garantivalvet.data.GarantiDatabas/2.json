@@ -1,0 +1,75 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "ee71818a0d3201e435db862e2f0cc10d",
+    "entities": [
+      {
+        "tableName": "kop",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `vad` TEXT NOT NULL, `var_kopt` TEXT, `kopdatum` INTEGER NOT NULL, `garanti_manader` INTEGER NOT NULL, `pris_ore` INTEGER, `anteckning` TEXT, `kvitto_fil` TEXT, `skapad` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vad",
+            "columnName": "vad",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "varKopt",
+            "columnName": "var_kopt",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "kopdatum",
+            "columnName": "kopdatum",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "garantiManader",
+            "columnName": "garanti_manader",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prisOre",
+            "columnName": "pris_ore",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "anteckning",
+            "columnName": "anteckning",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "kvittoFil",
+            "columnName": "kvitto_fil",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "skapad",
+            "columnName": "skapad",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ee71818a0d3201e435db862e2f0cc10d')"
+    ]
+  }
+}

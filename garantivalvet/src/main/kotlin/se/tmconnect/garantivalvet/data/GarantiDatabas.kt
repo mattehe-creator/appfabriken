@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 
 @Database(
     entities = [Kop::class],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 @TypeConverters(Konverterare::class)
@@ -27,7 +27,9 @@ abstract class GarantiDatabas : RoomDatabase() {
                     context.applicationContext,
                     GarantiDatabas::class.java,
                     FILNAMN,
-                ).build().also { instans = it }
+                )
+                    .addMigrations(MIGRATION_1_2)
+                    .build().also { instans = it }
             }
     }
 }

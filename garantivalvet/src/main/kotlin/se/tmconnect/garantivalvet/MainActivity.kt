@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import java.time.LocalDate
 import se.tmconnect.garantivalvet.data.GarantiDatabas
 import se.tmconnect.garantivalvet.data.KopRepository
+import se.tmconnect.garantivalvet.data.KvittoLager
 import se.tmconnect.garantivalvet.ui.KopDetaljSkarm
 import se.tmconnect.garantivalvet.ui.KopFormularSkarm
 import se.tmconnect.garantivalvet.ui.KopListaSkarm
@@ -22,7 +23,8 @@ import se.tmconnect.karna.tema.AppfabrikTema
 class MainActivity : ComponentActivity() {
     private val viewModel: KopViewModel by viewModels {
         val databas = GarantiDatabas.hamta(applicationContext)
-        KopViewModelFactory(KopRepository(databas.kopDao()))
+        val kvittoLager = KvittoLager(applicationContext)
+        KopViewModelFactory(KopRepository(databas.kopDao(), kvittoLager), kvittoLager)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,6 +78,10 @@ class MainActivity : ComponentActivity() {
                             },
                             onAvbryt = viewModel::visaLista,
                         )
+                    }
+
+                    is KopSkarm.KvittoHelskarm -> {
+                        // Helskärms-UI byggs i uppgift 2026-10-09-05-kvitto-helskarm-dela.md
                     }
 
                     is KopSkarm.Andra -> {
