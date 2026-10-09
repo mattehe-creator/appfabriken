@@ -12,4 +12,25 @@
     <string name="avbryt">Cancel</string>
     <string name="andra">Edit</string>
     <string name="ta_bort">Delete</string>
+    
+    <!-- Lista / status -->
+    <string name="status_galler">In warranty</string>
+    <string name="status_gar_ut_snart">Warranty ending soon</string>
+    <string name="status_utgangen">Expired</string>
+    <string name="lista_garanti_slut">Warranty ends %1$s</string>
+    
+    <!-- Formulär -->
+    <string name="falt_datum">Date</string>
+    <string name="falt_pris">Price</string>
+    <string name="falt_anteckning">Notes (optional)</string>
+    <string name="fel_vad_saknas">What field is required</string>
+    <string name="fel_garanti">Warranty must be a positive number</string>
+    <string name="fel_datum">Date is required</string>
+    <string name="fel_pris">Price must be a positive number</string>
+    
+    <!-- Borttagning -->
+    <string name="bekrafta_ta_bort_titel">Delete purchase</string>
+    <string name="bekrafta_ta_bort_text">Are you sure you want to delete this purchase?</string>
+    <string name="ja_ta_bort">Yes, delete</string>
+    <string name="nej">No</string>
 </resources>
