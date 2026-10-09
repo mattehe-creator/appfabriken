@@ -48,3 +48,4 @@ gradle :garantivalvet:testDebugUnitTest --tests "*FormularValideringTest"
 - Lägga till manifestbehörigheter.
 - Implementera helskärm, dela eller `onOppnaKvitto` (annan uppgift).
 
+utfall: godkänd 2026-10-09 (syntax på anteckningsfält, PickVisualMediaRequest, TakePicture-Uri, ContentResolver för miniatyr)

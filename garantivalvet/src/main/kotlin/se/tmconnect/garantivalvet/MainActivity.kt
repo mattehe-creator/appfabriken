@@ -1,11 +1,11 @@
 package se.tmconnect.garantivalvet
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
@@ -89,10 +89,15 @@ class MainActivity : ComponentActivity() {
                             initialAnteckning = null,
                             initialKopdatum = LocalDate.now(),
                             kvittoUri = viewModel.kvittoUriForFormular(null),
-                            onValjBild = { pickImageContract.launch(null) },
+                            onValjBild = {
+                                pickImageContract.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                                )
+                            },
                             onTaFoto = {
-                                kameraUri = viewModel.skapaKameraKvittoUri()
-                                takePictureContract.launch(kameraUri)
+                                val uri = viewModel.skapaKameraKvittoUri()
+                                kameraUri = uri
+                                takePictureContract.launch(uri)
                             },
                             onTaBortKvitto = viewModel::markeraKvittoForBorttagning,
                             onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning ->
@@ -125,10 +130,15 @@ class MainActivity : ComponentActivity() {
                                 initialAnteckning = kop.anteckning,
                                 initialKopdatum = kop.kopdatum,
                                 kvittoUri = viewModel.kvittoUriForFormular(kop),
-                                onValjBild = { pickImageContract.launch(null) },
+                                onValjBild = {
+                                    pickImageContract.launch(
+                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                                    )
+                                },
                                 onTaFoto = {
-                                    kameraUri = viewModel.skapaKameraKvittoUri()
-                                    takePictureContract.launch(kameraUri)
+                                    val uri = viewModel.skapaKameraKvittoUri()
+                                    kameraUri = uri
+                                    takePictureContract.launch(uri)
                                 },
                                 onTaBortKvitto = viewModel::markeraKvittoForBorttagning,
                                 onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning ->

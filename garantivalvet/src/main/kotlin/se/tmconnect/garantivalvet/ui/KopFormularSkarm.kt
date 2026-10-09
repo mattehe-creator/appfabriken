@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -189,17 +190,20 @@ fun KopFormularSkarm(
                 onValueChange = { anteckning = it },
                 label = { Text(text = stringResource(R.string.falt_anteckning)) },
                 modifier = Modifier.fillMaxWidth(),
-            }
+            )
             
             // Kvittoknappar
+            val context = LocalContext.current
             if (kvittoUri != null) {
                 // Förhandsvisning av kvitto
-                val bitmap = try {
-                    BitmapFactory.decodeStream(
-                        android.content.ContentResolver.openInputStream(kvittoUri)
-                    )
-                } catch (e: Exception) {
-                    null
+                val bitmap = remember(kvittoUri) {
+                    try {
+                        context.contentResolver.openInputStream(kvittoUri)?.use { input ->
+                            BitmapFactory.decodeStream(input)
+                        }
+                    } catch (_: Exception) {
+                        null
+                    }
                 }
                 
                 if (bitmap != null) {
