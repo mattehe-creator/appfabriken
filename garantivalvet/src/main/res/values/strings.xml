@@ -33,4 +33,14 @@
     <string name="bekrafta_ta_bort_text">Are you sure you want to delete this purchase?</string>
     <string name="ja_ta_bort">Yes, delete</string>
     <string name="nej">No</string>
+    
+    <!-- Kvittofunktioner -->
+    <string name="kvitto_valj_bild">Choose image</string>
+    <string name="kvitto_ta_foto">Take photo</string>
+    <string name="kvitto_ta_bort">Remove receipt</string>
+    <string name="kvitto_fornhandsvisning">Receipt preview</string>
+    <string name="kvitto_har_kvitto">Has receipt</string>
+    <string name="kvitto_oppna">Open receipt</string>
+    <string name="kvitto_dela">Share</string>
+    <string name="kvitto_stang">Close</string>
 </resources>
