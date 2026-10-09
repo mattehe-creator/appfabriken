@@ -72,6 +72,8 @@ class MainActivity : ComponentActivity() {
                         if (kop != null) {
                             KopDetaljSkarm(
                                 kop = kop,
+                                kvittoUri = viewModel.sparatKvittoUri(kop),
+                                onOppnaKvitto = { viewModel.visaKvittoHelskarm(kop.id) },
                                 onAndra = { viewModel.visaAndra(kop.id) },
                                 onTaBort = viewModel::taBortValtKop,
                                 onTillbaka = viewModel::visaLista,
