@@ -1,6 +1,5 @@
 package se.tmconnect.garantivalvet.ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -67,30 +66,13 @@ fun KopListaSkarm(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(kopLista, key = { it.id }) { kop ->
-                    KopRadSkelett(
+                    KopListRad(
                         kop = kop,
                         onClick = { onOppna(kop.id) },
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun KopRadSkelett(
-    kop: Kop,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(12.dp),
-    ) {
-        Text(text = kop.vad)
-        kop.varKopt?.let { Text(text = it) }
     }
 }
 
