@@ -1,7 +1,13 @@
 # Uppgift: sortera köp efter garantislut
 
+## Vad som saknades (försök 1)
+- Fel ordning: `compareByDescending` på garantislut lade det aktiva köp som går ut **senast** överst. Det som går ut **närmast** ska vara överst.
+- Testet hade tre köp med samma datum och kontrollerade bara antalet. Det ska ha ett testfall per exempel nedan och jämföra ordningen.
+
+Enklast: dela listan i aktiva (`!idag.isAfter(slut)`) och utgångna. Aktiva sorteras på slut stigande, utgångna på slut fallande, båda därefter på `vad`. Returnera aktiva + utgångna.
+
 uppdrag: uppdrag/2026-10-08-kop-databas-lista-formular.md
-försök: 1
+försök: 2
 beror-på: 2026-10-08-01-garantitid.md
 
 ## Ändra bara dessa filer

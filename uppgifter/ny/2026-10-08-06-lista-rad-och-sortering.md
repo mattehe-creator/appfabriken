@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-08-kop-databas-lista-formular.md
 försök: 1
-beror-på: 2026-10-08-02-sortera-efter-garanti.md, 2026-10-08-04-formatering-visning.md, 2026-10-08-05-status-strangar-lista.md
+beror-på: 2026-10-08-02-sortera-efter-garanti-f2.md, 2026-10-08-04-formatering-visning.md, 2026-10-08-05-status-strangar-lista.md
 
 ## Ändra bara dessa filer
 - garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/ui/KopListRad.kt (ny)
