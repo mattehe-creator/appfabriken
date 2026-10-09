@@ -38,15 +38,14 @@ class KvittoLager(
         val hojd = options.outHeight
         
         // Beräkna inSampleSize baserat på storlek
-        val inSampleSize = beraknaInSampleSize(bredd, hojd)
-        
+        val sampleSize = beraknaInSampleSize(bredd, hojd)
+
         // Läs bilden med rätt inSampleSize
         val bitmap = context.contentResolver.openInputStream(kallaUri)?.use { input ->
-            BitmapFactory.Options().apply {
-                inSampleSize = inSampleSize
-            }.let { opts ->
-                BitmapFactory.decodeStream(input, null, opts)
+            val decodeOptions = BitmapFactory.Options().apply {
+                inSampleSize = sampleSize
             }
+            BitmapFactory.decodeStream(input, null, decodeOptions)
         } ?: return null
 
         val (malBredd, malHojd) = beraknaNedskaladStorlek(bitmap.width, bitmap.height)

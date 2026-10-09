@@ -30,7 +30,7 @@ fun beraknaNedskaladStorlek(
  * Är bilden redan högst maxSida, returneras 1.
  */
 fun beraknaInSampleSize(bredd: Int, hojd: Int, maxSida: Int = 2000): Int {
-    if (bredd <= maxSida || hojd <= maxSida) {
+    if (maxOf(bredd, hojd) <= maxSida) {
         return 1
     }
     

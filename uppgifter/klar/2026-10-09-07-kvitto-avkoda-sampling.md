@@ -36,3 +36,5 @@ Ett testfall per exempel, JUnit 4 (`org.junit.Test`, `org.junit.Assert.assertEqu
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra hur filen sparas eller vad funktionen returnerar.
+
+utfall: godkänd 2026-10-09 (felplacerad rotfil borttagen, inSampleSize-skuggning, maxOf i beraknaInSampleSize, ett test per exempel)
