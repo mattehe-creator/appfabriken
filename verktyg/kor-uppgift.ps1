@@ -95,7 +95,12 @@ if ($aktuell -like "lokal/*" -and -not (git ls-remote --heads origin $aktuell)) 
     Kor git @("checkout", "-q", "main")
     Kor git @("branch", "-q", "-D", $aktuell)
 }
-if (git status --porcelain) { Avbryt "Repot har ändringar som inte är committade. Rensa först." }
+# Övriga ändringar (till exempel byggfiler som inte är ignorerade, eller en uppdaterad fil i verktyg/)
+# läggs undan i git stash i stället för att körningen stannar. De går att hämta med "git stash list".
+if (git status --porcelain) {
+    Write-Host "Lägger undan ändringar som inte är committade (git stash)." -ForegroundColor Yellow
+    Kor git @("stash", "push", "-q", "-u", "-m", "appfabriken $stampel")
+}
 Kor git @("checkout", "-q", "main")
 Kor git @("fetch", "-q", "origin", "main")
 # Lokal main ska alltid vara lika med origin/main. Har den egna commits (main på GitHub squash-mergas,
