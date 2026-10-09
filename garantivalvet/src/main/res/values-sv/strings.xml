@@ -48,6 +48,8 @@
     <string name="paminnelse_kanal_namn">Påminnelser om garanti</string>
     <string name="paminnelse_notis_titel">Garantin går snart ut</string>
     <string name="paminnelse_notis_text">Garantin för %1$s går ut %2$s</string>
+    <string name="paminnelse_notis_reklamation_titel">Reklamationsrätten går snart ut</string>
+    <string name="paminnelse_notis_reklamation_text">Reklamationsrätten för %1$s går ut %2$s</string>
     <string name="paminnelse_notis_samlad_titel">Flera garantier går snart ut</string>
     <string name="paminnelse_notis_samlad_text">%1$d köp har garanti som går ut inom 30 dagar</string>
     <string name="paminnelse_installning_rubrik">Påminn mig innan garantin går ut</string>

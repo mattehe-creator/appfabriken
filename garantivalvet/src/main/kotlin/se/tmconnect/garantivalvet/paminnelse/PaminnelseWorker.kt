@@ -26,6 +26,7 @@ import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.garantivalvet.regler.fristNyckel
 import se.tmconnect.garantivalvet.regler.fristerSomSkaAviseras
 import se.tmconnect.garantivalvet.regler.garantiSlut
+import se.tmconnect.garantivalvet.regler.reklamationSlut
 
 class PaminnelseWorker(
     appContext: Context,
@@ -45,7 +46,7 @@ class PaminnelseWorker(
         val dao = GarantiDatabas.hamta(applicationContext).kopDao()
         val kopLista = dao.alla()
         val idag = LocalDate.now()
-        val frister = kopLista.map { kop -> fristFranKop(kop) }
+        val frister = kopLista.flatMap { kop -> fristerFranKop(kop) }
         val redanAviserade = installningar.hamtaAviseradeFrister()
         val attAvisera = fristerSomSkaAviseras(frister, idag, redanAviserade)
         if (attAvisera.isEmpty()) {
@@ -59,11 +60,16 @@ class PaminnelseWorker(
         if (attAvisera.size == 1) {
             val frist = attAvisera.single()
             val kop = kopEfterId[frist.kopId] ?: return Result.success()
+            val (titelRes, textRes) = when (frist.typ) {
+                FristTyp.GARANTI -> R.string.paminnelse_notis_titel to R.string.paminnelse_notis_text
+                FristTyp.REKLAMATION -> R.string.paminnelse_notis_reklamation_titel to
+                    R.string.paminnelse_notis_reklamation_text
+            }
             visaNotis(
                 notisId = frist.kopId.toInt(),
-                titel = applicationContext.getString(R.string.paminnelse_notis_titel),
+                titel = applicationContext.getString(titelRes),
                 text = applicationContext.getString(
-                    R.string.paminnelse_notis_text,
+                    textRes,
                     kop.vad,
                     formateraDatum(frist.slutdatum, locale),
                 ),
@@ -137,12 +143,17 @@ class PaminnelseWorker(
         NotificationManagerCompat.from(applicationContext).notify(notisId, notis)
     }
 
-    private fun fristFranKop(kop: Kop): Frist =
-        Frist(
+    private fun fristerFranKop(kop: Kop): List<Frist> {
+        val garanti = Frist(
             kopId = kop.id,
             typ = FristTyp.GARANTI,
             slutdatum = garantiSlut(kop.kopdatum, kop.garantiManader),
         )
+        val reklamation = reklamationSlut(kop.kopdatum)?.let { slut ->
+            Frist(kopId = kop.id, typ = FristTyp.REKLAMATION, slutdatum = slut)
+        }
+        return listOfNotNull(garanti, reklamation)
+    }
 
     companion object {
         const val EXTRA_KOP_ID = "se.tmconnect.garantivalvet.extra.KOP_ID"

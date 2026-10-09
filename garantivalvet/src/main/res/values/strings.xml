@@ -48,6 +48,8 @@
     <string name="paminnelse_kanal_namn">Warranty reminders</string>
     <string name="paminnelse_notis_titel">Warranty ending soon</string>
     <string name="paminnelse_notis_text">Warranty for %1$s ends on %2$s</string>
+    <string name="paminnelse_notis_reklamation_titel">Statutory claim period ending soon</string>
+    <string name="paminnelse_notis_reklamation_text">The claim period for %1$s ends on %2$s</string>
     <string name="paminnelse_notis_samlad_titel">Warranties ending soon</string>
     <string name="paminnelse_notis_samlad_text">%1$d purchases have warranties ending within 30 days</string>
     <string name="paminnelse_installning_rubrik">Remind me before warranty ends</string>
