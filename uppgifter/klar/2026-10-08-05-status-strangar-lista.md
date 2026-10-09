@@ -37,3 +37,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*StringsNycklarTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-09 (Claude rättade fem feltexter så att de stämmer med reglerna)

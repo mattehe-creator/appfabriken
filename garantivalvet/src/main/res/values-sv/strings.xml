@@ -20,13 +20,13 @@
     <string name="lista_garanti_slut">Garantin går ut %1$s</string>
     
     <!-- Formulär -->
-    <string name="falt_datum">Datum</string>
+    <string name="falt_datum">Köpdatum</string>
     <string name="falt_pris">Pris</string>
     <string name="falt_anteckning">Anteckningar (valfritt)</string>
-    <string name="fel_vad_saknas">Vad-fältet måste fyllas i</string>
-    <string name="fel_garanti">Garantitid måste vara ett positivt tal</string>
-    <string name="fel_datum">Datum måste fyllas i</string>
-    <string name="fel_pris">Pris måste vara ett positivt tal</string>
+    <string name="fel_vad_saknas">Skriv vad du har köpt</string>
+    <string name="fel_garanti">Garantitiden ska vara 0–120 månader</string>
+    <string name="fel_datum">Köpdatumet kan inte ligga i framtiden</string>
+    <string name="fel_pris">Skriv priset som en siffra, till exempel 1 299,50</string>
     
     <!-- Borttagning -->
     <string name="bekrafta_ta_bort_titel">Ta bort köp</string>

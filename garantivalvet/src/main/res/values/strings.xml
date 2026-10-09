@@ -20,13 +20,13 @@
     <string name="lista_garanti_slut">Warranty ends %1$s</string>
     
     <!-- Formulär -->
-    <string name="falt_datum">Date</string>
+    <string name="falt_datum">Purchase date</string>
     <string name="falt_pris">Price</string>
     <string name="falt_anteckning">Notes (optional)</string>
-    <string name="fel_vad_saknas">What field is required</string>
-    <string name="fel_garanti">Warranty must be a positive number</string>
-    <string name="fel_datum">Date is required</string>
-    <string name="fel_pris">Price must be a positive number</string>
+    <string name="fel_vad_saknas">Enter what you bought</string>
+    <string name="fel_garanti">Warranty must be 0–120 months</string>
+    <string name="fel_datum">Purchase date cannot be in the future</string>
+    <string name="fel_pris">Enter the price as a number, for example 1,299.50</string>
     
     <!-- Borttagning -->
     <string name="bekrafta_ta_bort_titel">Delete purchase</string>
