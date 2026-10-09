@@ -160,6 +160,7 @@ fun KopDetaljSkarm(
                     mutableStateOf(bitmap)
                 }
 
+                // Använd en annan metod för att hantera bitmap-variabeln
                 if (bitmap != null) {
                     Image(
                         bitmap = bitmap.asImageBitmap(),
