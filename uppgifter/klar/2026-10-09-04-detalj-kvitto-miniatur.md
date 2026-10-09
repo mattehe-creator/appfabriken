@@ -27,3 +27,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*KopDaoTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: underkänd 2026-10-09 av Cursor (PR #18). Ersatt av 2026-10-09-04-detalj-kvitto-miniatur-f2.md (verkställt av Claude, rött bygge stoppade cursor-beslut)

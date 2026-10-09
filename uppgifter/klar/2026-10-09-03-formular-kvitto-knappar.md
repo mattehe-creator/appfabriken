@@ -36,3 +36,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*FormularValideringTest"
 - Lägga till beroenden.
 - Ändra databasschemat.
 - Lägga till manifestbehörigheter.
+
+utfall: underkänd 2026-10-09 av Cursor (PR #17). Ersatt av 2026-10-09-03-formular-kvitto-knappar-f2.md (verkställt av Claude, rött bygge stoppade cursor-beslut)

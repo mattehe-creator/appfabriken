@@ -41,15 +41,17 @@ jobs:
           namn="${GREN#lokal/}"
           fil="granskning/$namn.md"
           [ -f "$fil" ] || { echo "Cursor har inte granskat $GREN än."; exit 0; }
-          # Senaste bygget på grenen ska vara grönt, och efter det får bara .md-filer ha ändrats.
-          read -r bsha bslut < <(gh run list --branch "$GREN" --workflow Bygg --limit 1 --json headSha,conclusion --jq '.[0] | "\(.headSha) \(.conclusion)"')
-          [ "$bslut" = "success" ] || { echo "Senaste bygget på $GREN är inte grönt ($bslut)."; exit 0; }
-          if git diff --name-only "$bsha" HEAD | grep -qv '\.md$'; then
-            echo "Kod har ändrats efter senaste gröna bygget. Väntar på nästa bygge."; exit 0
+          beslut=$(grep -m1 '^beslut:' "$fil" | sed 's/^beslut:[[:space:]]*//' | tr -d '\r')
+          # Bara godkännande kräver grönt bygge (och efter det bara .md-ändringar). Underkänd verkställs även när bygget är rött.
+          if [ "$beslut" = "godkänd" ]; then
+            read -r bsha bslut < <(gh run list --branch "$GREN" --workflow Bygg --limit 1 --json headSha,conclusion --jq '.[0] | "\(.headSha) \(.conclusion)"')
+            [ "$bslut" = "success" ] || { echo "Senaste bygget på $GREN är inte grönt ($bslut)."; exit 0; }
+            if git diff --name-only "$bsha" HEAD | grep -qv '\.md$'; then
+              echo "Kod har ändrats efter senaste gröna bygget. Väntar på nästa bygge."; exit 0
+            fi
           fi
           pr=$(gh pr list --head "$GREN" --state open --json number --jq '.[0].number')
           [ -n "$pr" ] || { echo "Ingen öppen PR för $GREN."; exit 0; }
-          beslut=$(grep -m1 '^beslut:' "$fil" | sed 's/^beslut:[[:space:]]*//' | tr -d '\r')
           echo "PR #$pr, beslut: $beslut"
           git config user.name "Appfabriken"
           git config user.email "actions@users.noreply.github.com"

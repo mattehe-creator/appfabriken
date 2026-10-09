@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-09-kvittofoto.md
 försök: 1
-beror-på: 2026-10-09-04-detalj-kvitto-miniatur.md, 2026-10-09-02-kvitto-strangar-f2.md
+beror-på: 2026-10-09-04-detalj-kvitto-miniatur-f2.md, 2026-10-09-02-kvitto-strangar-f2.md
 
 ## Ändra bara dessa filer
 - garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/ui/KvittoHelskarm.kt (ny)
