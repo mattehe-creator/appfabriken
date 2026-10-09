@@ -12,7 +12,7 @@ import java.time.LocalDate
 import se.tmconnect.garantivalvet.data.GarantiDatabas
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.ui.KopDetaljSkelett
-import se.tmconnect.garantivalvet.ui.KopFormularSkelett
+import se.tmconnect.garantivalvet.ui.KopFormularSkarm
 import se.tmconnect.garantivalvet.ui.KopListaSkarm
 import se.tmconnect.garantivalvet.ui.KopSkarm
 import se.tmconnect.garantivalvet.ui.KopViewModel
@@ -56,19 +56,22 @@ class MainActivity : ComponentActivity() {
                     }
 
                     KopSkarm.LaggTill -> {
-                        KopFormularSkelett(
+                        KopFormularSkarm(
                             titel = stringResource(R.string.lagg_till_titel),
                             initialVad = "",
                             initialVar = "",
                             initialGarantiManader = "24",
-                            onSpara = { vad, varKopt, garantiManader ->
+                            initialPris = null,
+                            initialAnteckning = null,
+                            initialKopdatum = LocalDate.now(),
+                            onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning ->
                                 viewModel.sparaNyttKop(
                                     vad = vad,
                                     varKopt = varKopt,
-                                    kopdatum = LocalDate.now(),
+                                    kopdatum = kopdatum,
                                     garantiManader = garantiManader,
-                                    prisOre = null,
-                                    anteckning = null,
+                                    prisOre = prisOre,
+                                    anteckning = anteckning,
                                 )
                             },
                             onAvbryt = viewModel::visaLista,
@@ -78,17 +81,23 @@ class MainActivity : ComponentActivity() {
                     is KopSkarm.Andra -> {
                         val kop = valtKop
                         if (kop != null) {
-                            KopFormularSkelett(
+                            KopFormularSkarm(
                                 titel = stringResource(R.string.andra_titel),
                                 initialVad = kop.vad,
                                 initialVar = kop.varKopt.orEmpty(),
                                 initialGarantiManader = kop.garantiManader.toString(),
-                                onSpara = { vad, varKopt, garantiManader ->
+                                initialPris = kop.prisOre?.let { (it / 100.0).toString() },
+                                initialAnteckning = kop.anteckning,
+                                initialKopdatum = kop.kopdatum,
+                                onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning ->
                                     viewModel.uppdateraKop(
                                         kop.copy(
                                             vad = vad.trim(),
                                             varKopt = varKopt?.trim()?.takeIf { it.isNotEmpty() },
+                                            kopdatum = kopdatum,
                                             garantiManader = garantiManader,
+                                            prisOre = prisOre,
+                                            anteckning = anteckning?.trim()?.takeIf { it.isNotEmpty() },
                                         ),
                                     )
                                 },

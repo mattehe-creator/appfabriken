@@ -96,69 +96,6 @@ private fun KopRadSkelett(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun KopFormularSkelett(
-    titel: String,
-    initialVad: String,
-    initialVar: String,
-    initialGarantiManader: String,
-    onSpara: (vad: String, varKopt: String?, garantiManader: Int) -> Unit,
-    onAvbryt: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    var vad by remember(initialVad) { mutableStateOf(initialVad) }
-    var varKopt by remember(initialVar) { mutableStateOf(initialVar) }
-    var garantiManader by remember(initialGarantiManader) { mutableStateOf(initialGarantiManader) }
-
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            TopAppBar(title = { Text(text = titel) })
-        },
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            OutlinedTextField(
-                value = vad,
-                onValueChange = { vad = it },
-                label = { Text(text = stringResource(R.string.falt_vad)) },
-                modifier = Modifier.fillMaxWidth(),
-            )
-            OutlinedTextField(
-                value = varKopt,
-                onValueChange = { varKopt = it },
-                label = { Text(text = stringResource(R.string.falt_var)) },
-                modifier = Modifier.fillMaxWidth(),
-            )
-            OutlinedTextField(
-                value = garantiManader,
-                onValueChange = { garantiManader = it },
-                label = { Text(text = stringResource(R.string.falt_garanti_manader)) },
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Button(
-                onClick = {
-                    val manader = garantiManader.toIntOrNull() ?: 24
-                    onSpara(vad, varKopt.takeIf { it.isNotBlank() }, manader)
-                },
-                enabled = vad.isNotBlank(),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(R.string.spara))
-            }
-            TextButton(onClick = onAvbryt, modifier = Modifier.fillMaxWidth()) {
-                Text(text = stringResource(R.string.avbryt))
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
 fun KopDetaljSkelett(
     kop: Kop,
     onAndra: () -> Unit,
