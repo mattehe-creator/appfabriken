@@ -3,7 +3,7 @@ package se.tmconnect.garantivalvet.regler
 import java.time.LocalDate
 import java.util.Locale
 import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
 
 class FormateringTest {
     
