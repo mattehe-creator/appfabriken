@@ -185,6 +185,13 @@ $start = Get-Date
 Status "kodar" "Aider och $Modell arbetar."
 "" | Set-Content -Encoding UTF8 $aiderLogg
 # Aiders utskrift visas i fönstret och sparas samtidigt för panelen.
+# Utskriften går genom en pipe, och då använder Python Windows teckentabell (cp1252). Den saknar
+# tecken som Aider skriver (till exempel █ i förloppsindikatorn) och Aider kraschar. Tvinga UTF-8
+# i Python och låt PowerShell läsa pipen som UTF-8, så att å, ä och ö också blir rätt.
+$env:PYTHONUTF8 = "1"
+$env:PYTHONIOENCODING = "utf-8"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
 $ErrorActionPreference = "Continue"
 & $aider @aiderArg 2>&1 | ForEach-Object { $rad = "$_"; Write-Host $rad; Add-Content -Encoding UTF8 -Path $aiderLogg -Value $rad }
 $aiderKod = $LASTEXITCODE
