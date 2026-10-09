@@ -1,9 +1,12 @@
 package se.tmconnect.garantivalvet
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,6 +28,21 @@ class MainActivity : ComponentActivity() {
         val databas = GarantiDatabas.hamta(applicationContext)
         val kvittoLager = KvittoLager(applicationContext)
         KopViewModelFactory(KopRepository(databas.kopDao(), kvittoLager), kvittoLager)
+    }
+
+    private val pickImageContract = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri: Uri? ->
+        uri?.let {
+            viewModel.sattTillfalligtKvitto(it)
+        }
+    }
+
+    private val takePictureContract = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
+        bitmap?.let {
+            // För att använda bitmap i ViewModel, behöver vi skapa en URI
+            // Vi kan använda KvittoLager för att spara bitmap till fil och returnera URI
+            val uri = viewModel.skapaKameraKvittoUri()
+            viewModel.sattTillfalligtKvitto(uri)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +71,7 @@ class MainActivity : ComponentActivity() {
                                 onAndra = { viewModel.visaAndra(kop.id) },
                                 onTaBort = viewModel::taBortValtKop,
                                 onTillbaka = viewModel::visaLista,
+                                onOppnaKvitto = { viewModel.visaKvittoHelskarm(kop.id) }
                             )
                         }
                     }
@@ -66,6 +85,15 @@ class MainActivity : ComponentActivity() {
                             initialPris = null,
                             initialAnteckning = null,
                             initialKopdatum = LocalDate.now(),
+                            kvittoUri = viewModel.kvittoUriForFormular(valtKop),
+                            onValjBild = { pickImageContract.launch(null) },
+                            onTaFoto = {
+                                val uri = viewModel.skapaKameraKvittoUri()
+                                takePictureContract.launch(uri)
+                            },
+                            onTaBortKvitto = {
+                                viewModel.markeraKvittoForBorttagning()
+                            },
                             onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning ->
                                 viewModel.sparaNyttKop(
                                     vad = vad,
@@ -81,7 +109,27 @@ class MainActivity : ComponentActivity() {
                     }
 
                     is KopSkarm.KvittoHelskarm -> {
-                        // Helskärms-UI byggs i uppgift 2026-10-09-05-kvitto-helskarm-dela.md
+                        val kop = valtKop
+                        if (kop != null) {
+                            val uri = viewModel.sparatKvittoUri(kop)
+                            uri?.let {
+                                KvittoHelskarm(
+                                    kvittoUri = it,
+                                    onTillbaka = { viewModel.visaDetalj(kop.id) },
+                                    onDela = { uri ->
+                                        val intent = Intent(Intent.ACTION_SEND).apply {
+                                            type = "image/jpeg"
+                                            putExtra(Intent.EXTRA_STREAM, uri)
+                                            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                        }
+                                        startActivity(Intent.createChooser(intent, stringResource(R.string.kvitto_dela)))
+                                    }
+                                )
+                            } ?: run {
+                                // Om inget kvitto finns, gå tillbaka till detalj
+                                viewModel.visaDetalj(kop.id)
+                            }
+                        }
                     }
 
                     is KopSkarm.Andra -> {
@@ -95,6 +143,15 @@ class MainActivity : ComponentActivity() {
                                 initialPris = kop.prisOre?.let { (it / 100.0).toString() },
                                 initialAnteckning = kop.anteckning,
                                 initialKopdatum = kop.kopdatum,
+                                kvittoUri = viewModel.kvittoUriForFormular(valtKop),
+                                onValjBild = { pickImageContract.launch(null) },
+                                onTaFoto = {
+                                    val uri = viewModel.skapaKameraKvittoUri()
+                                    takePictureContract.launch(uri)
+                                },
+                                onTaBortKvitto = {
+                                    viewModel.markeraKvittoForBorttagning()
+                                },
                                 onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning ->
                                     viewModel.uppdateraKop(
                                         kop.copy(
