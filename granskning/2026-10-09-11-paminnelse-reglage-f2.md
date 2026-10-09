@@ -7,7 +7,8 @@ datum: 2026-10-09
 - Uppgiften: reglage med strängresurser, behörighet vid slå på (API 33+), direkt av utan dialog, callbacks till `KopListaSkarm`, reglage synligt vid tom lista.
 - Inga nya beroenden, behörigheter eller nätverk utöver befintlig `POST_NOTIFICATIONS` i manifestet.
 - Inga hårdkodade UI-strängar; inget duplicerat `KopListRad`.
-- Tester: `gradle :garantivalvet:testDebugUnitTest` grönt (befintliga enhetstester, t.ex. `PaminnelseTest`).
+- Tester: `:garantivalvet:testDebugUnitTest` grönt i CI (senaste push) och lokalt; inga nya testfiler krävs enligt uppgiften.
+- Försök 2: inget duplicerat `KopListRad`, nekad-text under reglaget, `behorighetNekad` sätts vid nekad/godkänd/av.
 
 ## Rättat av Cursor
 - Tog bort `MainActivity.kt` i repots rot (Aider-felplacering).
