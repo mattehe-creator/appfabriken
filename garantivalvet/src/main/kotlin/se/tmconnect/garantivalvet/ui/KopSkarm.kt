@@ -8,4 +8,6 @@ sealed interface KopSkarm {
     data class Detalj(val kopId: Long) : KopSkarm
 
     data class Andra(val kopId: Long) : KopSkarm
+
+    data class KvittoHelskarm(val kopId: Long) : KopSkarm
 }

@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 
 class KopRepository(
     private val dao: KopDao,
+    private val kvittoLager: KvittoLager,
 ) {
     val alla: Flow<List<Kop>> = dao.allaFlow()
 
@@ -17,7 +18,10 @@ class KopRepository(
             kop.id
         }
 
-    suspend fun taBort(kop: Kop) = dao.taBort(kop)
+    suspend fun taBort(kop: Kop) {
+        kvittoLager.taBort(kop.kvittoFil)
+        dao.taBort(kop)
+    }
 
     suspend fun antal(): Int = dao.antal()
 }

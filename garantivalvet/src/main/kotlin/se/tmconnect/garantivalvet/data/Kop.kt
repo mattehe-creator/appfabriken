@@ -18,5 +18,7 @@ data class Kop(
     @ColumnInfo(name = "pris_ore")
     val prisOre: Long? = null,
     val anteckning: String? = null,
+    @ColumnInfo(name = "kvitto_fil")
+    val kvittoFil: String? = null,
     val skapad: Long = System.currentTimeMillis(),
 )
