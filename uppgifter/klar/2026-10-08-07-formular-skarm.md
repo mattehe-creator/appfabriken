@@ -33,3 +33,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*FormularValideringTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-09 (tog bort KopSortering-filer utanför uppgiften; ok→spara, Toast bort, fel-färg från tema)
