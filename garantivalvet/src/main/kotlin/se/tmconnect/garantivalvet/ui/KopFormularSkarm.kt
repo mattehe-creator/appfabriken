@@ -186,7 +186,7 @@ fun KopFormularSkarm(
                 onClick = {
                     // Validera formuläret
                     val idag = LocalDate.now()
-                    fel = valideraKopFormular(vad, garantiManader.toIntOrNull() ?: 0, kopdatum, idag, prisText)
+                    fel = valideraKopFormular(vad, garantiManader.trim().toIntOrNull() ?: -1, kopdatum, idag, prisText)
                     
                     if (fel.isEmpty()) {
                         val prisOre = tolkaPrisTillOre(prisText)
@@ -194,13 +194,12 @@ fun KopFormularSkarm(
                             vad,
                             varKopt.takeIf { it.isNotBlank() },
                             kopdatum,
-                            garantiManader.toIntOrNull() ?: 0,
+                            garantiManader.trim().toInt(),
                             prisOre,
                             anteckning.takeIf { it.isNotBlank() },
                         )
                     }
                 },
-                enabled = vad.isNotBlank(),
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = stringResource(R.string.spara))
