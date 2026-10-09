@@ -1,9 +1,7 @@
 package se.tmconnect.garantivalvet.ui
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,6 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -26,13 +25,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.regler.FormularFel
+import se.tmconnect.garantivalvet.regler.tolkaPrisTillOre
 import se.tmconnect.garantivalvet.regler.valideraKopFormular
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,8 +48,6 @@ fun KopFormularSkarm(
     onAvbryt: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-    
     var vad by remember(initialVad) { mutableStateOf(initialVad) }
     var varKopt by remember(initialVar) { mutableStateOf(initialVar) }
     var garantiManader by remember(initialGarantiManader) { mutableStateOf(initialGarantiManader) }
@@ -78,13 +75,11 @@ fun KopFormularSkarm(
                         visarDatumväljare = false
                     }
                 ) {
-                    Text(text = stringResource(R.string.ok))
+                    Text(text = stringResource(R.string.spara))
                 }
             },
             dismissButton = {
-                Button(
-                    onClick = { visarDatumväljare = false }
-                ) {
+                TextButton(onClick = { visarDatumväljare = false }) {
                     Text(text = stringResource(R.string.avbryt))
                 }
             }
@@ -118,7 +113,7 @@ fun KopFormularSkarm(
             if (FormularFel.VAD_SAKNAS in fel) {
                 Text(
                     text = stringResource(R.string.fel_vad_saknas),
-                    color = androidx.compose.ui.graphics.Color.Red
+                    color = MaterialTheme.colorScheme.error
                 )
             }
             
@@ -144,7 +139,7 @@ fun KopFormularSkarm(
             if (FormularFel.KOPDATUM_FRAMTID in fel) {
                 Text(
                     text = stringResource(R.string.fel_datum),
-                    color = androidx.compose.ui.graphics.Color.Red
+                    color = MaterialTheme.colorScheme.error
                 )
             }
             
@@ -160,7 +155,7 @@ fun KopFormularSkarm(
             if (FormularFel.GARANTI_OGILTIG in fel) {
                 Text(
                     text = stringResource(R.string.fel_garanti),
-                    color = androidx.compose.ui.graphics.Color.Red
+                    color = MaterialTheme.colorScheme.error
                 )
             }
             
@@ -174,7 +169,7 @@ fun KopFormularSkarm(
             if (FormularFel.PRIS_OGILTIGT in fel) {
                 Text(
                     text = stringResource(R.string.fel_pris),
-                    color = androidx.compose.ui.graphics.Color.Red
+                    color = MaterialTheme.colorScheme.error
                 )
             }
             
@@ -194,12 +189,15 @@ fun KopFormularSkarm(
                     fel = valideraKopFormular(vad, garantiManader.toIntOrNull() ?: 0, kopdatum, idag, prisText)
                     
                     if (fel.isEmpty()) {
-                        // Om inga fel finns, spara
-                        val prisOre = se.tmconnect.garantivalvet.regler.tolkaPrisTillOre(prisText)
-                        onSpara(vad, varKopt.takeIf { it.isNotBlank() }, kopdatum, garantiManader.toIntOrNull() ?: 0, prisOre, anteckning.takeIf { it.isNotBlank() })
-                    } else {
-                        // Visa felmeddelande
-                        Toast.makeText(context, "Formuläret innehåller fel", Toast.LENGTH_SHORT).show()
+                        val prisOre = tolkaPrisTillOre(prisText)
+                        onSpara(
+                            vad,
+                            varKopt.takeIf { it.isNotBlank() },
+                            kopdatum,
+                            garantiManader.toIntOrNull() ?: 0,
+                            prisOre,
+                            anteckning.takeIf { it.isNotBlank() },
+                        )
                     }
                 },
                 enabled = vad.isNotBlank(),
