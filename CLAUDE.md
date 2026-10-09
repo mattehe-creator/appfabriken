@@ -104,12 +104,15 @@ Kod skrivs i första hand av den lokala modellen. Cursor skriver bara det som ä
 - `STATUS.md` — läget (Nu, Nästa, Senare).
 - `BESLUTSLOGG.md` — beslut med datum.
 - `IDEURVAL.md` — idéer, poäng och vilken app som byggs.
+- `ARBETSFLODE.md` — granskningen i två led (Cursor granskar den lokala modellen, Claude granskar Cursor) och hur frågor ställs.
+- `FRAGOR.md` — Claudes öppna frågor till Mattias.
+- `granskning/` — Cursors beslut om varje lokal uppgift.
 - `<app>/APP.md` — regler för en enskild app.
 - `<app>/butik/` — butikstexter, skärmbilder och Data safety-svar.
 - `uppdrag/` — uppdrag från Claude till Cursor, ett per fil.
 - `uppgifter/` — uppgifter för den lokala modellen, i mapparna `ny/`, `pagar/` och `klar/`. Formatet står i `uppgifter/MALL.md`.
 - `verktyg/` — körskriptet för den lokala modellen.
-- `.github/workflows/` — bygget (`bygg.yml`) och utskicket av uppdrag (`cursor-uppdrag.yml`). Ändras bara av Claude.
+- `.github/workflows/` — bygget (`bygg.yml`), utskicket av uppdrag (`cursor-uppdrag.yml`) och Cursors granskning av lokala PR:er (`cursor-granskning.yml`). Ändras bara av Claude.
 - `settings.gradle.kts`, rotens `build.gradle.kts`, `gradle.properties` och `gradle/wrapper/` — Gradle-rotbygget för hela portföljen.
 - `karna/` — Android-biblioteket `:karna` (gemensamt tema, tillgänglighet och senare Pro/export).
 - `garantivalvet/` — appmodulen `:garantivalvet` (Garantivalvet / Warranty Vault).

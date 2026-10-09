@@ -41,4 +41,4 @@ gradle :garantivalvet:testDebugUnitTest --tests "*FilTest"
 
 ## När försök 1 underkänns
 
-Cursor skriver en ny fil med samma namn och `-f2` sist, med `försök: 2` och ett avsnitt **Vad som saknades** överst. Den gamla filen flyttas till `uppgifter/klar/` med raden `utfall: underkänd` sist. Underkänns försök 2 gör Cursor uppgiften själv.
+Cursor skriver försök 2 i sin beslutsfil `granskning/<uppgift>.md` (se ARBETSFLODE.md), och Claude lägger det som en ny fil med samma namn och `-f2` sist, med `försök: 2` och ett avsnitt **Vad som saknades** överst. Den gamla filen flyttas till `uppgifter/klar/` med raden `utfall: underkänd` sist. Underkänns försök 2 gör Cursor uppgiften själv.

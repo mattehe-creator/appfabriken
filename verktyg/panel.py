@@ -51,6 +51,15 @@ def hamta_github():
     commits = gh(f"repos/{REPO}/commits?per_page=15") or []
     korningar = gh(f"repos/{REPO}/actions/runs?per_page=15") or {}
     ny = gh(f"repos/{REPO}/contents/uppgifter/ny?ref=main") or []
+    fragor_fil = gh(f"repos/{REPO}/contents/FRAGOR.md?ref=main") or {}
+    fragor = []
+    try:
+        import base64
+        text = base64.b64decode(fragor_fil.get("content", "")).decode("utf-8")
+        oppna = text.split("## Öppna", 1)[1].split("\n## ", 1)[0]
+        fragor = [r[2:].strip() for r in oppna.splitlines() if r.startswith("- ")]
+    except Exception:
+        pass
 
     handelser = []
     for c in commits:
@@ -59,6 +68,9 @@ def hamta_github():
                           "vem": aktor(forfattare=c["commit"]["author"]["name"], meddelande=m),
                           "text": m.split("\n")[0]})
     for r in korningar.get("workflow_runs", []):
+        if r["name"] == "Cursor-granskning" and r["conclusion"] == "success":
+            handelser.append({"tid": r["created_at"], "vem": "cursor",
+                              "text": "Cursor började granska " + r.get("head_branch", "")})
         if r["name"] == "Cursor-uppdrag" and r["conclusion"] == "success":
             handelser.append({"tid": r["created_at"], "vem": "claude",
                               "text": "Claude skickade uppdrag till Cursor: " + r["display_title"]})
@@ -66,6 +78,9 @@ def hamta_github():
         vem = aktor(gren=p["head"]["ref"])
         handelser.append({"tid": p["created_at"], "vem": vem,
                           "text": f"PR #{p['number']} öppnad: {p['title']}"})
+        if p["state"] == "closed" and not p.get("merged_at"):
+            handelser.append({"tid": p["closed_at"], "vem": "claude",
+                              "text": f"PR #{p['number']} underkänd och stängd"})
         if p.get("merged_at"):
             handelser.append({"tid": p["merged_at"], "vem": "claude",
                               "text": f"Claude granskade och mergade PR #{p['number']}"})
@@ -78,6 +93,7 @@ def hamta_github():
                          else ("utkast" if p.get("draft") else "väntar på granskning"))}
                 for p in prs],
         "handelser": handelser[:25],
+        "fragor": fragor,
     }
     with _lock:
         _cache.update(tid=time.time(), github=data)
@@ -123,7 +139,7 @@ ul{list-style:none;margin:0;padding:0}li{margin:0 0 6px}
 <section id="topp"><h1>APPFABRIKEN</h1><span id="fas">...</span><span id="uppgift"></span><span id="text" class="liten"></span></section>
 <section id="kod"><h2>LOKAL MODELL // AIDER</h2><div id="rader"></div><span class="cursor"></span></section>
 <section><h2>HÄNDELSER</h2><ul id="handelser"></ul></section>
-<section><h2>KÖ OCH PR</h2><div class="liten">Uppgifter som väntar</div><ul id="ko"></ul><div class="liten" style="margin-top:8px">Pull requests</div><ul id="prs"></ul></section>
+<section><h2>KÖ OCH PR</h2><div class="liten">Frågor till Mattias</div><ul id="fragor"></ul><div class="liten">Uppgifter som väntar</div><ul id="ko"></ul><div class="liten" style="margin-top:8px">Pull requests</div><ul id="prs"></ul></section>
 </main><script>
 const c=document.getElementById("regn"),x=c.getContext("2d");let kol=[];
 function storlek(){c.width=innerWidth;c.height=innerHeight;kol=Array(Math.ceil(c.width/16)).fill(0).map(()=>Math.random()*c.height/16)}
@@ -146,6 +162,7 @@ document.getElementById("rader").innerHTML=r.map((l,i)=>`<div class="rad${i>=r.l
 sist=r;const k=document.getElementById("kod");k.scrollTop=k.scrollHeight}}catch(e){}}
 async function github(){try{const d=await (await fetch("/api/github")).json();
 document.getElementById("handelser").innerHTML=d.handelser.map(h=>`<li class="${kls(h.vem)}"><span class="tag">${vemNamn[h.vem]}</span><span class="liten">${new Date(h.tid).toLocaleString("sv-SE",{dateStyle:"short",timeStyle:"short"})}</span> ${esc(h.text)}</li>`).join("");
+document.getElementById("fragor").innerHTML=d.fragor.length?d.fragor.map(f=>`<li class="claude">${esc(f)}</li>`).join(""):"<li class='liten'>Inga</li>";
 document.getElementById("ko").innerHTML=d.ko.length?d.ko.map(k=>`<li>${esc(k.replace(".md",""))}</li>`).join(""):"<li class='liten'>Tom</li>";
 document.getElementById("prs").innerHTML=d.prs.map(p=>`<li class="${kls(p.vem)}"><span class="tag">#${p.nr}</span>${esc(p.titel)} <span class="liten">(${p.lage})</span></li>`).join("")}catch(e){}}
 lokal();github();setInterval(lokal,2000);setInterval(github,30000);

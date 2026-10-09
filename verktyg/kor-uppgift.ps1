@@ -140,9 +140,20 @@ Kor git @("mv", "uppgifter/ny/$($uppgift.Name)", $iPagar)
 Kor git @("commit", "-q", "-m", "Uppgift startad: $namn")
 
 # --- Aider ---
+# Meddelandet är uppgiften plus en regel för frågor (ARBETSFLODE.md).
+$meddelande = Join-Path $loggMapp "meddelande-$stampel.md"
+$fragaRegel = @"
+
+
+---
+Om uppgiften är motsägelsefull, eller pekar på filer eller funktioner som inte finns: skriv ingen kod.
+Skapa i stället filen FRAGA.md i repots rot med din fråga, kort och konkret, och sluta där.
+Lägg alla filer på exakt de sökvägar som står i uppgiften.
+"@
+((Get-Content -Raw -Encoding UTF8 $iPagar) + $fragaRegel) | Set-Content -Encoding UTF8 $meddelande
 $aiderArg = @(
     "--model", $Modell,
-    "--message-file", $iPagar,
+    "--message-file", $meddelande,
     "--yes-always", "--no-pretty", "--no-check-update", "--no-show-release-notes",
     "--analytics-disable", "--no-gitignore", "--map-tokens", "0",
     "--auto-test", "--test-cmd", $testFil
@@ -173,8 +184,16 @@ if ($kvar) {
     Kor git @("commit", "-q", "-m", "Lokal modell: $namn (okommittade ändringar efter Aider)")
 }
 
-$andrade = git diff --name-only "main...HEAD" | Where-Object { $_ -notlike "uppgifter/*" }
-$saknas = $tillatna | Where-Object { $andrade -notcontains $_ }
+$harFraga = (Test-Path "FRAGA.md") -and ((Get-Content -Raw "FRAGA.md") -match "\S")
+if ($harFraga) {
+    Kor git @("add", "FRAGA.md")
+    if (git status --porcelain -- FRAGA.md) { Kor git @("commit", "-q", "-m", "Lokal modell: fråga om $namn") }
+    Write-Host "Den lokala modellen har en fråga (FRAGA.md)." -ForegroundColor Yellow
+    $testOk = $false
+}
+
+$andrade = git diff --name-only "main...HEAD" | Where-Object { $_ -notlike "uppgifter/*" -and $_ -ne "FRAGA.md" }
+$saknas = if ($harFraga) { @() } else { $tillatna | Where-Object { $andrade -notcontains $_ } }
 if ($saknas) { $testOk = $false; Write-Host "Filer som uppgiften kräver men som inte ändrats: $($saknas -join ', ')" -ForegroundColor Yellow }
 $utanfor = $andrade | Where-Object { $tillatna -notcontains $_ }
 
@@ -209,8 +228,8 @@ Granska mot uppgiften och CLAUDE.md punkt 8.
 # Texten går via fil, eftersom PowerShell 5.1 tar bort citattecken i argument till andra program.
 $kroppFil = Join-Path $loggMapp "pr-$stampel.md"
 $kropp | Set-Content -Encoding UTF8 $kroppFil
-$prArg = @("pr", "create", "--base", "main", "--head", $gren, "--title", "Lokal: $namn", "--body-file", $kroppFil)
-if (-not $testOk -or $utanfor) { $prArg += "--draft" }
+$prArg = @("pr", "create", "--base", "main", "--head", $gren, "--title", $(if ($harFraga) { "Fråga: $namn" } else { "Lokal: $namn" }), "--body-file", $kroppFil)
+if (-not $testOk -or $utanfor -or $harFraga) { $prArg += "--draft" }
 & gh @prArg
 if ($LASTEXITCODE -ne 0) {
     # gh kan ge felkod fast PR:en skapades. Det räcker att den finns.

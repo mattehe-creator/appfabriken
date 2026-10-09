@@ -1,0 +1,68 @@
+# Startar en Cursor-agent som granskar den lokala modellens PR, när bygget på en lokal/-gren är klart.
+# Cursor arbetar på samma gren och skriver sitt beslut i granskning/<uppgift>.md. Se ARBETSFLODE.md.
+# Claude mergar efter att ha granskat Cursors beslut. Ändras bara av Claude.
+name: Cursor-granskning
+
+on:
+  workflow_run:
+    workflows: ["Bygg"]
+    types: [completed]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  granska:
+    if: startsWith(github.event.workflow_run.head_branch, 'lokal/')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - name: Skicka granskning till Cursor
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          GREN: ${{ github.event.workflow_run.head_branch }}
+          BYGGE: ${{ github.event.workflow_run.conclusion }}
+          REPO_URL: https://github.com/${{ github.repository }}
+        run: |
+          namn="${GREN#lokal/}"
+          if [ -f "granskning/$namn.md" ]; then
+            echo "Cursor har redan granskat $GREN."; exit 0
+          fi
+          pr=$(gh api "repos/${{ github.repository }}/pulls?state=open&head=${{ github.repository_owner }}:$GREN" --jq '.[0].number')
+          if [ -z "$pr" ]; then
+            echo "Ingen öppen PR för $GREN ännu."; exit 0
+          fi
+          if [ -z "$CURSOR_API_KEY" ]; then echo "::error::CURSOR_API_KEY saknas."; exit 1; fi
+
+          text=$(cat <<EOF
+          Du är granskare i Appfabriken. Läs CLAUDE.md, ARBETSFLODE.md och uppgifter/MALL.md först och följ dem.
+
+          Granska den lokala modellens arbete på grenen $GREN (PR #$pr). Uppgiften står i uppgifter/pagar/$namn.md. Bygget på grenen blev: $BYGGE.
+
+          1. Läs uppgiften och diffen mot main. Kontrollera CLAUDE.md punkt 8, och särskilt: bara filerna under "Ändra bara dessa filer" är ändrade och ligger på rätt sökväg (Aider lägger ibland filer i repots rot), koden gör verkligen det uppgiften säger, testerna jämför resultat mot exemplen, inga nya beroenden, behörigheter eller nätverk, inga hårdkodade strängar i UI. Testerna i appmodulerna använder JUnit 4 (org.junit), inte kotlin.test.
+          2. Finns FRAGA.md i repots rot är det en fråga från den lokala modellen. Besvara den genom att skriva ett försök 2 där svaret står i uppgiften, och sätt beslutet till underkänd.
+          3. Små fel (fel sökväg, en import, en rad, en sträng, avrundning) rättar du själv på grenen. Kör gradle testDebugUnitTest och se till att det är grönt.
+          4. Godkänd: flytta uppgifter/pagar/$namn.md till uppgifter/klar/ och lägg sist till raden "utfall: godkänd ÅÅÅÅ-MM-DD (vad Cursor rättade, eller inget)".
+          5. Skriv alltid granskning/$namn.md enligt formatet i ARBETSFLODE.md. Vid underkänd: skriv hela försök 2 i avsnittet "Vid underkänd: försök 2". Rätta inte stora fel själv, det är den lokala modellens uppgift att göra om.
+          6. Gör allt i en enda commit och pusha den till $GREN när du är klar. Skapa ingen ny gren och ingen ny PR. Merga inte, det gör Claude.
+          7. Har du frågor om uppdraget eller direktiven, skriv dem under "Frågor till Claude".
+          EOF
+          )
+          body=$(jq -n --arg text "$text" --arg repo "$REPO_URL" --arg ref "$GREN" '
+            {prompt: {text: $text}, model: {id: "composer-latest"},
+             repos: [{url: $repo, startingRef: $ref}],
+             workOnCurrentBranch: true, autoCreatePR: false}')
+          svar=$(curl -sS -w '\n%{http_code}' -X POST "https://api.cursor.com/v1/agents" \
+            -H "Authorization: Bearer $CURSOR_API_KEY" -H "Content-Type: application/json" -d "$body")
+          kod=$(echo "$svar" | tail -1)
+          echo "$GREN -> $kod"
+          case "$kod" in
+            2*) echo "::notice::Cursor granskar PR #$pr: $(echo "$svar" | head -n -1 | jq -r '.agent.url // .url // empty')";;
+            *) echo "::error::Cursor svarade $kod: $(echo "$svar" | head -n -1 | cut -c1-600)"; exit 1;;
+          esac
