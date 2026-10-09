@@ -13,7 +13,7 @@ beror-på: ingen
 - garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/paminnelse/PaminnelseWorker.kt
 
 ## Uppgift
-Lägg till samma nycklar på engelska och svenska för påminnelser. Nycklarna ska matcha det som `PaminnelseWorker` och inställnings-UI använder (sök efter `R.string.paminnelse_` i repot om någon nyckel redan finns från Cursors PR).
+Lägg till (eller justera om Cursors del A-PR redan lagt in dem) samma nycklar på engelska och svenska för påminnelser. Nycklarna ska matcha det som `PaminnelseWorker` och inställnings-UI använder (sök efter `R.string.paminnelse_` i repot).
 
 | Nyckel | Parametrar | Syfte |
 |--------|------------|--------|
