@@ -1,9 +1,12 @@
 package se.tmconnect.garantivalvet
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,6 +28,25 @@ class MainActivity : ComponentActivity() {
         val databas = GarantiDatabas.hamta(applicationContext)
         val kvittoLager = KvittoLager(applicationContext)
         KopViewModelFactory(KopRepository(databas.kopDao(), kvittoLager), kvittoLager)
+    }
+
+    // Resultatkontrakt för bildval
+    private val pickImageContract = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        uri?.let {
+            viewModel.sattTillfalligtKvitto(it)
+        }
+    }
+
+    // Resultatkontrakt för kamera
+    private var kameraUri: Uri? = null
+    private val takePictureContract = registerForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success && kameraUri != null) {
+            viewModel.sattTillfalligtKvitto(kameraUri!!)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
