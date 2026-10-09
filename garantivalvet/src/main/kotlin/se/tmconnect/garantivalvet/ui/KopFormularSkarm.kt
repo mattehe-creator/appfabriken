@@ -42,10 +42,10 @@ fun KopFormularSkarm(
     initialVad: String,
     initialVar: String,
     initialGarantiManader: String,
-    initialKopdatum: LocalDate,
     initialPris: String?,
     initialAnteckning: String?,
-    onSpara: (String, String?, LocalDate, Int, Long?, String?) -> Unit,
+    initialKopdatum: LocalDate,
+    onSpara: (vad: String, varKopt: String?, kopdatum: LocalDate, garantiManader: Int, prisOre: Long?, anteckning: String?) -> Unit,
     onAvbryt: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -54,20 +54,17 @@ fun KopFormularSkarm(
     var vad by remember(initialVad) { mutableStateOf(initialVad) }
     var varKopt by remember(initialVar) { mutableStateOf(initialVar) }
     var garantiManader by remember(initialGarantiManader) { mutableStateOf(initialGarantiManader) }
+    var prisText by remember(initialPris) { mutableStateOf(initialPris ?: "") }
+    var anteckning by remember(initialAnteckning) { mutableStateOf(initialAnteckning ?: "") }
     var kopdatum by remember(initialKopdatum) { mutableStateOf(initialKopdatum) }
-    var prisText by remember(initialPris) { mutableStateOf(initialPris) }
-    var anteckning by remember(initialAnteckning) { mutableStateOf(initialAnteckning) }
     
     var visarDatumväljare by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = kopdatum.toEpochDay() * 86400000
+    val datumVäljare = rememberDatePickerState(
+        initialSelectedDate = kopdatum
     )
     
-    // Felmeddelanden
-    var felVadSaknas by remember { mutableStateOf(false) }
-    var felGaranti by remember { mutableStateOf(false) }
-    var felDatum by remember { mutableStateOf(false) }
-    var felPris by remember { mutableStateOf(false) }
+    // Valideringsfel
+    var fel by remember { mutableStateOf<List<FormularFel>>(emptyList()) }
     
     if (visarDatumväljare) {
         DatePickerDialog(
@@ -75,13 +72,13 @@ fun KopFormularSkarm(
             confirmButton = {
                 Button(
                     onClick = {
-                        datePickerState.selectedDateMillis?.let { millis ->
+                        datumVäljare.selectedDateMillis?.let { millis ->
                             kopdatum = LocalDate.ofEpochDay(millis / 86400000)
                         }
                         visarDatumväljare = false
                     }
                 ) {
-                    Text(text = stringResource(R.string.OK))
+                    Text(text = stringResource(R.string.ok))
                 }
             },
             dismissButton = {
@@ -92,7 +89,7 @@ fun KopFormularSkarm(
                 }
             }
         ) {
-            DatePicker(state = datePickerState)
+            DatePicker(state = datumVäljare)
         }
     }
     
@@ -110,15 +107,22 @@ fun KopFormularSkarm(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            // Fält: vad
             OutlinedTextField(
                 value = vad,
                 onValueChange = { vad = it },
                 label = { Text(text = stringResource(R.string.falt_vad)) },
-                isError = felVadSaknas,
-                supportingText = { if (felVadSaknas) Text(text = stringResource(R.string.fel_vad_saknas)) },
+                isError = FormularFel.VAD_SAKNAS in fel,
                 modifier = Modifier.fillMaxWidth(),
             )
+            if (FormularFel.VAD_SAKNAS in fel) {
+                Text(
+                    text = stringResource(R.string.fel_vad_saknas),
+                    color = androidx.compose.ui.graphics.Color.Red
+                )
+            }
             
+            // Fält: var (valfritt)
             OutlinedTextField(
                 value = varKopt,
                 onValueChange = { varKopt = it },
@@ -126,85 +130,76 @@ fun KopFormularSkarm(
                 modifier = Modifier.fillMaxWidth(),
             )
             
+            // Fält: köpdatum
+            Text(
+                text = stringResource(R.string.falt_datum),
+                modifier = Modifier.padding(top = 8.dp)
+            )
             Button(
                 onClick = { visarDatumväljare = true },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = stringResource(R.string.falt_datum) + ": ${kopdatum}")
+                Text(text = kopdatum.toString())
+            }
+            if (FormularFel.KOPDATUM_FRAMTID in fel) {
+                Text(
+                    text = stringResource(R.string.fel_datum),
+                    color = androidx.compose.ui.graphics.Color.Red
+                )
             }
             
+            // Fält: garantitid i månader
             OutlinedTextField(
                 value = garantiManader,
                 onValueChange = { garantiManader = it },
                 label = { Text(text = stringResource(R.string.falt_garanti_manader)) },
-                isError = felGaranti,
-                supportingText = { if (felGaranti) Text(text = stringResource(R.string.fel_garanti)) },
-                modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                isError = FormularFel.GARANTI_OGILTIG in fel,
+                modifier = Modifier.fillMaxWidth(),
             )
+            if (FormularFel.GARANTI_OGILTIG in fel) {
+                Text(
+                    text = stringResource(R.string.fel_garanti),
+                    color = androidx.compose.ui.graphics.Color.Red
+                )
+            }
             
+            // Fält: pris (valfritt)
             OutlinedTextField(
-                value = prisText ?: "",
+                value = prisText,
                 onValueChange = { prisText = it },
                 label = { Text(text = stringResource(R.string.falt_pris)) },
-                isError = felPris,
-                supportingText = { if (felPris) Text(text = stringResource(R.string.fel_pris)) },
                 modifier = Modifier.fillMaxWidth(),
             )
+            if (FormularFel.PRIS_OGILTIGT in fel) {
+                Text(
+                    text = stringResource(R.string.fel_pris),
+                    color = androidx.compose.ui.graphics.Color.Red
+                )
+            }
             
+            // Fält: anteckning (valfritt)
             OutlinedTextField(
-                value = anteckning ?: "",
+                value = anteckning,
                 onValueChange = { anteckning = it },
                 label = { Text(text = stringResource(R.string.falt_anteckning)) },
                 modifier = Modifier.fillMaxWidth(),
             )
             
+            // Knapp: spara
             Button(
                 onClick = {
-                    // Återställ felmeddelanden
-                    felVadSaknas = false
-                    felGaranti = false
-                    felDatum = false
-                    felPris = false
-                    
                     // Validera formuläret
-                    val fel = valideraKopFormular(
-                        vad = vad,
-                        garantiManader = garantiManader.toIntOrNull() ?: 0,
-                        kopdatum = kopdatum,
-                        idag = LocalDate.now(),
-                        prisText = prisText
-                    )
+                    val idag = LocalDate.now()
+                    fel = valideraKopFormular(vad, garantiManader.toIntOrNull() ?: 0, kopdatum, idag, prisText)
                     
-                    // Visa felmeddelanden om några finns
-                    if (fel.isNotEmpty()) {
-                        felVadSaknas = FormularFel.VAD_SAKNAS in fel
-                        felGaranti = FormularFel.GARANTI_OGILTIG in fel
-                        felDatum = FormularFel.KOPDATUM_FRAMTID in fel
-                        felPris = FormularFel.PRIS_OGILTIGT in fel
-                        
-                        // Visa toast om det finns fel
-                        if (fel.isNotEmpty()) {
-                            Toast.makeText(
-                                context,
-                                "Formuläret innehåller fel",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                    if (fel.isEmpty()) {
+                        // Om inga fel finns, spara
+                        val prisOre = se.tmconnect.garantivalvet.regler.tolkaPrisTillOre(prisText)
+                        onSpara(vad, varKopt.takeIf { it.isNotBlank() }, kopdatum, garantiManader.toIntOrNull() ?: 0, prisOre, anteckning.takeIf { it.isNotBlank() })
                     } else {
-                        // Om inga fel, spara
-                        val prisOre = prisText?.let { 
-                            se.tmconnect.garantivalvet.regler.tolkaPrisTillOre(it) 
-                        }
-                        
-                        onSpara(
-                            vad = vad,
-                            varKopt = varKopt.takeIf { it.isNotBlank() },
-                            kopdatum = kopdatum,
-                            garantiManader = garantiManader.toIntOrNull() ?: 0,
-                            prisOre = prisOre,
-                            anteckning = anteckning.takeIf { it.isNotBlank() }
-                        )
+                        // Visa felmeddelande
+                        Toast.makeText(context, "Formuläret innehåller fel", Toast.LENGTH_SHORT).show()
                     }
                 },
                 enabled = vad.isNotBlank(),
@@ -213,6 +208,7 @@ fun KopFormularSkarm(
                 Text(text = stringResource(R.string.spara))
             }
             
+            // Knapp: avbryt
             TextButton(onClick = onAvbryt, modifier = Modifier.fillMaxWidth()) {
                 Text(text = stringResource(R.string.avbryt))
             }
