@@ -9,11 +9,9 @@ Kompletterar CLAUDE.md punkt 3. Gäller från 2026-10-09.
    - rättar små fel direkt på grenen,
    - skriver sitt beslut i `granskning/<uppgift>.md` på grenen (format nedan),
    - flyttar vid godkännande uppgiftsfilen från `uppgifter/pagar/` till `uppgifter/klar/` med raden `utfall: godkänd ÅÅÅÅ-MM-DD`.
-3. **Claude granskar Cursor.** Claudes timvisa granskning läser Cursors beslut, gör en stickprovskontroll av koden och:
-   - mergar när beslutet är godkänt och bygget grönt,
-   - stänger PR:en och lägger Cursors försök 2 på main när beslutet är underkänt,
-   - underkänner Cursors beslut om det är fel, och skriver varför i BESLUTSLOGG.md.
-4. Cursors egna PR:er (`cursor/...`) granskas och mergas av Claude, som tidigare.
+3. **Beslutet verkställs direkt** av workflowet `cursor-beslut`: godkänd och grönt bygge mergas, underkänd stängs och Cursors försök 2 läggs i `uppgifter/ny/` på main. Ingen väntar på Claude.
+4. **Claude granskar Cursor i efterhand.** Claudes timvisa körning stickprovar det som mergats och stängts sedan förra gången. Var Cursors beslut fel rättar Claude det (en ny uppgift eller ett uppdrag) och skriver varför i BESLUTSLOGG.md. Claude tar också över PR:er där workflowet inte kunde avgöra.
+5. Cursors egna PR:er (`cursor/...`) granskas och mergas av Claude, som tidigare.
 
 ## Beslutsfil `granskning/<uppgift>.md`
 
