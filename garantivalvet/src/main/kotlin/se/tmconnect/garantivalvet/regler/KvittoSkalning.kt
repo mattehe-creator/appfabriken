@@ -22,3 +22,24 @@ fun beraknaNedskaladStorlek(
     val skala = maxLangstaSida.toFloat() / langsta
     return (bredd * skala).roundToInt() to (hojd * skala).roundToInt()
 }
+
+/**
+ * Beräknar inSampleSize för att undvika att ladda stora bilder i full storlek.
+ *
+ * Returnerar den största tvåpotensen n (1, 2, 4, 8 ...) sådan att max(bredd, hojd) / n >= maxSida.
+ * Är bilden redan högst maxSida, returneras 1.
+ */
+fun beraknaInSampleSize(bredd: Int, hojd: Int, maxSida: Int = 2000): Int {
+    if (bredd <= maxSida || hojd <= maxSida) {
+        return 1
+    }
+    
+    val langsta = maxOf(bredd, hojd)
+    var inSampleSize = 1
+    
+    while (langsta / (inSampleSize * 2) >= maxSida) {
+        inSampleSize *= 2
+    }
+    
+    return inSampleSize
+}

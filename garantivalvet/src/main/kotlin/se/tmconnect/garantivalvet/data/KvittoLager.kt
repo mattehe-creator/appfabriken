@@ -8,6 +8,7 @@ import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
+import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
 import se.tmconnect.garantivalvet.regler.beraknaNedskaladStorlek
 
 /**
@@ -24,8 +25,28 @@ class KvittoLager(
      * och returnerar filnamnet (utan sökväg) som ska sparas i [Kop.kvittoFil].
      */
     fun kopieraFranUri(kallaUri: Uri): String? {
+        // Först läs storleken utan att ladda hela bilden
+        val options = BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+        }
+        
+        context.contentResolver.openInputStream(kallaUri)?.use { input ->
+            BitmapFactory.decodeStream(input, null, options)
+        } ?: return null
+        
+        val bredd = options.outWidth
+        val hojd = options.outHeight
+        
+        // Beräkna inSampleSize baserat på storlek
+        val inSampleSize = beraknaInSampleSize(bredd, hojd)
+        
+        // Läs bilden med rätt inSampleSize
         val original = context.contentResolver.openInputStream(kallaUri)?.use { input ->
-            BitmapFactory.decodeStream(input)
+            BitmapFactory.Options().apply {
+                inSampleSize = inSampleSize
+            }.let { opts ->
+                BitmapFactory.decodeStream(input, null, opts)
+            }
         } ?: return null
 
         val (malBredd, malHojd) = beraknaNedskaladStorlek(original.width, original.height)
