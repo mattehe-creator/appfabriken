@@ -12,7 +12,7 @@ import java.time.LocalDate
 import se.tmconnect.garantivalvet.data.GarantiDatabas
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
-import se.tmconnect.garantivalvet.ui.KopDetaljSkelett
+import se.tmconnect.garantivalvet.ui.KopDetaljSkarm
 import se.tmconnect.garantivalvet.ui.KopFormularSkarm
 import se.tmconnect.garantivalvet.ui.KopListaSkarm
 import se.tmconnect.garantivalvet.ui.KopSkarm
@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
                     is KopSkarm.Detalj -> {
                         val kop = valtKop
                         if (kop != null) {
-                            KopDetaljSkelett(
+                            KopDetaljSkarm(
                                 kop = kop,
                                 onAndra = { viewModel.visaAndra(kop.id) },
                                 onTaBort = viewModel::taBortValtKop,

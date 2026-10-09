@@ -97,7 +97,16 @@ if ($aktuell -like "lokal/*" -and -not (git ls-remote --heads origin $aktuell)) 
 }
 if (git status --porcelain) { Avbryt "Repot har ändringar som inte är committade. Rensa först." }
 Kor git @("checkout", "-q", "main")
-Kor git @("pull", "-q", "--ff-only")
+Kor git @("fetch", "-q", "origin", "main")
+# Lokal main ska alltid vara lika med origin/main. Har den egna commits (main på GitHub squash-mergas,
+# så historiken går isär) sparas de på en gren och main sätts till origin/main.
+$egna = (git rev-list --count origin/main..main).Trim()
+if ($egna -ne "0") {
+    $sparad = "sparad/lokal-main-$stampel"
+    Write-Host "Lokal main hade $egna egna commits. Sparas på $sparad, main sätts till origin/main." -ForegroundColor Yellow
+    Kor git @("branch", "-q", $sparad, "main")
+}
+Kor git @("reset", "-q", "--hard", "origin/main")
 
 # Välj den första uppgiften som inte redan körts (gren finns) och vars beroenden är klara på main.
 $uppgift = $null
@@ -109,6 +118,7 @@ foreach ($kandidat in (Get-ChildItem "uppgifter\ny\*.md" -ErrorAction SilentlyCo
     if ($beror -and $beror -notmatch '^ingen') {
         foreach ($b in ($beror -split ',')) {
             $b = $b.Trim(); if (-not $b) { continue }
+            if ($b -like "cursor:*") { $saknade += $b; continue }   # väntar på Cursors kod
             if (-not $b.EndsWith('.md')) { $b = "$b.md" }
             if (-not (Test-Path "uppgifter\klar\$b")) { $saknade += $b }
         }
@@ -116,7 +126,11 @@ foreach ($kandidat in (Get-ChildItem "uppgifter\ny\*.md" -ErrorAction SilentlyCo
     if ($saknade) { Write-Host "Hoppar över $($kandidat.BaseName): väntar på $($saknade -join ', ')."; continue }
     $uppgift = $kandidat; break
 }
-if (-not $uppgift) { Status "vilar" "Ingen uppgift är redo."; Write-Host "Ingen uppgift att köra just nu."; Stop-Transcript | Out-Null; exit 3 }
+if (-not $uppgift) {
+    $antal = @(Get-ChildItem "uppgifter\ny\*.md" -ErrorAction SilentlyContinue).Count
+    $orsak = if ($antal -eq 0) { "Kön är tom. Väntar på att Cursor delar upp nästa uppdrag." } else { "$antal uppgifter väntar på granskning eller på andra uppgifter." }
+    Status "vilar" $orsak; Write-Host $orsak; Stop-Transcript | Out-Null; exit 3
+}
 
 $namn = $uppgift.BaseName
 $gren = "lokal/$namn"

@@ -30,3 +30,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*KopSorteringTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-09 (KopViewModel sorterade listan via map+sorteraEfterGaranti, heightIn 48 dp, borttagen KopRadSkelett, importstädning)

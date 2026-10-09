@@ -1,6 +1,5 @@
 package se.tmconnect.garantivalvet.ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -67,65 +66,11 @@ fun KopListaSkarm(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(kopLista, key = { it.id }) { kop ->
-                    KopRadSkelett(
+                    KopListRad(
                         kop = kop,
                         onClick = { onOppna(kop.id) },
                     )
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun KopRadSkelett(
-    kop: Kop,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(12.dp),
-    ) {
-        Text(text = kop.vad)
-        kop.varKopt?.let { Text(text = it) }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun KopDetaljSkelett(
-    kop: Kop,
-    onAndra: () -> Unit,
-    onTaBort: () -> Unit,
-    onTillbaka: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            TopAppBar(title = { Text(text = kop.vad) })
-        },
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            kop.varKopt?.let { Text(text = it) }
-            Text(text = stringResource(R.string.falt_garanti_manader) + ": ${kop.garantiManader}")
-            Button(onClick = onAndra, modifier = Modifier.fillMaxWidth()) {
-                Text(text = stringResource(R.string.andra))
-            }
-            TextButton(onClick = onTaBort, modifier = Modifier.fillMaxWidth()) {
-                Text(text = stringResource(R.string.ta_bort))
-            }
-            TextButton(onClick = onTillbaka, modifier = Modifier.fillMaxWidth()) {
-                Text(text = stringResource(R.string.avbryt))
             }
         }
     }

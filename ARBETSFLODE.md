@@ -9,11 +9,15 @@ Kompletterar CLAUDE.md punkt 3. Gäller från 2026-10-09.
    - rättar små fel direkt på grenen,
    - skriver sitt beslut i `granskning/<uppgift>.md` på grenen (format nedan),
    - flyttar vid godkännande uppgiftsfilen från `uppgifter/pagar/` till `uppgifter/klar/` med raden `utfall: godkänd ÅÅÅÅ-MM-DD`.
-3. **Claude granskar Cursor.** Claudes timvisa granskning läser Cursors beslut, gör en stickprovskontroll av koden och:
-   - mergar när beslutet är godkänt och bygget grönt,
-   - stänger PR:en och lägger Cursors försök 2 på main när beslutet är underkänt,
-   - underkänner Cursors beslut om det är fel, och skriver varför i BESLUTSLOGG.md.
-4. Cursors egna PR:er (`cursor/...`) granskas och mergas av Claude, som tidigare.
+3. **Beslutet verkställs direkt** av workflowet `cursor-beslut`: godkänd och grönt bygge mergas, underkänd stängs och Cursors försök 2 läggs i `uppgifter/ny/` på main. Ingen väntar på Claude.
+4. **Claude granskar Cursor i efterhand.** Claudes timvisa körning stickprovar det som mergats och stängts sedan förra gången. Var Cursors beslut fel rättar Claude det (en ny uppgift eller ett uppdrag) och skriver varför i BESLUTSLOGG.md. Claude tar också över PR:er där workflowet inte kunde avgöra.
+5. Cursors egna PR:er (`cursor/...`) granskas och mergas av Claude, som tidigare.
+
+## Uppdrag i två steg
+
+Från och med uppdraget efter kvittofoto skriver Claude uppdragen så att Cursor:
+1. först öppnar en liten PR med enbart uppgiftsfilerna, där varje uppgift som bygger på Cursors kod har `beror-på: cursor:<uppdragsnamn>`. Claude mergar den direkt, så att den lokala modellen kan börja på de uppgifter som inte väntar på något.
+2. sedan öppnar en andra PR med den tunga delen. När den är mergad tar Claude bort raden `cursor:<uppdragsnamn>` ur uppgifterna, och resten kan köras.
 
 ## Beslutsfil `granskning/<uppgift>.md`
 

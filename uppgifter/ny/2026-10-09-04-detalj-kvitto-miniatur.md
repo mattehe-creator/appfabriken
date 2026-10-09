@@ -1,6 +1,6 @@
 # Uppgift: kvittominiatyr i detaljvyn
 
-uppdrag: uppdrag/2026-10-09-foto-av-kvittot.md
+uppdrag: uppdrag/2026-10-09-kvittofoto.md
 försök: 1
 beror-på: 2026-10-09-02-kvitto-strangar.md
 

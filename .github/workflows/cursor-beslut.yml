@@ -1,0 +1,88 @@
+# Verkställer Cursors granskningsbeslut direkt, så att ingen väntar på Claudes timvisa körning.
+# Godkänd + grönt bygge: PR:en mergas. Underkänd: PR:en stängs och försök 2 läggs i uppgifter/ny/ på main.
+# Claude granskar Cursors beslut i efterhand och rättar om det behövs (ARBETSFLODE.md). Ändras bara av Claude.
+name: Cursor-beslut
+
+on:
+  workflow_run:
+    workflows: ["Bygg"]
+    types: [completed]
+  # Ett godkännande som bara ändrar .md-filer startar inget bygge, så beslutsfilen räcker som utlösare.
+  push:
+    branches: ["lokal/**"]
+    paths: ["granskning/**"]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: cursor-beslut
+  cancel-in-progress: false
+
+jobs:
+  verkstall:
+    if: github.event_name == 'push' || (startsWith(github.event.workflow_run.head_branch, 'lokal/') && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_branch || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Verkställ beslutet
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GREN: ${{ github.event.workflow_run.head_branch || github.ref_name }}
+        run: |
+          namn="${GREN#lokal/}"
+          fil="granskning/$namn.md"
+          [ -f "$fil" ] || { echo "Cursor har inte granskat $GREN än."; exit 0; }
+          # Senaste bygget på grenen ska vara grönt, och efter det får bara .md-filer ha ändrats.
+          read -r bsha bslut < <(gh run list --branch "$GREN" --workflow Bygg --limit 1 --json headSha,conclusion --jq '.[0] | "\(.headSha) \(.conclusion)"')
+          [ "$bslut" = "success" ] || { echo "Senaste bygget på $GREN är inte grönt ($bslut)."; exit 0; }
+          if git diff --name-only "$bsha" HEAD | grep -qv '\.md$'; then
+            echo "Kod har ändrats efter senaste gröna bygget. Väntar på nästa bygge."; exit 0
+          fi
+          pr=$(gh pr list --head "$GREN" --state open --json number --jq '.[0].number')
+          [ -n "$pr" ] || { echo "Ingen öppen PR för $GREN."; exit 0; }
+          beslut=$(grep -m1 '^beslut:' "$fil" | sed 's/^beslut:[[:space:]]*//' | tr -d '\r')
+          echo "PR #$pr, beslut: $beslut"
+          git config user.name "Appfabriken"
+          git config user.email "actions@users.noreply.github.com"
+
+          case "$beslut" in
+            godkänd)
+              if [ ! -f "uppgifter/klar/$namn.md" ]; then
+                echo "::warning::Godkänd men uppgiften ligger inte i uppgifter/klar/. Claude får avgöra."; exit 0
+              fi
+              gh pr ready "$pr" || true
+              gh pr merge "$pr" --squash --subject "Lokal: $namn (#$pr), godkänd av Cursor"
+              # En merge med GITHUB_TOKEN startar inget bygge på main, så det startas här (APK till telefonen).
+              gh workflow run bygg.yml --ref main || true
+              echo "::notice::PR #$pr mergad efter Cursors godkännande."
+              ;;
+            underkänd|fråga)
+              forsok2=$(awk '/^## Vid underkänd: försök 2/{f=1;next} /^## Frågor till Claude/{f=0} f' "$fil" | sed '/^```/d')
+              if ! echo "$forsok2" | grep -q '^# Uppgift'; then
+                echo "::warning::Underkänd utan försök 2 i beslutsfilen. Claude får avgöra."; exit 0
+              fi
+              gh pr close "$pr" --comment "Underkänd av Cursor. Försök 2 läggs i uppgifter/ny/. Se $fil på grenen."
+              git checkout -q main && git pull -q
+              ny="${namn}-f2"
+              case "$namn" in *-f2) ny="${namn%-f2}-f3";; esac
+              if [ -f "uppgifter/ny/$namn.md" ]; then
+                git mv "uppgifter/ny/$namn.md" "uppgifter/klar/$namn.md"
+                printf '\nutfall: underkänd %s av Cursor (PR #%s). Ersatt av %s.md\n' "$(date +%F)" "$pr" "$ny" >> "uppgifter/klar/$namn.md"
+              fi
+              printf '%s\n' "$forsok2" | sed '/./,$!d' > "uppgifter/ny/$ny.md"
+              grep -rl --include='*.md' "$namn.md" uppgifter/ny | xargs -r sed -i "s/$namn\.md/$ny.md/g"
+              git add -A
+              git commit -q -m "Uppgift $namn underkänd av Cursor (PR #$pr), $ny i kön"
+              git push -q origin main
+              echo "::notice::PR #$pr stängd, $ny lagd i kön."
+              ;;
+            *) echo "::warning::Okänt beslut '$beslut'. Claude får avgöra.";;
+          esac
