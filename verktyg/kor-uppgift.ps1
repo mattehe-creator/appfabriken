@@ -78,12 +78,27 @@ if (git status --porcelain) { Avbryt "Repot har ändringar som inte är committa
 Kor git @("checkout", "-q", "main")
 Kor git @("pull", "-q", "--ff-only")
 
-$uppgift = Get-ChildItem "uppgifter\ny\*.md" -ErrorAction SilentlyContinue | Sort-Object Name | Select-Object -First 1
-if (-not $uppgift) { Write-Host "Inga uppgifter i uppgifter/ny/."; Stop-Transcript | Out-Null; exit 0 }
+# Välj den första uppgiften som inte redan körts (gren finns) och vars beroenden är klara på main.
+$uppgift = $null
+foreach ($kandidat in (Get-ChildItem "uppgifter\ny\*.md" -ErrorAction SilentlyContinue | Sort-Object Name)) {
+    $g = "lokal/$($kandidat.BaseName)"
+    if (git ls-remote --heads origin $g) { Write-Host "Hoppar över $($kandidat.BaseName): grenen väntar på granskning."; continue }
+    $beror = (Get-Content -Encoding UTF8 $kandidat.FullName | Where-Object { $_ -match '^beror-på:' } | Select-Object -First 1) -replace '^beror-på:\s*', ''
+    $saknade = @()
+    if ($beror -and $beror -notmatch '^ingen') {
+        foreach ($b in ($beror -split ',')) {
+            $b = $b.Trim(); if (-not $b) { continue }
+            if (-not $b.EndsWith('.md')) { $b = "$b.md" }
+            if (-not (Test-Path "uppgifter\klar\$b")) { $saknade += $b }
+        }
+    }
+    if ($saknade) { Write-Host "Hoppar över $($kandidat.BaseName): väntar på $($saknade -join ', ')."; continue }
+    $uppgift = $kandidat; break
+}
+if (-not $uppgift) { Write-Host "Ingen uppgift att köra just nu."; Stop-Transcript | Out-Null; exit 3 }
 
 $namn = $uppgift.BaseName
 $gren = "lokal/$namn"
-if (git ls-remote --heads origin $gren) { Avbryt "Grenen $gren finns redan på GitHub. Uppgiften är redan körd." }
 
 Write-Host "Uppgift: $namn" -ForegroundColor Cyan
 $rader = Get-Content -Encoding UTF8 $uppgift.FullName

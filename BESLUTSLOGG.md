@@ -17,3 +17,5 @@
 ## 2026-10-09
 
 - Cursors PR #3 (Room, KopDao med tester, ViewModel, navigering utan bibliotek, formulärskelett) granskad och mergad. Sju uppgifter (02–08) väntar på den lokala modellen. (Claude)
+- Den lokala modellen körs via Schemaläggaren i Windows (`verktyg/installera-schema.ps1`): när datorn varit oanvänd i 10 minuter och varje natt kl. 01. Körskriptet hoppar över uppgifter vars beroenden inte ligger i `uppgifter/klar/` på main, och uppgifter som redan har en gren. (Claude)
+- Tills Cursors granskning är automatiserad granskar och mergar en schemalagd Claude-uppgift den lokala modellens PR:er var tredje timme, och flyttar uppgiften till `uppgifter/klar/`. (Claude)
