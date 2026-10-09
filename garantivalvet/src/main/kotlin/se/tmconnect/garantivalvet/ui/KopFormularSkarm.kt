@@ -1,9 +1,13 @@
 package se.tmconnect.garantivalvet.ui
 
+import android.graphics.BitmapFactory
+import android.net.Uri
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,6 +29,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -44,6 +51,10 @@ fun KopFormularSkarm(
     initialPris: String?,
     initialAnteckning: String?,
     initialKopdatum: LocalDate,
+    kvittoUri: Uri?,
+    onValjBild: () -> Unit,
+    onTaFoto: () -> Unit,
+    onTaBortKvitto: () -> Unit,
     onSpara: (vad: String, varKopt: String?, kopdatum: LocalDate, garantiManader: Int, prisOre: Long?, anteckning: String?) -> Unit,
     onAvbryt: () -> Unit,
     modifier: Modifier = Modifier,
@@ -179,7 +190,53 @@ fun KopFormularSkarm(
                 onValueChange = { anteckning = it },
                 label = { Text(text = stringResource(R.string.falt_anteckning)) },
                 modifier = Modifier.fillMaxWidth(),
-            )
+            }
+            
+            // Kvittoknappar
+            if (kvittoUri != null) {
+                // Förhandsvisning av kvitto
+                val bitmap = try {
+                    BitmapFactory.decodeStream(
+                        LocalContext.current.contentResolver.openInputStream(kvittoUri)
+                    )?.asImageBitmap()
+                } catch (e: Exception) {
+                    null
+                }
+                
+                if (bitmap != null) {
+                    Image(
+                        bitmap = bitmap,
+                        contentDescription = stringResource(R.string.kvitto_fornhandsvisning),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                
+                // Knapp: ta bort kvitto
+                Button(
+                    onClick = onTaBortKvitto,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = stringResource(R.string.kvitto_ta_bort))
+                }
+            } else {
+                // Knappar: välj bild och ta foto
+                Button(
+                    onClick = onValjBild,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = stringResource(R.string.kvitto_valj_bild))
+                }
+                
+                Button(
+                    onClick = onTaFoto,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = stringResource(R.string.kvitto_ta_foto))
+                }
+            }
             
             // Knapp: spara
             Button(
