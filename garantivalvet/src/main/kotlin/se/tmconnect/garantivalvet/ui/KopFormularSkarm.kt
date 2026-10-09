@@ -78,7 +78,7 @@ fun KopFormularSkarm(
                         visarDatumväljare = false
                     }
                 ) {
-                    Text(text = stringResource(R.string.OK))
+                    Text(text = stringResource(R.string.ok))
                 }
             },
             dismissButton = {
