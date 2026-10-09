@@ -1,0 +1,44 @@
+# Vaktmästaren: ser till att ingen lokal PR blir stående. Körs var 20:e minut.
+# Alla andra workflows startar av en händelse (bygge klart, push). Om en händelse uteblir eller ett steg
+# föll, händer ingenting mer och kön står still. Vaktmästaren hittar PR:er som inte rörts på 30 minuter:
+#  - Cursor har beslutat: beslutet verkställs igen (merge, sammanslagning med main, omstart eller försök 2).
+#  - Cursor har inte granskat: ett nytt bygge startas, och det startar granskningen.
+# Ändras bara av Claude.
+name: Vaktmästare
+run-name: Vaktmästare
+
+on:
+  schedule:
+    - cron: "*/20 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+  actions: write
+
+jobs:
+  vakta:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Leta efter PR:er som står stilla
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          nu=$(date +%s)
+          gh pr list --repo "$REPO" --state open --json number,headRefName,updatedAt \
+            --jq '.[] | select(.headRefName | startswith("lokal/")) | [.number, .headRefName, .updatedAt] | @tsv' \
+          | while IFS=$'\t' read -r nr gren upd; do
+              alder=$(( nu - $(date -d "$upd" +%s) ))
+              if [ "$alder" -lt 1800 ]; then echo "PR #$nr ($gren): rörd för $((alder/60)) min sedan, väntar."; continue; fi
+              namn="${gren#lokal/}"
+              if gh api "repos/$REPO/contents/granskning/$namn.md?ref=$gren" >/dev/null 2>&1; then
+                echo "PR #$nr ($gren): stilla i $((alder/60)) min, beslut finns. Verkställer igen."
+                gh workflow run cursor-beslut.yml --repo "$REPO" -f gren="$gren"
+              else
+                echo "PR #$nr ($gren): stilla i $((alder/60)) min, ingen granskning. Startar bygge och granskning."
+                gh workflow run bygg.yml --repo "$REPO" --ref "$gren"
+              fi
+            done

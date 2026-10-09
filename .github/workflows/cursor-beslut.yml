@@ -2,13 +2,19 @@
 # Godkänd + grönt bygge: PR:en mergas. Underkänd: PR:en stängs och försök 2 läggs i uppgifter/ny/ på main.
 # Claude granskar Cursors beslut i efterhand och rättar om det behövs (ARBETSFLODE.md). Ändras bara av Claude.
 name: Cursor-beslut
-run-name: Beslut ${{ github.event.workflow_run.head_branch || github.ref_name }}
+run-name: Beslut ${{ github.event.workflow_run.head_branch || inputs.gren || github.ref_name }}
 
 on:
   workflow_run:
     workflows: ["Bygg"]
     types: [completed]
   # Ett godkännande som bara ändrar .md-filer startar inget bygge, så beslutsfilen räcker som utlösare.
+  # Vaktmästaren (vaktmastare.yml) kör beslutet igen för PR:er som blivit stående utan att något hänt.
+  workflow_dispatch:
+    inputs:
+      gren:
+        description: "lokal/-gren vars beslut ska verkställas"
+        required: true
   push:
     branches: ["lokal/**"]
     paths: ["granskning/**"]
@@ -24,37 +30,74 @@ concurrency:
 
 jobs:
   verkstall:
-    if: github.event_name == 'push' || (startsWith(github.event.workflow_run.head_branch, 'lokal/') && github.event.workflow_run.conclusion == 'success')
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (startsWith(github.event.workflow_run.head_branch, 'lokal/') && github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.workflow_run.head_branch || github.ref_name }}
+          ref: ${{ github.event.workflow_run.head_branch || inputs.gren || github.ref_name }}
           fetch-depth: 0
 
       - name: Verkställ beslutet
         env:
           GH_TOKEN: ${{ github.token }}
-          GREN: ${{ github.event.workflow_run.head_branch || github.ref_name }}
+          GREN: ${{ github.event.workflow_run.head_branch || inputs.gren || github.ref_name }}
         run: |
           namn="${GREN#lokal/}"
           fil="granskning/$namn.md"
           [ -f "$fil" ] || { echo "Cursor har inte granskat $GREN än."; exit 0; }
           beslut=$(grep -m1 '^beslut:' "$fil" | sed 's/^beslut:[[:space:]]*//' | tr -d '\r')
-          # Bara godkännande kräver grönt bygge (och efter det bara .md-ändringar). Underkänd verkställs även när bygget är rött.
-          if [ "$beslut" = "godkänd" ]; then
-            read -r bsha bslut < <(gh run list --branch "$GREN" --workflow Bygg --limit 1 --json headSha,conclusion --jq '.[0] | "\(.headSha) \(.conclusion)"')
-            [ "$bslut" = "success" ] || { echo "Senaste bygget på $GREN är inte grönt ($bslut)."; exit 0; }
-            if git diff --name-only "$bsha" HEAD | grep -qv '\.md$'; then
-              echo "Kod har ändrats efter senaste gröna bygget. Väntar på nästa bygge."; exit 0
-            fi
-          fi
           pr=$(gh pr list --head "$GREN" --state open --json number --jq '.[0].number')
           [ -n "$pr" ] || { echo "Ingen öppen PR för $GREN."; exit 0; }
           echo "PR #$pr, beslut: $beslut"
           git config user.name "Appfabriken"
           git config user.email "actions@users.noreply.github.com"
+
+          # Grenen tas bort och PR:en stängs, så att körskriptet kör uppgiften om från aktuell main.
+          # Uppgiften ligger kvar i uppgifter/ny/ på main, så ingenting annat behöver flyttas.
+          # Efter två avbrutna försök lämnas den åt Claude, annars kunde samma krock upprepas för alltid.
+          omstart() {
+            n=$(gh pr list --head "$GREN" --state closed --json number --jq 'length')
+            if [ "$n" -ge 2 ]; then
+              echo "::error::$GREN har redan startats om $n gånger. Claude måste lösa det för hand."; exit 1
+            fi
+            gh pr close "$pr" --comment "$1 Grenen tas bort och uppgiften körs om från aktuell main."
+            git push -q origin --delete "$GREN"
+            echo "::notice::PR #$pr stängd, $GREN borttagen. Uppgiften körs om."
+            exit 0
+          }
+
+          if [ "$beslut" = "godkänd" ]; then
+            # 1. Krock med main: slå ihop main i grenen (grenens sida vinner i de rader som krockar)
+            #    och bygg om. Bygget och alla tester avgör sedan om resultatet håller.
+            tillstand=UNKNOWN
+            for i in 1 2 3 4 5 6; do
+              tillstand=$(gh pr view "$pr" --json mergeable --jq .mergeable)
+              [ "$tillstand" != "UNKNOWN" ] && break; sleep 5
+            done
+            if [ "$tillstand" = "CONFLICTING" ]; then
+              echo "::warning::PR #$pr krockar med main. Slår ihop main i grenen."
+              git fetch -q origin main
+              if git merge -q -X theirs --no-edit -m "Slå ihop main i $GREN (automatiskt, krock löst med grenens sida)" origin/main \
+                 && git push -q origin "HEAD:$GREN"; then
+                gh workflow run bygg.yml --ref "$GREN"
+                echo "::notice::Main inslagen i $GREN, nytt bygge startat. Mergas när det är grönt."; exit 0
+              fi
+              git merge --abort 2>/dev/null || true
+              omstart "Krockar med main och gick inte att slå ihop automatiskt."
+            fi
+            # 2. Bygget efter vår sammanslagning blev rött: main och grenen passar inte ihop.
+            read -r bsha bslut < <(gh run list --branch "$GREN" --workflow Bygg --limit 1 --json headSha,conclusion --jq '.[0] | "\(.headSha) \(.conclusion)"')
+            if [ "$bslut" = "failure" ] && git log -1 --format=%s | grep -q '^Slå ihop main'; then
+              omstart "Bygget blev rött efter att main slagits ihop med grenen."
+            fi
+            # 3. Annars: bara godkännande kräver grönt bygge (och efter det bara .md-ändringar).
+            [ "$bslut" = "success" ] || { echo "Senaste bygget på $GREN är inte grönt ($bslut)."; exit 0; }
+            if git diff --name-only "$bsha" HEAD | grep -qv '\.md$'; then
+              echo "Kod har ändrats efter senaste gröna bygget. Väntar på nästa bygge."; exit 0
+            fi
+          fi
 
           case "$beslut" in
             godkänd)

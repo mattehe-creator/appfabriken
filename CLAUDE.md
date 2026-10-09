@@ -112,7 +112,7 @@ Kod skrivs i första hand av den lokala modellen. Cursor skriver bara det som ä
 - `uppdrag/` — uppdrag från Claude till Cursor, ett per fil.
 - `uppgifter/` — uppgifter för den lokala modellen, i mapparna `ny/`, `pagar/` och `klar/`. Formatet står i `uppgifter/MALL.md`.
 - `verktyg/` — körskriptet för den lokala modellen.
-- `.github/workflows/` — bygget (`bygg.yml`), utskicket av uppdrag (`cursor-uppdrag.yml`) Cursors granskning av lokala PR:er (`cursor-granskning.yml`) och verkställandet av Cursors beslut (`cursor-beslut.yml`). Ändras bara av Claude.
+- `.github/workflows/` — bygget (`bygg.yml`), utskicket av uppdrag (`cursor-uppdrag.yml`) Cursors granskning av lokala PR:er (`cursor-granskning.yml`) verkställandet av Cursors beslut (`cursor-beslut.yml`) och vaktmästaren som ser till att ingen PR blir stående (`vaktmastare.yml`). Ändras bara av Claude.
 - `settings.gradle.kts`, rotens `build.gradle.kts`, `gradle.properties` och `gradle/wrapper/` — Gradle-rotbygget för hela portföljen.
 - `karna/` — Android-biblioteket `:karna` (gemensamt tema, tillgänglighet och senare Pro/export).
 - `garantivalvet/` — appmodulen `:garantivalvet` (Garantivalvet / Warranty Vault).
