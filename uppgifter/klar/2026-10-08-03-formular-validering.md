@@ -38,3 +38,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*FormularValideringTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Android-klasser i valideringslogiken.
+
+utfall: godkänd 2026-10-09 (Claude flyttade filerna till rätt mapp och avrundade öre med Math.round)
