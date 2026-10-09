@@ -1,39 +1,28 @@
 # Status
 
-Uppdaterad 2026-10-08.
+Uppdaterad 2026-10-09.
 
-## Nu: Grundplattan
+## Klart: Grundplattan (2026-10-08–09)
 
-Målet är att flödet Claude → Cursor → lokal modell fungerar på en riktig uppgift innan Garantivalvet byggs. Tre spår körs parallellt eftersom de väntar på olika saker.
+Flödet går hela vägen utan att Mattias rör koden: Claude skriver uppdrag, Cursor delar upp och gör det tunga, den lokala modellen (Aider + Ollama `qwen3-coder:30b`) skriver uppgifterna, Cursor granskar, workflowet `cursor-beslut` mergar, Claude granskar i efterhand. Se ARBETSFLODE.md.
 
-### Spår 1. Företag och Play-konto (Mattias)
+På Mattias dator: körskriptet i Schemaläggaren (när datorn är oanvänd 10 min, och kl. 01), startfilen "Starta lokal modell" och panelen "Appfabriken panel" på skrivbordet.
 
-Mattias sköter företaget, D-U-N-S-numret och Play Console som organisationskonto. Claude följer inte upp det. Play Console sköts bara av Mattias (direktivet punkt 9).
+## Nu: Garantivalvet 1.0
 
-### Spår 2. Repo och flöde (Claude och Mattias)
+Omfång i IDEURVAL.md.
 
-1. Klart 2026-10-08: repot `appfabriken` finns, med direktiv, workflows och uppgiftsformatet.
-2. Mattias lägger in hemligheten `CURSOR_API_KEY` i repot (samma som i heros-run). Valfritt: `DEBUG_KEYSTORE_BASE64`, så att nya APK:er går att installera över de gamla.
-3. Cursor bygger grundplattan enligt `uppdrag/2026-10-08-grundplatta.md`: rotbygget, biblioteket `:karna` och ett skal av `:garantivalvet`.
-
-### Spår 3. Lokal modell (Mattias dator)
-
-Ett 3080 Ti har 12 GB VRAM, vilket ligger under det som brukar anges som bekvämt för agentkodning (16–24 GB). En MoE-modell som Qwen3-Coder 30B-A3B går att köra med experterna delvis i RAM, men långsammare. Därför byggs flödet för små uppgifter, och Cursor tar över efter två misslyckanden.
-
-1. Klart 2026-10-08: Ollama och Aider 0.86.2 är installerade, med `qwen3-coder:30b`. Provet i en tom mapp: modellen laddas på under 10 s, och en liten fil tar 5–7 s. Aider valde redigeringsformatet whole.
-2. Provuppgiften ligger i `uppgifter/ny/2026-10-08-01-garantitid.md` (garantitid och status, ren Kotlin). Den körs först med `qwen3-coder:30b` och Aiders standardformat. Fler modeller eller OpenCode provas bara om resultatet är dåligt.
-   Resultat 2026-10-08: godkänd och mergad (PR #2). Korrekt kod och alla nio exempel testade, 4,2 minuter. Aider committade inte de nya filerna; körskriptet committar nu sådant själv.
-3. Körskriptet `verktyg/kor-uppgift.ps1` finns (2026-10-08). Första körningen gör Mattias för hand. När den fungerar läggs det i Schemaläggaren i Windows med villkoret "när datorn är inaktiv".
-4. Cursors granskning av den lokala modellens PR:er automatiseras efter provkörningen. Tills dess granskar Claude dem.
-
-Klart när: en uppgift har gått hela vägen från uppdrag till mergad kod utan att Mattias rört koden.
-
-## Nästa: Garantivalvet 1.0
-
-Omfång i IDEURVAL.md. Första uppdraget: datamodell och lista. Före regelmotorn kontrolleras fristerna mot konsumentköplagen (2022:260).
+- Klart: köp i databasen, lista sorterad efter garantislut, formulär med validering, detaljvy med ändra och ta bort, formatering av pris och datum (uppdrag `2026-10-08-kop-lista-formular`).
+- Pågår: foto av kvittot (uppdrag `2026-10-09-kvittofoto`). Cursors del (migration 1→2, KvittoLager, FileProvider) mergad i PR #12. Uppgift 01 och 07 klara, 02–06 i kön.
+- Kvar i 1.0, i ordning:
+  1. Påminnelser: dagligt jobb (WorkManager) och notis 30 dagar före garantislut. Kräver notisbehörighet på Android 13+ (`POST_NOTIFICATIONS`), som begärs först när användaren slår på påminnelser.
+  2. Reklamationsrätt enligt konsumentköplagen (2022:260). Fristerna kontrolleras mot lagtexten på riksdagen.se innan uppdraget skrivs.
+  3. Gratisgräns (15 köp) och Pro via Google Play Billing, i `:karna`.
+  4. Export: reklamationsunderlag som PDF och säkerhetskopia till fil (Pro).
+  5. Butiksmaterial i `garantivalvet/butik/`: texter, skärmbilder, Data safety-svar.
+- Öppet beslut: `android:allowBackup` (Androids automatiska molnkopia) krockar med CLAUDE.md punkt 6. Beslutas när exporten görs.
 
 ## Senare
 
-- App 2: Husets underhållslogg.
-- App 3: Mätarställning.
-- Nattgranskning och veckoavstämning som schemalagda uppgifter, som i heros-run.
+- App 2: Husets underhållslogg. App 3: Mätarställning (IDEURVAL.md).
+- Uppdrag i två steg (ARBETSFLODE.md) från och med påminnelser.
