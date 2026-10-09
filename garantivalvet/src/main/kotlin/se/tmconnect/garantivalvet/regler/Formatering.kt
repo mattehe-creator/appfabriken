@@ -19,7 +19,8 @@ fun formateraPrisKr(prisOre: Long?, locale: Locale = Locale.forLanguageTag("sv-S
     
     val formattedNumber = formatter.format(prisKr)
     
-    return "$formattedNumber kr"
+    // Java använder hårt mellanslag som tusentalsavgränsare på svenska. Visa vanligt mellanslag.
+    return formattedNumber.replace("\u00A0", " ").replace("\u202F", " ") + " kr"
 }
 
 fun formateraDatum(datum: LocalDate, locale: Locale = Locale.forLanguageTag("sv-SE")): String {
