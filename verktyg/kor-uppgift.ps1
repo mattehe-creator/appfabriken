@@ -26,8 +26,19 @@ Start-Transcript -Path (Join-Path $loggMapp "kor-$stampel.log") | Out-Null
 
 function Avbryt([string]$text) {
     Write-Host "AVBRYTER: $text" -ForegroundColor Red
+    Status "fel" $text
     Stop-Transcript | Out-Null
     exit 1
+}
+
+# Läget skrivs till status.json, som panelen (verktyg/panel.py) visar.
+$statusFil = Join-Path (Split-Path -Parent $loggMapp) "status.json"
+$aiderLogg = Join-Path $loggMapp "aider-senaste.log"
+function Status([string]$fas, [string]$text = "") {
+    try {
+        @{ fas = $fas; text = $text; uppgift = $script:namn; modell = $Modell; tid = (Get-Date).ToString("s") } |
+            ConvertTo-Json | Set-Content -Encoding UTF8 $statusFil
+    } catch { }
 }
 
 function Kor([string]$fil, [string[]]$argument) {
@@ -105,7 +116,7 @@ foreach ($kandidat in (Get-ChildItem "uppgifter\ny\*.md" -ErrorAction SilentlyCo
     if ($saknade) { Write-Host "Hoppar över $($kandidat.BaseName): väntar på $($saknade -join ', ')."; continue }
     $uppgift = $kandidat; break
 }
-if (-not $uppgift) { Write-Host "Ingen uppgift att köra just nu."; Stop-Transcript | Out-Null; exit 3 }
+if (-not $uppgift) { Status "vilar" "Ingen uppgift är redo."; Write-Host "Ingen uppgift att köra just nu."; Stop-Transcript | Out-Null; exit 3 }
 
 $namn = $uppgift.BaseName
 $gren = "lokal/$namn"
@@ -141,11 +152,17 @@ foreach ($f in $forebild) { $aiderArg += @("--read", $f) }
 $aiderArg += $tillatna
 
 $start = Get-Date
-& $aider @aiderArg
+Status "kodar" "Aider och $Modell arbetar."
+"" | Set-Content -Encoding UTF8 $aiderLogg
+# Aiders utskrift visas i fönstret och sparas samtidigt för panelen.
+$ErrorActionPreference = "Continue"
+& $aider @aiderArg 2>&1 | ForEach-Object { $rad = "$_"; Write-Host $rad; Add-Content -Encoding UTF8 -Path $aiderLogg -Value $rad }
 $aiderKod = $LASTEXITCODE
+$ErrorActionPreference = "Stop"
 $minuter = [math]::Round(((Get-Date) - $start).TotalMinutes, 1)
 
 # --- Egen kontroll efteråt ---
+Status "testar" "Kör testerna."
 & $testFil
 $testOk = ($LASTEXITCODE -eq 0)
 
@@ -173,6 +190,7 @@ if ($IngenPush) {
 }
 
 # --- Push och PR ---
+Status "pushar" "Öppnar PR."
 Kor git @("push", "-q", "-u", "origin", $gren)
 $utanforText = if ($utanfor) { $utanfor -join ", " } else { "inga" }
 $saknasText = if ($saknas) { $saknas -join ", " } else { "inga" }
@@ -193,8 +211,15 @@ $kroppFil = Join-Path $loggMapp "pr-$stampel.md"
 $kropp | Set-Content -Encoding UTF8 $kroppFil
 $prArg = @("pr", "create", "--base", "main", "--head", $gren, "--title", "Lokal: $namn", "--body-file", $kroppFil)
 if (-not $testOk -or $utanfor) { $prArg += "--draft" }
-Kor gh $prArg
+& gh @prArg
+if ($LASTEXITCODE -ne 0) {
+    # gh kan ge felkod fast PR:en skapades. Det räcker att den finns.
+    $finns = gh pr list --head $gren --state open --json number --jq ".[0].number"
+    if (-not $finns) { Avbryt "PR för $gren kunde inte skapas." }
+    Write-Host "PR #$finns finns." -ForegroundColor Yellow
+}
 
 Kor git @("checkout", "-q", "main")
 Write-Host "Klart." -ForegroundColor Green
+Status "klar" "PR öppnad för $namn. Tester: $resultat."
 Stop-Transcript | Out-Null
