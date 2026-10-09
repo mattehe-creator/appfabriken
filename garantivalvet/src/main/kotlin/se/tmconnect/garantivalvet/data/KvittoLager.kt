@@ -8,6 +8,7 @@ import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
+import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
 import se.tmconnect.garantivalvet.regler.beraknaNedskaladStorlek
 
 /**
@@ -24,19 +25,38 @@ class KvittoLager(
      * och returnerar filnamnet (utan sökväg) som ska sparas i [Kop.kvittoFil].
      */
     fun kopieraFranUri(kallaUri: Uri): String? {
-        val original = context.contentResolver.openInputStream(kallaUri)?.use { input ->
-            BitmapFactory.decodeStream(input)
+        // Först läs storleken utan att ladda hela bilden
+        val options = BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+        }
+        
+        context.contentResolver.openInputStream(kallaUri)?.use { input ->
+            BitmapFactory.decodeStream(input, null, options)
+        } ?: return null
+        
+        val bredd = options.outWidth
+        val hojd = options.outHeight
+        
+        // Beräkna inSampleSize baserat på storlek
+        val sampleSize = beraknaInSampleSize(bredd, hojd)
+
+        // Läs bilden med rätt inSampleSize
+        val bitmap = context.contentResolver.openInputStream(kallaUri)?.use { input ->
+            val decodeOptions = BitmapFactory.Options().apply {
+                inSampleSize = sampleSize
+            }
+            BitmapFactory.decodeStream(input, null, decodeOptions)
         } ?: return null
 
-        val (malBredd, malHojd) = beraknaNedskaladStorlek(original.width, original.height)
-        val skalad = if (malBredd != original.width || malHojd != original.height) {
-            Bitmap.createScaledBitmap(original, malBredd, malHojd, true).also {
-                if (it !== original) {
-                    original.recycle()
+        val (malBredd, malHojd) = beraknaNedskaladStorlek(bitmap.width, bitmap.height)
+        val skalad = if (malBredd != bitmap.width || malHojd != bitmap.height) {
+            Bitmap.createScaledBitmap(bitmap, malBredd, malHojd, true).also {
+                if (it !== bitmap) {
+                    bitmap.recycle()
                 }
             }
         } else {
-            original
+            bitmap
         }
 
         val filnamn = "${UUID.randomUUID()}.jpg"
