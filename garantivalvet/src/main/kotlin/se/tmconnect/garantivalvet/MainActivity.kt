@@ -53,6 +53,8 @@ class MainActivity : ComponentActivity() {
                                 onAndra = { viewModel.visaAndra(kop.id) },
                                 onTaBort = viewModel::taBortValtKop,
                                 onTillbaka = viewModel::visaLista,
+                                kvittoUri = viewModel.sparatKvittoUri(kop),
+                                onOppnaKvitto = { viewModel.visaKvittoHelskarm(kop.id) }
                             )
                         }
                     }
@@ -81,7 +83,16 @@ class MainActivity : ComponentActivity() {
                     }
 
                     is KopSkarm.KvittoHelskarm -> {
-                        // Helskärms-UI byggs i uppgift 2026-10-09-05-kvitto-helskarm-dela.md
+                        val kop = valtKop
+                        if (kop != null) {
+                            // For now, we'll show a simple implementation
+                            // Full zoom and share functionality will be implemented in the next task
+                            KvittoHelskarm(
+                                kvittoUri = viewModel.sparatKvittoUri(kop)!!,
+                                onTillbaka = viewModel::visaLista,
+                                onDela = { /* Share functionality will be added later */ }
+                            )
+                        }
                     }
 
                     is KopSkarm.Andra -> {
