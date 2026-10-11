@@ -42,6 +42,7 @@ import se.tmconnect.garantivalvet.regler.formateraPrisKr
 import se.tmconnect.garantivalvet.regler.garantiSlut
 import se.tmconnect.garantivalvet.regler.garantiStatus
 import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
+import se.tmconnect.garantivalvet.regler.reklamationSlut
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -139,6 +140,34 @@ fun KopDetaljSkarm(
                     text = statusText,
                     style = MaterialTheme.typography.bodyLarge,
                     color = statusColor,
+                )
+            }
+
+            // Reklamationsrätt information
+            val reklamationSlutDatum = reklamationSlut(kop.kopdatum)
+            if (reklamationSlutDatum != null) {
+                // Visa reklamationsinformation för köp efter 2022-05-01
+                Text(
+                    text = stringResource(R.string.detalj_reklamation_till, formateraDatum(reklamationSlutDatum)),
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                Text(
+                    text = stringResource(R.string.detalj_reklamation_rubrik),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = stringResource(R.string.detalj_reklamation_forklaring),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = stringResource(R.string.detalj_reklamation_vagledning),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            } else if (kop.kopdatum.isBefore(se.tmconnect.garantivalvet.regler.KONSUMENTKOP_IKRAFT)) {
+                // Visa information om äldre lag för köp före 2022-05-01
+                Text(
+                    text = stringResource(R.string.detalj_reklamation_aldre_lag),
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
 
