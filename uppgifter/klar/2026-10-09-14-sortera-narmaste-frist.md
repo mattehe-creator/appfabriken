@@ -41,3 +41,5 @@ Befintliga tester i `KopSorteringTest` ska fortsätta gå igenom oförändrade.
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-11 (köpdatum i test för helt utgånget köp)

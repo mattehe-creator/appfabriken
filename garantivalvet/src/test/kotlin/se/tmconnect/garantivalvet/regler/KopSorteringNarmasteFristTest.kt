@@ -35,8 +35,8 @@ class KopSorteringNarmasteFristTest {
         
         // Köp med garanti utgången men reklamation om 200 dagar
         val kop1 = kop("reklamation", LocalDate.of(2024, 5, 1), 12)
-        // Köp helt utgånget
-        val kop2 = kop("utgångna", LocalDate.of(2023, 5, 1), 12)
+        // Köp helt utgånget (reklamationsslut före idag, inte på sista dagen)
+        val kop2 = kop("utgångna", LocalDate.of(2023, 4, 30), 12)
         
         val lista = listOf(kop2, kop1)
         val resultat = sorteraEfterNarmasteFrist(lista, idag)
