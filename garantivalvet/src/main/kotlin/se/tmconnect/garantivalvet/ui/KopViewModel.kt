@@ -19,7 +19,6 @@ import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
 import se.tmconnect.garantivalvet.paminnelse.PaminnelsePlanerare
-import se.tmconnect.garantivalvet.regler.sorteraEfterGaranti
 import se.tmconnect.garantivalvet.regler.sorteraEfterNarmasteFrist
 
 class KopViewModel(
@@ -247,5 +246,20 @@ class KopViewModel(
     private fun rensaKvittoFormularTillstand() {
         _tillfalligtKvittoUri.value = null
         kvittoSkaTasBortVidSpara = false
+    }
+}
+
+class KopViewModelFactory(
+    private val repository: KopRepository,
+    private val kvittoLager: KvittoLager,
+    private val installningarLager: InstallningarLager,
+    private val appContext: Context,
+) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(KopViewModel::class.java)) {
+            return KopViewModel(repository, kvittoLager, installningarLager, appContext) as T
+        }
+        throw IllegalArgumentException("Okänd ViewModel: ${modelClass.name}")
     }
 }

@@ -19,11 +19,9 @@ import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
-import se.tmconnect.garantivalvet.regler.GarantiStatus
 import se.tmconnect.garantivalvet.regler.KopStatus
 import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.garantivalvet.regler.garantiSlut
-import se.tmconnect.garantivalvet.regler.garantiStatus
 import se.tmconnect.garantivalvet.regler.kopStatus
 
 @Composable
