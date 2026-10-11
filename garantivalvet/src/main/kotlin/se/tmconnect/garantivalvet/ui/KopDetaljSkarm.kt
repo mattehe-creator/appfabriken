@@ -54,6 +54,9 @@ fun KopDetaljSkarm(
     onAndra: () -> Unit,
     onTaBort: () -> Unit,
     onTillbaka: () -> Unit,
+    arPro: Boolean,
+    onExportPdf: () -> Unit,
+    onVisaProDialog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var visaBekraftaTaBort by remember { mutableStateOf(false) }
@@ -218,6 +221,21 @@ fun KopDetaljSkarm(
                             .clickable(onClick = onOppnaKvitto),
                     )
                 }
+            }
+
+            Button(
+                onClick = {
+                    if (arPro) {
+                        onExportPdf()
+                    } else {
+                        onVisaProDialog()
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) {
+                Text(text = stringResource(R.string.export_pdf))
             }
 
             Button(onClick = onAndra, modifier = Modifier.fillMaxWidth()) {

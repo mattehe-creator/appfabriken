@@ -22,7 +22,10 @@ import se.tmconnect.garantivalvet.data.GarantiDatabas
 import se.tmconnect.garantivalvet.data.InstallningarLager
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
+import se.tmconnect.garantivalvet.export.skrivUnderlagTillPdf
 import se.tmconnect.garantivalvet.paminnelse.PaminnelseWorker
+import se.tmconnect.garantivalvet.regler.UnderlagEtiketter
+import se.tmconnect.garantivalvet.regler.byggUnderlag
 import se.tmconnect.garantivalvet.ui.KopDetaljSkarm
 import se.tmconnect.garantivalvet.ui.KopFormularSkarm
 import se.tmconnect.garantivalvet.ui.KopListaSkarm
@@ -84,6 +87,15 @@ class MainActivity : ComponentActivity() {
             behorighetNekad = false
         } else {
             behorighetNekad = true
+        }
+    }
+
+    // Resultatkontrakt för PDF-export
+    private val createPdfContract = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/pdf")
+    ) { uri: Uri? ->
+        uri?.let { pdfUri ->
+            viewModel.exporteraPdf(pdfUri)
         }
     }
 
@@ -150,6 +162,14 @@ class MainActivity : ComponentActivity() {
                                 onAndra = { viewModel.visaAndra(kop.id) },
                                 onTaBort = viewModel::taBortValtKop,
                                 onTillbaka = viewModel::visaLista,
+                                arPro = arPro,
+                                onExportPdf = {
+                                    // Skapa filnamn för PDF
+                                    val filnamn = "reklamationsunderlag-${kop.vad}-${kop.kopdatum}.pdf"
+                                        .replace(Regex("[^a-zA-Z0-9\\-.]"), "-")
+                                    createPdfContract.launch(filnamn)
+                                },
+                                onVisaProDialog = viewModel::visaProDialog,
                             )
                         }
                     }
