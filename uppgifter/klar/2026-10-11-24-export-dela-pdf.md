@@ -37,3 +37,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*StringsNycklarTest"
 - Lägga till beroenden.
 - Ändra databasschemat.
 - Nya manifestbehörigheter (FileProvider finns).
+
+utfall: godkänd 2026-10-11 (flytt från repots rot till garantivalvet-sökvägar, imports och startActivity enligt KvittoHelskarm)
