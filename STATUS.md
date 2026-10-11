@@ -22,6 +22,8 @@ Omfång i IDEURVAL.md.
   2. Butiksmaterial i `garantivalvet/butik/`: texter, skärmbilder, Data safety-svar.
 - Öppet beslut: `android:allowBackup` (Androids automatiska molnkopia) krockar med CLAUDE.md punkt 6. Beslutas när exporten görs.
 
+- Mätaren i panelen (procent klart, beräknat releasedatum, tokens) styrs av `release.json`. Claude uppdaterar den när ett steg ändras.
+
 ## Senare
 
 - App 2: Husets underhållslogg. App 3: Mätarställning (IDEURVAL.md).
