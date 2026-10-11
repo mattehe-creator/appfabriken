@@ -73,6 +73,10 @@ class KopViewModel(
 
     private var kvittoSkaTasBortVidSpara = false
 
+    /** Om Pro-dialogen är synlig. */
+    private val _proDialogSynlig = MutableStateFlow(false)
+    val proDialogSynlig: StateFlow<Boolean> = _proDialogSynlig.asStateFlow()
+
     /**
      * Slår på eller av dagliga påminnelser och synkar WorkManager-jobbet.
      * Notisbehörighet ska vara hanterad i UI innan [pa] sätts till true.
@@ -100,12 +104,14 @@ class KopViewModel(
     fun visaLista() {
         _aktivSkarm.value = KopSkarm.Lista
         _valtKop.value = null
+        _proDialogSynlig.value = false
         rensaKvittoFormularTillstand()
     }
 
     fun visaLaggTill() {
         _aktivSkarm.value = KopSkarm.LaggTill
         _valtKop.value = null
+        _proDialogSynlig.value = false
         rensaKvittoFormularTillstand()
     }
 
@@ -113,6 +119,7 @@ class KopViewModel(
         viewModelScope.launch {
             _valtKop.value = repository.hamta(kopId)
             _aktivSkarm.value = KopSkarm.Detalj(kopId)
+            _proDialogSynlig.value = false
             rensaKvittoFormularTillstand()
         }
     }
@@ -121,6 +128,7 @@ class KopViewModel(
         viewModelScope.launch {
             _valtKop.value = repository.hamta(kopId)
             _aktivSkarm.value = KopSkarm.Andra(kopId)
+            _proDialogSynlig.value = false
             rensaKvittoFormularTillstand()
         }
     }
@@ -243,6 +251,21 @@ class KopViewModel(
             repository.taBort(kop)
             visaLista()
         }
+    }
+
+    /** Kontrollerar om användaren får lägga till ett nytt köp. */
+    fun kanLaggaTillNy(): Boolean {
+        return kanLaggaTill(kopLista.value.size, arPro.value)
+    }
+
+    /** Visar Pro-dialogen. */
+    fun visaProDialog() {
+        _proDialogSynlig.value = true
+    }
+
+    /** Stänger Pro-dialogen. */
+    fun stangProDialog() {
+        _proDialogSynlig.value = false
     }
 
     private suspend fun appliceraKvittoAndringar(kop: Kop): Kop {

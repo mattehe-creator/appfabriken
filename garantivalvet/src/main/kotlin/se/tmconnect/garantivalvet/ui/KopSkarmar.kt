@@ -34,6 +34,11 @@ fun KopListaSkarm(
     paminnelserPa: Boolean,
     onPaminnelserAndras: (Boolean) -> Unit,
     behorighetNekad: Boolean,
+    arPro: Boolean,
+    proDialogSynlig: Boolean,
+    onVisaProDialog: () -> Unit,
+    onStangProDialog: () -> Unit,
+    onKopPro: (Activity) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
