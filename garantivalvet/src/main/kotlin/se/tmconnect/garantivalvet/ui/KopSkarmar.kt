@@ -1,5 +1,6 @@
 package se.tmconnect.garantivalvet.ui
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,6 +35,11 @@ fun KopListaSkarm(
     paminnelserPa: Boolean,
     onPaminnelserAndras: (Boolean) -> Unit,
     behorighetNekad: Boolean,
+    arPro: Boolean,
+    proDialogSynlig: Boolean,
+    onVisaProDialog: () -> Unit,
+    onStangProDialog: () -> Unit,
+    onKopPro: (Activity) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(

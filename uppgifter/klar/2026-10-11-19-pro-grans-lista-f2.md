@@ -54,3 +54,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*GratisGransTest" --tests "*Str
 - Lägga till `AlertDialog` eller nya strängnycklar (uppgift 20).
 - Lägga till beroenden.
 - Blockera visning, ändring eller borttag av befintliga köp.
+
+utfall: godkänd 2026-10-11 (import av kanLaggaTill i KopViewModel)
