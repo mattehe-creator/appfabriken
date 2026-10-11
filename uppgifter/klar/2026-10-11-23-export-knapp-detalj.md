@@ -40,3 +40,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*UnderlagTest" --tests "*PdfFil
 - Lägga till beroenden.
 - Ändra databasschemat.
 - Nya manifestbehörigheter.
+
+utfall: underkänd 2026-10-11 av Cursor (PR #58). Ersatt av 2026-10-11-23-export-knapp-detalj-f2.md
