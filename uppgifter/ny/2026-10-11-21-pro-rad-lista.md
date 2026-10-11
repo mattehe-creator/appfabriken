@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-11-pro-gratisgrans.md
 försök: 1
-beror-på: 2026-10-11-18-pro-strangar.md, 2026-10-11-20-pro-dialog.md
+beror-på: 2026-10-11-18-pro-strangar.md, 2026-10-11-20-pro-dialog-f2.md
 
 ## Ändra bara dessa filer
 - garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/ui/KopSkarmar.kt
