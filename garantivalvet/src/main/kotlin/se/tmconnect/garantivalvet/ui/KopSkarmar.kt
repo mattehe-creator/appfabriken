@@ -85,6 +85,21 @@ fun KopListaSkarm(
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
+                    // Visa Pro-rad beroende på arPro
+                    if (arPro) {
+                        Text(
+                            text = stringResource(R.string.pro_du_har),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    } else {
+                        TextButton(
+                            onClick = onVisaProDialog,
+                            modifier = Modifier.heightIn(min = 48.dp)
+                        ) {
+                            Text(text = stringResource(R.string.pro_las_upp))
+                        }
+                    }
+                    
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
