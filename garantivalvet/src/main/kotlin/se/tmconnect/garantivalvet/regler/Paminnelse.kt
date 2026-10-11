@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit
 
 enum class FristTyp {
     GARANTI,
+    REKLAMATION,
 }
 
 data class Frist(
