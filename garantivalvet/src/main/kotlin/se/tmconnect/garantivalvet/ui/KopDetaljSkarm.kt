@@ -20,6 +20,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -58,9 +60,12 @@ fun KopDetaljSkarm(
     arPro: Boolean,
     onExportPdf: () -> Unit,
     onVisaProDialog: () -> Unit,
+    exportPdfMeddelande: ExportPdfMeddelande?,
+    onExportMeddelandeVisat: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var visaBekraftaTaBort by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     if (visaBekraftaTaBort) {
         AlertDialog(
@@ -90,6 +95,7 @@ fun KopDetaljSkarm(
         topBar = {
             TopAppBar(title = { Text(text = kop.vad) })
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -257,6 +263,20 @@ fun KopDetaljSkarm(
             Button(onClick = onTillbaka, modifier = Modifier.fillMaxWidth()) {
                 Text(text = stringResource(R.string.avbryt))
             }
+        }
+    }
+
+    // Visa snackbar när exportmeddelande är satt
+    exportPdfMeddelande?.let {
+        val meddelande = when (it) {
+            ExportPdfMeddelande.Sparad -> stringResource(R.string.export_pdf_sparad)
+            ExportPdfMeddelande.Misslyckades -> stringResource(R.string.export_pdf_misslyckades)
+        }
+        
+        // Visa snackbar
+        androidx.compose.runtime.LaunchedEffect(meddelande) {
+            snackbarHostState.showSnackbar(meddelande)
+            onExportMeddelandeVisat()
         }
     }
 }
