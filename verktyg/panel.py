@@ -308,7 +308,7 @@ SIDA = r"""<!doctype html><html lang="sv"><head><meta charset="utf-8">
 <title>Appfabriken</title><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 :root{--g:#00ff66;--g2:#0a8f3c;--bg:#000;--p:rgba(0,10,3,.82);--c:#7fd7ff;--k:#ffb347;--m:#d9d9d9}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--g);font:14px/1.45 Consolas,"Cascadia Mono",monospace;overflow:hidden}
+*{box-sizing:border-box;scrollbar-width:none}*::-webkit-scrollbar{display:none}body{margin:0;background:var(--bg);color:var(--g);font:14px/1.45 Consolas,"Cascadia Mono",monospace;overflow:hidden}
 canvas{position:fixed;inset:0;z-index:0}
 main{position:relative;z-index:1;display:grid;grid-template-columns:1.4fr 1fr;grid-template-rows:auto auto auto 1fr auto;gap:14px;height:100vh;padding:16px}
 section{background:var(--p);border:1px solid var(--g2);padding:12px;overflow:auto;box-shadow:0 0 18px rgba(0,255,102,.15)}
