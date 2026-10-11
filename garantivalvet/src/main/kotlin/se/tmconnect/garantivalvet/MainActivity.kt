@@ -107,7 +107,13 @@ class MainActivity : ComponentActivity() {
                     KopSkarm.Lista -> {
                         KopListaSkarm(
                             kopLista = kopLista,
-                            onLaggTill = viewModel::visaLaggTill,
+                            onLaggTill = {
+                                if (viewModel.kanLaggaTillNy()) {
+                                    viewModel.visaLaggTill()
+                                } else {
+                                    viewModel.visaProDialog()
+                                }
+                            },
                             onOppna = viewModel::visaDetalj,
                             paminnelserPa = paminnelserPa,
                             onPaminnelserAndras = { pa ->

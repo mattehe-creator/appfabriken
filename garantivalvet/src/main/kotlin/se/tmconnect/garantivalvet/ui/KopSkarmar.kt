@@ -131,7 +131,16 @@ fun KopListaSkarm(
             AlertDialog(
                 onDismissRequest = onStangProDialog,
                 title = { Text(text = stringResource(R.string.pro_dialog_titel)) },
-                text = { Text(text = stringResource(R.string.pro_dialog_beskrivning)) },
+                text = { 
+                    Column {
+                        Text(text = stringResource(R.string.pro_dialog_beskrivning))
+                        Text(
+                            text = stringResource(R.string.pro_dialog_grans),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                },
                 confirmButton = {
                     Button(onClick = {
                         // Vi behöver activity för att köra köpflödet
