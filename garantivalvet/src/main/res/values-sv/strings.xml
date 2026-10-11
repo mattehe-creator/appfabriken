@@ -93,4 +93,15 @@
     <string name="export_dela">Dela</string>
     <string name="export_pdf_sparad">PDF sparad</string>
     <string name="export_pdf_misslyckades">PDF kunde inte skapas</string>
+    
+    <!-- Säkerhetskopia -->
+    <string name="sakerhetskopia_rubrik">Säkerhetskopia</string>
+    <string name="sakerhetskopia_beskrivning">Filen innehåller alla köp och kvitton. Den sparas var du vill, och är inte krypterad.</string>
+    <string name="sakerhetskopia_spara">Spara säkerhetskopia</string>
+    <string name="sakerhetskopia_hamta">Hämta från säkerhetskopia</string>
+    <string name="sakerhetskopia_import_beskrivning">Import lägger bara till, skriver inte över befintliga köp.</string>
+    <string name="sakerhetskopia_sparad">Säkerhetskopia sparad</string>
+    <string name="sakerhetskopia_importerad">Importerade %1$d köp, hoppade över %2$d</string>
+    <string name="sakerhetskopia_kunde_inte_lasas">Filen kunde inte läsas</string>
+    <string name="sakerhetskopia_nyare_version">Filen kommer från en nyare version av appen</string>
 </resources>
