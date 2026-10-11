@@ -146,12 +146,15 @@ class MainActivity : ComponentActivity() {
                     // Skriv PDF till fil
                     contentResolver.openOutputStream(uri)?.use { stream ->
                         val resultat = skrivUnderlagTillPdf(underlag, stream, kvittoBitmap)
-                        senasteExportPdfResultat = resultat
+                        when (resultat) {
+                            PdfExportResult.Ok -> viewModel.meddelaExportSparad()
+                            is PdfExportResult.Fel -> viewModel.meddelaExportMisslyckades()
+                        }
                     }
                     
                     exportKop = null
                 } catch (e: Exception) {
-                    senasteExportPdfResultat = PdfExportResult.Fel(e.message ?: e.javaClass.simpleName)
+                    viewModel.meddelaExportMisslyckades()
                     exportKop = null
                 }
             }
@@ -160,7 +163,6 @@ class MainActivity : ComponentActivity() {
 
     private var behorighetNekad by mutableStateOf(false)
     private var exportKop: Kop? = null
-    var senasteExportPdfResultat: PdfExportResult? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -175,6 +177,7 @@ class MainActivity : ComponentActivity() {
                 val paminnelserPa by viewModel.paminnelserPa.collectAsState()
                 val arPro by viewModel.arPro.collectAsState()
                 val proDialogSynlig by viewModel.proDialogSynlig.collectAsState()
+                val exportPdfMeddelande by viewModel.exportPdfMeddelande.collectAsState()
 
                 when (aktivSkarm) {
                     KopSkarm.Lista -> {
@@ -301,6 +304,8 @@ class MainActivity : ComponentActivity() {
                                     }
                                 },
                                 onVisaProDialog = viewModel::visaProDialog,
+                                exportPdfMeddelande = exportPdfMeddelande,
+                                onExportMeddelandeVisat = viewModel::rensaExportMeddelande,
                             )
                         }
                     }

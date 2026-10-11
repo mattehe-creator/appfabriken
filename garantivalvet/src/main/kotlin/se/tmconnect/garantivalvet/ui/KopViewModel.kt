@@ -24,6 +24,11 @@ import se.tmconnect.garantivalvet.regler.kanLaggaTill
 import se.tmconnect.garantivalvet.regler.sorteraEfterNarmasteFrist
 import se.tmconnect.karna.pro.ProKalla
 
+sealed class ExportPdfMeddelande {
+    data object Sparad : ExportPdfMeddelande()
+    data object Misslyckades : ExportPdfMeddelande()
+}
+
 class KopViewModel(
     private val repository: KopRepository,
     private val kvittoLager: KvittoLager,
@@ -77,6 +82,10 @@ class KopViewModel(
     /** Om Pro-dialogen är synlig. */
     private val _proDialogSynlig = MutableStateFlow(false)
     val proDialogSynlig: StateFlow<Boolean> = _proDialogSynlig.asStateFlow()
+
+    /** State för exportmeddelanden */
+    private val _exportPdfMeddelande = MutableStateFlow<ExportPdfMeddelande?>(null)
+    val exportPdfMeddelande: StateFlow<ExportPdfMeddelande?> = _exportPdfMeddelande.asStateFlow()
 
     /**
      * Slår på eller av dagliga påminnelser och synkar WorkManager-jobbet.
@@ -267,6 +276,21 @@ class KopViewModel(
     /** Stänger Pro-dialogen. */
     fun stangProDialog() {
         _proDialogSynlig.value = false
+    }
+
+    /** Meddelar att PDF-export lyckades */
+    fun meddelaExportSparad() {
+        _exportPdfMeddelande.value = ExportPdfMeddelande.Sparad
+    }
+
+    /** Meddelar att PDF-export misslyckades */
+    fun meddelaExportMisslyckades() {
+        _exportPdfMeddelande.value = ExportPdfMeddelande.Misslyckades
+    }
+
+    /** Rensar exportmeddelande */
+    fun rensaExportMeddelande() {
+        _exportPdfMeddelande.value = null
     }
 
     private suspend fun appliceraKvittoAndringar(kop: Kop): Kop {
