@@ -391,7 +391,7 @@ def hamta_github():
                  "lage": "mergad" if p.get("merged_at") else ("stängd" if p["state"] == "closed"
                          else ("KROCKAR MED MAIN, Claude måste lösa" if p["number"] in krock
                                else ("utkast" if p.get("draft") else "väntar på granskning")))}
-                for p in prs],
+                for p in prs[:12]],
         "handelser": handelser[:25],
         "fragor": fragor,
         "cursor": sorted(cursor_nu, key=lambda h: h["tid"]),
@@ -430,7 +430,7 @@ SIDA = r"""<!doctype html><html lang="sv"><head><meta charset="utf-8">
 :root{--g:#00ff66;--g2:#0a8f3c;--bg:#000;--p:rgba(0,10,3,.82);--c:#7fd7ff;--k:#ffb347;--m:#d9d9d9}
 *{box-sizing:border-box;scrollbar-width:none}*::-webkit-scrollbar{display:none}body{margin:0;background:var(--bg);color:var(--g);font:14px/1.45 Consolas,"Cascadia Mono",monospace;overflow:hidden}
 canvas{position:fixed;inset:0;z-index:0}
-main{position:relative;z-index:1;display:grid;grid-template-columns:1.4fr 1fr;grid-template-rows:auto auto auto 1fr auto;gap:14px;height:100vh;padding:16px}
+main{position:relative;z-index:1;display:grid;grid-template-columns:1.4fr 1fr;grid-template-rows:auto auto auto minmax(180px,1fr) auto;gap:14px;height:100vh;padding:16px}
 section{background:var(--p);border:1px solid var(--g2);padding:12px;overflow:auto;box-shadow:0 0 18px rgba(0,255,102,.15)}
 h1{margin:0;font-size:18px;letter-spacing:.2em;text-shadow:0 0 8px var(--g)}h2{margin:0 0 8px;font-size:13px;letter-spacing:.15em;color:var(--g2)}
 #topp{grid-column:1/3;display:flex;gap:24px;align-items:center;flex-wrap:wrap}
@@ -445,13 +445,14 @@ h1{margin:0;font-size:18px;letter-spacing:.2em;text-shadow:0 0 8px var(--g)}h2{m
 #mat{grid-column:1/3;display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap;overflow:visible}
 #mat h2{margin-bottom:4px}#mat svg{display:block}
 #bage{filter:drop-shadow(0 0 6px #00ff66);transition:stroke-dasharray 1.2s ease}
-#eta{font-size:20px;text-shadow:0 0 8px var(--g)}#steg{columns:2;column-gap:20px;font-size:12px;margin-top:6px}
+#eta{font-size:20px;text-shadow:0 0 8px var(--g)}#steg{columns:3;column-gap:20px;font-size:12px;margin-top:6px}
 #steg li{margin:0 0 2px;break-inside:avoid}.klar{color:var(--g)}.pagar{color:var(--k)}.kvar{color:var(--g2)}
 #tok{display:grid;grid-template-columns:repeat(2,auto);gap:4px 22px;margin-top:4px}#tok b{font-size:20px;font-weight:normal;text-shadow:0 0 8px var(--g)}
 [data-tip]{position:relative;cursor:help}
 [data-tip]::after{content:attr(data-tip);position:absolute;left:0;top:calc(100% + 8px);z-index:30;width:380px;max-width:85vw;padding:10px 12px;background:#001a08;border:1px solid var(--g);color:var(--g);font:12px/1.5 Consolas,"Cascadia Mono",monospace;letter-spacing:0;text-transform:none;text-shadow:none;white-space:pre-line;box-shadow:0 0 18px rgba(0,255,102,.35);opacity:0;pointer-events:none;transition:opacity .15s}
 [data-tip]:hover::after{opacity:1}[data-tip].tip-r::after{left:auto;right:0}
 #topp{overflow:visible;position:relative;z-index:6}#mat{position:relative;z-index:5}
+#kopr{max-height:30vh}
 #kod{grid-row:3/6;white-space:pre-wrap;word-break:break-word}
 #kod .rad{opacity:.95}#kod .ny{animation:in .6s}@keyframes in{from{color:#fff;text-shadow:0 0 10px #fff}}
 .cursor::after{content:"█";animation:blink 1s steps(1) infinite}@keyframes blink{50%{opacity:0}}
@@ -478,7 +479,7 @@ ul{list-style:none;margin:0;padding:0}li{margin:0 0 6px}
 <section id="kod"><h2>LOKAL MODELL // AIDER</h2><div id="rader"></div><span class="cursor"></span></section>
 <section id="cur"><h2>CURSOR // NU</h2><ul id="cursornu"></ul><div class="liten" style="margin-top:6px">Detaljer: <a href="https://cursor.com/agents" target="_blank" style="color:var(--c)">cursor.com/agents</a> · <a href="https://github.com/mattehe-creator/appfabriken/actions" target="_blank" style="color:var(--c)">GitHub Actions</a></div></section>
 <section><h2>HÄNDELSER</h2><ul id="handelser"></ul></section>
-<section><h2>KÖ OCH PR</h2><div class="liten">Väntar på dig</div><ul id="fragor"></ul><div class="liten">Uppgifter som väntar</div><ul id="ko"></ul><div class="liten" style="margin-top:8px">Pull requests</div><ul id="prs"></ul></section>
+<section id="kopr"><h2>KÖ OCH PR</h2><div class="liten">Väntar på dig</div><ul id="fragor"></ul><div class="liten">Uppgifter som väntar</div><ul id="ko"></ul><div class="liten" style="margin-top:8px">Pull requests</div><ul id="prs"></ul></section>
 </main><script>
 const c=document.getElementById("regn"),x=c.getContext("2d");let kol=[];
 function storlek(){c.width=innerWidth;c.height=innerHeight;kol=Array(Math.ceil(c.width/16)).fill(0).map(()=>Math.random()*c.height/16)}
@@ -526,12 +527,12 @@ document.getElementById("eta").textContent=r.klar?"Klart för release":"Beräkna
 document.getElementById("spann").textContent=r.klar?"":`Spann ${kort(r.eta_tidigast)} till ${kort(r.eta_senast)}, med byggfart ${sv(r.fart,1)} poäng per dygn plus ${r.externa_dagar} dygn för test och Googles granskning.`;
 document.getElementById("steg").innerHTML=r.steg.map(s=>{const m=s.status==="klar"?"[x]":s.status==="pagar"?`[${Math.round(s.andel*100)}%]`:"[ ]";
 return `<li class="${s.status}">${m} ${esc(s.namn)}${s.extern?" (extern)":""}</li>`}).join("");
-document.getElementById("anm").textContent=r.anm||""}
+document.getElementById("anm").textContent=""}
 async function tokens(){try{const d=await (await fetch("/api/tokens")).json();
 document.getElementById("t-totalt").textContent=sv(d.totalt);document.getElementById("t-idag").textContent=sv(d.idag);
 document.getElementById("t-vecka").textContent=sv(d.vecka);
 document.getElementById("t-sek").textContent=d.per_sek==null?"-":sv(d.per_sek,1);
-document.getElementById("t-not").textContent=`${d.korningar} körningar. Aiders egen räkning, avrundad till tusental, skickat plus mottaget.`+(d.per_sek_senaste!=null?` Senaste körningen ${sv(d.per_sek_senaste,1)} per sekund.`:"")+" Cursor och Claude mäts inte här."}catch(e){}}
+document.getElementById("t-not").textContent=`${d.korningar} körningar`+(d.per_sek_senaste!=null?`, senaste ${sv(d.per_sek_senaste,1)} per sekund`:"")}catch(e){}}
 function chips(d){const kon=document.getElementById("kon"),larm=document.getElementById("larm");
 if(d.stilla){kon.textContent="Kön står still "+d.stilla.min+" min";kon.className="chip fel";larm.textContent=d.stilla.orsak;sat("kon",KON_TIP+"\n\nJust nu: STÅR STILL i "+d.stilla.min+" min. "+d.stilla.orsak)}
 else{kon.textContent="Kön aktiv";kon.className="chip ok";larm.textContent="";sat("kon",KON_TIP+"\n\nJust nu: AKTIV.")}
