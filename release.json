@@ -9,7 +9,7 @@
     {"namn": "Påminnelser", "vikt": 8, "status": "klar"},
     {"namn": "Reklamationsrätt", "vikt": 10, "status": "klar"},
     {"namn": "Gratisgräns och Pro (Billing)", "vikt": 12, "status": "klar", "uppgifter": {"datum": "2026-10-11", "fran": 18, "till": 21}},
-    {"namn": "Export: PDF och säkerhetskopia", "vikt": 12, "status": "pagar", "andel": 0.05},
+    {"namn": "Export: PDF och säkerhetskopia", "vikt": 12, "status": "pagar", "andel": 0.5},
     {"namn": "Butiksmaterial", "vikt": 6, "status": "kvar"},
     {"namn": "Mattias provar på telefon", "vikt": 5, "status": "kvar", "extern": true, "dagar": 2},
     {"namn": "Play Console och Googles granskning", "vikt": 10, "status": "kvar", "extern": true, "dagar": 3}
