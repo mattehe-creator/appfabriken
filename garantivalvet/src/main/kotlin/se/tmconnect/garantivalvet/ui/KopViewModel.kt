@@ -269,6 +269,15 @@ class KopViewModel(
         _proDialogSynlig.value = false
     }
 
+    /**
+     * Exporterar ett köp som PDF.
+     * Denna funktion är en stub som behöver implementeras i en senare uppgift.
+     */
+    fun exporteraPdf(pdfUri: Uri) {
+        // Implementation kommer i senare uppgift
+        // För nuvarande gör vi inget, men detta är där vi kommer att lägga till PDF-exportlogik
+    }
+
     private suspend fun appliceraKvittoAndringar(kop: Kop): Kop {
         when {
             kvittoSkaTasBortVidSpara -> {
