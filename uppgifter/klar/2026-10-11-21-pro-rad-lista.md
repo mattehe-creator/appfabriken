@@ -31,3 +31,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Dölja befintliga köp eller påminnelser bakom Pro.
+
+utfall: godkänd 2026-10-11 (trailing whitespace i KopSkarmar.kt)
