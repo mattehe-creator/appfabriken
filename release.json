@@ -1,14 +1,14 @@
 {
   "mal": "Garantivalvet 1.0",
   "start": "2026-10-08T08:00:00",
-  "anm": "Vikt = uppskattad arbetsinsats, summan är 100. Claude uppdaterar status och andel när ett steg ändras. Externa steg räknas i dagar enligt antagande, inte efter byggfart.",
+  "anm": "Vikt = uppskattad arbetsinsats, summan är 100. Steg med \"uppgifter\" räknar andelen själva ur uppgifter/klar; för övriga uppdaterar Claude status och andel. Externa steg räknas i dagar enligt antagande, inte efter byggfart.",
   "steg": [
     {"namn": "Grundplatta och flöde", "vikt": 15, "status": "klar"},
     {"namn": "Köp: lista och formulär", "vikt": 10, "status": "klar"},
     {"namn": "Kvittofoto", "vikt": 12, "status": "klar"},
     {"namn": "Påminnelser", "vikt": 8, "status": "klar"},
     {"namn": "Reklamationsrätt", "vikt": 10, "status": "klar"},
-    {"namn": "Gratisgräns och Pro (Billing)", "vikt": 12, "status": "pagar", "andel": 0.25},
+    {"namn": "Gratisgräns och Pro (Billing)", "vikt": 12, "status": "pagar", "andel": 0.25, "uppgifter": {"datum": "2026-10-11", "fran": 18, "till": 21}},
     {"namn": "Export: PDF och säkerhetskopia", "vikt": 12, "status": "kvar"},
     {"namn": "Butiksmaterial", "vikt": 6, "status": "kvar"},
     {"namn": "Mattias provar på telefon", "vikt": 5, "status": "kvar", "extern": true, "dagar": 2},

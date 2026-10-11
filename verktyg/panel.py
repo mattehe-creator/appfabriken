@@ -12,7 +12,9 @@ import subprocess
 import sys
 import threading
 import time
+import urllib.request
 import webbrowser
+import calendar
 from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -41,14 +43,36 @@ def gh(path):
         return None
 
 
-def release_berakna(rj, nu=None):
+def _auto_andel(s, klara):
+    """Andel klara uppgifter för ett steg med {"uppgifter": {"datum", "fran", "till"}} i release.json.
+    Uppgiftsfiler heter <datum>-<nr>-<namn>[-f2].md; försök 2 räknas inte dubbelt."""
+    u = s.get("uppgifter")
+    if not u or klara is None:
+        return None
+    klart = set()
+    for namn in klara:
+        d = namn.split("-")
+        if len(d) > 3 and "-".join(d[:3]) == u["datum"] and d[3].isdigit() and u["fran"] <= int(d[3]) <= u["till"]:
+            klart.add(int(d[3]))
+    return len(klart) / (u["till"] - u["fran"] + 1)
+
+
+def release_berakna(rj, nu=None, klara_uppgifter=None):
     """Procent klart och beräknat releasedatum ur release.json (steg med vikt, status och andel).
 
     Byggfarten är klarad vikt per dag sedan start. Den gäller bara utvecklingsstegen; externa steg
     (Mattias test, Googles granskning) räknas i dagar enligt antagandet i filen.
     """
     nu = nu or datetime.now()
-    steg = rj.get("steg", [])
+    steg = [dict(s) for s in rj.get("steg", [])]
+    for s in steg:  # automatisk andel går före den manuella
+        a = _auto_andel(s, klara_uppgifter)
+        if a is not None:
+            s["andel"] = a
+            if a >= 1:
+                s["status"] = "klar"
+            elif a > 0:
+                s["status"] = "pagar"
     total = sum(s["vikt"] for s in steg) or 1
 
     def klart(s):
@@ -159,6 +183,80 @@ def tokens_sammanstall(nu=None):
     return ut
 
 
+def _utc(s):
+    return calendar.timegm(time.strptime(s, "%Y-%m-%dT%H:%M:%SZ"))
+
+
+_dator_cache = {"tid": 0.0, "v": {}}
+
+
+def dator():
+    """GPU (nvidia-smi) och Ollama (api/ps). Båda är valfria: saknas de visas inget."""
+    if time.time() - _dator_cache["tid"] < 5:
+        return _dator_cache["v"]
+    ut = {"gpu": None, "ollama": None}
+    try:
+        r = subprocess.run(["nvidia-smi", "--query-gpu=utilization.gpu,temperature.gpu,memory.used,memory.total",
+                            "--format=csv,noheader,nounits"], capture_output=True, text=True, timeout=3,
+                           creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        if r.returncode == 0 and r.stdout.strip():
+            a = [x.strip() for x in r.stdout.strip().splitlines()[0].split(",")]
+            ut["gpu"] = {"last": int(a[0]), "temp": int(a[1]), "vram": int(a[2]), "vram_max": int(a[3])}
+    except Exception:
+        pass
+    try:
+        with urllib.request.urlopen("http://127.0.0.1:11434/api/ps", timeout=1) as f:
+            ut["ollama"] = [m.get("name", "?") for m in json.load(f).get("models", [])]
+    except Exception:
+        pass
+    _dator_cache.update(tid=time.time(), v=ut)
+    return ut
+
+
+def stilla_larm(nu, aktivitet, ko, oppna_arbete, cursor_nu, lokal_fas, lokal_tid, release_klar, grans_min=30):
+    """None om flödet rör sig, annars {"min", "orsak"}.
+
+    nu, aktivitet och lokal_tid är epoksekunder. Flödet räknas som stilla när inget hänt på GitHub
+    eller i den lokala körningen på grans_min minuter, den lokala modellen inte kodar, och något
+    väntar (uppgifter i kön, öppna lokal/- eller cursor/-PR:er) eller releasen inte är klar.
+    """
+    if lokal_fas in ("kodar", "testar"):
+        return None
+    senast = max(aktivitet or 0, lokal_tid or 0)
+    minuter = int((nu - senast) / 60) if senast else 0
+    if minuter < grans_min:
+        return None
+    krock = [p for p in oppna_arbete if p["lage"].startswith("KROCKAR")]
+    if krock:
+        orsak = f"PR #{krock[0]['nr']} krockar med main och måste lösas av Claude."
+    elif cursor_nu:
+        orsak = "Cursor: " + cursor_nu[0]["text"] + "."
+    elif oppna_arbete:
+        p = oppna_arbete[0]
+        orsak = f"PR #{p['nr']} ({p['lage']}) rör sig inte."
+    elif ko:
+        orsak = f"{len(ko)} uppgift(er) i kön, men den lokala modellen arbetar inte (läge: {lokal_fas})."
+    elif not release_klar:
+        orsak = "Kön är tom men releasen är inte klar. Nästa uppdrag måste skrivas."
+    else:
+        return None
+    return {"min": minuter, "orsak": orsak}
+
+
+def vantar_pa_mattias(prs, fragor, release):
+    """Det bara Mattias kan göra: merga Claudes PR:er, svara på frågor, stegen som är hans tur."""
+    ut = [{"typ": "MERGA", "text": f"PR #{p['number']}: {p['title']}"}
+          for p in prs if p["state"] == "open" and p["head"]["ref"].startswith("claude/") and not p.get("draft")]
+    ut += [{"typ": "FRÅGA", "text": f} for f in fragor]
+    if release and not release["klar"]:
+        steg = release["steg"]
+        if all(s["status"] == "klar" for s in steg if not s["extern"]):
+            kvar = [s for s in steg if s["extern"] and s["status"] != "klar"]
+            if kvar:
+                ut.append({"typ": "DIN TUR", "text": kvar[0]["namn"]})
+    return ut
+
+
 def aktor(gren="", forfattare="", meddelande=""):
     if gren.startswith("lokal/"):
         return "lokal"
@@ -219,15 +317,20 @@ def hamta_github():
     with _lock:
         if time.time() - _cache["tid"] < 30:
             return _cache["github"]
-    prs = gh(f"repos/{REPO}/pulls?state=all&per_page=12") or []
+    prs = gh(f"repos/{REPO}/pulls?state=all&per_page=30") or []
     commits = gh(f"repos/{REPO}/commits?per_page=15") or []
     korningar = gh(f"repos/{REPO}/actions/runs?per_page=15") or {}
     ny = gh(f"repos/{REPO}/contents/uppgifter/ny?ref=main") or []
     fragor_fil = gh(f"repos/{REPO}/contents/FRAGOR.md?ref=main") or {}
+    klara = gh(f"repos/{REPO}/contents/uppgifter/klar?ref=main")
+    klara = [f["name"] for f in klara] if isinstance(klara, list) else None
+    bygge_run = ((gh(f"repos/{REPO}/actions/workflows/bygg.yml/runs?branch=main&per_page=1") or {})
+                 .get("workflow_runs") or [None])[0]
     release = None
     try:
         rfil = gh(f"repos/{REPO}/contents/release.json?ref=main") or {}
-        release = release_berakna(json.loads(base64.b64decode(rfil.get("content", "")).decode("utf-8")))
+        release = release_berakna(json.loads(base64.b64decode(rfil.get("content", "")).decode("utf-8")),
+                                  klara_uppgifter=klara)
     except Exception:
         pass
     fragor = []
@@ -272,6 +375,16 @@ def hamta_github():
             if d.get("mergeable_state") == "dirty":
                 krock.add(p["number"])
 
+    # Senaste aktivitet på GitHub: commits, workflowkörningar och PR:er.
+    tider = [_utc(c["commit"]["author"]["date"]) for c in commits[:3]]
+    tider += [_utc(r["updated_at"]) for r in korningar.get("workflow_runs", [])[:5]]
+    tider += [_utc(p["updated_at"]) for p in prs if p["head"]["ref"].startswith(("lokal/", "cursor/"))]
+    idag0 = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
+    klar_idag = sum(1 for p in prs if p["head"]["ref"].startswith("lokal/") and p.get("merged_at")
+                    and _utc(p["merged_at"]) >= idag0)
+    arbete = [{"nr": p["number"], "lage": ("KROCKAR MED MAIN" if p["number"] in krock
+                                           else ("utkast" if p.get("draft") else "väntar på granskning"))}
+              for p in prs if p["state"] == "open" and p["head"]["ref"].startswith(("lokal/", "cursor/"))]
     data = {
         "ko": sorted(f["name"] for f in ny if f.get("name", "").endswith(".md")),
         "prs": [{"nr": p["number"], "titel": p["title"], "vem": aktor(gren=p["head"]["ref"]),
@@ -283,6 +396,12 @@ def hamta_github():
         "fragor": fragor,
         "cursor": sorted(cursor_nu, key=lambda h: h["tid"]),
         "release": release,
+        "aktivitet": max(tider) if tider else 0,
+        "arbete": arbete,
+        "bygge": ({"status": bygge_run["status"], "slutsats": bygge_run["conclusion"],
+                   "tid": bygge_run["updated_at"]} if bygge_run else None),
+        "vantar": vantar_pa_mattias(prs, fragor, release),
+        "klar_idag": klar_idag,
     }
     with _lock:
         _cache.update(tid=time.time(), github=data)
@@ -301,6 +420,7 @@ def lokalt():
         rader, andrad = [], 0
     status["aider"] = rader
     status["aider_sekunder_sedan"] = int(time.time() - andrad) if andrad else None
+    status["dator"] = dator()
     return status
 
 
@@ -317,6 +437,11 @@ h1{margin:0;font-size:18px;letter-spacing:.2em;text-shadow:0 0 8px var(--g)}h2{m
 #fas{padding:2px 10px;border:1px solid var(--g);text-transform:uppercase}
 #fas.kodar,#fas.testar{animation:puls 1.2s infinite}@keyframes puls{50%{box-shadow:0 0 14px var(--g)}}
 #fas.fel{color:#ff5555;border-color:#ff5555}
+.chip{padding:2px 10px;border:1px solid var(--g2);color:var(--g2);text-transform:uppercase}
+.chip.ok{color:var(--g);border-color:var(--g)}.chip.var{color:var(--k);border-color:var(--k)}
+.chip.fel{color:#ff5555;border-color:#ff5555;animation:pulsr 1.2s infinite}@keyframes pulsr{50%{box-shadow:0 0 14px #ff5555}}
+#larm{flex-basis:100%;color:#ff5555;text-shadow:0 0 8px #ff5555}#larm:empty{display:none}
+.vantar{color:var(--k)}.vantar b{font-weight:normal;border:1px solid var(--k);padding:0 6px;margin-right:6px;font-size:11px}
 #mat{grid-column:1/3;display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap;overflow:visible}
 #mat h2{margin-bottom:4px}#mat svg{display:block}
 #bage{filter:drop-shadow(0 0 6px #00ff66);transition:stroke-dasharray 1.2s ease}
@@ -331,7 +456,7 @@ ul{list-style:none;margin:0;padding:0}li{margin:0 0 6px}
 .tag{display:inline-block;min-width:66px}.liten{color:var(--g2);font-size:12px}
 @media(max-width:900px){main{grid-template-columns:1fr;grid-template-rows:auto;height:auto}body{overflow:auto}#kod{grid-row:auto;max-height:50vh}}
 </style></head><body><canvas id="regn"></canvas><main>
-<section id="topp"><h1>APPFABRIKEN</h1><span id="fas">...</span><span id="uppgift"></span><span id="text" class="liten"></span></section>
+<section id="topp"><h1>APPFABRIKEN</h1><span id="fas">...</span><span id="kon" class="chip">Kön ...</span><span id="bygge" class="chip">Bygge ...</span><span id="vchip" class="chip">...</span><span id="uppgift"></span><span id="text" class="liten"></span><div id="larm"></div></section>
 <section id="mat">
 <div><h2>MÄTARE // AVSTÅND TILL RELEASE</h2>
 <svg viewBox="0 0 200 124" width="230" role="img" aria-label="Procent klart till release">
@@ -344,11 +469,12 @@ ul{list-style:none;margin:0;padding:0}li{margin:0 0 6px}
 <div style="flex:1;min-width:300px"><h2 id="malrubrik">RELEASE</h2><div id="eta">Räknar...</div><div id="spann" class="liten"></div><ul id="steg"></ul><div id="anm" class="liten"></div></div>
 <div><h2>TOKENS // LOKAL MODELL</h2><div id="tok"><span class="liten">Totalt</span><span class="liten">Idag</span><b id="t-totalt">-</b><b id="t-idag">-</b><span class="liten">Denna vecka</span><span class="liten">Per sekund (snitt)</span><b id="t-vecka">-</b><b id="t-sek">-</b></div>
 <div id="t-not" class="liten" style="max-width:300px;margin-top:6px"></div></div>
+<div><h2>DATORN // MODELLEN</h2><div id="dator" class="liten" style="font-size:14px;line-height:1.6"></div></div>
 </section>
 <section id="kod"><h2>LOKAL MODELL // AIDER</h2><div id="rader"></div><span class="cursor"></span></section>
 <section id="cur"><h2>CURSOR // NU</h2><ul id="cursornu"></ul><div class="liten" style="margin-top:6px">Detaljer: <a href="https://cursor.com/agents" target="_blank" style="color:var(--c)">cursor.com/agents</a> · <a href="https://github.com/mattehe-creator/appfabriken/actions" target="_blank" style="color:var(--c)">GitHub Actions</a></div></section>
 <section><h2>HÄNDELSER</h2><ul id="handelser"></ul></section>
-<section><h2>KÖ OCH PR</h2><div class="liten">Frågor till Mattias</div><ul id="fragor"></ul><div class="liten">Uppgifter som väntar</div><ul id="ko"></ul><div class="liten" style="margin-top:8px">Pull requests</div><ul id="prs"></ul></section>
+<section><h2>KÖ OCH PR</h2><div class="liten">Väntar på dig</div><ul id="fragor"></ul><div class="liten">Uppgifter som väntar</div><ul id="ko"></ul><div class="liten" style="margin-top:8px">Pull requests</div><ul id="prs"></ul></section>
 </main><script>
 const c=document.getElementById("regn"),x=c.getContext("2d");let kol=[];
 function storlek(){c.width=innerWidth;c.height=innerHeight;kol=Array(Math.ceil(c.width/16)).fill(0).map(()=>Math.random()*c.height/16)}
@@ -365,10 +491,17 @@ async function lokal(){try{const d=await (await fetch("/api/lokal")).json();
 const f=document.getElementById("fas");f.textContent=d.fas;f.className=d.fas;
 document.getElementById("uppgift").textContent=d.uppgift||"";
 let t=d.text||"";if(d.fas==="kodar"&&d.aider_sekunder_sedan!=null)t+=" Senaste utskrift för "+d.aider_sekunder_sedan+" s sedan.";
-document.getElementById("text").textContent=t;
+document.getElementById("text").textContent=t;dator(d.dator);
 const r=d.aider||[];if(r.join("\n")!==sist.join("\n")){const ny=r.length-sist.length;
 document.getElementById("rader").innerHTML=r.map((l,i)=>`<div class="rad${i>=r.length-Math.max(ny,0)?" ny":""}">${esc(l)}</div>`).join("");
 sist=r;const k=document.getElementById("kod");k.scrollTop=k.scrollHeight}}catch(e){}}
+let klarIdag=0,senasteDator=null;
+function dator(x){if(x!==undefined)senasteDator=x;const d=senasteDator||{};const g=d.gpu;const rader=[];
+rader.push(g?`GPU ${g.last} % · ${g.temp} °C`:"GPU: ingen mätning");
+if(g)rader.push(`VRAM ${(g.vram/1024).toLocaleString("sv-SE",{maximumFractionDigits:1})} av ${(g.vram_max/1024).toLocaleString("sv-SE",{maximumFractionDigits:1})} GB`);
+rader.push(d.ollama==null?"Ollama svarar inte":d.ollama.length?"Ollama: "+d.ollama.map(esc).join(", ")+" i minnet":"Ollama: ingen modell laddad");
+rader.push("Klara idag: "+klarIdag);
+document.getElementById("dator").innerHTML=rader.map(r=>`<div>${r}</div>`).join("")}
 const sv=(n,dec)=>Number(n).toLocaleString("sv-SE",{maximumFractionDigits:dec||0});
 const dag=s=>new Date(s+"T12:00").toLocaleDateString("sv-SE",{weekday:"long",day:"numeric",month:"long"});
 const kort=s=>new Date(s+"T12:00").toLocaleDateString("sv-SE",{day:"numeric",month:"short"});
@@ -386,10 +519,21 @@ document.getElementById("t-totalt").textContent=sv(d.totalt);document.getElement
 document.getElementById("t-vecka").textContent=sv(d.vecka);
 document.getElementById("t-sek").textContent=d.per_sek==null?"-":sv(d.per_sek,1);
 document.getElementById("t-not").textContent=`${d.korningar} körningar. Aiders egen räkning, avrundad till tusental, skickat plus mottaget.`+(d.per_sek_senaste!=null?` Senaste körningen ${sv(d.per_sek_senaste,1)} per sekund.`:"")+" Cursor och Claude mäts inte här."}catch(e){}}
-async function github(){try{const d=await (await fetch("/api/github")).json();release(d.release);
+function chips(d){const kon=document.getElementById("kon"),larm=document.getElementById("larm");
+if(d.stilla){kon.textContent="Kön står still "+d.stilla.min+" min";kon.className="chip fel";larm.textContent=d.stilla.orsak}
+else{kon.textContent="Kön aktiv";kon.className="chip ok";larm.textContent=""}
+const b=document.getElementById("bygge"),x=d.bygge;
+if(!x){b.textContent="Bygge okänt";b.className="chip"}
+else if(x.status!=="completed"){b.textContent="Bygge main pågår";b.className="chip var"}
+else if(x.slutsats==="success"){b.textContent="Bygge main grönt";b.className="chip ok"}
+else{b.textContent="Bygge main RÖTT";b.className="chip fel"}
+const v=document.getElementById("vchip"),n=(d.vantar||[]).length;
+v.textContent=n?"Väntar på dig: "+n:"Inget väntar på dig";v.className="chip "+(n?"var":"ok");
+klarIdag=d.klar_idag||0;dator()}
+async function github(){try{const d=await (await fetch("/api/github")).json();release(d.release);chips(d);
 document.getElementById("handelser").innerHTML=d.handelser.map(h=>`<li class="${kls(h.vem)}"><span class="tag">${vemNamn[h.vem]}</span><span class="liten">${new Date(h.tid).toLocaleString("sv-SE",{dateStyle:"short",timeStyle:"short"})}</span> ${esc(h.text)}</li>`).join("");
 document.getElementById("cursornu").innerHTML=(d.cursor||[]).length?d.cursor.map(h=>`<li class="cursor-a"><span class="liten">sedan ${new Date(h.tid).toLocaleTimeString("sv-SE",{timeStyle:"short"})}</span> ${esc(h.text)}</li>`).join(""):"<li class='liten'>Vilar. Inget skickat till Cursor just nu.</li>";
-document.getElementById("fragor").innerHTML=d.fragor.length?d.fragor.map(f=>`<li class="claude">${esc(f)}</li>`).join(""):"<li class='liten'>Inga</li>";
+document.getElementById("fragor").innerHTML=(d.vantar||[]).length?d.vantar.map(f=>`<li class="vantar"><b>${esc(f.typ)}</b>${esc(f.text)}</li>`).join(""):"<li class='liten'>Inget</li>";
 document.getElementById("ko").innerHTML=d.ko.length?d.ko.map(k=>`<li>${esc(k.replace(".md",""))}</li>`).join(""):"<li class='liten'>Tom</li>";
 document.getElementById("prs").innerHTML=d.prs.map(p=>`<li class="${kls(p.vem)}"><span class="tag">#${p.nr}</span>${esc(p.titel)} <span class="liten">(${p.lage})</span></li>`).join("")}catch(e){}}
 let ver=null;async function version(){try{const v=(await (await fetch("/api/version")).json()).v;if(ver&&v!==ver)location.reload();ver=v}catch(e){}}
@@ -415,7 +559,19 @@ class Hanterare(BaseHTTPRequestHandler):
         elif self.path == "/api/tokens":
             self.svara(json.dumps(tokens_sammanstall(), ensure_ascii=False), "application/json")
         elif self.path == "/api/github":
-            self.svara(json.dumps(hamta_github(), ensure_ascii=False), "application/json")
+            d = dict(hamta_github())
+            try:
+                lok = lokalt()
+                try:
+                    lok_tid = datetime.fromisoformat(lok.get("tid", "")).timestamp()
+                except Exception:
+                    lok_tid = 0
+                d["stilla"] = stilla_larm(time.time(), d.get("aktivitet", 0), d.get("ko", []), d.get("arbete", []),
+                                          d.get("cursor", []), lok.get("fas"), lok_tid,
+                                          bool((d.get("release") or {}).get("klar")))
+            except Exception:
+                d["stilla"] = None
+            self.svara(json.dumps(d, ensure_ascii=False), "application/json")
         else:
             self.svara(SIDA, "text/html")
 
