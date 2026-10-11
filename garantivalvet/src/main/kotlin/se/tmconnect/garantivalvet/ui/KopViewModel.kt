@@ -19,10 +19,12 @@ import se.tmconnect.garantivalvet.data.InstallningarLager
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
+import se.tmconnect.garantivalvet.export.Sakerhetskopia
 import se.tmconnect.garantivalvet.paminnelse.PaminnelsePlanerare
 import se.tmconnect.garantivalvet.regler.kanLaggaTill
 import se.tmconnect.garantivalvet.regler.sorteraEfterNarmasteFrist
 import se.tmconnect.karna.pro.ProKalla
+import java.io.OutputStream
 
 sealed class ExportPdfMeddelande {
     data object Sparad : ExportPdfMeddelande()
@@ -291,6 +293,30 @@ class KopViewModel(
     /** Rensar exportmeddelande */
     fun rensaExportMeddelande() {
         _exportPdfMeddelande.value = null
+    }
+
+    /**
+     * Hämtar alla köp för export (till säkerhetskopia)
+     */
+    suspend fun allaKopForExport(): List<Kop> {
+        return repository.alla.first()
+    }
+
+    /**
+     * Sparar säkerhetskopia till angiven URI
+     */
+    fun sparaSakerhetskopia(uri: Uri) {
+        viewModelScope.launch {
+            try {
+                val kop = allaKopForExport()
+                appContext.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                    Sakerhetskopia.skriv(outputStream, kop, kvittoLager)
+                }
+                // Här skulle vi kunna visa en snackbar/toast med "Säkerhetskopia sparad"
+            } catch (e: Exception) {
+                // Här skulle vi kunna visa en snackbar/toast med "Filen kunde inte läsas"
+            }
+        }
     }
 
     private suspend fun appliceraKvittoAndringar(kop: Kop): Kop {

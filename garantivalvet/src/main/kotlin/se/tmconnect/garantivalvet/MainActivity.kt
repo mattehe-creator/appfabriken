@@ -29,6 +29,7 @@ import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.export.PdfExportResult
 import se.tmconnect.garantivalvet.export.reklamationsPdfFilnamn
 import se.tmconnect.garantivalvet.export.skrivUnderlagTillPdf
+import se.tmconnect.garantivalvet.export.sakerhetskopiaFilnamn
 import se.tmconnect.garantivalvet.paminnelse.PaminnelseWorker
 import se.tmconnect.garantivalvet.regler.UnderlagEtiketter
 import se.tmconnect.garantivalvet.regler.byggUnderlag
@@ -161,6 +162,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Resultatkontrakt för säkerhetskopia
+    private val createSakerhetskopiaContract = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/zip")
+    ) { uri: Uri? ->
+        if (uri != null) {
+            viewModel.sparaSakerhetskopia(uri)
+        }
+    }
+
     private var behorighetNekad by mutableStateOf(false)
     private var exportKop: Kop? = null
 
@@ -213,7 +223,13 @@ class MainActivity : ComponentActivity() {
                             onVisaProDialog = viewModel::visaProDialog,
                             onStangProDialog = viewModel::stangProDialog,
                             onKopPro = { activity -> proKalla.kop(activity) },
-                            onSparaSakerhetskopia = {},
+                            onSparaSakerhetskopia = {
+                                if (arPro) {
+                                    createSakerhetskopiaContract.launch(sakerhetskopiaFilnamn(LocalDate.now()))
+                                } else {
+                                    viewModel.visaProDialog()
+                                }
+                            },
                             onHamtaSakerhetskopia = {},
                         )
                     }
