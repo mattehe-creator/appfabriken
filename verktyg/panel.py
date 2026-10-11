@@ -9,6 +9,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 import threading
 import time
 import webbrowser
@@ -23,6 +24,7 @@ STATUS = DATA / "status.json"
 AIDER = DATA / "logg" / "aider-senaste.log"
 LOGGMAPP = DATA / "logg"
 
+STARTAD = str(time.time())  # ny process = nytt värde; sidan laddar om sig då
 _cache = {"tid": 0.0, "github": {}}
 _tokcache = {}  # loggfil -> (mtime, storlek, skickade, mottagna)
 _commit = {}  # sha -> (författare, datum, rubrik); en commit ändras aldrig
@@ -390,6 +392,8 @@ document.getElementById("cursornu").innerHTML=(d.cursor||[]).length?d.cursor.map
 document.getElementById("fragor").innerHTML=d.fragor.length?d.fragor.map(f=>`<li class="claude">${esc(f)}</li>`).join(""):"<li class='liten'>Inga</li>";
 document.getElementById("ko").innerHTML=d.ko.length?d.ko.map(k=>`<li>${esc(k.replace(".md",""))}</li>`).join(""):"<li class='liten'>Tom</li>";
 document.getElementById("prs").innerHTML=d.prs.map(p=>`<li class="${kls(p.vem)}"><span class="tag">#${p.nr}</span>${esc(p.titel)} <span class="liten">(${p.lage})</span></li>`).join("")}catch(e){}}
+let ver=null;async function version(){try{const v=(await (await fetch("/api/version")).json()).v;if(ver&&v!==ver)location.reload();ver=v}catch(e){}}
+version();setInterval(version,5000);
 lokal();github();tokens();setInterval(lokal,2000);setInterval(github,30000);setInterval(tokens,5000);
 </script></body></html>"""
 
@@ -406,6 +410,8 @@ class Hanterare(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/api/lokal":
             self.svara(json.dumps(lokalt(), ensure_ascii=False), "application/json")
+        elif self.path == "/api/version":
+            self.svara(json.dumps({"v": STARTAD}), "application/json")
         elif self.path == "/api/tokens":
             self.svara(json.dumps(tokens_sammanstall(), ensure_ascii=False), "application/json")
         elif self.path == "/api/github":
@@ -417,12 +423,41 @@ class Hanterare(BaseHTTPRequestHandler):
         pass
 
 
+def bevaka_filen(server):
+    """Startar om panelen när panel.py ändras på disken (till exempel efter git pull), så att
+    en gammal process inte blir kvar och visar gammal sida. Den nya processen öppnar ingen flik;
+    sidan laddar om sig själv när servern är tillbaka."""
+    fil = Path(__file__).resolve()
+    senast = fil.stat().st_mtime
+    while True:
+        time.sleep(5)
+        try:
+            ny = fil.stat().st_mtime
+        except OSError:
+            continue
+        if ny != senast:
+            # Den nya processen startas först och väntar på porten. Avslutas servern först hinner
+            # huvudtråden avsluta processen innan den nya startats.
+            subprocess.Popen([sys.executable, str(fil), "--omstart"],
+                             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+            server.server_close()
+            os._exit(0)
+
+
 if __name__ == "__main__":
-    try:
-        server = ThreadingHTTPServer(("127.0.0.1", PORT), Hanterare)
-    except OSError:
+    omstart = "--omstart" in sys.argv
+    server = None
+    for _ in range(10 if omstart else 1):  # vid omstart kan porten behöva en stund på sig att släppas
+        try:
+            server = ThreadingHTTPServer(("127.0.0.1", PORT), Hanterare)
+            break
+        except OSError:
+            time.sleep(1)
+    if server is None:
         webbrowser.open(f"http://127.0.0.1:{PORT}")  # panelen kör redan
         raise SystemExit(0)
-    webbrowser.open(f"http://127.0.0.1:{PORT}")
+    if not omstart:
+        webbrowser.open(f"http://127.0.0.1:{PORT}")
     print(f"Panelen körs på http://127.0.0.1:{PORT}. Stäng fönstret för att stoppa den.")
+    threading.Thread(target=bevaka_filen, args=(server,), daemon=True).start()
     server.serve_forever()
