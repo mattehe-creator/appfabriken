@@ -123,7 +123,12 @@ foreach ($kandidat in (Get-ChildItem "uppgifter\ny\*.md" -ErrorAction SilentlyCo
     if ($beror -and $beror -notmatch '^ingen') {
         foreach ($b in ($beror -split ',')) {
             $b = $b.Trim(); if (-not $b) { continue }
-            if ($b -like "cursor:*") { $saknade += $b; continue }   # väntar på Cursors kod
+            if ($b -like "cursor:*") {   # väntar på Cursors kod: klar när PR:en från cursor/<namn> är mergad
+                $cg = "cursor/" + $b.Substring(7).Trim()
+                $mergad = gh pr list --head $cg --state merged --json number --jq ".[0].number" 2>$null
+                if (-not $mergad) { $saknade += $b }
+                continue
+            }
             if (-not $b.EndsWith('.md')) { $b = "$b.md" }
             if (-not (Test-Path "uppgifter\klar\$b")) { $saknade += $b }
         }

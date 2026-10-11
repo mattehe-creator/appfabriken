@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-11-export-pdf.md
 försök: 1
-beror-på: cursor:2026-10-11-export-pdf, 2026-10-11-22-export-pdf-strangar.md
+beror-på: 2026-10-11-22-export-pdf-strangar.md
 
 ## Ändra bara dessa filer
 - garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/ui/KopDetaljSkarm.kt
