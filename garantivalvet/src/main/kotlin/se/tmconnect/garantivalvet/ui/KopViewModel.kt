@@ -24,11 +24,15 @@ import se.tmconnect.garantivalvet.paminnelse.PaminnelsePlanerare
 import se.tmconnect.garantivalvet.regler.kanLaggaTill
 import se.tmconnect.garantivalvet.regler.sorteraEfterNarmasteFrist
 import se.tmconnect.karna.pro.ProKalla
-import java.io.OutputStream
 
 sealed class ExportPdfMeddelande {
     data object Sparad : ExportPdfMeddelande()
     data object Misslyckades : ExportPdfMeddelande()
+}
+
+sealed class SakerhetskopiaMeddelande {
+    data object Sparad : SakerhetskopiaMeddelande()
+    data object KundeInteLasas : SakerhetskopiaMeddelande()
 }
 
 class KopViewModel(
@@ -88,6 +92,10 @@ class KopViewModel(
     /** State för exportmeddelanden */
     private val _exportPdfMeddelande = MutableStateFlow<ExportPdfMeddelande?>(null)
     val exportPdfMeddelande: StateFlow<ExportPdfMeddelande?> = _exportPdfMeddelande.asStateFlow()
+
+    private val _sakerhetskopiaMeddelande = MutableStateFlow<SakerhetskopiaMeddelande?>(null)
+    val sakerhetskopiaMeddelande: StateFlow<SakerhetskopiaMeddelande?> =
+        _sakerhetskopiaMeddelande.asStateFlow()
 
     /**
      * Slår på eller av dagliga påminnelser och synkar WorkManager-jobbet.
@@ -295,6 +303,10 @@ class KopViewModel(
         _exportPdfMeddelande.value = null
     }
 
+    fun rensaSakerhetskopiaMeddelande() {
+        _sakerhetskopiaMeddelande.value = null
+    }
+
     /**
      * Hämtar alla köp för export (till säkerhetskopia)
      */
@@ -309,12 +321,14 @@ class KopViewModel(
         viewModelScope.launch {
             try {
                 val kop = allaKopForExport()
-                appContext.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                    Sakerhetskopia.skriv(outputStream, kop, kvittoLager)
+                val outputStream = appContext.contentResolver.openOutputStream(uri)
+                    ?: throw java.io.IOException()
+                outputStream.use {
+                    Sakerhetskopia.skriv(it, kop, kvittoLager)
                 }
-                // Här skulle vi kunna visa en snackbar/toast med "Säkerhetskopia sparad"
-            } catch (e: Exception) {
-                // Här skulle vi kunna visa en snackbar/toast med "Filen kunde inte läsas"
+                _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.Sparad
+            } catch (_: Exception) {
+                _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.KundeInteLasas
             }
         }
     }
