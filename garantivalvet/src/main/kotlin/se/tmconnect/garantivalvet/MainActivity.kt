@@ -161,6 +161,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Resultatkontrakt för säkerhetskopia-sparning
+    private val createSakerhetskopiaContract = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/zip")
+    ) { uri: Uri? ->
+        // Denna kommer att implementeras i en senare uppgift
+    }
+
+    // Resultatkontrakt för säkerhetskopia-import
+    private val openSakerhetskopiaContract = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        // Denna kommer att implementeras i en senare uppgift
+    }
+
     private var behorighetNekad by mutableStateOf(false)
     private var exportKop: Kop? = null
 
@@ -212,7 +226,9 @@ class MainActivity : ComponentActivity() {
                             proDialogSynlig = proDialogSynlig,
                             onVisaProDialog = viewModel::visaProDialog,
                             onStangProDialog = viewModel::stangProDialog,
-                            onKopPro = { activity -> proKalla.kop(activity) }
+                            onKopPro = { activity -> proKalla.kop(activity) },
+                            onSparaSakerhetskopia = {},
+                            onHamtaSakerhetskopia = {},
                         )
                     }
 
