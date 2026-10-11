@@ -22,8 +22,10 @@ import se.tmconnect.garantivalvet.data.GarantiDatabas
 import se.tmconnect.garantivalvet.data.InstallningarLager
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
-import se.tmconnect.garantivalvet.export.skrivUnderlagTillPdf
+import se.tmconnect.garantivalvet.data.Kop
+import se.tmconnect.garantivalvet.export.PdfExportResult
 import se.tmconnect.garantivalvet.export.reklamationsPdfFilnamn
+import se.tmconnect.garantivalvet.export.skrivUnderlagTillPdf
 import se.tmconnect.garantivalvet.paminnelse.PaminnelseWorker
 import se.tmconnect.garantivalvet.regler.UnderlagEtiketter
 import se.tmconnect.garantivalvet.regler.byggUnderlag
@@ -128,8 +130,7 @@ class MainActivity : ComponentActivity() {
                     )
                     
                     // Hämta kvittobitmap om det finns ett kvitto
-                    val kvittoBitmap = kop.kvittoFil?.let { filnamn ->
-                        viewModel.sparatKvittoUri(kop)?.let { kvittoUri ->
+                    val kvittoBitmap = viewModel.sparatKvittoUri(kop)?.let { kvittoUri ->
                             try {
                                 contentResolver.openInputStream(kvittoUri)?.use { stream ->
                                     android.graphics.BitmapFactory.decodeStream(stream)
@@ -137,7 +138,6 @@ class MainActivity : ComponentActivity() {
                             } catch (_: Exception) {
                                 null
                             }
-                        }
                     }
                     
                     // Skriv PDF till fil
@@ -148,7 +148,7 @@ class MainActivity : ComponentActivity() {
                     
                     exportKop = null
                 } catch (e: Exception) {
-                    senasteExportPdfResultat = se.tmconnect.garantivalvet.export.PdfExportResult.Fel(e.message ?: "Okänt fel")
+                    senasteExportPdfResultat = PdfExportResult.Fel(e.message ?: e.javaClass.simpleName)
                     exportKop = null
                 }
             }
@@ -156,8 +156,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private var behorighetNekad by mutableStateOf(false)
-    private var exportKop: se.tmconnect.garantivalvet.data.Kop? = null
-    var senasteExportPdfResultat: se.tmconnect.garantivalvet.export.PdfExportResult? = null
+    private var exportKop: Kop? = null
+    var senasteExportPdfResultat: PdfExportResult? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

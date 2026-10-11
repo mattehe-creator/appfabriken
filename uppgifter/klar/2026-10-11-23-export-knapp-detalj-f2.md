@@ -46,3 +46,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*UnderlagTest" --tests "*PdfFil
 - Lägga till beroenden.
 - Ändra databasschemat.
 - Nya manifestbehörigheter.
+
+utfall: godkänd 2026-10-11 (felmeddelande-fallback, kvittoladdning, imports)
