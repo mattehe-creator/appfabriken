@@ -36,11 +36,12 @@ import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
-import se.tmconnect.garantivalvet.regler.GarantiStatus
+import se.tmconnect.garantivalvet.regler.KONSUMENTKOP_IKRAFT
+import se.tmconnect.garantivalvet.regler.KopStatus
 import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.garantivalvet.regler.formateraPrisKr
 import se.tmconnect.garantivalvet.regler.garantiSlut
-import se.tmconnect.garantivalvet.regler.garantiStatus
+import se.tmconnect.garantivalvet.regler.kopStatus
 import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
 import se.tmconnect.garantivalvet.regler.reklamationSlut
 
@@ -116,7 +117,7 @@ fun KopDetaljSkarm(
             )
 
             val garantiSlutDatum = garantiSlut(kop.kopdatum, kop.garantiManader)
-            val status = garantiStatus(kop.kopdatum, kop.garantiManader, LocalDate.now())
+            val status = kopStatus(kop.kopdatum, kop.garantiManader, LocalDate.now())
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -127,14 +128,16 @@ fun KopDetaljSkarm(
                     modifier = Modifier.weight(1f),
                 )
                 val statusText = when (status) {
-                    GarantiStatus.GALLER -> stringResource(R.string.status_galler)
-                    GarantiStatus.GAR_UT_SNART -> stringResource(R.string.status_gar_ut_snart)
-                    GarantiStatus.UTGANGEN -> stringResource(R.string.status_utgangen)
+                    KopStatus.GARANTI_GALLER -> stringResource(R.string.status_galler)
+                    KopStatus.GARANTI_SNART -> stringResource(R.string.status_gar_ut_snart)
+                    KopStatus.REKLAMATION_GALLER -> stringResource(R.string.status_reklamation_galler)
+                    KopStatus.UTGANGEN -> stringResource(R.string.status_utgangen)
                 }
                 val statusColor = when (status) {
-                    GarantiStatus.GALLER -> MaterialTheme.colorScheme.primary
-                    GarantiStatus.GAR_UT_SNART -> MaterialTheme.colorScheme.tertiary
-                    GarantiStatus.UTGANGEN -> MaterialTheme.colorScheme.error
+                    KopStatus.GARANTI_GALLER -> MaterialTheme.colorScheme.primary
+                    KopStatus.GARANTI_SNART -> MaterialTheme.colorScheme.tertiary
+                    KopStatus.REKLAMATION_GALLER -> MaterialTheme.colorScheme.primary
+                    KopStatus.UTGANGEN -> MaterialTheme.colorScheme.error
                 }
                 Text(
                     text = statusText,
@@ -163,7 +166,7 @@ fun KopDetaljSkarm(
                     text = stringResource(R.string.detalj_reklamation_vagledning),
                     style = MaterialTheme.typography.bodyMedium,
                 )
-            } else if (kop.kopdatum.isBefore(se.tmconnect.garantivalvet.regler.KONSUMENTKOP_IKRAFT)) {
+            } else if (kop.kopdatum.isBefore(KONSUMENTKOP_IKRAFT)) {
                 // Visa information om äldre lag för köp före 2022-05-01
                 Text(
                     text = stringResource(R.string.detalj_reklamation_aldre_lag),

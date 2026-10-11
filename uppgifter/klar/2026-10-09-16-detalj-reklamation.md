@@ -32,3 +32,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*KopStatusTest" --tests "*Strin
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-11 (kopStatus på garantiraden, import KONSUMENTKOP_IKRAFT)
