@@ -255,7 +255,7 @@ class KopViewModel(
 
     /** Kontrollerar om användaren får lägga till ett nytt köp. */
     fun kanLaggaTillNy(): Boolean {
-        return kanLaggaTill(kopLista.value.size, arPro.value)
+        return se.tmconnect.garantivalvet.regler.kanLaggaTill(kopLista.value.size, arPro.value)
     }
 
     /** Visar Pro-dialogen. */
