@@ -11,6 +11,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,9 +30,19 @@ import se.tmconnect.garantivalvet.ui.KopSkarm
 import se.tmconnect.garantivalvet.ui.KopViewModel
 import se.tmconnect.garantivalvet.ui.KopViewModelFactory
 import se.tmconnect.garantivalvet.ui.KvittoHelskarm
+import se.tmconnect.karna.pro.ProKalla
+import se.tmconnect.karna.pro.skapaPlayProKalla
 import se.tmconnect.karna.tema.AppfabrikTema
 
 class MainActivity : ComponentActivity() {
+    private val proKalla: ProKalla by lazy {
+        skapaPlayProKalla(
+            applicationContext,
+            ProKonfig.PRODUKT_ID,
+            lifecycleScope,
+        )
+    }
+
     private val viewModel: KopViewModel by viewModels {
         val databas = GarantiDatabas.hamta(applicationContext)
         val kvittoLager = KvittoLager(applicationContext)
@@ -41,6 +52,7 @@ class MainActivity : ComponentActivity() {
             kvittoLager,
             installningarLager,
             applicationContext,
+            proKalla,
         )
     }
 

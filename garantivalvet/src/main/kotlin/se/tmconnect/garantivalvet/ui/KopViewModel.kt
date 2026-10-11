@@ -1,5 +1,6 @@
 package se.tmconnect.garantivalvet.ui
 
+import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -20,14 +21,28 @@ import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
 import se.tmconnect.garantivalvet.paminnelse.PaminnelsePlanerare
 import se.tmconnect.garantivalvet.regler.sorteraEfterNarmasteFrist
+import se.tmconnect.karna.pro.ProKalla
 
 class KopViewModel(
     private val repository: KopRepository,
     private val kvittoLager: KvittoLager,
     private val installningarLager: InstallningarLager,
     private val appContext: Context,
+    private val proKalla: ProKalla,
     private val idag: LocalDate = LocalDate.now(),
 ) : ViewModel() {
+    init {
+        viewModelScope.launch {
+            proKalla.kontrollera()
+        }
+    }
+
+    val arPro: StateFlow<Boolean> =
+        proKalla.arPro.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false,
+        )
     val kopLista: StateFlow<List<Kop>> =
         repository.alla
             .map { lista -> sorteraEfterNarmasteFrist(lista, idag) }
@@ -75,6 +90,11 @@ class KopViewModel(
             val pa = installningarLager.paminnelserPa.first()
             PaminnelsePlanerare.synka(appContext, pa)
         }
+    }
+
+    /** Startar Play-köpflödet för Pro (anropas från UI). */
+    fun kopPro(activity: Activity) {
+        proKalla.kop(activity)
     }
 
     fun visaLista() {
@@ -254,11 +274,18 @@ class KopViewModelFactory(
     private val kvittoLager: KvittoLager,
     private val installningarLager: InstallningarLager,
     private val appContext: Context,
+    private val proKalla: ProKalla,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(KopViewModel::class.java)) {
-            return KopViewModel(repository, kvittoLager, installningarLager, appContext) as T
+            return KopViewModel(
+                repository,
+                kvittoLager,
+                installningarLager,
+                appContext,
+                proKalla,
+            ) as T
         }
         throw IllegalArgumentException("Okänd ViewModel: ${modelClass.name}")
     }
