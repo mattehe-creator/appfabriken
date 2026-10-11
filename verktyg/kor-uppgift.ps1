@@ -7,6 +7,9 @@
 #   -Modell ollama_chat/qwen3-coder:30b   (vilken Ollama-modell Aider använder)
 #   -EditFormat diff                      (whole, diff, udiff; tomt = Aiders standard för modellen)
 #   -IngenPush                            (kör lokalt men pusha inte och öppna ingen PR)
+#   -Tvinga                               (hoppa över vakten, som annars pausar när ett spel eller annat tungt körs)
+#
+# Slutkod: 0 klar, 1 fel, 3 ingen uppgift redo, 4 pausad av vakten (vakt.ps1; uppgiften körs om senare).
 #
 # Kräver: git, gh (inloggad), Aider i %USERPROFILE%\.local\bin, Ollama igång, JDK 17+ och Android SDK.
 # Skriptet ändrar bara repot och grenen lokal/<uppgift>. Det rör aldrig main på GitHub.
@@ -15,8 +18,10 @@ param(
     [string]$Repo = (Split-Path -Parent $PSScriptRoot),
     [string]$Modell = "ollama_chat/qwen3-coder:30b",
     [string]$EditFormat = "",
-    [switch]$IngenPush
+    [switch]$IngenPush,
+    [switch]$Tvinga
 )
+. (Join-Path $PSScriptRoot "vakt.ps1")
 
 $ErrorActionPreference = "Stop"
 $loggMapp = Join-Path $env:LOCALAPPDATA "appfabriken\logg"
@@ -59,6 +64,18 @@ function Filer([string[]]$rader) {
     $ut = @()
     foreach ($r in $rader) { if ($r -match '^\s*-\s+(\S+)') { $ut += $Matches[1] } }
     return $ut
+}
+
+# --- Vakt: starta inte om datorn används till något tungt ---
+if (-not $Tvinga) {
+    $tungt = Tungt-Pagar
+    if ($tungt) {
+        Write-Host "Pausad: $tungt" -ForegroundColor Yellow
+        Vakt-FrigorModell $Modell
+        Vakt-Status "pausad" "Något tungt körs ($tungt). Den lokala modellen väntar."
+        Stop-Transcript | Out-Null
+        exit 4
+    }
 }
 
 # --- Förkontroller ---
@@ -192,10 +209,47 @@ $env:PYTHONUTF8 = "1"
 $env:PYTHONIOENCODING = "utf-8"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
+# Vakt under körningen: startar ett spel medan Aider arbetar, stoppas Aider och modellen lastas ur, så att
+# spelet får grafikkortet. Uppgiften kastas och körs om från början när datorn är fri igen (slutkod 4).
+$vaktFlagga = Join-Path $loggMapp "vakt-avbrott.txt"
+Remove-Item $vaktFlagga -ErrorAction SilentlyContinue
+$vaktJobb = $null
+if (-not $Tvinga) {
+    $vaktJobb = Start-Job -ArgumentList $PSScriptRoot, $vaktFlagga, $Modell -ScriptBlock {
+        param($mapp, $flagga, $modell)
+        . (Join-Path $mapp "vakt.ps1")
+        while ($true) {
+            Start-Sleep -Seconds 20
+            $orsak = Tungt-Pagar
+            if ($orsak) {
+                Set-Content -Encoding UTF8 -Path $flagga -Value $orsak
+                & taskkill.exe /F /T /IM aider.exe 2>&1 | Out-Null
+                Vakt-FrigorModell $modell
+                return
+            }
+        }
+    }
+}
 $ErrorActionPreference = "Continue"
 & $aider @aiderArg 2>&1 | ForEach-Object { $rad = "$_"; Write-Host $rad; Add-Content -Encoding UTF8 -Path $aiderLogg -Value $rad }
 $aiderKod = $LASTEXITCODE
 $ErrorActionPreference = "Stop"
+if ($vaktJobb) {
+    Stop-Job $vaktJobb -ErrorAction SilentlyContinue
+    Remove-Job $vaktJobb -Force -ErrorAction SilentlyContinue
+}
+if (Test-Path $vaktFlagga) {
+    $vaktOrsak = (Get-Content -Raw -Encoding UTF8 $vaktFlagga).Trim()
+    Remove-Item $vaktFlagga -ErrorAction SilentlyContinue
+    Write-Host "Avbröt: $vaktOrsak. $namn körs om när datorn är fri." -ForegroundColor Yellow
+    Vakt-Status "pausad" "Något tungt startade ($vaktOrsak). $namn körs om när datorn är fri."
+    Kor git @("reset", "-q", "--hard")
+    Kor git @("clean", "-q", "-fd")
+    Kor git @("checkout", "-q", "main")
+    Kor git @("branch", "-q", "-D", $gren)
+    Stop-Transcript | Out-Null
+    exit 4
+}
 $minuter = [math]::Round(((Get-Date) - $start).TotalMinutes, 1)
 
 # --- Egen kontroll efteråt ---
