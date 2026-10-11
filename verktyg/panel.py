@@ -186,6 +186,7 @@ h1{margin:0;font-size:18px;letter-spacing:.2em;text-shadow:0 0 8px var(--g)}h2{m
 #fas{padding:2px 10px;border:1px solid var(--g);text-transform:uppercase}
 #fas.kodar,#fas.testar{animation:puls 1.2s infinite}@keyframes puls{50%{box-shadow:0 0 14px var(--g)}}
 #fas.fel{color:#ff5555;border-color:#ff5555}
+#fas.pausad{color:var(--k);border-color:var(--k)}
 #kod{grid-row:2/5;white-space:pre-wrap;word-break:break-word}
 #kod .rad{opacity:.95}#kod .ny{animation:in .6s}@keyframes in{from{color:#fff;text-shadow:0 0 10px #fff}}
 .cursor::after{content:"█";animation:blink 1s steps(1) infinite}@keyframes blink{50%{opacity:0}}
