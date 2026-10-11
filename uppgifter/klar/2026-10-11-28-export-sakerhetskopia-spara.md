@@ -33,3 +33,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra andra filer.
 - Import eller filväljare för öppning.
 - Nya behörigheter.
+
+utfall: godkänd 2026-10-11 (användarfeedback snackbar, felhantering spara, dubbel Pro-gate bort, oanvänd import)

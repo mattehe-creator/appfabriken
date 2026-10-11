@@ -12,10 +12,18 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.FileProvider
 import java.io.File
@@ -29,6 +37,7 @@ import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.export.PdfExportResult
 import se.tmconnect.garantivalvet.export.reklamationsPdfFilnamn
 import se.tmconnect.garantivalvet.export.skrivUnderlagTillPdf
+import se.tmconnect.garantivalvet.export.sakerhetskopiaFilnamn
 import se.tmconnect.garantivalvet.paminnelse.PaminnelseWorker
 import se.tmconnect.garantivalvet.regler.UnderlagEtiketter
 import se.tmconnect.garantivalvet.regler.byggUnderlag
@@ -38,6 +47,7 @@ import se.tmconnect.garantivalvet.ui.KopListaSkarm
 import se.tmconnect.garantivalvet.ui.KopSkarm
 import se.tmconnect.garantivalvet.ui.KopViewModel
 import se.tmconnect.garantivalvet.ui.KopViewModelFactory
+import se.tmconnect.garantivalvet.ui.SakerhetskopiaMeddelande
 import se.tmconnect.garantivalvet.ui.KvittoHelskarm
 import se.tmconnect.karna.pro.ProKalla
 import se.tmconnect.karna.pro.skapaPlayProKalla
@@ -161,6 +171,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Resultatkontrakt för säkerhetskopia
+    private val createSakerhetskopiaContract = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/zip")
+    ) { uri: Uri? ->
+        if (uri != null) {
+            viewModel.sparaSakerhetskopia(uri)
+        }
+    }
+
     private var behorighetNekad by mutableStateOf(false)
     private var exportKop: Kop? = null
 
@@ -178,7 +197,23 @@ class MainActivity : ComponentActivity() {
                 val arPro by viewModel.arPro.collectAsState()
                 val proDialogSynlig by viewModel.proDialogSynlig.collectAsState()
                 val exportPdfMeddelande by viewModel.exportPdfMeddelande.collectAsState()
+                val sakerhetskopiaMeddelande by viewModel.sakerhetskopiaMeddelande.collectAsState()
+                val snackbarHostState = remember { SnackbarHostState() }
 
+                sakerhetskopiaMeddelande?.let { meddelande ->
+                    val text = when (meddelande) {
+                        SakerhetskopiaMeddelande.Sparad ->
+                            stringResource(R.string.sakerhetskopia_sparad)
+                        SakerhetskopiaMeddelande.KundeInteLasas ->
+                            stringResource(R.string.sakerhetskopia_kunde_inte_lasas)
+                    }
+                    LaunchedEffect(meddelande) {
+                        snackbarHostState.showSnackbar(text)
+                        viewModel.rensaSakerhetskopiaMeddelande()
+                    }
+                }
+
+                Box(modifier = Modifier.fillMaxSize()) {
                 when (aktivSkarm) {
                     KopSkarm.Lista -> {
                         KopListaSkarm(
@@ -213,7 +248,11 @@ class MainActivity : ComponentActivity() {
                             onVisaProDialog = viewModel::visaProDialog,
                             onStangProDialog = viewModel::stangProDialog,
                             onKopPro = { activity -> proKalla.kop(activity) },
-                            onSparaSakerhetskopia = {},
+                            onSparaSakerhetskopia = {
+                                createSakerhetskopiaContract.launch(
+                                    sakerhetskopiaFilnamn(LocalDate.now()),
+                                )
+                            },
                             onHamtaSakerhetskopia = {},
                         )
                     }
@@ -283,8 +322,8 @@ class MainActivity : ComponentActivity() {
                                             val resultat = skrivUnderlagTillPdf(underlag, stream, kvittoBitmap)
                                             if (resultat is PdfExportResult.Ok) {
                                                 val fileUri = FileProvider.getUriForFile(
-                                                    this,
-                                                    KvittoLager.fileProviderAuthority(this),
+                                                    this@MainActivity,
+                                                    KvittoLager.fileProviderAuthority(this@MainActivity),
                                                     pdfFil,
                                                 )
 
@@ -397,6 +436,11 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     }
+                }
+                    SnackbarHost(
+                        hostState = snackbarHostState,
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                    )
                 }
             }
         }

@@ -19,6 +19,7 @@ import se.tmconnect.garantivalvet.data.InstallningarLager
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
+import se.tmconnect.garantivalvet.export.Sakerhetskopia
 import se.tmconnect.garantivalvet.paminnelse.PaminnelsePlanerare
 import se.tmconnect.garantivalvet.regler.kanLaggaTill
 import se.tmconnect.garantivalvet.regler.sorteraEfterNarmasteFrist
@@ -27,6 +28,11 @@ import se.tmconnect.karna.pro.ProKalla
 sealed class ExportPdfMeddelande {
     data object Sparad : ExportPdfMeddelande()
     data object Misslyckades : ExportPdfMeddelande()
+}
+
+sealed class SakerhetskopiaMeddelande {
+    data object Sparad : SakerhetskopiaMeddelande()
+    data object KundeInteLasas : SakerhetskopiaMeddelande()
 }
 
 class KopViewModel(
@@ -86,6 +92,10 @@ class KopViewModel(
     /** State för exportmeddelanden */
     private val _exportPdfMeddelande = MutableStateFlow<ExportPdfMeddelande?>(null)
     val exportPdfMeddelande: StateFlow<ExportPdfMeddelande?> = _exportPdfMeddelande.asStateFlow()
+
+    private val _sakerhetskopiaMeddelande = MutableStateFlow<SakerhetskopiaMeddelande?>(null)
+    val sakerhetskopiaMeddelande: StateFlow<SakerhetskopiaMeddelande?> =
+        _sakerhetskopiaMeddelande.asStateFlow()
 
     /**
      * Slår på eller av dagliga påminnelser och synkar WorkManager-jobbet.
@@ -291,6 +301,36 @@ class KopViewModel(
     /** Rensar exportmeddelande */
     fun rensaExportMeddelande() {
         _exportPdfMeddelande.value = null
+    }
+
+    fun rensaSakerhetskopiaMeddelande() {
+        _sakerhetskopiaMeddelande.value = null
+    }
+
+    /**
+     * Hämtar alla köp för export (till säkerhetskopia)
+     */
+    suspend fun allaKopForExport(): List<Kop> {
+        return repository.alla.first()
+    }
+
+    /**
+     * Sparar säkerhetskopia till angiven URI
+     */
+    fun sparaSakerhetskopia(uri: Uri) {
+        viewModelScope.launch {
+            try {
+                val kop = allaKopForExport()
+                val outputStream = appContext.contentResolver.openOutputStream(uri)
+                    ?: throw java.io.IOException()
+                outputStream.use {
+                    Sakerhetskopia.skriv(it, kop, kvittoLager)
+                }
+                _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.Sparad
+            } catch (_: Exception) {
+                _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.KundeInteLasas
+            }
+        }
     }
 
     private suspend fun appliceraKvittoAndringar(kop: Kop): Kop {
