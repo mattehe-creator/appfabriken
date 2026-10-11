@@ -88,6 +88,24 @@ class KvittoLager(
         return FileProvider.getUriForFile(context, fileProviderAuthority(context), fil)
     }
 
+    /** Rå bytes för export till säkerhetskopia. */
+    fun lasRåBytes(filnamn: String): ByteArray? {
+        val fil = File(kvittonKatalog, filnamn)
+        if (!fil.isFile) {
+            return null
+        }
+        return fil.readBytes()
+    }
+
+    /** Sparar kvittodata vid import; returnerar nytt filnamn i [kvitton/]. */
+    fun sparaFranBytes(innehall: ByteArray, ursprungligtFilnamn: String): String {
+        val delar = ursprungligtFilnamn.substringAfterLast('.', missingDelimiterValue = "")
+        val andelse = delar.ifEmpty { "jpg" }.take(10)
+        val filnamn = "${UUID.randomUUID()}.$andelse"
+        File(kvittonKatalog, filnamn).writeBytes(innehall)
+        return filnamn
+    }
+
     /** Tar bort kvittofilen om [filnamn] inte är null. */
     fun taBort(filnamn: String?) {
         if (filnamn.isNullOrBlank()) {

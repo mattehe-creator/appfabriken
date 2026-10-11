@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
@@ -29,4 +30,9 @@ interface KopDao {
 
     @Query("SELECT COUNT(*) FROM kop")
     suspend fun antal(): Int
+
+    @Transaction
+    suspend fun importeraKop(kopLista: List<Kop>) {
+        kopLista.forEach { infoga(it) }
+    }
 }
