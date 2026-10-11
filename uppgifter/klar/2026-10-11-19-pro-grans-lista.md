@@ -37,3 +37,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*GratisGransTest" --tests "*Str
 - Ändra andra filer.
 - Lägga till beroenden.
 - Blockera visning, ändring eller borttag av befintliga köp.
+
+utfall: underkänd 2026-10-11 av Cursor (PR #43). Ersatt av 2026-10-11-19-pro-grans-lista-f2.md
