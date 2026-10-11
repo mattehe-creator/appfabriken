@@ -33,3 +33,4 @@ gradle :garantivalvet:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra andra filer.
 - Implementera filväljare eller ZIP-logik här.
 - Lägga till beroenden eller behörigheter.
+utfall: godkänd 2026-10-11 (tog bort oanvända säkerhetskopia-kontrakt i MainActivity)
