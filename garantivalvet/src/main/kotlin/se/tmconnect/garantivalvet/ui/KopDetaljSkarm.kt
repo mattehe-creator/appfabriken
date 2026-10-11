@@ -57,6 +57,7 @@ fun KopDetaljSkarm(
     onTillbaka: () -> Unit,
     arPro: Boolean,
     onExportPdf: () -> Unit,
+    onDelaPdf: () -> Unit,
     onVisaProDialog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -237,6 +238,21 @@ fun KopDetaljSkarm(
                     .heightIn(min = 48.dp)
             ) {
                 Text(text = stringResource(R.string.export_pdf))
+            }
+
+            Button(
+                onClick = {
+                    if (arPro) {
+                        onDelaPdf()
+                    } else {
+                        onVisaProDialog()
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp),
+            ) {
+                Text(text = stringResource(R.string.export_dela))
             }
 
             Button(onClick = onAndra, modifier = Modifier.fillMaxWidth()) {

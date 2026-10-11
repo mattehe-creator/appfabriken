@@ -17,6 +17,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.FileProvider
+import java.io.File
+import java.io.FileOutputStream
 import java.time.LocalDate
 import se.tmconnect.garantivalvet.data.GarantiDatabas
 import se.tmconnect.garantivalvet.data.InstallningarLager
@@ -224,6 +227,78 @@ class MainActivity : ComponentActivity() {
                                 onExportPdf = {
                                     exportKop = kop
                                     createPdfContract.launch(reklamationsPdfFilnamn(kop.vad, kop.kopdatum))
+                                },
+                                onDelaPdf = {
+                                    try {
+                                        val etiketter = UnderlagEtiketter(
+                                            vad = getString(R.string.underlag_vad),
+                                            varKopt = getString(R.string.underlag_var_kopt),
+                                            kopdatum = getString(R.string.underlag_kopdatum),
+                                            pris = getString(R.string.underlag_pris),
+                                            garantiManader = getString(R.string.underlag_garanti_manader),
+                                            garantiSlut = getString(R.string.underlag_garanti_slut),
+                                            reklamationSlut = getString(R.string.underlag_reklamation_slut),
+                                            presumtionSlut = getString(R.string.underlag_presumtion_slut),
+                                            reklamationStatus = getString(R.string.underlag_reklamation_status),
+                                            statusFelAntasFunnits = getString(R.string.underlag_status_fel_antas_funnits),
+                                            statusGaller = getString(R.string.underlag_status_galler),
+                                            statusUtgangen = getString(R.string.underlag_status_utgangen),
+                                            anteckning = getString(R.string.underlag_anteckning),
+                                            skapad = getString(R.string.underlag_skapad),
+                                        )
+
+                                        val dokumentRubrik = getString(R.string.underlag_rubrik)
+                                        val locale = resources.configuration.locales[0]
+
+                                        val underlag = byggUnderlag(
+                                            kop,
+                                            LocalDate.now(),
+                                            etiketter,
+                                            dokumentRubrik,
+                                            locale,
+                                        )
+
+                                        val kvittoBitmap = viewModel.sparatKvittoUri(kop)?.let { kvittoUri ->
+                                            try {
+                                                contentResolver.openInputStream(kvittoUri)?.use { stream ->
+                                                    android.graphics.BitmapFactory.decodeStream(stream)
+                                                }
+                                            } catch (_: Exception) {
+                                                null
+                                            }
+                                        }
+
+                                        val pdfFil = File(
+                                            cacheDir,
+                                            "export/${reklamationsPdfFilnamn(kop.vad, kop.kopdatum)}",
+                                        )
+                                        pdfFil.parentFile?.mkdirs()
+
+                                        FileOutputStream(pdfFil).use { stream ->
+                                            val resultat = skrivUnderlagTillPdf(underlag, stream, kvittoBitmap)
+                                            if (resultat is PdfExportResult.Ok) {
+                                                val fileUri = FileProvider.getUriForFile(
+                                                    this,
+                                                    KvittoLager.fileProviderAuthority(this),
+                                                    pdfFil,
+                                                )
+
+                                                val intent = Intent(Intent.ACTION_SEND).apply {
+                                                    type = "application/pdf"
+                                                    putExtra(Intent.EXTRA_STREAM, fileUri)
+                                                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                                }
+
+                                                startActivity(
+                                                    Intent.createChooser(
+                                                        intent,
+                                                        getString(R.string.export_dela),
+                                                    ),
+                                                )
+                                            }
+                                        }
+                                    } catch (_: Exception) {
+                                    }
                                 },
                                 onVisaProDialog = viewModel::visaProDialog,
                             )
