@@ -63,4 +63,13 @@
     <string name="detalj_reklamation_forklaring">You can claim faults that appear within three years of purchase. Faults that appear within two years are presumed to have existed at purchase. Counted from the purchase date and applies to goods bought from a business.</string>
     <string name="detalj_reklamation_vagledning">This information is for guidance only and does not constitute legal advice.</string>
     <string name="detalj_reklamation_aldre_lag">Purchases before May 1, 2022 are subject to older rules.</string>
+    
+    <!-- Pro -->
+    <string name="pro">Pro</string>
+    <string name="pro_las_upp">Unlock Pro</string>
+    <string name="pro_forklaring">The free version saves up to 15 purchases. Pro is a one-time purchase without subscription and unlocks unlimited purchases.</string>
+    <string name="pro_du_har">You have Pro</string>
+    <string name="pro_kop_misslyckades">The purchase could not be completed. Try again.</string>
+    <string name="pro_grans_nadd">Limit reached: 15 purchases</string>
+    <string name="pro_inte_nu">Not now</string>
 </resources>
