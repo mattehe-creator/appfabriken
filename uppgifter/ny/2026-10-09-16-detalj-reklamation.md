@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-09-reklamationsratt.md
 försök: 1
-beror-på: 2026-10-09-12-reklamation-strangar.md, cursor:2026-10-09-reklamationsratt
+beror-på: 2026-10-09-12-reklamation-strangar.md
 
 ## Ändra bara dessa filer
 - garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/ui/KopDetaljSkarm.kt
