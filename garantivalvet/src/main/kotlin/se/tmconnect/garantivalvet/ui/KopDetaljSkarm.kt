@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -54,6 +55,9 @@ fun KopDetaljSkarm(
     onAndra: () -> Unit,
     onTaBort: () -> Unit,
     onTillbaka: () -> Unit,
+    arPro: Boolean,
+    onExportPdf: () -> Unit,
+    onVisaProDialog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var visaBekraftaTaBort by remember { mutableStateOf(false) }
@@ -218,6 +222,21 @@ fun KopDetaljSkarm(
                             .clickable(onClick = onOppnaKvitto),
                     )
                 }
+            }
+
+            Button(
+                onClick = {
+                    if (arPro) {
+                        onExportPdf()
+                    } else {
+                        onVisaProDialog()
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp)
+            ) {
+                Text(text = stringResource(R.string.export_pdf))
             }
 
             Button(onClick = onAndra, modifier = Modifier.fillMaxWidth()) {

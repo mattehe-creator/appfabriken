@@ -22,7 +22,13 @@ import se.tmconnect.garantivalvet.data.GarantiDatabas
 import se.tmconnect.garantivalvet.data.InstallningarLager
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
+import se.tmconnect.garantivalvet.data.Kop
+import se.tmconnect.garantivalvet.export.PdfExportResult
+import se.tmconnect.garantivalvet.export.reklamationsPdfFilnamn
+import se.tmconnect.garantivalvet.export.skrivUnderlagTillPdf
 import se.tmconnect.garantivalvet.paminnelse.PaminnelseWorker
+import se.tmconnect.garantivalvet.regler.UnderlagEtiketter
+import se.tmconnect.garantivalvet.regler.byggUnderlag
 import se.tmconnect.garantivalvet.ui.KopDetaljSkarm
 import se.tmconnect.garantivalvet.ui.KopFormularSkarm
 import se.tmconnect.garantivalvet.ui.KopListaSkarm
@@ -87,7 +93,71 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Resultatkontrakt för PDF-export
+    private val createPdfContract = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/pdf")
+    ) { uri: Uri? ->
+        if (uri != null) {
+            exportKop?.let { kop ->
+                try {
+                    // Bygg underlaget
+                    val etiketter = UnderlagEtiketter(
+                        vad = getString(R.string.underlag_vad),
+                        varKopt = getString(R.string.underlag_var_kopt),
+                        kopdatum = getString(R.string.underlag_kopdatum),
+                        pris = getString(R.string.underlag_pris),
+                        garantiManader = getString(R.string.underlag_garanti_manader),
+                        garantiSlut = getString(R.string.underlag_garanti_slut),
+                        reklamationSlut = getString(R.string.underlag_reklamation_slut),
+                        presumtionSlut = getString(R.string.underlag_presumtion_slut),
+                        reklamationStatus = getString(R.string.underlag_reklamation_status),
+                        statusFelAntasFunnits = getString(R.string.underlag_status_fel_antas_funnits),
+                        statusGaller = getString(R.string.underlag_status_galler),
+                        statusUtgangen = getString(R.string.underlag_status_utgangen),
+                        anteckning = getString(R.string.underlag_anteckning),
+                        skapad = getString(R.string.underlag_skapad)
+                    )
+                    
+                    val dokumentRubrik = getString(R.string.underlag_rubrik)
+                    val locale = resources.configuration.locales[0]
+                    
+                    val underlag = byggUnderlag(
+                        kop,
+                        LocalDate.now(),
+                        etiketter,
+                        dokumentRubrik,
+                        locale
+                    )
+                    
+                    // Hämta kvittobitmap om det finns ett kvitto
+                    val kvittoBitmap = viewModel.sparatKvittoUri(kop)?.let { kvittoUri ->
+                            try {
+                                contentResolver.openInputStream(kvittoUri)?.use { stream ->
+                                    android.graphics.BitmapFactory.decodeStream(stream)
+                                }
+                            } catch (_: Exception) {
+                                null
+                            }
+                    }
+                    
+                    // Skriv PDF till fil
+                    contentResolver.openOutputStream(uri)?.use { stream ->
+                        val resultat = skrivUnderlagTillPdf(underlag, stream, kvittoBitmap)
+                        senasteExportPdfResultat = resultat
+                    }
+                    
+                    exportKop = null
+                } catch (e: Exception) {
+                    senasteExportPdfResultat = PdfExportResult.Fel(e.message ?: e.javaClass.simpleName)
+                    exportKop = null
+                }
+            }
+        }
+    }
+
     private var behorighetNekad by mutableStateOf(false)
+    private var exportKop: Kop? = null
+    var senasteExportPdfResultat: PdfExportResult? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -150,6 +220,12 @@ class MainActivity : ComponentActivity() {
                                 onAndra = { viewModel.visaAndra(kop.id) },
                                 onTaBort = viewModel::taBortValtKop,
                                 onTillbaka = viewModel::visaLista,
+                                arPro = arPro,
+                                onExportPdf = {
+                                    exportKop = kop
+                                    createPdfContract.launch(reklamationsPdfFilnamn(kop.vad, kop.kopdatum))
+                                },
+                                onVisaProDialog = viewModel::visaProDialog,
                             )
                         }
                     }
