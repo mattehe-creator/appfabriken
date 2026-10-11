@@ -429,8 +429,19 @@ def bevaka_filen(server):
     sidan laddar om sig själv när servern är tillbaka."""
     fil = Path(__file__).resolve()
     senast = fil.stat().st_mtime
+    egen_kopia = DATA.resolve() in fil.parents  # körs från LOCALAPPDATA, inte från repots arbetskopia
+    varv = 0
     while True:
         time.sleep(5)
+        varv += 1
+        if egen_kopia and varv % 24 == 0:  # var 2:a minut: hämta senaste panel.py från main
+            try:
+                d = gh(f"repos/{REPO}/contents/verktyg/panel.py?ref=main") or {}
+                ny_kod = base64.b64decode(d.get("content", ""))
+                if ny_kod and ny_kod != fil.read_bytes():
+                    fil.write_bytes(ny_kod)
+            except Exception:
+                pass
         try:
             ny = fil.stat().st_mtime
         except OSError:
