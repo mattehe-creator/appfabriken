@@ -10,7 +10,7 @@ beror-på: ingen
 
 ## Läs som förebild (ändra inte)
 - garantivalvet/src/test/kotlin/se/tmconnect/garantivalvet/StringsNycklarTest.kt
-- garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/regler/Underlag.kt
+- garantivalvet/src/main/res/values/strings.xml (befintliga etiketter för fält)
 
 ## Uppgift
 Lägg till samma nycklar på engelska och svenska:
