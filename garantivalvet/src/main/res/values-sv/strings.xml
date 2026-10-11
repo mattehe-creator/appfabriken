@@ -63,4 +63,13 @@
     <string name="detalj_reklamation_forklaring">Du kan reklamera fel som visar sig inom tre år från köpet. Fel som visar sig inom två år antas ha funnits vid köpet. Räknas från köpdatum och gäller varor köpta av en näringsidkare.</string>
     <string name="detalj_reklamation_vagledning">Detta är vägledning och inte juridisk rådgivning.</string>
     <string name="detalj_reklamation_aldre_lag">Köp före 1 maj 2022 omfattas av äldre regler.</string>
+    
+    <!-- Pro -->
+    <string name="pro">Pro</string>
+    <string name="pro_las_upp">Lås upp Pro</string>
+    <string name="pro_forklaring">Gratisversionen sparar upp till 15 köp. Pro är ett engångsköp utan prenumeration och låser upp obegränsat antal köp.</string>
+    <string name="pro_du_har">Du har Pro</string>
+    <string name="pro_kop_misslyckades">Köpet kunde inte genomföras. Försök igen.</string>
+    <string name="pro_grans_nadd">Gränsen är nådd: 15 köp</string>
+    <string name="pro_inte_nu">Inte nu</string>
 </resources>
