@@ -100,12 +100,20 @@ class MainActivity : ComponentActivity() {
                 val aktivSkarm by viewModel.aktivSkarm.collectAsState()
                 val valtKop by viewModel.valtKop.collectAsState()
                 val paminnelserPa by viewModel.paminnelserPa.collectAsState()
+                val arPro by viewModel.arPro.collectAsState()
+                val proDialogSynlig by viewModel.proDialogSynlig.collectAsState()
 
                 when (aktivSkarm) {
                     KopSkarm.Lista -> {
                         KopListaSkarm(
                             kopLista = kopLista,
-                            onLaggTill = viewModel::visaLaggTill,
+                            onLaggTill = {
+                                if (viewModel.kanLaggaTillNy()) {
+                                    viewModel.visaLaggTill()
+                                } else {
+                                    viewModel.visaProDialog()
+                                }
+                            },
                             onOppna = viewModel::visaDetalj,
                             paminnelserPa = paminnelserPa,
                             onPaminnelserAndras = { pa ->
@@ -123,7 +131,14 @@ class MainActivity : ComponentActivity() {
                                     behorighetNekad = false
                                 }
                             },
-                            behorighetNekad = behorighetNekad
+                            behorighetNekad = behorighetNekad,
+                            arPro = arPro,
+                            proDialogSynlig = proDialogSynlig,
+                            onVisaProDialog = viewModel::visaProDialog,
+                            onStangProDialog = viewModel::stangProDialog,
+                            onKopPro = {
+                                viewModel.kopPro(this)
+                            }
                         )
                     }
 

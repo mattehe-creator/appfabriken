@@ -20,7 +20,8 @@ import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
 import se.tmconnect.garantivalvet.paminnelse.PaminnelsePlanerare
-import se.tmconnect.garantivalvet.regler.sorteraEfterNarmasteFrist
+import se.tmconnect.garantivalvet.regler.kanLaggaTill
+import se.tmconnect.garantivalvet.regler.GRATIS_MAX_KOP
 import se.tmconnect.karna.pro.ProKalla
 
 class KopViewModel(
@@ -43,9 +44,13 @@ class KopViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = false,
         )
+    
+    private val _proDialogSynlig = MutableStateFlow(false)
+    val proDialogSynlig: StateFlow<Boolean> = _proDialogSynlig.asStateFlow()
+
     val kopLista: StateFlow<List<Kop>> =
         repository.alla
-            .map { lista -> sorteraEfterNarmasteFrist(lista, idag) }
+            .map { lista -> lista.sortedBy { it.kopdatum } }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
@@ -101,12 +106,22 @@ class KopViewModel(
         _aktivSkarm.value = KopSkarm.Lista
         _valtKop.value = null
         rensaKvittoFormularTillstand()
+        stangProDialog()
     }
 
     fun visaLaggTill() {
         _aktivSkarm.value = KopSkarm.LaggTill
         _valtKop.value = null
         rensaKvittoFormularTillstand()
+        stangProDialog()
+    }
+
+    fun visaProDialog() {
+        _proDialogSynlig.value = true
+    }
+
+    fun stangProDialog() {
+        _proDialogSynlig.value = false
     }
 
     fun visaDetalj(kopId: Long) {
@@ -114,6 +129,7 @@ class KopViewModel(
             _valtKop.value = repository.hamta(kopId)
             _aktivSkarm.value = KopSkarm.Detalj(kopId)
             rensaKvittoFormularTillstand()
+            stangProDialog()
         }
     }
 
@@ -122,6 +138,7 @@ class KopViewModel(
             _valtKop.value = repository.hamta(kopId)
             _aktivSkarm.value = KopSkarm.Andra(kopId)
             rensaKvittoFormularTillstand()
+            stangProDialog()
         }
     }
 
@@ -266,6 +283,11 @@ class KopViewModel(
     private fun rensaKvittoFormularTillstand() {
         _tillfalligtKvittoUri.value = null
         kvittoSkaTasBortVidSpara = false
+    }
+    
+    /** Kontrollerar om användaren kan lägga till ett nytt köp */
+    fun kanLaggaTillNy(): Boolean {
+        return kanLaggaTill(kopLista.value.size, arPro.value)
     }
 }
 

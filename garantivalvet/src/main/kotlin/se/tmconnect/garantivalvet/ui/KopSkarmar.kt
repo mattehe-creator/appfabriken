@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,6 +37,11 @@ fun KopListaSkarm(
     paminnelserPa: Boolean,
     onPaminnelserAndras: (Boolean) -> Unit,
     behorighetNekad: Boolean,
+    arPro: Boolean,
+    proDialogSynlig: Boolean,
+    onVisaProDialog: () -> Unit,
+    onStangProDialog: () -> Unit,
+    onKopPro: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -111,6 +119,37 @@ fun KopListaSkarm(
                     )
                 }
             }
+        }
+        
+        // Visa Pro-dialog om den är synlig
+        if (proDialogSynlig) {
+            AlertDialog(
+                onDismissRequest = onStangProDialog,
+                title = { Text(text = stringResource(R.string.pro_dialog_titel)) },
+                text = { 
+                    Column {
+                        Text(text = stringResource(R.string.pro_dialog_beskrivning))
+                        Text(
+                            text = stringResource(R.string.pro_dialog_grans),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                },
+                confirmButton = {
+                    Button(onClick = {
+                        onKopPro()
+                        onStangProDialog()
+                    }) {
+                        Text(text = stringResource(R.string.pro_dialog_knop))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = onStangProDialog) {
+                        Text(text = stringResource(R.string.inte_nu))
+                    }
+                }
+            )
         }
     }
 }
