@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-11-pro-gratisgrans.md
 försök: 1
-beror-på: cursor:2026-10-11-pro-gratisgrans
+beror-på: 2026-10-11-18-pro-strangar.md
 
 ## Ändra bara dessa filer
 - garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/ui/KopViewModel.kt
