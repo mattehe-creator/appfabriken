@@ -19,7 +19,7 @@ import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
 import se.tmconnect.garantivalvet.paminnelse.PaminnelsePlanerare
-import se.tmconnect.garantivalvet.regler.sorteraEfterGaranti
+import se.tmconnect.garantivalvet.regler.sorteraEfterNarmasteFrist
 
 class KopViewModel(
     private val repository: KopRepository,
@@ -30,7 +30,7 @@ class KopViewModel(
 ) : ViewModel() {
     val kopLista: StateFlow<List<Kop>> =
         repository.alla
-            .map { lista -> sorteraEfterGaranti(lista, idag) }
+            .map { lista -> sorteraEfterNarmasteFrist(lista, idag) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),

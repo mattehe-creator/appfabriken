@@ -33,3 +33,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*KopSorteringNarmasteFristTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-11 (KopViewModelFactory återställd, oanvända importer)
