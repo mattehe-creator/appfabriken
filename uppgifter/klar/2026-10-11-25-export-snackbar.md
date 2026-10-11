@@ -34,3 +34,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*UnderlagTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-11 (inget)
