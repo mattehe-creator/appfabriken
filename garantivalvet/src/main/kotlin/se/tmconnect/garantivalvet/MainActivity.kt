@@ -107,13 +107,7 @@ class MainActivity : ComponentActivity() {
                     KopSkarm.Lista -> {
                         KopListaSkarm(
                             kopLista = kopLista,
-                            onLaggTill = {
-                                if (viewModel.kanLaggaTillNy()) {
-                                    viewModel.visaLaggTill()
-                                } else {
-                                    viewModel.visaProDialog()
-                                }
-                            },
+                            onLaggTill = viewModel::visaLaggTill,
                             onOppna = viewModel::visaDetalj,
                             paminnelserPa = paminnelserPa,
                             onPaminnelserAndras = { pa ->
@@ -136,9 +130,7 @@ class MainActivity : ComponentActivity() {
                             proDialogSynlig = proDialogSynlig,
                             onVisaProDialog = viewModel::visaProDialog,
                             onStangProDialog = viewModel::stangProDialog,
-                            onKopPro = {
-                                viewModel.kopPro(this)
-                            }
+                            onKopPro = viewModel::kopPro
                         )
                     }
 

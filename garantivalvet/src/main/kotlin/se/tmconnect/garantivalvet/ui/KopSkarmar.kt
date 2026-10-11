@@ -41,7 +41,7 @@ fun KopListaSkarm(
     proDialogSynlig: Boolean,
     onVisaProDialog: () -> Unit,
     onStangProDialog: () -> Unit,
-    onKopPro: () -> Unit,
+    onKopPro: (activity: android.app.Activity) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -89,7 +89,13 @@ fun KopListaSkarm(
             }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onLaggTill) {
+            FloatingActionButton(onClick = {
+                if (arPro || kopLista.size < 15) {
+                    onLaggTill()
+                } else {
+                    onVisaProDialog()
+                }
+            }) {
                 Text(text = stringResource(R.string.lagg_till))
             }
         },
@@ -121,24 +127,16 @@ fun KopListaSkarm(
             }
         }
         
-        // Visa Pro-dialog om den är synlig
         if (proDialogSynlig) {
             AlertDialog(
                 onDismissRequest = onStangProDialog,
                 title = { Text(text = stringResource(R.string.pro_dialog_titel)) },
-                text = { 
-                    Column {
-                        Text(text = stringResource(R.string.pro_dialog_beskrivning))
-                        Text(
-                            text = stringResource(R.string.pro_dialog_grans),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                },
+                text = { Text(text = stringResource(R.string.pro_dialog_beskrivning)) },
                 confirmButton = {
                     Button(onClick = {
-                        onKopPro()
+                        // Vi behöver activity för att köra köpflödet
+                        // Denna kommer från MainActivity, så vi skickar den via callback
+                        onKopPro(androidx.compose.ui.platform.LocalContext.current as android.app.Activity)
                         onStangProDialog()
                     }) {
                         Text(text = stringResource(R.string.pro_dialog_knop))
