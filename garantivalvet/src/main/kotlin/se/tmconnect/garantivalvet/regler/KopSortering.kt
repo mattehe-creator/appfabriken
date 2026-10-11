@@ -40,6 +40,17 @@ fun sorteraEfterNarmasteFrist(lista: List<Kop>, idag: LocalDate): List<Kop> {
         return null
     }
     
+    fun senastPasseradFrist(kop: Kop): LocalDate? {
+        val garantiSlutDatum = garantiSlut(kop)
+        val reklamationSlutDatum = reklamationSlut(kop)
+        
+        // Returnera den senaste av de två fristerna som är passerade
+        return when {
+            reklamationSlutDatum != null && idag.isAfter(reklamationSlutDatum) -> reklamationSlutDatum
+            else -> garantiSlutDatum
+        }
+    }
+    
     val (aktiva, utgangna) = lista.partition { kop ->
         närmasteFrist(kop) != null
     }
@@ -49,17 +60,7 @@ fun sorteraEfterNarmasteFrist(lista: List<Kop>, idag: LocalDate): List<Kop> {
     )
     
     val sorteradeUtgangna = utgangna.sortedWith(
-        compareByDescending<Kop> { 
-            // För utgångna köp, använd den senast passerade fristen
-            val garantiSlutDatum = garantiSlut(it)
-            val reklamationSlutDatum = reklamationSlut(it)
-            
-            // Returnera den senaste av de två fristerna (eller null om båda är null)
-            when {
-                reklamationSlutDatum != null && !idag.isAfter(reklamationSlutDatum) -> garantiSlutDatum
-                else -> garantiSlutDatum
-            }
-        }.thenBy { it.vad }
+        compareByDescending<Kop> { senastPasseradFrist(it) }.thenBy { it.vad }
     )
     
     return sorteradeAktiva + sorteradeUtgangna
