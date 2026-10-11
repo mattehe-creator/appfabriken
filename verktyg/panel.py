@@ -448,6 +448,10 @@ h1{margin:0;font-size:18px;letter-spacing:.2em;text-shadow:0 0 8px var(--g)}h2{m
 #eta{font-size:20px;text-shadow:0 0 8px var(--g)}#steg{columns:2;column-gap:20px;font-size:12px;margin-top:6px}
 #steg li{margin:0 0 2px;break-inside:avoid}.klar{color:var(--g)}.pagar{color:var(--k)}.kvar{color:var(--g2)}
 #tok{display:grid;grid-template-columns:repeat(2,auto);gap:4px 22px;margin-top:4px}#tok b{font-size:20px;font-weight:normal;text-shadow:0 0 8px var(--g)}
+[data-tip]{position:relative;cursor:help}
+[data-tip]::after{content:attr(data-tip);position:absolute;left:0;top:calc(100% + 8px);z-index:30;width:380px;max-width:85vw;padding:10px 12px;background:#001a08;border:1px solid var(--g);color:var(--g);font:12px/1.5 Consolas,"Cascadia Mono",monospace;letter-spacing:0;text-transform:none;text-shadow:none;white-space:pre-line;box-shadow:0 0 18px rgba(0,255,102,.35);opacity:0;pointer-events:none;transition:opacity .15s}
+[data-tip]:hover::after{opacity:1}[data-tip].tip-r::after{left:auto;right:0}
+#topp{overflow:visible;position:relative;z-index:6}#mat{position:relative;z-index:5}
 #kod{grid-row:3/6;white-space:pre-wrap;word-break:break-word}
 #kod .rad{opacity:.95}#kod .ny{animation:in .6s}@keyframes in{from{color:#fff;text-shadow:0 0 10px #fff}}
 .cursor::after{content:"█";animation:blink 1s steps(1) infinite}@keyframes blink{50%{opacity:0}}
@@ -458,7 +462,7 @@ ul{list-style:none;margin:0;padding:0}li{margin:0 0 6px}
 </style></head><body><canvas id="regn"></canvas><main>
 <section id="topp"><h1>APPFABRIKEN</h1><span id="fas">...</span><span id="kon" class="chip">Kön ...</span><span id="bygge" class="chip">Bygge ...</span><span id="vchip" class="chip">...</span><span id="uppgift"></span><span id="text" class="liten"></span><div id="larm"></div></section>
 <section id="mat">
-<div><h2>MÄTARE // AVSTÅND TILL RELEASE</h2>
+<div><h2 id="h-matare">MÄTARE // AVSTÅND TILL RELEASE</h2>
 <svg viewBox="0 0 200 124" width="230" role="img" aria-label="Procent klart till release">
 <path d="M20 100 A80 80 0 0 1 180 100" pathLength="100" fill="none" stroke="#0a8f3c" stroke-width="12" opacity=".35"/>
 <path id="bage" d="M20 100 A80 80 0 0 1 180 100" pathLength="100" fill="none" stroke="#00ff66" stroke-width="12" stroke-dasharray="0 100"/>
@@ -467,9 +471,9 @@ ul{list-style:none;margin:0;padding:0}li{margin:0 0 6px}
 <text x="20" y="118" text-anchor="middle" font-size="9" fill="#0a8f3c" font-family="Consolas,monospace">0</text>
 <text x="180" y="118" text-anchor="middle" font-size="9" fill="#0a8f3c" font-family="Consolas,monospace">100</text></svg></div>
 <div style="flex:1;min-width:300px"><h2 id="malrubrik">RELEASE</h2><div id="eta">Räknar...</div><div id="spann" class="liten"></div><ul id="steg"></ul><div id="anm" class="liten"></div></div>
-<div><h2>TOKENS // LOKAL MODELL</h2><div id="tok"><span class="liten">Totalt</span><span class="liten">Idag</span><b id="t-totalt">-</b><b id="t-idag">-</b><span class="liten">Denna vecka</span><span class="liten">Per sekund (snitt)</span><b id="t-vecka">-</b><b id="t-sek">-</b></div>
+<div><h2 id="h-tokens">TOKENS // LOKAL MODELL</h2><div id="tok"><span class="liten">Totalt</span><span class="liten">Idag</span><b id="t-totalt">-</b><b id="t-idag">-</b><span class="liten">Denna vecka</span><span class="liten">Per sekund (snitt)</span><b id="t-vecka">-</b><b id="t-sek">-</b></div>
 <div id="t-not" class="liten" style="max-width:300px;margin-top:6px"></div></div>
-<div><h2>DATORN // MODELLEN</h2><div id="dator" class="liten" style="font-size:14px;line-height:1.6"></div></div>
+<div><h2 id="h-dator">DATORN // MODELLEN</h2><div id="dator" class="liten" style="font-size:14px;line-height:1.6"></div></div>
 </section>
 <section id="kod"><h2>LOKAL MODELL // AIDER</h2><div id="rader"></div><span class="cursor"></span></section>
 <section id="cur"><h2>CURSOR // NU</h2><ul id="cursornu"></ul><div class="liten" style="margin-top:6px">Detaljer: <a href="https://cursor.com/agents" target="_blank" style="color:var(--c)">cursor.com/agents</a> · <a href="https://github.com/mattehe-creator/appfabriken/actions" target="_blank" style="color:var(--c)">GitHub Actions</a></div></section>
@@ -488,13 +492,22 @@ const kls=v=>v==="cursor"?"cursor-a":v;
 const esc=s=>String(s).replace(/[&<>]/g,t=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[t]));
 let sist=[];
 async function lokal(){try{const d=await (await fetch("/api/lokal")).json();
-const f=document.getElementById("fas");f.textContent=d.fas;f.className=d.fas;
+const f=document.getElementById("fas");f.textContent=d.fas;f.className=d.fas;sat("fas",fasTip(d.fas));
 document.getElementById("uppgift").textContent=d.uppgift||"";
 let t=d.text||"";if(d.fas==="kodar"&&d.aider_sekunder_sedan!=null)t+=" Senaste utskrift för "+d.aider_sekunder_sedan+" s sedan.";
 document.getElementById("text").textContent=t;dator(d.dator);
 const r=d.aider||[];if(r.join("\n")!==sist.join("\n")){const ny=r.length-sist.length;
 document.getElementById("rader").innerHTML=r.map((l,i)=>`<div class="rad${i>=r.length-Math.max(ny,0)?" ny":""}">${esc(l)}</div>`).join("");
 sist=r;const k=document.getElementById("kod");k.scrollTop=k.scrollHeight}}catch(e){}}
+const sat=(id,t,r)=>{const e=document.getElementById(id);if(!e)return;e.setAttribute("data-tip",t);if(r)e.classList.add("tip-r")};
+const FAS={kodar:"Aider skriver kod för en uppgift.",testar:"Koden är skriven och testerna körs.",pushar:"Resultatet skickas till GitHub som en PR.",klar:"Uppgiften är klar och inskickad.",vilar:"Ingen uppgift pågår. Modellen väntar på nästa i kön.",fel:"Körningen avbröts. Orsaken står bredvid.","okänd":"Ingen körning har skrivit status än."};
+const fasTip=f=>"LOKAL MODELL (Aider på din dator)\nJust nu: "+(f||"okänd").toUpperCase()+". "+(FAS[f]||FAS["okänd"])+"\n\nAlla lägen:\n"+Object.entries(FAS).map(([k,v])=>"• "+k.toUpperCase()+": "+v).join("\n");
+const KON_TIP="KÖN\nVisar om arbetsflödet rör sig.\n\n• AKTIV: något har hänt på GitHub eller lokalt de senaste 30 minuterna, eller den lokala modellen kodar just nu.\n• STÅR STILL: inget har hänt på 30 minuter, modellen kodar inte, och något väntar (uppgifter i kön eller en öppen PR) eller releasen är inte klar. Orsaken står på raden under.";
+const BYGGE_TIP="BYGGE MAIN\nGitHub kompilerar appen och kör alla tester varje gång något hamnar på main.\n\n• GRÖNT: bygget och alla tester gick igenom.\n• PÅGÅR: bygget körs just nu och tar några minuter. Inget att göra, bara vänta.\n• RÖTT: bygget eller ett test föll. Något på main är trasigt och Claude behöver rätta det.\n• OKÄNT: panelen kunde inte läsa byggstatus (GitHub svarar inte, eller gh är utloggad).";
+const VANTAR_TIP="VÄNTAR PÅ DIG\nSådant som bara du kan göra. Listan finns i rutan Kö och PR.\n\n• MERGA: en PR från Claude som väntar på din merge på GitHub.\n• FRÅGA: en öppen fråga i FRAGOR.md som Claude behöver svar på.\n• DIN TUR: ett steg mot release där du är näst på tur, till exempel att prova appen på telefonen eller Play Console.\n• Inget väntar på dig: du behöver inte göra något.";
+const TIPS={"h-matare":"MÄTARE\nHur långt Garantivalvet 1.0 har kommit, 0 till 100.\n\nVarje steg har en vikt efter uppskattad arbetsinsats (summan är 100). Klara steg räknas helt. Steg som pågår räknas efter andelen klara uppgifter.","malrubrik":"BERÄKNAT RELEASEDATUM\nByggfarten är klarad vikt per dygn sedan start. Det som återstår av byggarbetet delas med farten.\n\nSedan läggs dygn till för externa steg: dina tester på telefon och Googles granskning (antaganden i release.json).\n\nSpannet är farten gånger 1,5 (tidigast) och farten delad på 2 (senast). Det är en uppskattning, inte ett löfte.","h-tokens":"TOKENS\nRäknas bara för den lokala modellen, ur Aiders rader i körloggarna (skickat plus mottaget). Aider avrundar till tusental, så siffrorna är ungefärliga.\n\n• TOTALT: sedan första loggen.\n• IDAG: sedan midnatt.\n• DENNA VECKA: sedan måndag.\n• PER SEKUND: snitt över körtiden (inklusive test och git), ingen live-mätare.\n\nCursor och Claude mäts inte: det finns ingen datakälla.","h-dator":"DATORN OCH MODELLEN\n• GPU: last och temperatur från nvidia-smi.\n• VRAM: använt minne på grafikkortet av totalt.\n• OLLAMA: vilken modell som ligger laddad. \"Svarar inte\" betyder att Ollama inte körs.\n• KLARA IDAG: lokala uppgifter som mergats sedan midnatt.\n\nSaknas raden finns ingen mätning (till exempel inget NVIDIA-kort)."};
+for(const [id,tx] of Object.entries(TIPS))sat(id,tx,id==="h-tokens"||id==="h-dator");
+sat("kon",KON_TIP);sat("bygge",BYGGE_TIP);sat("vchip",VANTAR_TIP);sat("fas",fasTip("okänd"));
 let klarIdag=0,senasteDator=null;
 function dator(x){if(x!==undefined)senasteDator=x;const d=senasteDator||{};const g=d.gpu;const rader=[];
 rader.push(g?`GPU ${g.last} % · ${g.temp} °C`:"GPU: ingen mätning");
@@ -520,15 +533,16 @@ document.getElementById("t-vecka").textContent=sv(d.vecka);
 document.getElementById("t-sek").textContent=d.per_sek==null?"-":sv(d.per_sek,1);
 document.getElementById("t-not").textContent=`${d.korningar} körningar. Aiders egen räkning, avrundad till tusental, skickat plus mottaget.`+(d.per_sek_senaste!=null?` Senaste körningen ${sv(d.per_sek_senaste,1)} per sekund.`:"")+" Cursor och Claude mäts inte här."}catch(e){}}
 function chips(d){const kon=document.getElementById("kon"),larm=document.getElementById("larm");
-if(d.stilla){kon.textContent="Kön står still "+d.stilla.min+" min";kon.className="chip fel";larm.textContent=d.stilla.orsak}
-else{kon.textContent="Kön aktiv";kon.className="chip ok";larm.textContent=""}
+if(d.stilla){kon.textContent="Kön står still "+d.stilla.min+" min";kon.className="chip fel";larm.textContent=d.stilla.orsak;sat("kon",KON_TIP+"\n\nJust nu: STÅR STILL i "+d.stilla.min+" min. "+d.stilla.orsak)}
+else{kon.textContent="Kön aktiv";kon.className="chip ok";larm.textContent="";sat("kon",KON_TIP+"\n\nJust nu: AKTIV.")}
 const b=document.getElementById("bygge"),x=d.bygge;
-if(!x){b.textContent="Bygge okänt";b.className="chip"}
-else if(x.status!=="completed"){b.textContent="Bygge main pågår";b.className="chip var"}
-else if(x.slutsats==="success"){b.textContent="Bygge main grönt";b.className="chip ok"}
-else{b.textContent="Bygge main RÖTT";b.className="chip fel"}
+const nu=s=>BYGGE_TIP+"\n\nJust nu: "+s+".";
+if(!x){b.textContent="Bygge okänt";b.className="chip";sat("bygge",nu("OKÄNT"))}
+else if(x.status!=="completed"){b.textContent="Bygge main pågår";b.className="chip var";sat("bygge",nu("PÅGÅR"))}
+else if(x.slutsats==="success"){b.textContent="Bygge main grönt";b.className="chip ok";sat("bygge",nu("GRÖNT"))}
+else{b.textContent="Bygge main RÖTT";b.className="chip fel";sat("bygge",nu("RÖTT"))}
 const v=document.getElementById("vchip"),n=(d.vantar||[]).length;
-v.textContent=n?"Väntar på dig: "+n:"Inget väntar på dig";v.className="chip "+(n?"var":"ok");
+v.textContent=n?"Väntar på dig: "+n:"Inget väntar på dig";v.className="chip "+(n?"var":"ok");sat("vchip",VANTAR_TIP+"\n\nJust nu: "+(n?n+" sak(er) väntar, se rutan Kö och PR.":"inget väntar."));
 klarIdag=d.klar_idag||0;dator()}
 async function github(){try{const d=await (await fetch("/api/github")).json();release(d.release);chips(d);
 document.getElementById("handelser").innerHTML=d.handelser.map(h=>`<li class="${kls(h.vem)}"><span class="tag">${vemNamn[h.vem]}</span><span class="liten">${new Date(h.tid).toLocaleString("sv-SE",{dateStyle:"short",timeStyle:"short"})}</span> ${esc(h.text)}</li>`).join("");
