@@ -99,7 +99,7 @@ fun KopListaSkarm(
                             Text(text = stringResource(R.string.pro_las_upp))
                         }
                     }
-                    
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
