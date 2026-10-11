@@ -93,4 +93,15 @@
     <string name="export_dela">Share</string>
     <string name="export_pdf_sparad">PDF saved</string>
     <string name="export_pdf_misslyckades">Could not create PDF</string>
+    
+    <!-- Säkerhetskopia -->
+    <string name="sakerhetskopia_rubrik">Backup</string>
+    <string name="sakerhetskopia_beskrivning">The file contains all purchases and receipts. It is saved where you choose, and is not encrypted.</string>
+    <string name="sakerhetskopia_spara">Save backup</string>
+    <string name="sakerhetskopia_hamta">Restore from backup</string>
+    <string name="sakerhetskopia_import_beskrivning">Import only adds new purchases, it does not overwrite existing ones.</string>
+    <string name="sakerhetskopia_sparad">Backup saved</string>
+    <string name="sakerhetskopia_importerad">Imported %1$d purchases, skipped %2$d</string>
+    <string name="sakerhetskopia_kunde_inte_lasas">Could not read the file</string>
+    <string name="sakerhetskopia_nyare_version">The file is from a newer version of the app</string>
 </resources>
