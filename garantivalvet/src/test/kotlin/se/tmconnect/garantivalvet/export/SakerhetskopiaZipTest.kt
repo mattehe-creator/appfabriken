@@ -53,6 +53,26 @@ class SakerhetskopiaZipTest {
     }
 
     @Test
+    fun saknatKvittoExporterasUtanKvittoFil() {
+        val kop = Kop(
+            vad = "Utan kvitto",
+            kopdatum = LocalDate.of(2024, 5, 5),
+            garantiManader = 12,
+            kvittoFil = "finns-inte.jpg",
+        )
+        val zipBytes = ByteArrayOutputStream().use { ut ->
+            Sakerhetskopia.skriv(ut, listOf(kop), kvittoLager)
+            ut.toByteArray()
+        }
+        val las = ByteArrayInputStream(zipBytes).use { Sakerhetskopia.lasIn(it) }
+        assertTrue(las is SakerhetskopiaLasResult.Ok)
+        val ok = las as SakerhetskopiaLasResult.Ok
+        assertEquals(1, ok.innehall.kop.size)
+        assertEquals(null, ok.innehall.kop.single().kvittoFil)
+        assertEquals(0, ok.kvittoFiler.size)
+    }
+
+    @Test
     fun zipSlipAvvisas() {
         val zipBytes = ByteArrayOutputStream().use { ut ->
             ZipOutputStream(ut).use { zip ->

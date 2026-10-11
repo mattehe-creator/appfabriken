@@ -35,3 +35,5 @@ Lägg till testet `saknatKvittoExporterasUtanKvittoFil` enligt första exemplet.
 - Lägga till beroenden.
 - Ändra databasschemat.
 - Ändra JSON-formatet eller `SAKERHETSKOPIA_VERSION`.
+
+utfall: godkänd 2026-10-11 (inget)
