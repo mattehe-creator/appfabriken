@@ -44,6 +44,8 @@ fun KopListaSkarm(
     onVisaProDialog: () -> Unit,
     onStangProDialog: () -> Unit,
     onKopPro: (Activity) -> Unit,
+    onSparaSakerhetskopia: () -> Unit,
+    onHamtaSakerhetskopia: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     // Visa Pro-dialog om den är synlig
@@ -129,6 +131,64 @@ fun KopListaSkarm(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error,
                         )
+                    }
+
+                    // Säkerhetskopia-sektion
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.sakerhetskopia_rubrik),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        Text(
+                            text = stringResource(R.string.sakerhetskopia_beskrivning),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                            text = stringResource(R.string.sakerhetskopia_import_beskrivning),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            Button(
+                                onClick = {
+                                    if (arPro) {
+                                        onSparaSakerhetskopia()
+                                    } else {
+                                        onVisaProDialog()
+                                    }
+                                },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .heightIn(min = 48.dp),
+                            ) {
+                                Text(text = stringResource(R.string.sakerhetskopia_spara))
+                            }
+                            Button(
+                                onClick = {
+                                    if (arPro) {
+                                        onHamtaSakerhetskopia()
+                                    } else {
+                                        onVisaProDialog()
+                                    }
+                                },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .heightIn(min = 48.dp),
+                            ) {
+                                Text(text = stringResource(R.string.sakerhetskopia_hamta))
+                            }
+                        }
                     }
                 }
             }

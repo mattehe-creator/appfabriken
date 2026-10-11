@@ -212,7 +212,9 @@ class MainActivity : ComponentActivity() {
                             proDialogSynlig = proDialogSynlig,
                             onVisaProDialog = viewModel::visaProDialog,
                             onStangProDialog = viewModel::stangProDialog,
-                            onKopPro = { activity -> proKalla.kop(activity) }
+                            onKopPro = { activity -> proKalla.kop(activity) },
+                            onSparaSakerhetskopia = {},
+                            onHamtaSakerhetskopia = {},
                         )
                     }
 
