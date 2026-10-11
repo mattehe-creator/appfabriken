@@ -136,7 +136,7 @@ class MainActivity : ComponentActivity() {
                             proDialogSynlig = proDialogSynlig,
                             onVisaProDialog = viewModel::visaProDialog,
                             onStangProDialog = viewModel::stangProDialog,
-                            onKopPro = viewModel::kopPro
+                            onKopPro = { activity -> proKalla.kop(activity) }
                         )
                     }
 
