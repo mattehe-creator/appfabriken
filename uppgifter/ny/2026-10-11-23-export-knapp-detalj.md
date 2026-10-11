@@ -21,9 +21,9 @@ beror-på: cursor:2026-10-11-export-pdf, 2026-10-11-22-export-pdf-strangar.md
    - Vid tryck: om `arPro` → `onExportPdf()`, annars `onVisaProDialog()`.
 
 2. **`MainActivity`**: Registrera `ActivityResultContracts.CreateDocument("application/pdf")`. Vid export:
-   - Bygg `Underlag` med `byggUnderlag(kop, LocalDate.now(), etiketter från `stringResource`, locale från `Configuration`)`.
+   - Bygg `Underlag` med `byggUnderlag(kop, LocalDate.now(), etiketter, dokumentRubrik, locale)`: `etiketter` är en `UnderlagEtiketter` med texterna från `underlag_*`-strängarna, `dokumentRubrik` är `getString(R.string.underlag_rubrik)` och `locale` kommer från `resources.configuration`.
    - Föreslaget filnamn: `reklamationsPdfFilnamn(kop.vad, kop.kopdatum)`.
-   - Öppna dokumentväljaren; i callback skriv PDF med `skrivUnderlagTillPdf` till `contentResolver.openOutputStream(uri)`, ladda kvittobitmap från `sparattKvittoUri` om det finns (samma mönster som miniatyr i detaljvyn).
+   - Öppna dokumentväljaren; i callback skriv PDF med `skrivUnderlagTillPdf` till `contentResolver.openOutputStream(uri)`, ladda kvittobitmap via `contentResolver.openInputStream(viewModel.sparatKvittoUri(kop))` och `BitmapFactory.decodeStream` om köpet har kvitto (samma mönster som miniatyr i detaljvyn).
    - Exponera resultat till snackbar-uppgiften via callback eller ViewModel (minimal state, t.ex. `MutableStateFlow` i ViewModel om det behövs — annars håll logiken i Activity tills uppgift 25).
 
 Skicka `arPro`, export- och Pro-callbacks från `MainActivity` till `KopDetaljSkarm`.

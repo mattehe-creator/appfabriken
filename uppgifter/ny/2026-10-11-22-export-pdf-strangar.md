@@ -17,6 +17,7 @@ Lägg till samma nycklar på engelska och svenska:
 
 | Nyckel | Syfte |
 |--------|--------|
+| `underlag_rubrik` | Rubrik i PDF «Reklamationsunderlag» / «Claim document» |
 | `underlag_vad` | Etikett «Vad» / «What» i PDF |
 | `underlag_var_kopt` | «Var köpt» / «Where purchased» |
 | `underlag_kopdatum` | «Köpdatum» / «Purchase date» |

@@ -7,9 +7,10 @@ beror-på: cursor:2026-10-11-export-pdf, 2026-10-11-22-export-pdf-strangar.md, 2
 ## Ändra bara dessa filer
 - garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/ui/KopDetaljSkarm.kt
 - garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/ui/KopViewModel.kt
+- garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/MainActivity.kt
 
 ## Läs som förebild (ändra inte)
-- garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/MainActivity.kt
+- garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/export/PdfUnderlagSkrivare.kt
 
 ## Uppgift
 Visa **Snackbar** i detaljvyn efter export via dokumentväljaren (uppgift 23):
