@@ -20,6 +20,7 @@ import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
 import se.tmconnect.garantivalvet.paminnelse.PaminnelsePlanerare
+import se.tmconnect.garantivalvet.regler.kanLaggaTill
 import se.tmconnect.garantivalvet.regler.sorteraEfterNarmasteFrist
 import se.tmconnect.karna.pro.ProKalla
 
@@ -255,7 +256,7 @@ class KopViewModel(
 
     /** Kontrollerar om användaren får lägga till ett nytt köp. */
     fun kanLaggaTillNy(): Boolean {
-        return se.tmconnect.garantivalvet.regler.kanLaggaTill(kopLista.value.size, arPro.value)
+        return kanLaggaTill(kopLista.value.size, arPro.value)
     }
 
     /** Visar Pro-dialogen. */
