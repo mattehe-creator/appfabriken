@@ -72,4 +72,25 @@
     <string name="pro_kop_misslyckades">The purchase could not be completed. Try again.</string>
     <string name="pro_grans_nadd">Limit reached: 15 purchases</string>
     <string name="pro_inte_nu">Not now</string>
+    
+    <!-- PDF Export -->
+    <string name="underlag_rubrik">Claim document</string>
+    <string name="underlag_vad">What</string>
+    <string name="underlag_var_kopt">Where purchased</string>
+    <string name="underlag_kopdatum">Purchase date</string>
+    <string name="underlag_pris">Price</string>
+    <string name="underlag_garanti_manader">Warranty (months)</string>
+    <string name="underlag_garanti_slut">Warranty valid until</string>
+    <string name="underlag_reklamation_slut">Right to claim until</string>
+    <string name="underlag_presumtion_slut">Presumption until</string>
+    <string name="underlag_reklamation_status">Claim status</string>
+    <string name="underlag_status_fel_antas_funnits">Fault assumed to exist at purchase</string>
+    <string name="underlag_status_galler">Claim period active</string>
+    <string name="underlag_status_utgangen">Claim period expired</string>
+    <string name="underlag_anteckning">Notes</string>
+    <string name="underlag_skapad">Document created</string>
+    <string name="export_pdf">Export PDF</string>
+    <string name="export_dela">Share</string>
+    <string name="export_pdf_sparad">PDF saved</string>
+    <string name="export_pdf_misslyckades">Could not create PDF</string>
 </resources>

@@ -72,4 +72,25 @@
     <string name="pro_kop_misslyckades">Köpet kunde inte genomföras. Försök igen.</string>
     <string name="pro_grans_nadd">Gränsen är nådd: 15 köp</string>
     <string name="pro_inte_nu">Inte nu</string>
+    
+    <!-- PDF Export -->
+    <string name="underlag_rubrik">Reklamationsunderlag</string>
+    <string name="underlag_vad">Vad</string>
+    <string name="underlag_var_kopt">Var köpt</string>
+    <string name="underlag_kopdatum">Köpdatum</string>
+    <string name="underlag_pris">Pris</string>
+    <string name="underlag_garanti_manader">Garantitid (månader)</string>
+    <string name="underlag_garanti_slut">Garanti gäller till</string>
+    <string name="underlag_reklamation_slut">Reklamationsrätt till</string>
+    <string name="underlag_presumtion_slut">Presumtion till</string>
+    <string name="underlag_reklamation_status">Reklamationsstatus</string>
+    <string name="underlag_status_fel_antas_funnits">Fel antas ha funnits vid köpet</string>
+    <string name="underlag_status_galler">Reklamationsrätt gäller</string>
+    <string name="underlag_status_utgangen">Reklamationsfristen gått ut</string>
+    <string name="underlag_anteckning">Anteckning</string>
+    <string name="underlag_skapad">Underlag skapat</string>
+    <string name="export_pdf">Exportera PDF</string>
+    <string name="export_dela">Dela</string>
+    <string name="export_pdf_sparad">PDF sparad</string>
+    <string name="export_pdf_misslyckades">PDF kunde inte skapas</string>
 </resources>
