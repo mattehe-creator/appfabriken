@@ -1,6 +1,6 @@
 # Status
 
-Uppdaterad 2026-10-12.
+Uppdaterad 2026-10-12 09:15.
 
 ## Klart: Grundplattan (2026-10-08–09)
 
@@ -19,10 +19,13 @@ Omfång i IDEURVAL.md.
 - Klart: gratisgräns (15 köp) och Pro via Google Play Billing, i `:karna` (uppdrag `2026-10-11-pro-gratisgrans`, uppgift 18–21).
 - Klart: reklamationsunderlag som PDF (Pro) och `allowBackup=false` (uppdrag `2026-10-11-export-pdf`, uppgift 22–25).
 - Klart: säkerhetskopia till fil och import (Pro), uppdrag `2026-10-11-export-sakerhetskopia`, uppgift 26–30 och 34.
+- Mattias provade 2026-10-12. Resultat: PDF och Dela gör ingenting (Pro-dialogen ritas inte på detaljsidan, och Pro kan inte köpas utanför Play), och utseendet håller inte för försäljning.
 - Kvar i 1.0, i ordning:
-  1. Mattias provar på telefon (APK i releasen `senaste-main`). Fel han hittar blir nya uppdrag.
+  1. Fel från provet: Pro-dialog på alla skärmar och testläge för Pro i debug-APK:n (uppdrag `2026-10-12-provfel-pdf-pro`, Cursor).
+  2. Ny design: fullständigt tema, startsidan är listan, inställningar under kugghjul, nytt formulär, ny detaljsida med statuskort och tidslinje, nya skärmbilder (uppdrag `2026-10-12-ny-design`).
+  3. Mattias provar igen på telefon.
+  4. Play Console: internt testspår, produkten `pro`, prova köpet.
 - Klart: butiksmaterial i `garantivalvet/butik/` (texter, skärmbilder, Data safety) och datum/pris i enhetens språk (#79–#94).
-- Inget nytt uppdrag skrivs innan Mattias provat: högst en app i aktiv utveckling tills den första är publicerad (CLAUDE.md punkt 10).
 
 - Mätaren i panelen (procent klart, beräknat releasedatum, tokens) styrs av `release.json`. Claude uppdaterar den när ett steg ändras.
 

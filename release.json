@@ -3,15 +3,81 @@
   "start": "2026-10-08T08:00:00",
   "anm": "Vikt = uppskattad arbetsinsats, summan är 100. Steg med \"uppgifter\" räknar andelen själva ur uppgifter/klar; för övriga uppdaterar Claude status och andel. Externa steg räknas i dagar enligt antagande, inte efter byggfart.",
   "steg": [
-    {"namn": "Grundplatta och flöde", "vikt": 15, "status": "klar"},
-    {"namn": "Köp: lista och formulär", "vikt": 10, "status": "klar"},
-    {"namn": "Kvittofoto", "vikt": 12, "status": "klar"},
-    {"namn": "Påminnelser", "vikt": 8, "status": "klar"},
-    {"namn": "Reklamationsrätt", "vikt": 10, "status": "klar"},
-    {"namn": "Gratisgräns och Pro (Billing)", "vikt": 12, "status": "klar", "uppgifter": {"datum": "2026-10-11", "fran": 18, "till": 21}},
-    {"namn": "Export: PDF och säkerhetskopia", "vikt": 12, "status": "klar"},
-    {"namn": "Butiksmaterial", "vikt": 6, "status": "klar"},
-    {"namn": "Mattias provar på telefon", "vikt": 5, "status": "pagar", "extern": true, "dagar": 2},
-    {"namn": "Play Console och Googles granskning", "vikt": 10, "status": "kvar", "extern": true, "dagar": 3}
+    {
+      "namn": "Grundplatta och flöde",
+      "vikt": 13,
+      "status": "klar"
+    },
+    {
+      "namn": "Köp: lista och formulär",
+      "vikt": 8,
+      "status": "klar"
+    },
+    {
+      "namn": "Kvittofoto",
+      "vikt": 10,
+      "status": "klar"
+    },
+    {
+      "namn": "Påminnelser",
+      "vikt": 7,
+      "status": "klar"
+    },
+    {
+      "namn": "Reklamationsrätt",
+      "vikt": 8,
+      "status": "klar"
+    },
+    {
+      "namn": "Gratisgräns och Pro (Billing)",
+      "vikt": 10,
+      "status": "klar",
+      "uppgifter": {
+        "datum": "2026-10-11",
+        "fran": 18,
+        "till": 21
+      }
+    },
+    {
+      "namn": "Export: PDF och säkerhetskopia",
+      "vikt": 10,
+      "status": "klar"
+    },
+    {
+      "namn": "Butiksmaterial",
+      "vikt": 5,
+      "status": "klar"
+    },
+    {
+      "namn": "Mattias provar på telefon (runda 1)",
+      "vikt": 3,
+      "status": "klar",
+      "extern": true,
+      "dagar": 1
+    },
+    {
+      "namn": "Fel från provet (PDF, Pro i debug)",
+      "vikt": 3,
+      "status": "pagar"
+    },
+    {
+      "namn": "Ny design",
+      "vikt": 13,
+      "status": "kvar"
+    },
+    {
+      "namn": "Mattias provar igen",
+      "vikt": 2,
+      "status": "kvar",
+      "extern": true,
+      "dagar": 1
+    },
+    {
+      "namn": "Play Console och Googles granskning",
+      "vikt": 8,
+      "status": "kvar",
+      "extern": true,
+      "dagar": 3
+    }
   ]
 }
