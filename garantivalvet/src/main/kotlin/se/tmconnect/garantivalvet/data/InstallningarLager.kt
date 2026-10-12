@@ -42,8 +42,21 @@ class InstallningarLager(
         }
     }
 
+    /** Debug-testläge: Pro utan Play (används bara av [DebugProKalla] i debug-bygget). */
+    val debugProTestlagePa: Flow<Boolean> =
+        context.installningarDataStore.data.map { prefs ->
+            prefs[DEBUG_PRO_TESTLAGE] ?: false
+        }
+
+    suspend fun sattDebugProTestlagePa(pa: Boolean) {
+        context.installningarDataStore.edit { prefs ->
+            prefs[DEBUG_PRO_TESTLAGE] = pa
+        }
+    }
+
     companion object {
         private val PAMINNELSER_PA = booleanPreferencesKey("paminnelser_pa")
         private val AVISERADE_FRISTER = stringSetPreferencesKey("aviserade_frister")
+        private val DEBUG_PRO_TESTLAGE = booleanPreferencesKey("debug_pro_testlage")
     }
 }

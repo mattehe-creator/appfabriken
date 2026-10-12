@@ -43,6 +43,7 @@ import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.ui.KopDetaljSkarm
 import se.tmconnect.garantivalvet.ui.KopFormularSkarm
 import se.tmconnect.garantivalvet.ui.KopListaSkarm
+import se.tmconnect.garantivalvet.ui.ProDialog
 import se.tmconnect.karna.tema.AppfabrikFarger
 import se.tmconnect.karna.tema.AppfabrikTema
 
@@ -166,10 +167,7 @@ abstract class ButikSkarmbilderBas {
                 onPaminnelserAndras = {},
                 behorighetNekad = false,
                 arPro = false,
-                proDialogSynlig = false,
                 onVisaProDialog = noOp,
-                onStangProDialog = noOp,
-                onKopPro = {},
                 onSparaSakerhetskopia = noOp,
                 onHamtaSakerhetskopia = noOp,
             )
@@ -229,12 +227,13 @@ abstract class ButikSkarmbilderBas {
                 onPaminnelserAndras = {},
                 behorighetNekad = false,
                 arPro = false,
-                proDialogSynlig = true,
                 onVisaProDialog = noOp,
-                onStangProDialog = noOp,
-                onKopPro = {},
                 onSparaSakerhetskopia = noOp,
                 onHamtaSakerhetskopia = noOp,
+            )
+            ProDialog(
+                onDismiss = noOp,
+                onKopPro = {},
             )
         }
     }

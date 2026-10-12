@@ -72,6 +72,7 @@
     <string name="pro_kop_misslyckades">Köpet kunde inte genomföras. Försök igen.</string>
     <string name="pro_grans_nadd">Gränsen är nådd: 15 köp</string>
     <string name="pro_inte_nu">Inte nu</string>
+    <string name="debug_pro_testlage">Testläge: Pro</string>
     
     <!-- PDF Export -->
     <string name="underlag_rubrik">Reklamationsunderlag</string>
