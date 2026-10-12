@@ -2,7 +2,6 @@ package se.tmconnect.garantivalvet.ui
 
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +30,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
+import se.tmconnect.garantivalvet.regler.ListaGrupp
+import se.tmconnect.garantivalvet.regler.listaGrupp
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,6 +82,19 @@ fun KopListaSkarm(
                     .padding(innerPadding),
             )
         } else {
+            val idag = LocalDate.now()
+            val grupperadLista = kopLista.groupBy { listaGrupp(it, idag) }
+            val gruppOrdning = listOf(
+                ListaGrupp.GAR_UT_SNART,
+                ListaGrupp.GALLER,
+                ListaGrupp.UTGANGNA,
+            )
+            val rubrikRes = mapOf(
+                ListaGrupp.GAR_UT_SNART to R.string.lista_grupp_snart,
+                ListaGrupp.GALLER to R.string.lista_grupp_galler,
+                ListaGrupp.UTGANGNA to R.string.lista_grupp_utgangna,
+            )
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -87,12 +102,22 @@ fun KopListaSkarm(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(kopLista, key = { it.id }) { kop ->
-                    KopListRad(
-                        kop = kop,
-                        kvittoUri = kvittoUriFor(kop),
-                        onClick = { onOppna(kop.id) },
-                    )
+                gruppOrdning.forEach { grupp ->
+                    val kopIGrupp = grupperadLista[grupp] ?: return@forEach
+                    item(key = "rubrik_$grupp") {
+                        Text(
+                            text = stringResource(rubrikRes.getValue(grupp)),
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
+                        )
+                    }
+                    items(kopIGrupp, key = { it.id }) { kop ->
+                        KopListRad(
+                            kop = kop,
+                            kvittoUri = kvittoUriFor(kop),
+                            onClick = { onOppna(kop.id) },
+                        )
+                    }
                 }
             }
         }
