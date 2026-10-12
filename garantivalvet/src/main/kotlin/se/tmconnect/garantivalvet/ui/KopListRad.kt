@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextOverflow
 import java.time.LocalDate
 import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
@@ -120,11 +122,19 @@ fun KopListRad(
             }
             AssistChip(
                 onClick = onClick,
-                label = { Text(text = statusText, style = MaterialTheme.typography.labelSmall) },
+                label = { 
+                    Text(
+                        text = statusText, 
+                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    ) 
+                },
                 colors = AssistChipDefaults.assistChipColors(
                     containerColor = chipFarger.container,
                     labelColor = chipFarger.content,
                 ),
+                modifier = Modifier.widthIn(max = 120.dp)
             )
         }
     }

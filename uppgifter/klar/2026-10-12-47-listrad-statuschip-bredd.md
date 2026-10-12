@@ -30,3 +30,5 @@ gradle testDebugUnitTest
 - Ändra andra filer, skärmbilderna eller exempeldatan i testerna.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-12 (inget)
