@@ -502,6 +502,13 @@ private fun ReklamationsKort(kop: Kop, locale: java.util.Locale) {
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
+                        if (Varutyp.franNamn(kop.varutyp) == Varutyp.VAXTER) {
+                            Text(
+                                text = stringResource(R.string.detalj_reklamation_vaxter),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                         Text(
                             text = stringResource(R.string.detalj_reklamation_vagledning),
                             style = MaterialTheme.typography.bodySmall,

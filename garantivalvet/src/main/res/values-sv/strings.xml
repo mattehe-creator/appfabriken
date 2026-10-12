@@ -173,7 +173,10 @@
     <string name="detalj_oppet_kop_mat">Mat och dryck omfattas inte alltid av öppet köp.</string>
     <string name="detalj_oppet_kop_oanvand">Varan ska normalt vara oanvänd.</string>
     <string name="detalj_reklamation_bevis">De första två åren är det säljaren som måste visa att felet inte fanns när du köpte varan. Därefter måste du visa att det fanns. Då kan en garanti vara bättre.</string>
-    <string name="detalj_reklamation_slitage">Normalt slitage räknas inte som fel. Felet ska ha funnits när du fick varan. För begagnade varor bedöms felet efter varans ålder, skick och pris.</string>
+    <string name="detalj_reklamation_slitage">Normalt slitage räknas inte som fel. Felet ska ha funnits när du fick varan.</string>
     <string name="underlag_farskvara">Typ av vara</string>
     <string name="underlag_farskvara_text">Färskvara (mat och dryck): tiden att reklamera är betydligt kortare än tre år.</string>
+    <string name="varutyp_vaxter">Växter</string>
+    <string name="varutyp_vaxter_hjalp">Växter har tre års reklamationsrätt som andra varor, men du måste ha skött växten enligt skötselinstruktionerna. Snittblommor är färskvaror: välj Mat och dryck.</string>
+    <string name="detalj_reklamation_vaxter">Du måste ha skött växten enligt de skötselinstruktioner du fick. Spara gärna bilder som visar hur plantan såg ut vid leveransen. Snittblommor räknas som färskvaror.</string>
 </resources>

@@ -35,6 +35,7 @@ enum class Varutyp {
     ELEKTRONIK,
     KLADER_SKOR,
     HEM_BYGG,
+    VAXTER,
     MAT_DRYCK,
     OVRIGT,
     ;
