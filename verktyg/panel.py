@@ -18,6 +18,7 @@ import calendar
 from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 REPO = "mattehe-creator/appfabriken"
 PORT = 8765
@@ -437,7 +438,7 @@ h1{margin:0;font-size:18px;letter-spacing:.2em;text-shadow:0 0 8px var(--g)}h2{m
 #fas{padding:2px 10px;border:1px solid var(--g);text-transform:uppercase}
 #fas.kodar,#fas.testar{animation:puls 1.2s infinite}@keyframes puls{50%{box-shadow:0 0 14px var(--g)}}
 #fas.fel{color:#ff5555;border-color:#ff5555}
-.chip{padding:2px 10px;border:1px solid var(--g2);color:var(--g2);text-transform:uppercase}
+.chip{text-decoration:none;padding:2px 10px;border:1px solid var(--g2);color:var(--g2);text-transform:uppercase}
 .chip.ok{color:var(--g);border-color:var(--g)}.chip.var{color:var(--k);border-color:var(--k)}
 .chip.fel{color:#ff5555;border-color:#ff5555;animation:pulsr 1.2s infinite}@keyframes pulsr{50%{box-shadow:0 0 14px #ff5555}}
 #larm{flex-basis:100%;color:#ff5555;text-shadow:0 0 8px #ff5555}#larm:empty{display:none}
@@ -461,7 +462,7 @@ ul{list-style:none;margin:0;padding:0}li{margin:0 0 6px}
 .tag{display:inline-block;min-width:66px}.liten{color:var(--g2);font-size:12px}
 @media(max-width:900px){main{grid-template-columns:1fr;grid-template-rows:auto;height:auto}body{overflow:auto}#kod{grid-row:auto;max-height:50vh}}
 </style></head><body><canvas id="regn"></canvas><main>
-<section id="topp"><h1>APPFABRIKEN</h1><span id="fas">...</span><span id="kon" class="chip">Kön ...</span><span id="bygge" class="chip">Bygge ...</span><span id="vchip" class="chip">...</span><span id="uppgift"></span><span id="text" class="liten"></span><div id="larm"></div></section>
+<section id="topp"><h1>APPFABRIKEN</h1><span id="fas">...</span><span id="kon" class="chip">Kön ...</span><span id="bygge" class="chip">Bygge ...</span><span id="vchip" class="chip">...</span><a id="anv" class="chip ok" href="/anvandning">Användning</a><span id="uppgift"></span><span id="text" class="liten"></span><div id="larm"></div></section>
 <section id="mat">
 <div><h2 id="h-matare">MÄTARE // AVSTÅND TILL RELEASE</h2>
 <svg viewBox="0 0 200 124" width="230" role="img" aria-label="Procent klart till release">
@@ -508,13 +509,15 @@ const BYGGE_TIP="BYGGE MAIN\nGitHub kompilerar appen och kör alla tester varje 
 const VANTAR_TIP="VÄNTAR PÅ DIG\nSådant som bara du kan göra. Listan finns i rutan Kö och PR.\n\n• MERGA: en PR från Claude som väntar på din merge på GitHub.\n• FRÅGA: en öppen fråga i FRAGOR.md som Claude behöver svar på.\n• DIN TUR: ett steg mot release där du är näst på tur, till exempel att prova appen på telefonen eller Play Console.\n• Inget väntar på dig: du behöver inte göra något.";
 const TIPS={"h-matare":"MÄTARE\nHur långt Garantivalvet 1.0 har kommit, 0 till 100.\n\nVarje steg har en vikt efter uppskattad arbetsinsats (summan är 100). Klara steg räknas helt. Steg som pågår räknas efter andelen klara uppgifter.","malrubrik":"BERÄKNAT RELEASEDATUM\nByggfarten är klarad vikt per dygn sedan start. Det som återstår av byggarbetet delas med farten.\n\nSedan läggs dygn till för externa steg: dina tester på telefon och Googles granskning (antaganden i release.json).\n\nSpannet är farten gånger 1,5 (tidigast) och farten delad på 2 (senast). Det är en uppskattning, inte ett löfte.","h-tokens":"TOKENS\nRäknas bara för den lokala modellen, ur Aiders rader i körloggarna (skickat plus mottaget). Aider avrundar till tusental, så siffrorna är ungefärliga.\n\n• TOTALT: sedan första loggen.\n• IDAG: sedan midnatt.\n• DENNA VECKA: sedan måndag.\n• PER SEKUND: snitt över körtiden (inklusive test och git), ingen live-mätare.\n\nCursor och Claude mäts inte: det finns ingen datakälla.","h-dator":"DATORN OCH MODELLEN\n• GPU: last och temperatur från nvidia-smi.\n• VRAM: använt minne på grafikkortet av totalt.\n• OLLAMA: vilken modell som ligger laddad. \"Svarar inte\" betyder att Ollama inte körs.\n• KLARA IDAG: lokala uppgifter som mergats sedan midnatt.\n\nSaknas raden finns ingen mätning (till exempel inget NVIDIA-kort)."};
 for(const [id,tx] of Object.entries(TIPS))sat(id,tx,id==="h-tokens"||id==="h-dator");
-sat("kon",KON_TIP);sat("bygge",BYGGE_TIP);sat("vchip",VANTAR_TIP);sat("fas",fasTip("okänd"));
-let klarIdag=0,senasteDator=null;
+sat("kon",KON_TIP);sat("bygge",BYGGE_TIP);sat("vchip",VANTAR_TIP);sat("fas",fasTip("okänd"));sat("anv","ANVÄNDNING\nÖppnar sidan som visar när GPU:n var aktiv och inte, och vem som höll bollen när modellen väntade. Mäts var 15:e sekund och sparas över tid.\n\nPekar du på en ruta i den sidan ser du exakt vad som hände.");
+let klarIdag=0,senasteDator=null,gpuIdag="";
+const tidhm=s=>{const m=Math.floor(Math.round(s)/60),h=Math.floor(m/60);return h?h+" h "+String(m%60).padStart(2,"0")+" min":m+" min"};
+async function anv(){try{const d=await (await fetch("/api/anvandning?dagar=1")).json();const x=d.dagar[0];gpuIdag=x&&x.matt_s>0?"GPU aktiv idag: "+tidhm(x.kat.aktiv)+" ("+Math.round(100*x.kat.aktiv/x.matt_s)+" %)":"GPU aktiv idag: ingen mätning än";dator()}catch(e){}}
 function dator(x){if(x!==undefined)senasteDator=x;const d=senasteDator||{};const g=d.gpu;const rader=[];
 rader.push(g?`GPU ${g.last} % · ${g.temp} °C`:"GPU: ingen mätning");
 if(g)rader.push(`VRAM ${(g.vram/1024).toLocaleString("sv-SE",{maximumFractionDigits:1})} av ${(g.vram_max/1024).toLocaleString("sv-SE",{maximumFractionDigits:1})} GB`);
 rader.push(d.ollama==null?"Ollama svarar inte":d.ollama.length?"Ollama: "+d.ollama.map(esc).join(", ")+" i minnet":"Ollama: ingen modell laddad");
-rader.push("Klara idag: "+klarIdag);
+if(gpuIdag)rader.push(gpuIdag);rader.push("Klara idag: "+klarIdag);
 document.getElementById("dator").innerHTML=rader.map(r=>`<div>${r}</div>`).join("")}
 const sv=(n,dec)=>Number(n).toLocaleString("sv-SE",{maximumFractionDigits:dec||0});
 const dag=s=>new Date(s+"T12:00").toLocaleDateString("sv-SE",{weekday:"long",day:"numeric",month:"long"});
@@ -553,16 +556,411 @@ document.getElementById("ko").innerHTML=d.ko.length?d.ko.map(k=>`<li>${esc(k.rep
 document.getElementById("prs").innerHTML=d.prs.map(p=>`<li class="${kls(p.vem)}"><span class="tag">#${p.nr}</span>${esc(p.titel)} <span class="liten">(${p.lage})</span></li>`).join("")}catch(e){}}
 let ver=null;async function version(){try{const v=(await (await fetch("/api/version")).json()).v;if(ver&&v!==ver)location.reload();ver=v}catch(e){}}
 version();setInterval(version,5000);
-lokal();github();tokens();setInterval(lokal,2000);setInterval(github,30000);setInterval(tokens,5000);
+lokal();github();tokens();anv();setInterval(anv,60000);setInterval(lokal,2000);setInterval(github,30000);setInterval(tokens,5000);
 </script></body></html>"""
 
 
+# ---- Användning: GPU och väntetid över tid ---------------------------------------------------
+# Panelen mäter GPU:n var 15:e sekund och sparar raden i %LOCALAPPDATA%\appfabriken\anvandning.csv.
+# Sammanställningen görs vid läsning, så att reglerna för vad som räknas som aktivitet och väntan
+# kan förbättras i efterhand på redan sparade prover.
+
+ANV = DATA / "anvandning.csv"
+ANV_RUBRIK = "t;gpu;vram;fas;fas_min;ollama;bollen;ko"
+PROV_SEK = 15      # hur ofta GPU:n mäts
+GPU_AKTIV = 15     # procent last som räknas som aktiv
+STALE_MIN = 45     # en status kodar/testar/pushar som är äldre än så anses övergiven
+LUCKA_SEK = 60     # längsta intervall ett prov står för; resten räknas som "ej mätt"
+KATEGORIER = ["aktiv", "utan_gpu", "cursor", "claude", "mattias", "av", "lokal_vilar", "ovrigt"]
+VILA_FRAS = {
+    "cursor": "väntan på Cursor",
+    "claude": "väntan på Claude",
+    "mattias": "väntan på dig",
+    "av": "tid då körslingan var av (datorn i bruk eller fönstret stängt)",
+    "lokal_vilar": "tid då modellen vilade fast kön hade uppgifter",
+    "ovrigt": "övrigt (fel, annan GPU-användning, okänd orsak)",
+}
+_anv_lock = threading.Lock()
+_bollen = {"v": "okand", "ko": 0, "tid": 0.0}
+_anv_cache = {"nyckel": None, "v": None}
+
+
+def bollen_av(d):
+    """Vem håller bollen när den lokala modellen inte har något att göra, ur GitHub-datat."""
+    if not d or not d.get("aktivitet"):  # tomt data betyder att gh inte svarade
+        return "okand"
+    arbete = d.get("arbete") or []
+    if any(p["lage"].startswith("KROCKAR") for p in arbete):
+        return "claude"
+    if arbete or d.get("cursor"):
+        return "cursor"
+    if d.get("ko"):
+        return "lokal"
+    rel = d.get("release") or {}
+    if rel.get("klar") or any(v["typ"] == "DIN TUR" for v in d.get("vantar") or []):
+        return "mattias"
+    return "claude"
+
+
+def klassa(p):
+    """En kategori för ett prov (t, gpu, vram, fas, fas_min, ollama, bollen, ko)."""
+    t, gpu, vram, fas, fas_min, oll, bollen, ko = p
+    jobb = fas in ("kodar", "testar", "pushar")
+    arbetar = jobb and fas_min <= STALE_MIN
+    if gpu is not None and gpu >= GPU_AKTIV:
+        return "aktiv" if (arbetar or oll == 1) else "ovrigt"  # last utan modellen: något annat använder GPU:n
+    if arbetar:
+        return "aktiv" if (gpu is None and fas == "kodar") else "utan_gpu"
+    if (jobb and fas_min > STALE_MIN) or fas == "okand" or (fas in ("vilar", "klar") and fas_min > 10) \
+            or (fas == "fel" and fas_min > 40):
+        return "av"  # körslingan skriver status var 3:e minut; tystnad betyder att den inte körs
+    if fas == "fel":
+        return "ovrigt"
+    return {"cursor": "cursor", "claude": "claude", "mattias": "mattias",
+            "lokal": "lokal_vilar"}.get(bollen, "ovrigt")
+
+
+def _fas_nu():
+    try:
+        s = json.loads(STATUS.read_text(encoding="utf-8-sig"))
+        alder = int((time.time() - STATUS.stat().st_mtime) / 60)
+        return str(s.get("fas", "okand")).replace("ä", "a").replace("å", "a").replace("ö", "o").replace(";", ","), alder
+    except Exception:
+        return "okand", 0
+
+
+def prov_rad(nu=None):
+    nu = nu or time.time()
+    d = dator()
+    g = d.get("gpu")
+    fas, alder = _fas_nu()
+    oll = "" if d.get("ollama") is None else int(bool(d["ollama"]))
+    return ";".join(str(x) for x in (int(nu), g["last"] if g else "", g["vram"] if g else "", fas, alder, oll,
+                                     _bollen["v"], _bollen["ko"]))
+
+
+def skriv_prov(rad):
+    with _anv_lock:
+        ny = not ANV.exists() or ANV.stat().st_size == 0
+        ANV.parent.mkdir(parents=True, exist_ok=True)
+        with open(ANV, "a", encoding="utf-8", newline="\n") as f:
+            if ny:
+                f.write(ANV_RUBRIK + "\n")
+            f.write(rad + "\n")
+
+
+def rensa_gammalt(dagar=90, grans_mb=20):
+    """Filen växer cirka 0,4 MB per dygn. Över grans_mb behålls bara de senaste dagarna."""
+    try:
+        if ANV.stat().st_size < grans_mb * 1024 * 1024:
+            return
+        grans = time.time() - dagar * 86400
+        with _anv_lock:
+            rader = ANV.read_text(encoding="utf-8").splitlines()
+            behall = [rader[0]] + [r for r in rader[1:] if r.split(";", 1)[0].isdigit()
+                                   and int(r.split(";", 1)[0]) >= grans]
+            tmp = ANV.with_suffix(".tmp")
+            tmp.write_text("\n".join(behall) + "\n", encoding="utf-8")
+            tmp.replace(ANV)
+    except Exception:
+        pass
+
+
+def las_prov(sokvag=None, sedan=0):
+    ut = []
+    try:
+        text = (sokvag or ANV).read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return ut
+    for rad in text.splitlines()[1:]:
+        a = rad.split(";")
+        if len(a) != 8 or not a[0].isdigit() or int(a[0]) < sedan:
+            continue
+        try:
+            ut.append((int(a[0]), int(a[1]) if a[1] else None, int(a[2]) if a[2] else None, a[3], int(a[4] or 0),
+                       None if a[5] == "" else int(a[5]), a[6], int(a[7] or 0)))
+        except ValueError:
+            continue
+    return ut
+
+
+def _hm(s):
+    m = int(round(s)) // 60
+    h, m = divmod(m, 60)
+    return f"{h} h {m:02d} min" if h else f"{m} min"
+
+
+def anvandning_insikter(kat, matt):
+    if matt <= 0:
+        return []
+    jobb = kat["aktiv"] + kat["utan_gpu"]
+    ut = [f"Modellen arbetade {_hm(jobb)} av {_hm(matt)} mätt tid ({round(100 * jobb / matt)} %). "
+          f"GPU:n var aktiv {_hm(kat['aktiv'])} ({round(100 * kat['aktiv'] / matt)} %)."]
+    vila = {k: kat[k] for k in VILA_FRAS}
+    k, s = max(vila.items(), key=lambda x: x[1])
+    if s >= 300:
+        ut.append(f"Störst del av stilleståndet: {VILA_FRAS[k]}, {_hm(s)} ({round(100 * s / matt)} % av tiden).")
+    if kat["utan_gpu"] >= 600 and kat["utan_gpu"] >= 0.2 * jobb:
+        ut.append(f"{_hm(kat['utan_gpu'])} av arbetstiden gick åt till test, bygge och git medan GPU:n vilade.")
+    return ut
+
+
+def anvandning_sammanstall(prov, nu, dagar=7):
+    """Dygnsvis sammanställning. Varje dygn har 96 block om 15 minuter; ett block är
+    [mätta sekunder, sekunder per kategori i ordningen KATEGORIER]."""
+    dagar = max(1, min(int(dagar), 90))
+    idag0 = datetime.fromtimestamp(nu).replace(hour=0, minute=0, second=0, microsecond=0)
+    start0 = idag0 - timedelta(days=dagar - 1)
+    prov = sorted((p for p in prov if p[0] >= start0.timestamp()), key=lambda p: p[0])
+    dag = {}
+    for i in range(dagar):
+        d0 = start0 + timedelta(days=i)
+        dag[d0.date().isoformat()] = {"datum": d0.date().isoformat(), "matt_s": 0, "ej_matt_s": 0,
+                                      "kat": {k: 0 for k in KATEGORIER},
+                                      "b": [[0] * (1 + len(KATEGORIER)) for _ in range(96)], "_f": None, "_l": None}
+    stilla, aktuell, gpu_prov = [], None, 0
+    for i, p in enumerate(prov):
+        t = p[0]
+        dt = max(0, min((prov[i + 1][0] if i + 1 < len(prov) else nu) - t, LUCKA_SEK))
+        k = klassa(p)
+        lt = datetime.fromtimestamp(t)
+        d = dag.get(lt.date().isoformat())
+        if d is None:
+            continue
+        ki = KATEGORIER.index(k)
+        d["kat"][k] += dt
+        d["matt_s"] += dt
+        bi = min(95, (lt.hour * 3600 + lt.minute * 60 + lt.second) // 900)
+        d["b"][bi][0] += dt
+        d["b"][bi][1 + ki] += dt
+        d["_f"] = t if d["_f"] is None else d["_f"]
+        d["_l"] = t + dt
+        gpu_prov += p[1] is not None
+        ledig = k not in ("aktiv", "utan_gpu")
+        if ledig and aktuell and t - aktuell["sist"] <= LUCKA_SEK:
+            aktuell["sist"], aktuell["slut"] = t, t + dt
+            aktuell["per"][k] += dt
+        else:
+            if aktuell:
+                stilla.append(aktuell)
+            aktuell = None
+            if ledig:
+                aktuell = {"start": t, "sist": t, "slut": t + dt, "per": {x: 0 for x in KATEGORIER}}
+                aktuell["per"][k] += dt
+    if aktuell:
+        stilla.append(aktuell)
+    summa = {k: 0 for k in KATEGORIER}
+    lista = []
+    for d in sorted(dag.values(), key=lambda x: x["datum"], reverse=True):
+        if d["_f"] is not None:
+            d["ej_matt_s"] = max(0, (d["_l"] - d["_f"]) - d["matt_s"])
+        del d["_f"], d["_l"]
+        for k in KATEGORIER:
+            summa[k] += d["kat"][k]
+        lista.append(d)
+    matt = sum(summa.values())
+    stilla = [{"start": s["start"], "slut": s["slut"], "sek": sum(s["per"].values()),
+               "orsak": max(s["per"], key=s["per"].get)} for s in stilla if sum(s["per"].values()) >= 600]
+    stilla.sort(key=lambda s: s["sek"], reverse=True)
+    return {"nu": int(nu), "dagar": lista, "kategorier": KATEGORIER,
+            "summa": {"matt_s": matt, "ej_matt_s": sum(d["ej_matt_s"] for d in lista), "kat": summa},
+            "stillestand": stilla[:6], "insikt": anvandning_insikter(summa, matt),
+            "gpu_andel": round(gpu_prov / len(prov), 2) if prov else None}
+
+
+def anvandning_api(dagar):
+    nu = time.time()
+    try:
+        st = ANV.stat()
+        sig = (st.st_mtime, st.st_size)
+    except OSError:
+        sig = None
+    nyckel = (dagar, sig, int(nu // 10))
+    if _anv_cache["nyckel"] != nyckel:
+        v = anvandning_sammanstall(las_prov(sedan=nu - (dagar + 1) * 86400), nu, dagar)
+        _anv_cache.update(nyckel=nyckel, v=v)
+    return _anv_cache["v"]
+
+
+def provtagning():
+    rensa_gammalt()
+    while True:
+        try:
+            skriv_prov(prov_rad())
+        except Exception:
+            pass
+        time.sleep(PROV_SEK)
+
+
+def bollen_traad():
+    """Uppdaterar vem som håller bollen var 2:a minut, i en egen tråd så att proverna inte fördröjs av gh."""
+    while True:
+        try:
+            d = hamta_github()
+            _bollen.update(v=bollen_av(d), ko=len(d.get("ko") or []), tid=time.time())
+        except Exception:
+            _bollen.update(v="okand", tid=time.time())
+        time.sleep(120)
+
+
+ANVANDNING_SIDA = r"""<!doctype html><html lang="sv"><head><meta charset="utf-8">
+<title>Appfabriken // Användning</title><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--bg:#000803;--panel:#03140a;--line:#0a5f2a;--g:#00ff66;--ink:#c8f7d8;--mut:#7fb895;--on:#00140a;
+--aktiv:#17a750;--cursor:#0099e3;--claude:#d46d00;--mattias:#a56cde;--ovrigt:#6f7f76;
+--s0:#172c1c;--s1:#235430;--s2:#287c42;--s3:#17a750;--s4:#49de78}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Consolas,"Cascadia Mono",monospace;padding:20px 24px 64px}
+a{color:#7fd7ff}h1{margin:0;font-size:18px;letter-spacing:.2em;color:var(--g);text-shadow:0 0 8px var(--g)}
+h2{margin:30px 0 10px;font-size:13px;letter-spacing:.15em;color:var(--mut);font-weight:normal}
+.topp{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.chip{padding:2px 10px;border:1px solid var(--line);color:var(--mut);text-decoration:none;text-transform:uppercase;font-size:13px}
+.chip:hover,.chip.vald{border-color:var(--g);color:var(--g)}.chip.vald{box-shadow:0 0 10px rgba(0,255,102,.3)}
+.liten{color:var(--mut);font-size:12px}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:18px}
+.kpi>div{background:var(--panel);border:1px solid var(--line);padding:12px 14px}
+.kpi .v{font-size:30px;line-height:1.2;color:var(--ink)}.kpi .hero .v{font-size:48px;color:var(--g);text-shadow:0 0 10px rgba(0,255,102,.5)}
+.kpi .l{color:var(--mut);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+ul{margin:8px 0 0;padding:0;list-style:none}li{margin:0 0 4px}
+.rad{display:grid;grid-template-columns:104px 1fr 112px;gap:10px;align-items:center;margin:0 0 6px}
+.dl{color:var(--mut);white-space:nowrap}.ds{color:var(--ink);text-align:right;white-space:nowrap}
+.ticks{position:relative;height:16px;margin-bottom:2px}.ticks span{position:absolute;top:0;font-size:11px;color:var(--mut);transform:translateX(-50%)}
+.celler{display:grid;grid-template-columns:repeat(96,1fr);gap:2px}
+.c{height:24px;border-radius:2px;min-width:0}.c:hover{outline:1px solid var(--ink);outline-offset:1px}
+.l0{background:var(--s0)}.l1{background:var(--s1)}.l2{background:var(--s2)}.l3{background:var(--s3)}.l4{background:var(--s4)}
+.n{background:transparent;border:1px dashed #1c3d29}
+.leg{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--mut)}
+.sw{display:inline-block;width:18px;height:12px;border-radius:2px;vertical-align:middle}
+.sb{display:flex;height:28px}
+.sg{height:100%;display:flex;align-items:center;overflow:hidden;white-space:nowrap;padding:0 6px;font-size:11px;color:var(--on);margin-right:2px;min-width:0}
+.sg:first-child{border-radius:4px 0 0 4px}.sg:last-child{border-radius:0 4px 4px 0;margin-right:0}.sg:only-child{border-radius:4px}
+.sg:hover{filter:brightness(1.25)}
+.rand{background:repeating-linear-gradient(135deg,var(--aktiv) 0 5px,#08301a 5px 10px)}
+.rand b{background:var(--bg);color:var(--ink);font-weight:normal;padding:0 4px;border-radius:2px}
+.tom{background:transparent;border:1px dashed #1c3d29;color:var(--mut)}
+table{border-collapse:collapse;width:100%;font-size:12px}#still table{max-width:760px}#still th,#still td{text-align:left}th,td{padding:4px 8px;border-bottom:1px solid #0b2a17;text-align:right;white-space:nowrap}
+th{color:var(--mut);font-weight:normal}th:first-child,td:first-child{text-align:left}
+details{margin-top:14px}summary{cursor:pointer;color:var(--mut)}summary:hover{color:var(--g)}
+#tt{position:fixed;z-index:50;pointer-events:none;background:#001a08;border:1px solid var(--g);padding:8px 10px;font-size:12px;max-width:340px;box-shadow:0 0 18px rgba(0,255,102,.35);display:none}
+#tt .v{font-size:15px;color:var(--ink)}#tt .r{display:flex;gap:8px;align-items:center;margin-top:2px;color:var(--mut)}
+#tt .k{width:12px;height:0;border-top:3px solid}
+.varn{border:1px solid var(--claude);color:var(--ink);padding:8px 12px;margin-top:14px}
+@media(max-width:760px){.rad{grid-template-columns:70px 1fr 70px}.sg{font-size:10px}}
+</style></head><body>
+<div class="topp"><h1>ANVÄNDNING // GPU OCH VÄNTETID</h1>
+<a class="chip" href="/">Panelen</a><span id="val"></span><a class="chip" href="/anvandning.csv">Ladda ner CSV</a></div>
+<div class="liten" style="margin-top:6px" id="ram"></div>
+<div id="varn"></div>
+<div class="kpi" id="kpi"></div>
+<h2>SLUTSATSER</h2><ul id="insikt"></ul>
+<h2>NÄR GPU:N VAR AKTIV // ETT BLOCK = 15 MINUTER</h2>
+<div id="hm"></div>
+<div class="leg" id="hmleg"></div>
+<h2>VAR TIDEN GICK // ANDEL AV MÄTT TID PER DYGN</h2>
+<div class="leg" id="sbleg" style="margin:0 0 10px"></div>
+<div id="sb"></div>
+<h2>LÄNGSTA STILLESTÅND</h2><div id="still"></div>
+<details><summary>Visa alla siffror som tabell</summary><div style="overflow-x:auto;margin-top:8px"><table id="tab"></table></div></details>
+<h2>SÅ MÄTS DET</h2>
+<div class="liten" style="max-width:900px">GPU:n läses var 15:e sekund (nvidia-smi) av panelen och sparas på din dator. Last från 15 % räknas som aktiv, om modellen kodar eller Ollama har den laddad (annars räknas det som annan GPU-användning). Arbetar körslingan men GPU:n vilar (test, bygge, git) räknas det som egen kategori. Står modellen still avgörs vem som håller bollen ur GitHub: öppna PR:er och Cursors arbete betyder Cursor, tom kö utan PR betyder att Claude måste skriva nästa uppdrag, och återstår bara dina steg räknas det på dig. Utebliven statusuppdatering från körslingan i mer än 10 minuter räknas som att den är av (datorn i bruk eller fönstret stängt). Luckor över 60 sekunder mellan prover är Ej mätt, till exempel när datorn sov eller panelen var stängd. Bollhållaren uppdateras var 2:a minut.</div>
+<div id="tt"></div>
+<script>
+const KAT={aktiv:"GPU aktiv",utan_gpu:"Arbetar, GPU vilar (test, bygge, git)",cursor:"Väntar på Cursor",claude:"Väntar på Claude",mattias:"Väntar på dig (ditt steg)",av:"Körslingan av (datorn i bruk eller fönstret stängt)",lokal_vilar:"Modellen vilar fast kön har uppgift",ovrigt:"Övrigt (fel, annan GPU-användning, okänt)"};
+const SEG=[{n:"GPU aktiv",k:["aktiv"],c:"var(--aktiv)"},{n:"Arbetar, GPU vilar",k:["utan_gpu"],c:"var(--aktiv)",rand:1},{n:"Väntar på Cursor",k:["cursor"],c:"var(--cursor)"},{n:"Väntar på Claude",k:["claude"],c:"var(--claude)"},{n:"Väntar på dig",k:["mattias","av"],c:"var(--mattias)"},{n:"Övrigt",k:["lokal_vilar","ovrigt"],c:"var(--ovrigt)"}];
+const $=id=>document.getElementById(id);
+const hm=s=>{s=Math.round(s);const m=Math.floor(s/60),h=Math.floor(m/60);return h?h+" h "+String(m%60).padStart(2,"0")+" min":m+" min"};
+const pct=(a,b)=>b>0?Math.round(100*a/b)+" %":"-";
+const dagnamn=d=>new Date(d+"T12:00").toLocaleDateString("sv-SE",{weekday:"short",day:"numeric",month:"short"});
+const klock=t=>new Date(t*1000).toLocaleTimeString("sv-SE",{hour:"2-digit",minute:"2-digit"});
+const DAGAR=Math.min(Math.max(parseInt(new URLSearchParams(location.search).get("dagar")||"7",10)||7,1),90);
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function niva(f){return f<0.05?0:f<0.25?1:f<0.5?2:f<0.75?3:4}
+const tt=$("tt");
+function visa(e,rader,titel,varde){tt.replaceChildren();tt.appendChild(el("div","liten",titel));tt.appendChild(el("div","v",varde));
+for(const [n,v,c] of rader){const r=el("div","r");const k=el("span","k");k.style.borderColor=c;r.appendChild(k);r.appendChild(el("span","",n+": "+v));tt.appendChild(r)}
+tt.style.display="block";const w=tt.offsetWidth,h=tt.offsetHeight;let x=e.clientX+14,y=e.clientY+14;
+if(x+w>innerWidth-8)x=e.clientX-w-14;if(y+h>innerHeight-8)y=e.clientY-h-14;tt.style.left=Math.max(4,x)+"px";tt.style.top=Math.max(4,y)+"px"}
+function dold(){tt.style.display="none"}
+function segtider(kat){return SEG.map(s=>({s,sek:s.k.reduce((a,k)=>a+(kat[k]||0),0)}))}
+function bygg(d){
+$("ram").textContent="Senaste "+(DAGAR===1?"dygnet":DAGAR+" dygnen")+". Uppdateras var 30:e sekund.";
+const v=$("val");v.replaceChildren();for(const [n,t] of [[1,"Idag"],[7,"7 dagar"],[14,"14 dagar"],[30,"30 dagar"]]){const a=el("a","chip"+(n===DAGAR?" vald":""),t);a.href="?dagar="+n;v.appendChild(a);v.appendChild(document.createTextNode(" "))}
+const S=d.summa,idag=d.dagar[0];
+$("varn").replaceChildren();
+if(S.matt_s===0){$("varn").appendChild(el("div","varn","Ingen mätning ännu. Panelen mäter var 15:e sekund så länge den körs. Kom tillbaka om en stund."))}
+else if(d.gpu_andel!=null&&d.gpu_andel<0.5)$("varn").appendChild(el("div","varn","GPU-mätning saknas för det mesta (nvidia-smi svarade inte). Aktiv tid räknas då från körslingans status i stället."));
+const kpi=$("kpi");kpi.replaceChildren();
+const kort=(l,v,u,h)=>{const x=el("div",h?"hero":"");x.appendChild(el("div","l",l));x.appendChild(el("div","v",v));if(u)x.appendChild(el("div","liten",u));kpi.appendChild(x)};
+kort("GPU aktiv idag",hm(idag.kat.aktiv),pct(idag.kat.aktiv,idag.matt_s)+" av "+hm(idag.matt_s)+" mätt tid",1);
+const dm=d.dagar.filter(x=>x.matt_s>0);
+kort("Snitt per mätt dag",dm.length?hm(dm.reduce((a,x)=>a+x.kat.aktiv,0)/dm.length):"-","GPU aktiv, "+dm.length+" dygn med mätning");
+kort("Arbetar utan GPU",hm(S.kat.utan_gpu),"test, bygge och git, i perioden");
+const vila=SEG.slice(2).map(s=>({s,sek:s.k.reduce((a,k)=>a+S.kat[k],0)})).sort((a,b)=>b.sek-a.sek)[0];
+kort("Mest väntan",S.matt_s>0&&vila.sek>0?vila.s.n.replace("Väntar på ",""):"-",S.matt_s>0&&vila.sek>0?hm(vila.sek)+" i perioden":"");
+const ul=$("insikt");ul.replaceChildren();(d.insikt.length?d.insikt:["Inga slutsatser ännu."]).forEach(t=>ul.appendChild(el("li","",t)));
+// värmerad
+const hmEl=$("hm");hmEl.replaceChildren();
+const huvud=el("div","rad");huvud.appendChild(el("span"));const tk=el("div","ticks");
+for(let h=0;h<24;h+=3){const s=el("span","",String(h).padStart(2,"0"));s.style.left=(h/24*100)+"%";tk.appendChild(s)}
+huvud.appendChild(tk);huvud.appendChild(el("span"));hmEl.appendChild(huvud);
+d.dagar.forEach((dg,di)=>{const r=el("div","rad");r.appendChild(el("span","dl",dagnamn(dg.datum)));
+const c=el("div","celler");
+dg.b.forEach((b,bi)=>{const x=el("div","c");const m=b[0];
+if(m<120)x.className="c n";else x.className="c l"+niva(b[1]/m);x.dataset.d=di;x.dataset.b=bi;c.appendChild(x)});
+r.appendChild(c);r.appendChild(el("span","ds",dg.matt_s?hm(dg.kat.aktiv):"-"));hmEl.appendChild(r)});
+hmEl.onmousemove=e=>{const x=e.target;if(!x.dataset||x.dataset.b===undefined){dold();return}
+const dg=d.dagar[+x.dataset.d],bi=+x.dataset.b,b=dg.b[bi];const h0=String(Math.floor(bi/4)).padStart(2,"0")+":"+String((bi%4)*15).padStart(2,"0");
+const h1=String(Math.floor((bi+1)/4)%24).padStart(2,"0")+":"+String(((bi+1)%4)*15).padStart(2,"0");
+if(b[0]<120){visa(e,[],dagnamn(dg.datum)+" "+h0+"-"+h1,"Ej mätt");return}
+const kat={};d.kategorier.forEach((k,i)=>kat[k]=b[1+i]);
+visa(e,segtider(kat).filter(x=>x.sek>0).map(x=>[x.s.n,pct(x.sek,b[0])+" ("+hm(x.sek)+")",x.s.c]),dagnamn(dg.datum)+" "+h0+"-"+h1,"GPU aktiv "+pct(kat.aktiv,b[0]))};
+hmEl.onmouseleave=dold;
+const lg=$("hmleg");lg.replaceChildren(el("span","","GPU aktiv av mätt tid:"));
+["0","<25 %","<50 %","<75 %",">75 %"].forEach((t,i)=>{const s=el("span","sw l"+i);lg.appendChild(s);lg.appendChild(el("span","",t))});
+const nn=el("span","sw n");lg.appendChild(nn);lg.appendChild(el("span","","Ej mätt"));
+// staplar
+const sl=$("sbleg");sl.replaceChildren();
+SEG.forEach(s=>{const sw=el("span","sw"+(s.rand?" rand":""));sw.style.background=s.rand?"":s.c;sl.appendChild(sw);sl.appendChild(el("span","",s.n+"  "))});
+const sb=$("sb");sb.replaceChildren();
+const sett=(g,tx,rand)=>{g.replaceChildren();if(!tx)return;if(rand)g.appendChild(el("b","",tx));else g.textContent=tx};
+const rad=(namn,kat,matt,ekstra)=>{const r=el("div","rad");r.appendChild(el("span","dl",namn));const b=el("div","sb");
+if(matt<=0){b.appendChild(el("div","sg tom","Ingen mätning"));b.firstChild.style.flex="1"}
+else segtider(kat).forEach(x=>{if(x.sek<=0)return;const g=el("div","sg"+(x.s.rand?" rand":""));g.style.flex="0 0 calc("+(100*x.sek/matt)+"% - 2px)";
+if(!x.s.rand)g.style.background=x.s.c;const andel=100*x.sek/matt;
+g._f=[x.s.n+" "+hm(x.sek),hm(x.sek),""];g._r=!!x.s.rand;
+g.onmousemove=e=>{const sub=x.s.k.map(k=>[KAT[k],hm(kat[k]||0),x.s.c]).filter(z=>z[1]!=="0 min"||x.s.k.length===1);visa(e,x.s.k.length>1?sub:[],namn,x.s.n+" "+pct(x.sek,matt)+" ("+hm(x.sek)+")")};
+g.onmouseleave=dold;b.appendChild(g)});
+r.appendChild(b);r.appendChild(el("span","ds",ekstra));sb.appendChild(r);
+b.querySelectorAll(".sg").forEach(g=>{if(!g._f)return;for(const tx of g._f){sett(g,tx,g._r);if(g.scrollWidth<=g.clientWidth+1)break}})};
+rad("Perioden",S.kat,S.matt_s,hm(S.matt_s));
+d.dagar.forEach(dg=>rad(dagnamn(dg.datum),dg.kat,dg.matt_s,dg.matt_s?hm(dg.matt_s):"-"));
+// stillestånd
+const st=$("still");st.replaceChildren();
+if(!d.stillestand.length)st.appendChild(el("div","liten","Inga stillestånd över 10 minuter i perioden."));
+else{const t=el("table");const h=el("tr");["Start","Längd","Orsak"].forEach(x=>h.appendChild(el("th","",x)));t.appendChild(h);
+d.stillestand.forEach(s=>{const r=el("tr");const dd=new Date(s.start*1000).toLocaleDateString("sv-SE",{weekday:"short",day:"numeric",month:"short"});
+r.appendChild(el("td","",dd+" "+klock(s.start)+"-"+klock(s.slut)));r.appendChild(el("td","",hm(s.sek)));r.appendChild(el("td","",KAT[s.orsak]));t.appendChild(r)});st.appendChild(t)}
+// tabell
+const tab=$("tab");tab.replaceChildren();const th=el("tr");
+["Dag","Mätt","GPU aktiv","Arbetar utan GPU","Cursor","Claude","Dig (ditt steg)","Körslingan av","Kön har uppgift","Övrigt","Ej mätt"].forEach(x=>th.appendChild(el("th","",x)));tab.appendChild(th);
+const tr=(n,k,m,e)=>{const r=el("tr");[n,hm(m),...["aktiv","utan_gpu","cursor","claude","mattias","av","lokal_vilar","ovrigt"].map(x=>hm(k[x])),hm(e)].forEach(x=>r.appendChild(el("td","",x)));tab.appendChild(r)};
+tr("Perioden",S.kat,S.matt_s,S.ej_matt_s);d.dagar.forEach(dg=>tr(dagnamn(dg.datum),dg.kat,dg.matt_s,dg.ej_matt_s))}
+let sist=null;
+async function hamta(){try{sist=await (await fetch("/api/anvandning?dagar="+DAGAR)).json();bygg(sist)}catch(e){}}
+addEventListener("resize",()=>{if(sist)bygg(sist)});
+hamta();setInterval(hamta,30000);
+</script></body></html>
+"""
+
+
 class Hanterare(BaseHTTPRequestHandler):
-    def svara(self, kropp, typ):
+    def svara(self, kropp, typ, extra=None):
         b = kropp.encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", typ + "; charset=utf-8")
         self.send_header("Content-Length", str(len(b)))
+        for k, v in (extra or {}).items():
+            self.send_header(k, v)
         self.end_headers()
         self.wfile.write(b)
 
@@ -587,6 +985,21 @@ class Hanterare(BaseHTTPRequestHandler):
             except Exception:
                 d["stilla"] = None
             self.svara(json.dumps(d, ensure_ascii=False), "application/json")
+        elif self.path.startswith("/api/anvandning"):
+            q = parse_qs(urlparse(self.path).query)
+            try:
+                dg = int((q.get("dagar") or ["7"])[0])
+            except ValueError:
+                dg = 7
+            self.svara(json.dumps(anvandning_api(max(1, min(dg, 90))), ensure_ascii=False), "application/json")
+        elif self.path.split("?")[0] == "/anvandning.csv":
+            try:
+                kropp = ANV.read_text(encoding="utf-8")
+            except OSError:
+                kropp = ANV_RUBRIK + "\n"
+            self.svara(kropp, "text/csv", {"Content-Disposition": 'attachment; filename="appfabriken-anvandning.csv"'})
+        elif self.path.split("?")[0] == "/anvandning":
+            self.svara(ANVANDNING_SIDA, "text/html")
         else:
             self.svara(SIDA, "text/html")
 
@@ -642,4 +1055,6 @@ if __name__ == "__main__":
         webbrowser.open(f"http://127.0.0.1:{PORT}")
     print(f"Panelen körs på http://127.0.0.1:{PORT}. Stäng fönstret för att stoppa den.")
     threading.Thread(target=bevaka_filen, args=(server,), daemon=True).start()
+    threading.Thread(target=provtagning, daemon=True).start()
+    threading.Thread(target=bollen_traad, daemon=True).start()
     server.serve_forever()
