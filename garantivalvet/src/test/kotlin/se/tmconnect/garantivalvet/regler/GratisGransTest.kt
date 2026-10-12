@@ -1,5 +1,6 @@
 package se.tmconnect.garantivalvet.regler
 
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -35,7 +36,7 @@ class GratisGransTest {
     }
 
     @Test
-    fun kvittonKvarGratisRaknarRätt() {
+    fun kvittonKvarGratisRaknarRatt() {
         assertEquals(3, kvittonKvarGratis(12))
         assertEquals(1, kvittonKvarGratis(14))
         assertEquals(0, kvittonKvarGratis(15))
