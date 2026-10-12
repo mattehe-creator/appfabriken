@@ -180,6 +180,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Resultatkontrakt för säkerhetskopia import
+    private val openSakerhetskopiaContract = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            viewModel.lasInSakerhetskopia(uri)
+        }
+    }
+
     private var behorighetNekad by mutableStateOf(false)
     private var exportKop: Kop? = null
 
@@ -206,6 +215,15 @@ class MainActivity : ComponentActivity() {
                             stringResource(R.string.sakerhetskopia_sparad)
                         SakerhetskopiaMeddelande.KundeInteLasas ->
                             stringResource(R.string.sakerhetskopia_kunde_inte_lasas)
+                        is SakerhetskopiaMeddelande.Importerad -> {
+                            stringResource(
+                                R.string.sakerhetskopia_importerad,
+                                meddelande.tillagda,
+                                meddelande.hoppadeOver
+                            )
+                        }
+                        SakerhetskopiaMeddelande.NyareVersion ->
+                            stringResource(R.string.sakerhetskopia_nyare_version)
                     }
                     LaunchedEffect(meddelande) {
                         snackbarHostState.showSnackbar(text)
@@ -253,7 +271,11 @@ class MainActivity : ComponentActivity() {
                                     sakerhetskopiaFilnamn(LocalDate.now()),
                                 )
                             },
-                            onHamtaSakerhetskopia = {},
+                            onHamtaSakerhetskopia = {
+                                openSakerhetskopiaContract.launch(
+                                    arrayOf("application/zip", "application/octet-stream")
+                                )
+                            },
                         )
                     }
 

@@ -38,3 +38,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra andra filer.
 - Delvis import vid fel.
 - Nya behörigheter.
+
+utfall: godkänd 2026-10-12 (stängde input stream med use; tog bort nästlade viewModelScope.launch i import)
