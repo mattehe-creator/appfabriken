@@ -215,6 +215,15 @@ class MainActivity : ComponentActivity() {
                             stringResource(R.string.sakerhetskopia_sparad)
                         SakerhetskopiaMeddelande.KundeInteLasas ->
                             stringResource(R.string.sakerhetskopia_kunde_inte_lasas)
+                        is SakerhetskopiaMeddelande.Importerad -> {
+                            stringResource(
+                                R.string.sakerhetskopia_importerad,
+                                meddelande.tillagda,
+                                meddelande.hoppadeOver
+                            )
+                        }
+                        SakerhetskopiaMeddelande.NyareVersion ->
+                            stringResource(R.string.sakerhetskopia_nyare_version)
                     }
                     LaunchedEffect(meddelande) {
                         snackbarHostState.showSnackbar(text)
@@ -287,7 +296,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onDelaPdf = {
                                     try {
-                                        val etiketter = UnderlagEtikeller(
+                                        val etiketter = UnderlagEtiketter(
                                             vad = getString(R.string.underlag_vad),
                                             varKopt = getString(R.string.underlag_var_kopt),
                                             kopdatum = getString(R.string.underlag_kopdatum),
