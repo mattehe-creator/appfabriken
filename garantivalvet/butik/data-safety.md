@@ -58,6 +58,7 @@ Följande lagras **på enheten** för appens funktion. Det ska **inte** markeras
 | Behörighet | Varför | Data safety-koppling |
 |------------|--------|----------------------|
 | `POST_NOTIFICATIONS` | Lokala notiser om garanti/reklamation enligt användarens val | Notiser genereras på enheten; inget skickas till utvecklaren |
+| `com.android.vending.BILLING` | Finns i **sammanslaget manifest** (`processDebugMainManifest`); kommer från Google Play Billing Library (`billing-ktx` i `:karna`), inte från appmodulens egen manifestfil | Play Store på enheten hanterar köp; utvecklaren tar inte emot betalningsuppgifter. Se avsnitt 6 |
 | (ingen `INTERNET` i slutlig manifest) | Medvetet borttagen | Stödjer påståendet att appen inte använder nätverk för egen datainsamling |
 
 Kamera och lagring används via **systemintents** (fotoväljare/kamera) enligt projektregler, inte som breda lagringsbehörigheter i manifest.
