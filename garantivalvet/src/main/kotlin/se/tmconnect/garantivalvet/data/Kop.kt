@@ -33,4 +33,11 @@ data class Kop(
     val felBeskrivning: String? = null,
     /** Dagen användaren reklamerade hos företaget, `null` om inte gjort. */
     val reklamerad: LocalDate? = null,
+    /** Butikens kontaktuppgifter, till nytta när man ska reklamera. Personnummer sparas aldrig. */
+    @ColumnInfo(name = "butik_epost")
+    val butikEpost: String? = null,
+    @ColumnInfo(name = "butik_telefon")
+    val butikTelefon: String? = null,
+    @ColumnInfo(name = "butik_orgnr")
+    val butikOrgnr: String? = null,
 )

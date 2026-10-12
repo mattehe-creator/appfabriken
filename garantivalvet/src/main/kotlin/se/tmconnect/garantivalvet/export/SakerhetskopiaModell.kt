@@ -24,6 +24,9 @@ data class SakerhetskopiaKop(
     val felUpptackt: LocalDate? = null,
     val felBeskrivning: String? = null,
     val reklamerad: LocalDate? = null,
+    val butikEpost: String? = null,
+    val butikTelefon: String? = null,
+    val butikOrgnr: String? = null,
 )
 
 data class SakerhetskopiaInnehall(
@@ -51,6 +54,9 @@ fun kopTillSakerhetskopia(kop: Kop): SakerhetskopiaKop =
         felUpptackt = kop.felUpptackt,
         felBeskrivning = kop.felBeskrivning,
         reklamerad = kop.reklamerad,
+        butikEpost = kop.butikEpost,
+        butikTelefon = kop.butikTelefon,
+        butikOrgnr = kop.butikOrgnr,
     )
 
 fun sakerhetskopiaKopTillKop(export: SakerhetskopiaKop, kvittoFil: String? = export.kvittoFil): Kop =
@@ -67,6 +73,9 @@ fun sakerhetskopiaKopTillKop(export: SakerhetskopiaKop, kvittoFil: String? = exp
         felUpptackt = export.felUpptackt,
         felBeskrivning = export.felBeskrivning?.trim()?.takeIf { it.isNotEmpty() },
         reklamerad = export.reklamerad,
+        butikEpost = export.butikEpost?.trim()?.takeIf { it.isNotEmpty() },
+        butikTelefon = export.butikTelefon?.trim()?.takeIf { it.isNotEmpty() },
+        butikOrgnr = export.butikOrgnr?.trim()?.takeIf { it.isNotEmpty() },
     )
 
 /** Dubblett om de fem fälten matchar ett befintligt köp (enligt BESLUTSLOGG). */

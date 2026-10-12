@@ -213,4 +213,17 @@ class KvittoTolkareTest {
         assertEquals("Biltema AB", hittaButik(listOf("Biltema AB/Landskrona 160")))
         assertNull(hittaButik(listOf("Faktura 127258", "Fak tura 127258")))
     }
+
+    @Test
+    fun kontaktFyllsBaraDarDetSaknas() {
+        val f = KvittoForslag(null, null, null, kontakt = ButikKontakt("a@b.se", "08-123 45", "556000-0000"))
+        val tom = fyllTommaFalt(f, "", "", idag, idag)
+        assertEquals(ButikKontakt("a@b.se", "08-123 45", "556000-0000"), tom.kontakt)
+        assertTrue(tom.kontaktFranKvitto)
+        val delvis = fyllTommaFalt(f, "", "", idag, idag, kontakt = ButikKontakt(epost = "min@epost.se"))
+        assertEquals(ButikKontakt("min@epost.se", "08-123 45", "556000-0000"), delvis.kontakt)
+        val full = fyllTommaFalt(f, "", "", idag, idag, kontakt = ButikKontakt("x@y.se", "1", "2"))
+        assertEquals(ButikKontakt("x@y.se", "1", "2"), full.kontakt)
+        assertTrue(!full.kontaktFranKvitto)
+    }
 }

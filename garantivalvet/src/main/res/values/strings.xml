@@ -228,4 +228,15 @@
     <string name="kvitto_rotera_hoger">Rotate right</string>
     <string name="kvitto_las_igen">Read again</string>
     <string name="kvitto_varu_forslag">Suggestions from the receipt:</string>
+    <string name="falt_butik_kontakt">Shop contact details (optional)</string>
+    <string name="falt_butik_epost">Email</string>
+    <string name="falt_butik_telefon">Phone</string>
+    <string name="falt_butik_orgnr">Organisation number</string>
+    <string name="butik_kontakt_hjalp">Read from the receipt when possible. Numbers that look like personal ID numbers are not saved.</string>
+    <string name="detalj_butik_kontakt">Shop contact</string>
+    <string name="mejla_butiken">Email the shop</string>
+    <string name="ring_butiken">Call the shop</string>
+    <string name="underlag_butik_epost">Shop email</string>
+    <string name="underlag_butik_telefon">Shop phone</string>
+    <string name="underlag_butik_orgnr">Shop organisation number</string>
 </resources>

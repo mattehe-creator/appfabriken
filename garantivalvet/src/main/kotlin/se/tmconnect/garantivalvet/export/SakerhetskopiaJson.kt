@@ -59,6 +59,9 @@ private fun skrivKopObjekt(kop: SakerhetskopiaKop): String =
         kop.felUpptackt?.let { laggTillFalt("felUpptackt", jsonStrang(it.toString())) }
         kop.felBeskrivning?.let { laggTillFalt("felBeskrivning", jsonStrang(it)) }
         kop.reklamerad?.let { laggTillFalt("reklamerad", jsonStrang(it.toString())) }
+        kop.butikEpost?.let { laggTillFalt("butikEpost", jsonStrang(it)) }
+        kop.butikTelefon?.let { laggTillFalt("butikTelefon", jsonStrang(it)) }
+        kop.butikOrgnr?.let { laggTillFalt("butikOrgnr", jsonStrang(it)) }
         append('}')
     }
 
@@ -159,6 +162,9 @@ private fun lasKopObjekt(falt: Map<String, Any?>): SakerhetskopiaKop? {
         felUpptackt = lasDatum(falt["felUpptackt"]),
         felBeskrivning = falt["felBeskrivning"] as? String,
         reklamerad = lasDatum(falt["reklamerad"]),
+        butikEpost = falt["butikEpost"] as? String,
+        butikTelefon = falt["butikTelefon"] as? String,
+        butikOrgnr = falt["butikOrgnr"] as? String,
     )
 }
 
