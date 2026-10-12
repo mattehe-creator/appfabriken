@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-12-sprakformat-och-engelska-skarmbilder.md
 försök: 1
-beror-på: 2026-10-12-35-locale-datum-pris-ui.md
+beror-på: 2026-10-12-35-locale-datum-pris-ui-f2.md
 
 ## Ändra bara dessa filer
 - garantivalvet/src/test/kotlin/se/tmconnect/garantivalvet/butik/ButikSkarmbilderTest.kt

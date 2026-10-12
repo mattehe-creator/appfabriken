@@ -35,3 +35,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*FormateringTest"
 - Ändra andra filer (inklusive `MainActivity.kt` om locale redan skickas till `byggUnderlag`).
 - Lägga till beroenden.
 - Ändra lagrade värden eller `Formatering.kt`.
+
+utfall: underkänd 2026-10-12 av Cursor (PR #92). Ersatt av 2026-10-12-35-locale-datum-pris-ui-f2.md
