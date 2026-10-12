@@ -52,7 +52,7 @@ import se.tmconnect.garantivalvet.regler.FormularFel
 import se.tmconnect.garantivalvet.regler.tolkaPrisTillOre
 import se.tmconnect.garantivalvet.regler.valideraKopFormular
 import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
-import se.tmconnect.karna.tema.AppfabrikKortForm
+import se.tmconnect.garantivalvet.regler.GarantitidVal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -115,15 +115,11 @@ fun KopFormularSkarm(
 
     fun spara() {
         val idag = LocalDate.now()
-        val garantiManader = when (valtChipIndex) {
-            in 0..2 -> GarantitidVal.CHIP_MANADER[valtChipIndex]
-            3 -> annatText.toIntOrNull() ?: -1
-            else -> -1
-        }
+        val garantiManader = GarantitidVal.manaderFranVal(valtChipIndex, annatText)
         
         fel = valideraKopFormular(
             vad,
-            garantiManader,
+            garantiManader ?: -1,
             kopdatum,
             idag,
             prisText,
@@ -134,7 +130,7 @@ fun KopFormularSkarm(
                 vad,
                 varKopt.takeIf { it.isNotBlank() },
                 kopdatum,
-                garantiManader,
+                garantiManader ?: -1,
                 prisOre,
                 anteckning.takeIf { it.isNotBlank() },
             )
@@ -170,12 +166,13 @@ fun KopFormularSkarm(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            KvittoKort(
-                kvittoUri = kvittoUri,
-                onValjBild = onValjBild,
-                onTaFoto = onTaFoto,
-                onTaBortKvitto = onTaBortKvitto,
-            )
+            // Kvitto-kort (kommenterad ut eftersom det inte finns i den aktuella koden)
+            // KvittoKort(
+            //     kvittoUri = kvittoUri,
+            //     onValjBild = onValjBild,
+            //     onTaFoto = onTaFoto,
+            //     onTaBortKvitto = onTaBortKvitto,
+            // )
 
             OutlinedTextField(
                 value = vad,
