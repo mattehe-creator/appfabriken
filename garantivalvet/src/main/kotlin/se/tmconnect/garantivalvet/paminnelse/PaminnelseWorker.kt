@@ -25,6 +25,7 @@ import se.tmconnect.garantivalvet.regler.FristTyp
 import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.garantivalvet.regler.fristNyckel
 import se.tmconnect.garantivalvet.regler.fristerSomSkaAviseras
+import se.tmconnect.garantivalvet.regler.arFarskvara
 import se.tmconnect.garantivalvet.regler.garantiSlut
 import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
 import se.tmconnect.garantivalvet.regler.oppetKopSlut
@@ -159,6 +160,8 @@ class PaminnelseWorker(
         val oppetKop = giltigaOppetKopDagar(kop.oppetKopDagar)?.let { dagar ->
             Frist(kopId = kop.id, typ = FristTyp.OPPET_KOP, slutdatum = oppetKopSlut(kop.kopdatum, dagar))
         }
+        // Färskvaror har ingen längre frist att påminna om (se arFarskvara).
+        if (arFarskvara(kop)) return listOfNotNull(oppetKop)
         return listOfNotNull(oppetKop, garanti, reklamation)
     }
 

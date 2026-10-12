@@ -62,7 +62,8 @@ import se.tmconnect.garantivalvet.regler.TidslinjeMarkorer
 import se.tmconnect.garantivalvet.regler.appfabrikStatusFran
 import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.garantivalvet.regler.formateraPrisKr
-import se.tmconnect.garantivalvet.regler.kopStatus
+import se.tmconnect.garantivalvet.regler.arFarskvara
+import se.tmconnect.garantivalvet.regler.statusForKop
 import se.tmconnect.garantivalvet.regler.NarmasteFristTyp
 import se.tmconnect.garantivalvet.regler.narmasteFrist
 import se.tmconnect.garantivalvet.regler.reklamationSlut
@@ -91,9 +92,9 @@ fun KopDetaljSkarm(
     var visaMeny by remember { mutableStateOf(false) }
     val locale = LocalConfiguration.current.locales[0]
     val idag = LocalDate.now()
-    val status = kopStatus(kop.kopdatum, kop.garantiManader, idag)
+    val status = statusForKop(kop, idag)
     val chipFarger = statusChipFarger(appfabrikStatusFran(status))
-    val tidslinjeMarkorer = beraknaTidslinje(kop.kopdatum, kop.garantiManader, idag)
+    val tidslinjeMarkorer = if (arFarskvara(kop)) null else beraknaTidslinje(kop.kopdatum, kop.garantiManader, idag)
 
     if (visaBekraftaTaBort) {
         AlertDialog(
@@ -228,10 +229,12 @@ fun KopDetaljSkarm(
                     varde = formateraPrisKr(it, locale),
                 )
             }
-            DetaljRad(
-                etikett = stringResource(R.string.falt_garanti_manader),
-                varde = kop.garantiManader.toString(),
-            )
+            if (!arFarskvara(kop)) {
+                DetaljRad(
+                    etikett = stringResource(R.string.falt_garanti_manader),
+                    varde = kop.garantiManader.toString(),
+                )
+            }
             Varutyp.franNamn(kop.varutyp)?.let { typ ->
                 DetaljRad(
                     etikett = stringResource(R.string.underlag_varutyp),
@@ -254,19 +257,30 @@ fun KopDetaljSkarm(
                         if (idag.isAfter(slut)) R.string.detalj_oppet_kop_gick_ut else R.string.detalj_oppet_kop_till,
                         formateraDatum(slut, locale),
                     ),
-                    forklaring = stringResource(R.string.detalj_oppet_kop_forklaring),
+                    forklaring = stringResource(R.string.detalj_oppet_kop_forklaring) + " " + stringResource(
+                        if (arFarskvara(kop)) R.string.detalj_oppet_kop_mat else R.string.detalj_oppet_kop_oanvand,
+                    ),
                 )
             }
-            val garantiSlutDatum = garantiSlut(kop.kopdatum, kop.garantiManader)
-            FristKort(
-                rubrik = stringResource(R.string.detalj_garanti_rubrik),
-                datumText = stringResource(
-                    if (idag.isAfter(garantiSlutDatum)) R.string.detalj_garanti_gick_ut else R.string.detalj_garanti_till,
-                    formateraDatum(garantiSlutDatum, locale),
-                ),
-                forklaring = stringResource(R.string.detalj_garanti_forklaring),
-            )
-            ReklamationsKort(kop = kop, locale = locale)
+            if (arFarskvara(kop)) {
+                // Mat och dryck är färskvaror: ingen garanti eller treårig reklamationsfrist (se arFarskvara).
+                FristKort(
+                    rubrik = stringResource(R.string.farskvara_rubrik),
+                    datumText = stringResource(R.string.farskvara_text),
+                    forklaring = stringResource(R.string.farskvara_forklaring),
+                )
+            } else {
+                val garantiSlutDatum = garantiSlut(kop.kopdatum, kop.garantiManader)
+                FristKort(
+                    rubrik = stringResource(R.string.detalj_garanti_rubrik),
+                    datumText = stringResource(
+                        if (idag.isAfter(garantiSlutDatum)) R.string.detalj_garanti_gick_ut else R.string.detalj_garanti_till,
+                        formateraDatum(garantiSlutDatum, locale),
+                    ),
+                    forklaring = stringResource(R.string.detalj_garanti_forklaring),
+                )
+                ReklamationsKort(kop = kop, locale = locale)
+            }
         }
     }
 }
@@ -296,6 +310,7 @@ private fun StatusKort(
                 formateraDatum(narmaste.datum, locale),
             )
         }
+        arFarskvara(kop) -> stringResource(R.string.farskvara_huvud)
         reklamationSlut(kop.kopdatum) != null -> stringResource(
             R.string.detalj_reklamation_till,
             formateraDatum(reklamationSlut(kop.kopdatum)!!, locale),
@@ -307,6 +322,7 @@ private fun StatusKort(
         KopStatus.GARANTI_SNART -> stringResource(R.string.status_gar_ut_snart)
         KopStatus.REKLAMATION_GALLER -> stringResource(R.string.status_reklamation_galler)
         KopStatus.UTGANGEN -> stringResource(R.string.status_utgangen)
+        KopStatus.FARSKVARA -> stringResource(R.string.status_farskvara)
     }
 
     Card(
@@ -473,6 +489,16 @@ private fun ReklamationsKort(kop: Kop, locale: java.util.Locale) {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             text = stringResource(R.string.detalj_reklamation_forklaring),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                            text = stringResource(R.string.detalj_reklamation_bevis),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                            text = stringResource(R.string.detalj_reklamation_slitage),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

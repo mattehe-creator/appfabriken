@@ -17,6 +17,7 @@ fun appfabrikStatusFran(kopStatus: KopStatus): AppfabrikStatus =
         KopStatus.GARANTI_SNART -> AppfabrikStatus.SNART
         KopStatus.REKLAMATION_GALLER -> AppfabrikStatus.REKLAMATION
         KopStatus.UTGANGEN -> AppfabrikStatus.UTGANGEN
+        KopStatus.FARSKVARA -> AppfabrikStatus.SNART
     }
 
 enum class NarmasteFristTyp {
@@ -52,4 +53,7 @@ private fun garantiEllerReklamation(kop: Kop, idag: LocalDate): NarmasteFrist? {
 
 /** Den frist som går ut först av öppet köp (om det gäller) och garanti/reklamation. */
 fun narmasteFrist(kop: Kop, idag: LocalDate): NarmasteFrist? =
-    listOfNotNull(aktivtOppetKop(kop, idag), garantiEllerReklamation(kop, idag)).minByOrNull { it.datum }
+    listOfNotNull(
+        aktivtOppetKop(kop, idag),
+        garantiEllerReklamation(kop, idag).takeUnless { arFarskvara(kop) },
+    ).minByOrNull { it.datum }

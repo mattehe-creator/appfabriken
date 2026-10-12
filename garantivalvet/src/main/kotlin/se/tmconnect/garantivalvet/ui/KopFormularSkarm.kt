@@ -449,6 +449,13 @@ fun KopFormularSkarm(
                 text = stringResource(R.string.falt_varutyp),
                 style = MaterialTheme.typography.labelLarge,
             )
+            if (varutyp == Varutyp.MAT_DRYCK) {
+                Text(
+                    text = stringResource(R.string.varutyp_mat_hjalp),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth(),
