@@ -1,6 +1,6 @@
 # Uppgift: språkspecifik exempeldata och omgenererade skärmbilder
 
-uppdrag: uppdrag/2026-10-12-datum-pris-locale-skarmbilder.md
+uppdrag: uppdrag/2026-10-12-sprakformat-och-engelska-skarmbilder.md
 försök: 1
 beror-på: 2026-10-12-35-locale-datum-pris-ui.md
 
@@ -33,7 +33,7 @@ Idag delar `ButikSkarmbilderSvTest` och `ButikSkarmbilderEnTest` samma `exempelL
 Om `recordRoborazziDebug` misslyckas i din miljö (t.ex. saknad GPU): gör kodändringen, skriv kort vad som saknas i `FRAGA.md` i repots rot, och låt Cursor köra Roborazzi i granskningen.
 
 ## Exempel
-- Engelsk `01-lista.png`: rubriker på engelska, "Mobile phone", datum som "Aug 1, 2026" (inte "1 aug. 2026").
+- Engelsk `01-lista.png`: rubriker på engelska, "Mobile phone", datum enligt testets locale en-GB, alltså "1 Aug 2026" (inte "1 aug. 2026").
 - Svensk `01-lista.png`: "Mobiltelefon", datum som "1 aug. 2026".
 
 ## Test som ska gå igenom

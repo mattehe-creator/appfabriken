@@ -1,6 +1,6 @@
 # Uppgift: locale för datum och pris i UI
 
-uppdrag: uppdrag/2026-10-12-datum-pris-locale-skarmbilder.md
+uppdrag: uppdrag/2026-10-12-sprakformat-och-engelska-skarmbilder.md
 försök: 1
 beror-på: ingen
 
