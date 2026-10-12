@@ -66,18 +66,8 @@ abstract class ButikSkarmbilderBas {
 
     @Before
     fun ställInSprak() {
-        val locale = Locale.forLanguageTag(localeTag())
-        Locale.setDefault(locale)
-        val app = ApplicationProvider.getApplicationContext<Application>()
-        val config = Configuration(app.resources.configuration)
-        config.setLocale(locale)
-        // Använd den nya metoden för att uppdatera konfigurationen
-        try {
-            app.resources.updateConfiguration(config, app.resources.displayMetrics)
-        } catch (e: Exception) {
-            // Fallback om updateConfiguration inte fungerar
-            RuntimeEnvironment.setQualifiers(skarmQualifiers())
-        }
+        // Använd endast qualifiers för att sätta rätt språk och skärmstorlek
+        RuntimeEnvironment.setQualifiers(skarmQualifiers())
     }
 
     protected abstract fun exempelLista(): List<Kop>
