@@ -273,6 +273,8 @@ class MainActivity : ComponentActivity() {
                             },
                             onOppna = viewModel::visaDetalj,
                             onOppnaInstallningar = viewModel::visaInstallningar,
+                            arPro = arPro,
+                            onVisaProDialog = viewModel::visaProDialog,
                         )
                     }
 
