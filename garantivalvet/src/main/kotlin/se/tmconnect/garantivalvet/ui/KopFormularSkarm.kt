@@ -78,6 +78,7 @@ fun KopFormularSkarm(
     initialKopdatum: LocalDate,
     initialOppetKop: Int? = null,
     initialVarutyp: String? = null,
+    lasInitialtKvitto: Boolean = false,
     kvittoUri: Uri?,
     onValjBild: () -> Unit,
     onTaFoto: () -> Unit,
@@ -130,7 +131,7 @@ fun KopFormularSkarm(
     var ingetHittades by remember { mutableStateOf(false) }
 
     // Läs av kvittot när användaren fotar eller byter det. Ett redan sparat kvitto läses inte om.
-    val startUri = remember { kvittoUri }
+    val startUri = remember { if (lasInitialtKvitto) null else kvittoUri }
     LaunchedEffect(kvittoUri) {
         if (kvittoUri == null || kvittoUri == startUri) return@LaunchedEffect
         laserKvitto = true

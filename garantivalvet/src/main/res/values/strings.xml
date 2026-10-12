@@ -223,4 +223,5 @@
     <string name="brev_krav_hava">cancel the purchase and refund my money</string>
     <string name="brev_avslut">I look forward to your reply.</string>
     <string name="brev_halsning">Kind regards</string>
+    <string name="dela_in_fel">Could not read the receipt. Share an image or a PDF.</string>
 </resources>

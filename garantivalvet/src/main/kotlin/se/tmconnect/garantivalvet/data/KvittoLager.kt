@@ -3,12 +3,17 @@ package se.tmconnect.garantivalvet.data
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.pdf.PdfRenderer
 import android.net.Uri
 import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
+import se.tmconnect.garantivalvet.regler.DELAT_KVITTO_MAX_BYTES
+import se.tmconnect.garantivalvet.regler.arPdf
 import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
+import se.tmconnect.garantivalvet.regler.beraknaPdfStorlek
 import se.tmconnect.garantivalvet.regler.beraknaNedskaladStorlek
 
 /**
@@ -68,6 +73,68 @@ class KvittoLager(
         } finally {
             skalad.recycle()
         }
+    }
+
+    /**
+     * Tar emot ett kvitto som delats till appen (bild eller PDF) och lägger det som JPEG i cache,
+     * så att det inte beror på avsändarens tillfälliga läsrättighet. PDF:ens första sida renderas till en bild.
+     * Returnerar FileProvider-URI, eller `null` om filen inte gick att läsa.
+     */
+    fun tagEmotDelatKvitto(kalla: Uri, mime: String?): Uri? {
+        val katalog = File(context.cacheDir, KAMERA_CACHE_MAPP).also { it.mkdirs() }
+        val fil = File(katalog, "${UUID.randomUUID()}.jpg")
+        val klar = try {
+            if (arPdf(mime)) renderaPdfForstaSidan(kalla, fil) else kopieraBild(kalla, fil)
+        } catch (_: Exception) {
+            false
+        }
+        if (!klar) {
+            fil.delete()
+            return null
+        }
+        return FileProvider.getUriForFile(context, fileProviderAuthority(context), fil)
+    }
+
+    private fun kopieraBild(kalla: Uri, mal: File): Boolean {
+        val ok = context.contentResolver.openInputStream(kalla)?.use { input ->
+            FileOutputStream(mal).use { ut ->
+                val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                var totalt = 0L
+                while (true) {
+                    val last = input.read(buffer)
+                    if (last < 0) break
+                    totalt += last
+                    if (totalt > DELAT_KVITTO_MAX_BYTES) return false
+                    ut.write(buffer, 0, last)
+                }
+                true
+            }
+        } ?: return false
+        if (!ok) return false
+        val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeFile(mal.absolutePath, options)
+        return options.outWidth > 0 && options.outHeight > 0
+    }
+
+    private fun renderaPdfForstaSidan(kalla: Uri, mal: File): Boolean {
+        val pfd = context.contentResolver.openFileDescriptor(kalla, "r") ?: return false
+        pfd.use {
+            PdfRenderer(it).use { renderare ->
+                if (renderare.pageCount == 0) return false
+                renderare.openPage(0).use { sida ->
+                    val (bredd, hojd) = beraknaPdfStorlek(sida.width, sida.height)
+                    val bitmap = Bitmap.createBitmap(bredd, hojd, Bitmap.Config.ARGB_8888)
+                    try {
+                        bitmap.eraseColor(Color.WHITE)
+                        sida.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                        FileOutputStream(mal).use { ut -> bitmap.compress(Bitmap.CompressFormat.JPEG, 90, ut) }
+                    } finally {
+                        bitmap.recycle()
+                    }
+                }
+            }
+        }
+        return true
     }
 
     /**

@@ -16,6 +16,7 @@ import se.tmconnect.garantivalvet.ocr.KvittoLasare
 import se.tmconnect.garantivalvet.ocr.MlKitKvittoLasare
 import se.tmconnect.garantivalvet.regler.KvittoForslag
 import se.tmconnect.garantivalvet.regler.Varutyp
+import se.tmconnect.garantivalvet.regler.arDelbartKvitto
 import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
 import se.tmconnect.garantivalvet.regler.tolkaKvitto
 import se.tmconnect.garantivalvet.ui.varutypText
@@ -203,6 +204,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         hanteraPaminnelseIntent(intent)
+        if (savedInstanceState == null) {
+            hanteraDelatKvitto(intent)
+        }
         viewModel.synkaPaminnelseJobb()
         enableEdgeToEdge()
         setContent {
@@ -210,6 +214,7 @@ class MainActivity : ComponentActivity() {
                 val kopLista by viewModel.kopLista.collectAsState()
                 // Måste läsas här: annars ritas formuläret inte om när ett kvitto fotas eller väljs.
                 val tillfalligtKvitto by viewModel.tillfalligtKvittoUri.collectAsState()
+                val delatKvitto by viewModel.delatKvitto.collectAsState()
                 val aktivSkarm by viewModel.aktivSkarm.collectAsState()
                 val valtKop by viewModel.valtKop.collectAsState()
                 val paminnelserPa by viewModel.paminnelserPa.collectAsState()
@@ -367,6 +372,7 @@ class MainActivity : ComponentActivity() {
                             initialKopdatum = LocalDate.now(),
                             initialOppetKop = null,
                             initialVarutyp = null,
+                            lasInitialtKvitto = delatKvitto,
                             kvittoUri = tillfalligtKvitto ?: viewModel.kvittoUriForFormular(null),
                             onValjBild = {
                                 pickImageContract.launch(
@@ -473,6 +479,7 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         hanteraPaminnelseIntent(intent)
+        hanteraDelatKvitto(intent)
     }
 
     private fun underlagEtiketter() = UnderlagEtiketter(
@@ -555,6 +562,21 @@ class MainActivity : ComponentActivity() {
                 }
             }
         } catch (_: Exception) {
+        }
+    }
+
+    /** Tar emot ett kvitto (bild eller PDF) som delats från en annan app, till exempel mejl eller galleri. */
+    private fun hanteraDelatKvitto(intent: Intent?) {
+        if (intent?.action != Intent.ACTION_SEND || !arDelbartKvitto(intent.type)) return
+        val uri = if (Build.VERSION.SDK_INT >= 33) {
+            intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+        } ?: return
+        intent.removeExtra(Intent.EXTRA_STREAM)
+        viewModel.tagEmotDelatKvitto(uri, intent.type) {
+            android.widget.Toast.makeText(this, R.string.dela_in_fel, android.widget.Toast.LENGTH_LONG).show()
         }
     }
 

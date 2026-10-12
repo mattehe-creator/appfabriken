@@ -247,6 +247,37 @@ class KopViewModel(
         _tillfalligtKvittoUri.value = uri
     }
 
+    private val _delatKvitto = MutableStateFlow(false)
+
+    /** Sant när formuläret öppnades med ett kvitto som delats till appen, och det ska läsas av direkt. */
+    val delatKvitto: StateFlow<Boolean> = _delatKvitto.asStateFlow()
+
+    /**
+     * Tar emot ett kvitto som delats till appen (bild eller PDF), öppnar formuläret för ett nytt köp med
+     * kvittot ifyllt och startar avläsningen. Efter 15 köp utan Pro visas Pro-dialogen i stället.
+     * [onFel] anropas om filen inte gick att läsa.
+     */
+    fun tagEmotDelatKvitto(uri: Uri, mime: String?, onFel: () -> Unit) {
+        viewModelScope.launch {
+            if (!kanLaggaTill(repository.antal(), arPro.value)) {
+                visaLista()
+                visaProDialog()
+                return@launch
+            }
+            val bild = withContext(Dispatchers.IO) { kvittoLager.tagEmotDelatKvitto(uri, mime) }
+            if (bild == null) {
+                onFel()
+                return@launch
+            }
+            _valtKop.value = null
+            _proDialogSynlig.value = false
+            rensaKvittoFormularTillstand()
+            _aktivSkarm.value = KopSkarm.LaggTill
+            sattTillfalligtKvitto(bild)
+            _delatKvitto.value = true
+        }
+    }
+
     /** Tar bort kvittot i formuläret (sparat kvitto tas bort vid Spara). */
     fun markeraKvittoForBorttagning() {
         _tillfalligtKvittoUri.value = null
@@ -477,6 +508,7 @@ class KopViewModel(
     }
 
     private fun rensaKvittoFormularTillstand() {
+        _delatKvitto.value = false
         _tillfalligtKvittoUri.value = null
         kvittoSkaTasBortVidSpara = false
     }
