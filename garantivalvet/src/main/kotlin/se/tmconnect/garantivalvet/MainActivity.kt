@@ -60,6 +60,7 @@ import se.tmconnect.garantivalvet.ui.KopSkarm
 import se.tmconnect.garantivalvet.ui.KopViewModel
 import se.tmconnect.garantivalvet.ui.KopViewModelFactory
 import se.tmconnect.garantivalvet.ui.ProDialog
+import se.tmconnect.garantivalvet.ui.ReklamationsSkarm
 import se.tmconnect.garantivalvet.ui.SakerhetskopiaMeddelande
 import se.tmconnect.garantivalvet.ui.KvittoHelskarm
 import se.tmconnect.karna.pro.ProKalla
@@ -333,6 +334,24 @@ class MainActivity : ComponentActivity() {
                                     createPdfContract.launch(reklamationsPdfFilnamn(kop.vad, kop.kopdatum))
                                 },
                                 onVisaProDialog = viewModel::visaProDialog,
+                                onReklamera = { viewModel.visaReklamera(kop.id) },
+                                onMarkeraReklamerad = viewModel::markeraReklamerad,
+                            )
+                        }
+                    }
+
+                    is KopSkarm.Reklamera -> {
+                        val kop = valtKop
+                        if (kop != null) {
+                            ReklamationsSkarm(
+                                kop = kop,
+                                kvittoFinns = kop.kvittoFil != null,
+                                onSkickaMejl = { amne, text -> skickaReklamationsMejl(kop, amne, text) },
+                                onSparaFel = viewModel::sparaFel,
+                                onHarReklamerat = { upptackt, beskrivning ->
+                                    viewModel.harReklamerat(upptackt, beskrivning)
+                                },
+                                onTillbaka = { viewModel.visaDetalj(kop.id) },
                             )
                         }
                     }
@@ -478,6 +497,26 @@ class MainActivity : ComponentActivity() {
         farskvaraText = getString(R.string.underlag_farskvara_text),
         varutyper = Varutyp.entries.associate { it.name to getString(varutypText(it)) },
     )
+
+    /** Öppnar mejlappen med färdigt meddelande och kvittot bifogat. Ingen behörighet eller nätverk i appen. */
+    private fun skickaReklamationsMejl(kop: Kop, amne: String, text: String) {
+        val kvittoUri = viewModel.sparatKvittoUri(kop)
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "message/rfc822"
+            putExtra(Intent.EXTRA_SUBJECT, amne)
+            putExtra(Intent.EXTRA_TEXT, text)
+            if (kvittoUri != null) {
+                putExtra(Intent.EXTRA_STREAM, kvittoUri)
+                clipData = android.content.ClipData.newRawUri("", kvittoUri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+        }
+        try {
+            startActivity(Intent.createChooser(intent, getString(R.string.reklamera_skicka_mejl)))
+        } catch (_: android.content.ActivityNotFoundException) {
+            android.widget.Toast.makeText(this, R.string.reklamera_inget_mejl, android.widget.Toast.LENGTH_LONG).show()
+        }
+    }
 
     private fun delaPdfForKop(kop: Kop) {
         try {

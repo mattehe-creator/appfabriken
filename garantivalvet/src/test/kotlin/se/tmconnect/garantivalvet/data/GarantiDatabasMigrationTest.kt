@@ -68,7 +68,7 @@ class GarantiDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, GarantiDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .allowMainThreadQueries()
             .build()
 
@@ -130,7 +130,7 @@ class GarantiDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, GarantiDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_2_3)
+            .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
             .allowMainThreadQueries()
             .build()
 
@@ -144,6 +144,80 @@ class GarantiDatabasMigrationTest {
         val uppdaterad = databas.kopDao().hamta(1)!!
         assertEquals(30, uppdaterad.oppetKopDagar)
         assertEquals("ELEKTRONIK", uppdaterad.varutyp)
+
+        databas.close()
+        context.deleteDatabase(TEST_DB)
+    }
+
+    @Test
+    fun migration3Till4BevararRaderMedNullLogg() = runTest {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        context.deleteDatabase(TEST_DB)
+
+        val config = SupportSQLiteOpenHelper.Configuration.builder(context)
+            .name(TEST_DB)
+            .callback(
+                object : SupportSQLiteOpenHelper.Callback(3) {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        db.execSQL(
+                            """
+                            CREATE TABLE IF NOT EXISTS kop (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                vad TEXT NOT NULL,
+                                var_kopt TEXT,
+                                kopdatum INTEGER NOT NULL,
+                                garanti_manader INTEGER NOT NULL,
+                                pris_ore INTEGER,
+                                anteckning TEXT,
+                                kvitto_fil TEXT,
+                                skapad INTEGER NOT NULL,
+                                oppet_kop_dagar INTEGER,
+                                varutyp TEXT
+                            )
+                            """.trimIndent(),
+                        )
+                    }
+
+                    override fun onUpgrade(
+                        db: SupportSQLiteDatabase,
+                        oldVersion: Int,
+                        newVersion: Int,
+                    ) = Unit
+                },
+            )
+            .build()
+        val openHelper = FrameworkSQLiteOpenHelperFactory().create(config)
+        val kopdatum = LocalDate.of(2024, 6, 15).toEpochDay()
+        openHelper.writableDatabase.apply {
+            execSQL(
+                """
+                INSERT INTO kop (id, vad, var_kopt, kopdatum, garanti_manader, pris_ore, anteckning, kvitto_fil, skapad, oppet_kop_dagar, varutyp)
+                VALUES (1, 'Kaffebryggare', 'Elgiganten', $kopdatum, 24, 129950, NULL, NULL, 1700000000000, 30, 'ELEKTRONIK')
+                """.trimIndent(),
+            )
+            close()
+        }
+        openHelper.close()
+
+        val databas = Room.databaseBuilder(context, GarantiDatabas::class.java, TEST_DB)
+            .addMigrations(MIGRATION_3_4)
+            .allowMainThreadQueries()
+            .build()
+
+        val kop = databas.kopDao().hamta(1)!!
+        assertEquals(30, kop.oppetKopDagar)
+        assertEquals("ELEKTRONIK", kop.varutyp)
+        assertNull(kop.felUpptackt)
+        assertNull(kop.felBeskrivning)
+        assertNull(kop.reklamerad)
+
+        val upptackt = LocalDate.of(2026, 10, 1)
+        val reklamerad = LocalDate.of(2026, 10, 5)
+        databas.kopDao().uppdatera(kop.copy(felUpptackt = upptackt, felBeskrivning = "Går sönder", reklamerad = reklamerad))
+        val uppdaterad = databas.kopDao().hamta(1)!!
+        assertEquals(upptackt, uppdaterad.felUpptackt)
+        assertEquals("Går sönder", uppdaterad.felBeskrivning)
+        assertEquals(reklamerad, uppdaterad.reklamerad)
 
         databas.close()
         context.deleteDatabase(TEST_DB)

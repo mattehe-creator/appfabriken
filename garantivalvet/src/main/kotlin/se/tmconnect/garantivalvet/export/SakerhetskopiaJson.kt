@@ -56,6 +56,9 @@ private fun skrivKopObjekt(kop: SakerhetskopiaKop): String =
         kop.kvittoFil?.let { laggTillFalt("kvittoFil", jsonStrang(it)) }
         kop.oppetKopDagar?.let { laggTillFalt("oppetKopDagar", it.toString()) }
         kop.varutyp?.let { laggTillFalt("varutyp", jsonStrang(it)) }
+        kop.felUpptackt?.let { laggTillFalt("felUpptackt", jsonStrang(it.toString())) }
+        kop.felBeskrivning?.let { laggTillFalt("felBeskrivning", jsonStrang(it)) }
+        kop.reklamerad?.let { laggTillFalt("reklamerad", jsonStrang(it.toString())) }
         append('}')
     }
 
@@ -118,6 +121,15 @@ fun lasSakerhetskopiaJson(text: String): SakerhetskopiaJsonLasResult {
     }
 }
 
+private fun lasDatum(varde: Any?): LocalDate? =
+    (varde as? String)?.let {
+        try {
+            LocalDate.parse(it)
+        } catch (_: DateTimeParseException) {
+            null
+        }
+    }
+
 private fun lasKopObjekt(falt: Map<String, Any?>): SakerhetskopiaKop? {
     val vad = falt["vad"] as? String ?: return null
     val kopdatumStr = falt["kopdatum"] as? String ?: return null
@@ -144,6 +156,9 @@ private fun lasKopObjekt(falt: Map<String, Any?>): SakerhetskopiaKop? {
         kvittoFil = falt["kvittoFil"] as? String,
         oppetKopDagar = (falt["oppetKopDagar"] as? Number)?.toInt(),
         varutyp = falt["varutyp"] as? String,
+        felUpptackt = lasDatum(falt["felUpptackt"]),
+        felBeskrivning = falt["felBeskrivning"] as? String,
+        reklamerad = lasDatum(falt["reklamerad"]),
     )
 }
 

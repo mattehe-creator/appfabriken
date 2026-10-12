@@ -35,6 +35,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -54,7 +55,11 @@ import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.regler.KONSUMENTKOP_IKRAFT
 import se.tmconnect.garantivalvet.regler.KopStatus
+import se.tmconnect.garantivalvet.regler.ReklamationsLogg
 import se.tmconnect.garantivalvet.regler.Varutyp
+import se.tmconnect.garantivalvet.regler.arnAnmalanSenast
+import se.tmconnect.garantivalvet.regler.reklamationsLogg
+import se.tmconnect.garantivalvet.regler.reklamerasSenast
 import se.tmconnect.garantivalvet.regler.garantiSlut
 import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
 import se.tmconnect.garantivalvet.regler.oppetKopSlut
@@ -87,6 +92,8 @@ fun KopDetaljSkarm(
     onExportPdf: () -> Unit,
     onVisaProDialog: () -> Unit,
     modifier: Modifier = Modifier,
+    onReklamera: () -> Unit = {},
+    onMarkeraReklamerad: (LocalDate?) -> Unit = {},
 ) {
     var visaBekraftaTaBort by remember { mutableStateOf(false) }
     var visaMeny by remember { mutableStateOf(false) }
@@ -165,10 +172,19 @@ fun KopDetaljSkarm(
                     .padding(16.dp),
             ) {
                 Button(
-                    onClick = onExportPdf,
+                    onClick = onReklamera,
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(min = 48.dp),
+                ) {
+                    Text(text = stringResource(R.string.reklamera_knapp))
+                }
+                OutlinedButton(
+                    onClick = onExportPdf,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 48.dp)
+                        .padding(top = 8.dp),
                 ) {
                     Text(text = stringResource(R.string.export_pdf))
                 }
@@ -191,6 +207,8 @@ fun KopDetaljSkarm(
                 idag = idag,
                 tidslinjeMarkorer = tidslinjeMarkorer,
             )
+
+            ReklamationsLoggKort(kop = kop, locale = locale, onMarkeraReklamerad = onMarkeraReklamerad)
 
             kvittoUri?.let { uri ->
                 KvittoBild(uri = uri, onOppnaKvitto = onOppnaKvitto)
@@ -406,6 +424,66 @@ private fun KvittoBild(uri: Uri, onOppnaKvitto: () -> Unit) {
                     .fillMaxWidth()
                     .height(200.dp),
             )
+        }
+    }
+}
+
+/** Loggen över användarens reklamation: fel upptäckt, reklamerat och sista dag för ARN. Visas bara när det finns något. */
+@Composable
+private fun ReklamationsLoggKort(
+    kop: Kop,
+    locale: java.util.Locale,
+    onMarkeraReklamerad: (LocalDate?) -> Unit,
+) {
+    val logg = reklamationsLogg(kop)
+    if (logg == ReklamationsLogg.INGEN) return
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = AppfabrikKortForm,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+    ) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(text = stringResource(R.string.logg_rubrik), style = MaterialTheme.typography.titleMedium)
+            kop.felBeskrivning?.let {
+                Text(text = stringResource(R.string.logg_fel_prefix, it), style = MaterialTheme.typography.bodyMedium)
+            }
+            when (logg) {
+                ReklamationsLogg.FEL_UPPTACKT -> {
+                    val upptackt = kop.felUpptackt!!
+                    Text(
+                        text = stringResource(
+                            R.string.logg_fel_upptackt,
+                            formateraDatum(upptackt, locale),
+                            formateraDatum(reklamerasSenast(upptackt), locale),
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Text(
+                        text = stringResource(R.string.logg_fel_upptackt_hjalp),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    TextButton(onClick = { onMarkeraReklamerad(LocalDate.now()) }) {
+                        Text(text = stringResource(R.string.logg_markera_reklamerad))
+                    }
+                }
+                ReklamationsLogg.REKLAMERAD -> {
+                    val reklamerad = kop.reklamerad!!
+                    Text(
+                        text = stringResource(R.string.logg_reklamerad, formateraDatum(reklamerad, locale)),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Text(
+                        text = stringResource(R.string.logg_arn, formateraDatum(arnAnmalanSenast(reklamerad), locale)),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    TextButton(onClick = { onMarkeraReklamerad(null) }) {
+                        Text(text = stringResource(R.string.logg_angra))
+                    }
+                }
+                ReklamationsLogg.INGEN -> Unit
+            }
         }
     }
 }

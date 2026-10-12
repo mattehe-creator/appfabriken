@@ -7,6 +7,12 @@ enum class FristTyp {
     GARANTI,
     REKLAMATION,
     OPPET_KOP,
+
+    /** Fel upptäckt men inte reklamerat: påminner innan två månader gått. */
+    REKLAMERA_SENAST,
+
+    /** Reklamerat: påminner innan året för anmälan till ARN gått. */
+    ARN,
 }
 
 data class Frist(
@@ -14,6 +20,8 @@ data class Frist(
     val typ: FristTyp,
     val slutdatum: LocalDate,
 )
+
+const val REKLAMERA_SENAST_SNART_DAGAR = 14
 
 fun fristNyckel(frist: Frist): String =
     "${frist.kopId}:${frist.typ.name}:${frist.slutdatum}"
@@ -29,6 +37,10 @@ fun fristerSomSkaAviseras(
 ): List<Frist> =
     frister.filter { frist ->
         val dagarKvar = ChronoUnit.DAYS.between(idag, frist.slutdatum).toInt()
-        val grans = if (frist.typ == FristTyp.OPPET_KOP) OPPET_KOP_SNART_DAGAR else dagarInnan
+        val grans = when (frist.typ) {
+            FristTyp.OPPET_KOP -> OPPET_KOP_SNART_DAGAR
+            FristTyp.REKLAMERA_SENAST -> REKLAMERA_SENAST_SNART_DAGAR
+            else -> dagarInnan
+        }
         dagarKvar in 0..grans && fristNyckel(frist) !in redanAviserade
     }

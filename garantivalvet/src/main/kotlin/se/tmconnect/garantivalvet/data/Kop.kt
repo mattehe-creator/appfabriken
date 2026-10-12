@@ -26,4 +26,11 @@ data class Kop(
     val oppetKopDagar: Int? = null,
     /** Namnet på en [se.tmconnect.garantivalvet.regler.Varutyp], `null` om användaren inte angett. */
     val varutyp: String? = null,
+    /** Dagen användaren upptäckte ett fel, `null` om inget fel angetts. */
+    @ColumnInfo(name = "fel_upptackt")
+    val felUpptackt: LocalDate? = null,
+    @ColumnInfo(name = "fel_beskrivning")
+    val felBeskrivning: String? = null,
+    /** Dagen användaren reklamerade hos företaget, `null` om inte gjort. */
+    val reklamerad: LocalDate? = null,
 )

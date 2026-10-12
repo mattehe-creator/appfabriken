@@ -165,6 +165,53 @@ class KopViewModel(
         }
     }
 
+    fun visaReklamera(kopId: Long) {
+        viewModelScope.launch {
+            _valtKop.value = repository.hamta(kopId)
+            _aktivSkarm.value = KopSkarm.Reklamera(kopId)
+            _proDialogSynlig.value = false
+            rensaKvittoFormularTillstand()
+        }
+    }
+
+    /** Sparar felet (datum och beskrivning) på det valda köpet. */
+    fun sparaFel(felUpptackt: LocalDate, beskrivning: String) {
+        val kop = _valtKop.value ?: return
+        viewModelScope.launch {
+            val ny = kop.copy(
+                felUpptackt = felUpptackt,
+                felBeskrivning = beskrivning.trim().takeIf { it.isNotEmpty() },
+            )
+            repository.spara(ny)
+            _valtKop.value = ny
+        }
+    }
+
+    /** Markerar att användaren reklamerat hos företaget och går tillbaka till köpets detaljvy. */
+    fun harReklamerat(felUpptackt: LocalDate, beskrivning: String, datum: LocalDate = LocalDate.now()) {
+        val kop = _valtKop.value ?: return
+        viewModelScope.launch {
+            val ny = kop.copy(
+                felUpptackt = felUpptackt,
+                felBeskrivning = beskrivning.trim().takeIf { it.isNotEmpty() },
+                reklamerad = datum,
+            )
+            repository.spara(ny)
+            _valtKop.value = ny
+            _aktivSkarm.value = KopSkarm.Detalj(kop.id)
+        }
+    }
+
+    /** Sätter eller tar bort datumet då användaren reklamerade (detaljvyns logg). */
+    fun markeraReklamerad(datum: LocalDate?) {
+        val kop = _valtKop.value ?: return
+        viewModelScope.launch {
+            val ny = kop.copy(reklamerad = datum)
+            repository.spara(ny)
+            _valtKop.value = ny
+        }
+    }
+
     /** Öppnar helskärmsvy för köpets kvitto. */
     fun visaKvittoHelskarm(kopId: Long) {
         viewModelScope.launch {
