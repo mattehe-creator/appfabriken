@@ -8,6 +8,10 @@ Idag sparas kvittofotot bara som en bild; användaren skriver in butik, datum oc
 
 Allt sker på telefonen. Bilden och texten lämnar aldrig enheten (CLAUDE.md punkt 5 och 6).
 
+## Genomförande
+
+Undantag på Mattias begäran 2026-10-12: Claude kodar funktionen direkt i stället för att dela upp den (BESLUTSLOGG.md). Uppdraget gäller i övrigt som skrivet. Priset hanteras i ören (`prisOre`), butik går till fältet "Var köpt", och formulärlogiken ligger i den rena funktionen `fyllTommaFalt` så att den kan testas.
+
 ## Uppgift
 
 **Del A (Cursor, en PR):** textigenkänningen.

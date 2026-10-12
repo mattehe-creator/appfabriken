@@ -61,6 +61,8 @@ Följande lagras **på enheten** för appens funktion. Det ska **inte** markeras
 | `com.android.vending.BILLING` | Finns i **sammanslaget manifest** (`processDebugMainManifest`); kommer från Google Play Billing Library (`billing-ktx` i `:karna`), inte från appmodulens egen manifestfil | Play Store på enheten hanterar köp; utvecklaren tar inte emot betalningsuppgifter. Se avsnitt 6 |
 | (ingen `INTERNET` i slutlig manifest) | Medvetet borttagen | Stödjer påståendet att appen inte använder nätverk för egen datainsamling |
 
+Kvittotexten läses av **på enheten** med ML Kit Text Recognition (medföljande modell, inget nätverk, `INTERNET` borttagen och låst av `IngenNatverkTest`). Bilden och den avlästa texten lämnar aldrig telefonen, och texten sparas inte; den fyller bara formulärfält som användaren kontrollerar. Inget deklareras som insamlat eller delat.
+
 Kamera och lagring används via **systemintents** (fotoväljare/kamera) enligt projektregler, inte som breda lagringsbehörigheter i manifest.
 
 ---
