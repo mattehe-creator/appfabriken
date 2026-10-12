@@ -34,3 +34,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*ListaGruppTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-12 (flytt från repots rot, Kop-fält och assertEquals i test, gruppering i KopSkarmar)
