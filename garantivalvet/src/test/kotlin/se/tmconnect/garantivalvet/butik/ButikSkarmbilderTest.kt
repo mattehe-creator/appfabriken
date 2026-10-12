@@ -123,6 +123,8 @@ abstract class ButikSkarmbilderBas {
                 onVisaProDialog = noOp,
                 onStangProDialog = noOp,
                 onKopPro = {},
+                onSparaSakerhetskopia = noOp,
+                onHamtaSakerhetskopia = noOp,
             )
         }
     }
@@ -183,6 +185,8 @@ abstract class ButikSkarmbilderBas {
                 onVisaProDialog = noOp,
                 onStangProDialog = noOp,
                 onKopPro = {},
+                onSparaSakerhetskopia = noOp,
+                onHamtaSakerhetskopia = noOp,
             )
         }
     }
