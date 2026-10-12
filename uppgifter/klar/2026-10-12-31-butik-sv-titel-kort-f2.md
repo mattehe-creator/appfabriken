@@ -43,3 +43,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*ButikTexterTest"
 - Ändra andra filer (inklusive `sv/lang.txt`, engelska texter och `lang.txt` på main).
 - Lägga till beroenden.
 - Ändra appkod, manifest eller databasschema.
+
+utfall: godkänd 2026-10-12 (rättade titel.txt och kort.txt efter Aider-skrot)
