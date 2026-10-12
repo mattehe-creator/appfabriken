@@ -61,6 +61,7 @@ import se.tmconnect.garantivalvet.regler.kopStatus
 import se.tmconnect.garantivalvet.regler.NarmasteFristTyp
 import se.tmconnect.garantivalvet.regler.narmasteFrist
 import se.tmconnect.garantivalvet.regler.reklamationSlut
+import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
 import se.tmconnect.garantivalvet.regler.beraknaTidslinje
 import se.tmconnect.garantivalvet.regler.visaMedVersal
 import se.tmconnect.karna.tema.AppfabrikKortForm
@@ -297,12 +298,11 @@ private fun StatusKort(
                     ),
                 )
             }
-            
-            // Visa tidslinje om den finns
+
             tidslinjeMarkorer?.let {
-                TidslinjeStapel(markorer = it)
+                TidslinjeStapel(markorer = it, contentDescription = huvudText)
             }
-            
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -347,7 +347,7 @@ private fun KvittoBild(uri: Uri, onOppnaKvitto: () -> Unit) {
             context.contentResolver.openInputStream(uri)?.use {
                 BitmapFactory.decodeStream(it, null, options)
             }
-            val sampleSize = beraknaInSampleSize(options.outWidth, options.outHeight, 480)
+            val sampleSize = beraknaInSampleSize(options.outWidth, options.outHeight, maxSida = 480)
             context.contentResolver.openInputStream(uri)?.use { input ->
                 BitmapFactory.decodeStream(
                     input,
@@ -411,20 +411,4 @@ private fun ReklamationsKort(kop: Kop, locale: java.util.Locale) {
             }
         }
     }
-}
-
-// Funktion för att beräkna inSampleSize för bitmap
-private fun beraknaInSampleSize(bredd: Int, hojd: Int, maxSida: Int): Int {
-    var inSampleSize = 1
-    
-    if (bredd > maxSida || hojd > maxSida) {
-        val halvBredd = bredd / 2
-        val halvHojd = hojd / 2
-        
-        while (halvBredd / inSampleSize >= maxSida && halvHojd / inSampleSize >= maxSida) {
-            inSampleSize *= 2
-        }
-    }
-    
-    return inSampleSize
 }

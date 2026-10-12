@@ -2,77 +2,75 @@ package se.tmconnect.garantivalvet.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import se.tmconnect.garantivalvet.regler.TidslinjeMarkorer
 
 @Composable
 fun TidslinjeStapel(
     markorer: TidslinjeMarkorer,
-    modifier: Modifier = Modifier
+    contentDescription: String,
+    modifier: Modifier = Modifier,
 ) {
-    val configuration = LocalConfiguration.current
-    val bredd = configuration.screenWidthDp.dp
-    
+    val trackColor = MaterialTheme.colorScheme.outlineVariant
+    val garantiFarg = MaterialTheme.colorScheme.primary
+    val presumtionFarg = MaterialTheme.colorScheme.tertiary
+    val idagFarg = MaterialTheme.colorScheme.error
+
     Box(
         modifier = modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .height(48.dp)
+            .semantics { this.contentDescription = contentDescription },
     ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
+        Canvas(modifier = Modifier.fillMaxWidth().height(48.dp)) {
             val linjeHojd = 12.dp.toPx()
             val linjeStartX = 0f
-            val linjeSlutX = bredd.toPx()
+            val linjeSlutX = size.width
             val linjeY = size.height / 2
-            
-            // Rita huvudlinjen
+
             drawLine(
-                color = Color.Gray,
+                color = trackColor,
                 start = Offset(linjeStartX, linjeY),
                 end = Offset(linjeSlutX, linjeY),
                 strokeWidth = linjeHojd,
-                cap = StrokeCap.Round
+                cap = StrokeCap.Round,
             )
-            
-            // Rita markörer
-            val garantiSlutX = linjeStartX + (linjeSlutX - linjeStartX) * markorer.garantiSlutAndel
-            val presumtionSlutX = linjeStartX + (linjeSlutX - linjeStartX) * markorer.presumtionSlutAndel
-            val idagX = linjeStartX + (linjeSlutX - linjeStartX) * markorer.idagAndel
-            
-            // Garanti slut markör (blå)
+
+            val garantiSlutX = linjeStartX + linjeSlutX * markorer.garantiSlutAndel
+            val presumtionSlutX = linjeStartX + linjeSlutX * markorer.presumtionSlutAndel
+            val idagX = linjeStartX + linjeSlutX * markorer.idagAndel
+
             drawLine(
-                color = Color.Blue,
+                color = garantiFarg,
                 start = Offset(garantiSlutX, linjeY - 12.dp.toPx()),
                 end = Offset(garantiSlutX, linjeY + 12.dp.toPx()),
                 strokeWidth = 4.dp.toPx(),
-                cap = StrokeCap.Round
+                cap = StrokeCap.Round,
             )
-            
-            // Presumtion slut markör (orange)
+
             drawLine(
-                color = Color(0xFFFFA500), // Orange
+                color = presumtionFarg,
                 start = Offset(presumtionSlutX, linjeY - 11.dp.toPx()),
                 end = Offset(presumtionSlutX, linjeY + 11.dp.toPx()),
                 strokeWidth = 3.dp.toPx(),
-                cap = StrokeCap.Round
+                cap = StrokeCap.Round,
             )
-            
-            // Idag markör (röd)
+
             drawLine(
-                color = Color.Red,
+                color = idagFarg,
                 start = Offset(idagX, linjeY - 10.dp.toPx()),
                 end = Offset(idagX, linjeY + 10.dp.toPx()),
                 strokeWidth = 2.dp.toPx(),
-                cap = StrokeCap.Round
+                cap = StrokeCap.Round,
             )
         }
     }
