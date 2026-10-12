@@ -80,12 +80,48 @@ fun KopListaSkarm(
         },
     ) { innerPadding ->
         if (kopLista.isEmpty()) {
-            TomListaInnehall(
-                onLaggTill = onLaggTill,
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-            )
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Tom lista - visar ikon, rubrik, beskrivning och knapp
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_receipt),
+                        contentDescription = stringResource(R.string.tom_lista_rubrik),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                            .size(96.dp)
+                    )
+                    
+                    Text(
+                        text = stringResource(R.string.tom_lista_rubrik),
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                    
+                    Text(
+                        text = stringResource(R.string.tom_lista_beskrivning),
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    
+                    Button(
+                        onClick = onLaggTill,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        Text(text = stringResource(R.string.tom_lista_knapp))
+                    }
+                }
+            }
         } else {
             LazyColumn(
                 modifier = Modifier
