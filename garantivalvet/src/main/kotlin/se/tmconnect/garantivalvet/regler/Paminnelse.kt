@@ -6,6 +6,7 @@ import java.time.temporal.ChronoUnit
 enum class FristTyp {
     GARANTI,
     REKLAMATION,
+    OPPET_KOP,
 }
 
 data class Frist(
@@ -28,5 +29,6 @@ fun fristerSomSkaAviseras(
 ): List<Frist> =
     frister.filter { frist ->
         val dagarKvar = ChronoUnit.DAYS.between(idag, frist.slutdatum).toInt()
-        dagarKvar in 0..dagarInnan && fristNyckel(frist) !in redanAviserade
+        val grans = if (frist.typ == FristTyp.OPPET_KOP) OPPET_KOP_SNART_DAGAR else dagarInnan
+        dagarKvar in 0..grans && fristNyckel(frist) !in redanAviserade
     }

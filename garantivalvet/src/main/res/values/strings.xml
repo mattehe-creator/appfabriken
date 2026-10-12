@@ -11,7 +11,7 @@
     <string name="andra_titel">Edit purchase</string>
     <string name="falt_vad">What did you buy?</string>
     <string name="falt_var">Where (optional)</string>
-    <string name="falt_garanti_manader">Warranty (months)</string>
+    <string name="falt_garanti_manader">Warranty, voluntary (months)</string>
     <string name="garanti_chip_12">12 mo</string>
     <string name="garanti_chip_24">24 mo</string>
     <string name="garanti_chip_36">36 mo</string>
@@ -71,8 +71,8 @@
     <string name="paminnelse_notis_text">Warranty for %1$s ends on %2$s</string>
     <string name="paminnelse_notis_reklamation_titel">Statutory claim period ending soon</string>
     <string name="paminnelse_notis_reklamation_text">The claim period for %1$s ends on %2$s</string>
-    <string name="paminnelse_notis_samlad_titel">Warranties ending soon</string>
-    <string name="paminnelse_notis_samlad_text">%1$d purchases have warranties ending within 30 days</string>
+    <string name="paminnelse_notis_samlad_titel">Several deadlines ending soon</string>
+    <string name="paminnelse_notis_samlad_text">%1$d deadlines for your purchases are ending soon</string>
     <string name="paminnelse_installning_rubrik">Remind me before warranty ends</string>
     <string name="paminnelse_installning_beskrivning">Daily notification when a warranty ends within 30 days</string>
     <string name="paminnelse_behorighet_nekad">Notifications are off. Enable them in system settings to get reminders.</string>
@@ -80,7 +80,7 @@
     <!-- Reklamationsrätt -->
     <string name="detalj_reklamation_till">Right to claim until %1$s</string>
     <string name="detalj_reklamation_rubrik">Right to claim faults</string>
-    <string name="detalj_reklamation_kort_rubrik">Your right to claim faults</string>
+    <string name="detalj_reklamation_kort_rubrik">Right to claim faults (law)</string>
     <string name="detalj_reklamation_las_mer">Read more</string>
     <string name="detalj_reklamation_forklaring">You can claim faults that appear within three years of purchase. Faults that appear within two years are presumed to have existed at purchase. Counted from the purchase date and applies to goods bought from a business.</string>
     <string name="detalj_reklamation_vagledning">This information is for guidance only and does not constitute legal advice.</string>
@@ -106,9 +106,9 @@
     <string name="underlag_var_kopt">Where purchased</string>
     <string name="underlag_kopdatum">Purchase date</string>
     <string name="underlag_pris">Price</string>
-    <string name="underlag_garanti_manader">Warranty (months)</string>
-    <string name="underlag_garanti_slut">Warranty valid until</string>
-    <string name="underlag_reklamation_slut">Right to claim until</string>
+    <string name="underlag_garanti_manader">Warranty, voluntary (months)</string>
+    <string name="underlag_garanti_slut">Warranty (voluntary) valid until</string>
+    <string name="underlag_reklamation_slut">Right to claim (law) until</string>
     <string name="underlag_presumtion_slut">Presumption until</string>
     <string name="underlag_reklamation_status">Claim status</string>
     <string name="underlag_status_fel_antas_funnits">Fault assumed to exist at purchase</string>
@@ -136,4 +136,32 @@
     <string name="tillbaka">Back</string>
     <string name="stang">Close</string>
     <string name="mer_meny">More options</string>
+    <string name="falt_oppet_kop">Return period (days)</string>
+    <string name="oppet_kop_chip_inget">None</string>
+    <string name="oppet_kop_chip_14">14 days</string>
+    <string name="oppet_kop_chip_30">30 days</string>
+    <string name="oppet_kop_chip_annat">Other</string>
+    <string name="oppet_kop_hjalp">A return period is the shop’s voluntary offer and varies between shops and goods. Check the receipt.</string>
+    <string name="garanti_hjalp">A warranty is voluntary (manufacturer or shop). Your right to claim faults by law applies regardless of any warranty.</string>
+    <string name="falt_varutyp">What kind of item? (optional)</string>
+    <string name="varutyp_elektronik">Electronics</string>
+    <string name="varutyp_klader_skor">Clothes and shoes</string>
+    <string name="varutyp_hem_bygg">Home and DIY</string>
+    <string name="varutyp_mat_dryck">Food and drink</string>
+    <string name="varutyp_ovrigt">Other</string>
+    <string name="lista_oppet_kop_till">Return period until %1$s</string>
+    <string name="detalj_oppet_kop_rubrik">Return period (shop’s offer)</string>
+    <string name="detalj_oppet_kop_till">Return period until %1$s</string>
+    <string name="detalj_oppet_kop_gick_ut">Return period ended %1$s</string>
+    <string name="detalj_oppet_kop_forklaring">A return period is the shop’s voluntary offer, not a legal right. The terms are on the receipt or with the shop and vary between shops and goods.</string>
+    <string name="detalj_garanti_rubrik">Warranty (voluntary)</string>
+    <string name="detalj_garanti_till">Warranty until %1$s</string>
+    <string name="detalj_garanti_gick_ut">Warranty ended %1$s</string>
+    <string name="detalj_garanti_forklaring">A warranty is given by the manufacturer or the shop and varies. It does not replace your right to claim faults by law.</string>
+    <string name="detalj_reklamation_oavsett_garanti">Your right to claim faults applies regardless of any warranty.</string>
+    <string name="paminnelse_notis_oppet_kop_titel">Return period ending soon</string>
+    <string name="paminnelse_notis_oppet_kop_text">The return period for %1$s ends %2$s</string>
+    <string name="underlag_oppet_kop">Return period, days (shop’s offer)</string>
+    <string name="underlag_oppet_kop_slut">Return period until</string>
+    <string name="underlag_varutyp">Type of item</string>
 </resources>

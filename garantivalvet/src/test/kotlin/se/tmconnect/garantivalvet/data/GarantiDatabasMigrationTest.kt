@@ -80,4 +80,72 @@ class GarantiDatabasMigrationTest {
         databas.close()
         context.deleteDatabase(TEST_DB)
     }
+
+    @Test
+    fun migration2Till3BevararRaderMedNullOppetKopOchVarutyp() = runTest {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        context.deleteDatabase(TEST_DB)
+
+        val config = SupportSQLiteOpenHelper.Configuration.builder(context)
+            .name(TEST_DB)
+            .callback(
+                object : SupportSQLiteOpenHelper.Callback(2) {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        db.execSQL(
+                            """
+                            CREATE TABLE IF NOT EXISTS kop (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                vad TEXT NOT NULL,
+                                var_kopt TEXT,
+                                kopdatum INTEGER NOT NULL,
+                                garanti_manader INTEGER NOT NULL,
+                                pris_ore INTEGER,
+                                anteckning TEXT,
+                                kvitto_fil TEXT,
+                                skapad INTEGER NOT NULL
+                            )
+                            """.trimIndent(),
+                        )
+                    }
+
+                    override fun onUpgrade(
+                        db: SupportSQLiteDatabase,
+                        oldVersion: Int,
+                        newVersion: Int,
+                    ) = Unit
+                },
+            )
+            .build()
+        val openHelper = FrameworkSQLiteOpenHelperFactory().create(config)
+        val kopdatum = LocalDate.of(2024, 6, 15).toEpochDay()
+        openHelper.writableDatabase.apply {
+            execSQL(
+                """
+                INSERT INTO kop (id, vad, var_kopt, kopdatum, garanti_manader, pris_ore, anteckning, kvitto_fil, skapad)
+                VALUES (1, 'Kaffebryggare', 'Elgiganten', $kopdatum, 24, 129950, NULL, 'kvitto.jpg', 1700000000000)
+                """.trimIndent(),
+            )
+            close()
+        }
+        openHelper.close()
+
+        val databas = Room.databaseBuilder(context, GarantiDatabas::class.java, TEST_DB)
+            .addMigrations(MIGRATION_2_3)
+            .allowMainThreadQueries()
+            .build()
+
+        val kop = databas.kopDao().hamta(1)!!
+        assertEquals("Kaffebryggare", kop.vad)
+        assertEquals("kvitto.jpg", kop.kvittoFil)
+        assertNull(kop.oppetKopDagar)
+        assertNull(kop.varutyp)
+
+        databas.kopDao().uppdatera(kop.copy(oppetKopDagar = 30, varutyp = "ELEKTRONIK"))
+        val uppdaterad = databas.kopDao().hamta(1)!!
+        assertEquals(30, uppdaterad.oppetKopDagar)
+        assertEquals("ELEKTRONIK", uppdaterad.varutyp)
+
+        databas.close()
+        context.deleteDatabase(TEST_DB)
+    }
 }

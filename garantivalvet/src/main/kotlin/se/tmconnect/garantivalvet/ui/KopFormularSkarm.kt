@@ -5,6 +5,8 @@ import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -55,6 +57,8 @@ import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.regler.FormularFel
 import se.tmconnect.garantivalvet.regler.GarantitidVal
 import se.tmconnect.garantivalvet.regler.KvittoForslag
+import se.tmconnect.garantivalvet.regler.Varutyp
+import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
 import se.tmconnect.garantivalvet.regler.fyllTommaFalt
 import se.tmconnect.garantivalvet.regler.tolkaPrisTillOre
 import se.tmconnect.garantivalvet.regler.valideraKopFormular
@@ -62,7 +66,7 @@ import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
 import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.karna.tema.AppfabrikKortForm
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun KopFormularSkarm(
     titel: String,
@@ -72,11 +76,22 @@ fun KopFormularSkarm(
     initialPris: String?,
     initialAnteckning: String?,
     initialKopdatum: LocalDate,
+    initialOppetKop: Int? = null,
+    initialVarutyp: String? = null,
     kvittoUri: Uri?,
     onValjBild: () -> Unit,
     onTaFoto: () -> Unit,
     onTaBortKvitto: () -> Unit,
-    onSpara: (vad: String, varKopt: String?, kopdatum: LocalDate, garantiManader: Int, prisOre: Long?, anteckning: String?) -> Unit,
+    onSpara: (
+        vad: String,
+        varKopt: String?,
+        kopdatum: LocalDate,
+        garantiManader: Int,
+        prisOre: Long?,
+        anteckning: String?,
+        oppetKopDagar: Int?,
+        varutyp: String?,
+    ) -> Unit,
     onStang: () -> Unit,
     modifier: Modifier = Modifier,
     lasKvitto: suspend (Uri) -> KvittoForslag? = { null },
@@ -90,6 +105,27 @@ fun KopFormularSkarm(
     var forslagButik by remember { mutableStateOf(false) }
     var forslagDatum by remember { mutableStateOf(false) }
     var forslagPris by remember { mutableStateOf(false) }
+    var forslagOppetKop by remember { mutableStateOf(false) }
+
+    // Öppet köp: chips Inget / 14 / 30 / Annat (index 3, med fritt antal dagar).
+    fun oppetKopIndexFor(dagar: Int?): Int = when (dagar) {
+        null -> 0
+        14 -> 1
+        30 -> 2
+        else -> 3
+    }
+    var oppetKopIndex by remember(initialOppetKop) { mutableIntStateOf(oppetKopIndexFor(initialOppetKop)) }
+    var oppetKopAnnat by remember(initialOppetKop) {
+        mutableStateOf(if (oppetKopIndexFor(initialOppetKop) == 3) initialOppetKop.toString() else "")
+    }
+    var varutyp by remember(initialVarutyp) { mutableStateOf(Varutyp.franNamn(initialVarutyp)) }
+
+    fun nuvarandeOppetKop(): Int? = when (oppetKopIndex) {
+        0 -> null
+        1 -> 14
+        2 -> 30
+        else -> giltigaOppetKopDagar(oppetKopAnnat.trim().toIntOrNull())
+    }
     var laserKvitto by remember { mutableStateOf(false) }
     var ingetHittades by remember { mutableStateOf(false) }
 
@@ -103,13 +139,18 @@ fun KopFormularSkarm(
             val forslag = lasKvitto(kvittoUri)
             ingetHittades = forslag == null
             if (forslag != null) {
-                val ny = fyllTommaFalt(forslag, varKopt, prisText, kopdatum, LocalDate.now())
+                val ny = fyllTommaFalt(forslag, varKopt, prisText, kopdatum, LocalDate.now(), nuvarandeOppetKop())
                 varKopt = ny.varKopt
                 prisText = ny.prisText
                 kopdatum = ny.kopdatum
                 if (ny.butikFranKvitto) forslagButik = true
                 if (ny.prisFranKvitto) forslagPris = true
                 if (ny.datumFranKvitto) forslagDatum = true
+                if (ny.oppetKopFranKvitto) {
+                    oppetKopIndex = oppetKopIndexFor(ny.oppetKopDagar)
+                    oppetKopAnnat = if (oppetKopIndex == 3) ny.oppetKopDagar.toString() else ""
+                    forslagOppetKop = true
+                }
             }
         } finally {
             laserKvitto = false
@@ -188,6 +229,8 @@ fun KopFormularSkarm(
                 garantiManader,
                 prisOre,
                 anteckning.takeIf { it.isNotBlank() },
+                nuvarandeOppetKop(),
+                varutyp?.name,
             )
         }
     }
@@ -349,6 +392,74 @@ fun KopFormularSkarm(
                     text = stringResource(R.string.fel_garanti),
                     color = MaterialTheme.colorScheme.error,
                 )
+            }
+
+            Text(
+                text = stringResource(R.string.garanti_hjalp),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            Text(
+                text = stringResource(R.string.falt_oppet_kop),
+                style = MaterialTheme.typography.labelLarge,
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                listOf(
+                    R.string.oppet_kop_chip_inget,
+                    R.string.oppet_kop_chip_14,
+                    R.string.oppet_kop_chip_30,
+                    R.string.oppet_kop_chip_annat,
+                ).forEachIndexed { index, textRes ->
+                    FilterChip(
+                        selected = oppetKopIndex == index,
+                        onClick = {
+                            oppetKopIndex = index
+                            oppetKopAnnat = ""
+                            forslagOppetKop = false
+                        },
+                        label = { Text(text = stringResource(textRes)) },
+                    )
+                }
+            }
+            if (oppetKopIndex == 3) {
+                OutlinedTextField(
+                    value = oppetKopAnnat,
+                    onValueChange = {
+                        oppetKopAnnat = it.filter { c -> c.isDigit() }.take(3)
+                        forslagOppetKop = false
+                    },
+                    label = { Text(text = stringResource(R.string.falt_oppet_kop)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            Text(
+                text = stringResource(
+                    if (forslagOppetKop) R.string.kvitto_forslag else R.string.oppet_kop_hjalp,
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            Text(
+                text = stringResource(R.string.falt_varutyp),
+                style = MaterialTheme.typography.labelLarge,
+            )
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Varutyp.entries.forEach { typ ->
+                    FilterChip(
+                        selected = varutyp == typ,
+                        onClick = { varutyp = if (varutyp == typ) null else typ },
+                        label = { Text(text = stringResource(varutypText(typ))) },
+                    )
+                }
             }
 
             OutlinedTextField(

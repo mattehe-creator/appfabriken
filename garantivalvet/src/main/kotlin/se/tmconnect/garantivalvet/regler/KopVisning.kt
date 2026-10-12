@@ -22,6 +22,7 @@ fun appfabrikStatusFran(kopStatus: KopStatus): AppfabrikStatus =
 enum class NarmasteFristTyp {
     GARANTI,
     REKLAMATION,
+    OPPET_KOP,
 }
 
 data class NarmasteFrist(
@@ -29,7 +30,15 @@ data class NarmasteFrist(
     val datum: LocalDate,
 )
 
-fun narmasteFrist(kop: Kop, idag: LocalDate): NarmasteFrist? {
+/** Öppet köp som ännu inte gått ut, eller `null`. */
+fun aktivtOppetKop(kop: Kop, idag: LocalDate): NarmasteFrist? {
+    val dagar = giltigaOppetKopDagar(kop.oppetKopDagar) ?: return null
+    val slut = oppetKopSlut(kop.kopdatum, dagar)
+    return if (idag.isAfter(slut)) null else NarmasteFrist(NarmasteFristTyp.OPPET_KOP, slut)
+}
+
+/** Garantin om den gäller, annars reklamationsrätten om den gäller. Öppet köp räknas inte hit. */
+private fun garantiEllerReklamation(kop: Kop, idag: LocalDate): NarmasteFrist? {
     val garantiSlutDatum = garantiSlut(kop.kopdatum, kop.garantiManader)
     if (!idag.isAfter(garantiSlutDatum)) {
         return NarmasteFrist(NarmasteFristTyp.GARANTI, garantiSlutDatum)
@@ -40,3 +49,7 @@ fun narmasteFrist(kop: Kop, idag: LocalDate): NarmasteFrist? {
     }
     return null
 }
+
+/** Den frist som går ut först av öppet köp (om det gäller) och garanti/reklamation. */
+fun narmasteFrist(kop: Kop, idag: LocalDate): NarmasteFrist? =
+    listOfNotNull(aktivtOppetKop(kop, idag), garantiEllerReklamation(kop, idag)).minByOrNull { it.datum }

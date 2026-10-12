@@ -31,6 +31,11 @@ data class UnderlagEtiketter(
     val statusUtgangen: String,
     val anteckning: String,
     val skapad: String,
+    val oppetKop: String = "",
+    val oppetKopSlut: String = "",
+    val varutyp: String = "",
+    /** Visningsnamn per [Varutyp.name]. */
+    val varutyper: Map<String, String> = emptyMap(),
 )
 
 fun byggUnderlag(
@@ -52,6 +57,23 @@ fun byggUnderlag(
 
     kop.prisOre?.let { prisOre ->
         rader.add(UnderlagRad(etiketter.pris, formateraPrisKr(prisOre, locale)))
+    }
+
+    Varutyp.franNamn(kop.varutyp)?.let { typ ->
+        val namn = etiketter.varutyper[typ.name]
+        if (namn != null && etiketter.varutyp.isNotEmpty()) {
+            rader.add(UnderlagRad(etiketter.varutyp, namn))
+        }
+    }
+
+    // Tre skilda delar: öppet köp (butikens erbjudande), garanti (frivillig) och reklamationsrätt (lag).
+    giltigaOppetKopDagar(kop.oppetKopDagar)?.let { dagar ->
+        if (etiketter.oppetKop.isNotEmpty()) {
+            rader.add(UnderlagRad(etiketter.oppetKop, dagar.toString()))
+            rader.add(
+                UnderlagRad(etiketter.oppetKopSlut, formateraDatum(oppetKopSlut(kop.kopdatum, dagar), locale)),
+            )
+        }
     }
 
     rader.add(UnderlagRad(etiketter.garantiManader, kop.garantiManader.toString()))

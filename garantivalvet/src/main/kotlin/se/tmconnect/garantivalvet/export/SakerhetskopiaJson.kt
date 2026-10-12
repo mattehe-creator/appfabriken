@@ -54,6 +54,8 @@ private fun skrivKopObjekt(kop: SakerhetskopiaKop): String =
         kop.prisOre?.let { laggTillFalt("prisOre", it.toString()) }
         kop.anteckning?.let { laggTillFalt("anteckning", jsonStrang(it)) }
         kop.kvittoFil?.let { laggTillFalt("kvittoFil", jsonStrang(it)) }
+        kop.oppetKopDagar?.let { laggTillFalt("oppetKopDagar", it.toString()) }
+        kop.varutyp?.let { laggTillFalt("varutyp", jsonStrang(it)) }
         append('}')
     }
 
@@ -140,6 +142,8 @@ private fun lasKopObjekt(falt: Map<String, Any?>): SakerhetskopiaKop? {
         prisOre = prisOre,
         anteckning = falt["anteckning"] as? String,
         kvittoFil = falt["kvittoFil"] as? String,
+        oppetKopDagar = (falt["oppetKopDagar"] as? Number)?.toInt(),
+        varutyp = falt["varutyp"] as? String,
     )
 }
 

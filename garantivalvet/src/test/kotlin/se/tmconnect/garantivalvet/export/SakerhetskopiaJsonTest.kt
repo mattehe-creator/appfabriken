@@ -118,4 +118,48 @@ class SakerhetskopiaJsonTest {
         assertTrue(arSakerhetskopiaDubblett(export, lik))
         assertFalse(arSakerhetskopiaDubblett(export, olik))
     }
+
+    @Test
+    fun oppetKopOchVarutypGarRundtur() {
+        val innehall =
+            SakerhetskopiaInnehall(
+                version = 1,
+                skapad = "2026-10-12",
+                kop =
+                    listOf(
+                        SakerhetskopiaKop(
+                            vad = "Kabel",
+                            kopdatum = LocalDate.of(2026, 9, 1),
+                            garantiManader = 24,
+                            oppetKopDagar = 30,
+                            varutyp = "ELEKTRONIK",
+                        ),
+                    ),
+            )
+        val las = lasSakerhetskopiaJson(skrivSakerhetskopiaJson(innehall)) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals(innehall, las.innehall)
+    }
+
+    @Test
+    fun gammalFilUtanOppetKopLasesSomNull() {
+        val json = """{"version":1,"skapad":"x","kop":[{"vad":"A","kopdatum":"2025-01-01","garantiManader":12}]}"""
+        val las = lasSakerhetskopiaJson(json) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals(null, las.innehall.kop.single().oppetKopDagar)
+        assertEquals(null, las.innehall.kop.single().varutyp)
+    }
+
+    @Test
+    fun ogiltigtOppetKopOchOkandVarutypRensasVidImport() {
+        val kop = sakerhetskopiaKopTillKop(
+            SakerhetskopiaKop(
+                vad = "A",
+                kopdatum = LocalDate.of(2025, 1, 1),
+                garantiManader = 12,
+                oppetKopDagar = 9999,
+                varutyp = "UPPHITTAD",
+            ),
+        )
+        assertEquals(null, kop.oppetKopDagar)
+        assertEquals(null, kop.varutyp)
+    }
 }

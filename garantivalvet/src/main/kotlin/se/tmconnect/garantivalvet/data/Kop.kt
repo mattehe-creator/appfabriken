@@ -21,4 +21,9 @@ data class Kop(
     @ColumnInfo(name = "kvitto_fil")
     val kvittoFil: String? = null,
     val skapad: Long = System.currentTimeMillis(),
+    /** Butikens öppna köp i dagar från köpdatum, `null` om inget. Frivilligt erbjudande, inte lag. */
+    @ColumnInfo(name = "oppet_kop_dagar")
+    val oppetKopDagar: Int? = null,
+    /** Namnet på en [se.tmconnect.garantivalvet.regler.Varutyp], `null` om användaren inte angett. */
+    val varutyp: String? = null,
 )

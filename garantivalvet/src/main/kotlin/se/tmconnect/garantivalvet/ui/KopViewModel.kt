@@ -19,6 +19,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import se.tmconnect.garantivalvet.data.InstallningarLager
 import se.tmconnect.garantivalvet.data.Kop
+import se.tmconnect.garantivalvet.regler.Varutyp
+import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
 import se.tmconnect.garantivalvet.export.Sakerhetskopia
@@ -248,6 +250,8 @@ class KopViewModel(
         garantiManader: Int,
         prisOre: Long?,
         anteckning: String?,
+        oppetKopDagar: Int? = null,
+        varutyp: String? = null,
     ) {
         viewModelScope.launch {
             var kop = Kop(
@@ -257,6 +261,8 @@ class KopViewModel(
                 garantiManader = garantiManader,
                 prisOre = prisOre,
                 anteckning = anteckning?.trim()?.takeIf { it.isNotEmpty() },
+                oppetKopDagar = giltigaOppetKopDagar(oppetKopDagar),
+                varutyp = Varutyp.franNamn(varutyp)?.name,
             )
             kop = kop.copy(id = repository.spara(kop))
             kop = appliceraKvittoAndringar(kop)

@@ -11,7 +11,7 @@
     <string name="andra_titel">Ändra köp</string>
     <string name="falt_vad">Vad köpte du?</string>
     <string name="falt_var">Var (valfritt)</string>
-    <string name="falt_garanti_manader">Garantitid (månader)</string>
+    <string name="falt_garanti_manader">Garanti, frivillig (månader)</string>
     <string name="garanti_chip_12">12 mån</string>
     <string name="garanti_chip_24">24 mån</string>
     <string name="garanti_chip_36">36 mån</string>
@@ -71,8 +71,8 @@
     <string name="paminnelse_notis_text">Garantin för %1$s går ut %2$s</string>
     <string name="paminnelse_notis_reklamation_titel">Reklamationsrätten går snart ut</string>
     <string name="paminnelse_notis_reklamation_text">Reklamationsrätten för %1$s går ut %2$s</string>
-    <string name="paminnelse_notis_samlad_titel">Flera garantier går snart ut</string>
-    <string name="paminnelse_notis_samlad_text">%1$d köp har garanti som går ut inom 30 dagar</string>
+    <string name="paminnelse_notis_samlad_titel">Flera frister går snart ut</string>
+    <string name="paminnelse_notis_samlad_text">%1$d frister för dina köp går snart ut</string>
     <string name="paminnelse_installning_rubrik">Påminn mig innan garantin går ut</string>
     <string name="paminnelse_installning_beskrivning">Daglig notis när en garanti går ut inom 30 dagar</string>
     <string name="paminnelse_behorighet_nekad">Notiser är avstängda. Slå på dem i systeminställningarna för att få påminnelser.</string>
@@ -80,7 +80,7 @@
     <!-- Reklamationsrätt -->
     <string name="detalj_reklamation_till">Reklamationsrätt till %1$s</string>
     <string name="detalj_reklamation_rubrik">Reklamationsrätt</string>
-    <string name="detalj_reklamation_kort_rubrik">Din reklamationsrätt</string>
+    <string name="detalj_reklamation_kort_rubrik">Reklamationsrätt (lag)</string>
     <string name="detalj_reklamation_las_mer">Läs mer</string>
     <string name="detalj_reklamation_forklaring">Du kan reklamera fel som visar sig inom tre år från köpet. Fel som visar sig inom två år antas ha funnits vid köpet. Räknas från köpdatum och gäller varor köpta av en näringsidkare.</string>
     <string name="detalj_reklamation_vagledning">Detta är vägledning och inte juridisk rådgivning.</string>
@@ -106,9 +106,9 @@
     <string name="underlag_var_kopt">Var köpt</string>
     <string name="underlag_kopdatum">Köpdatum</string>
     <string name="underlag_pris">Pris</string>
-    <string name="underlag_garanti_manader">Garantitid (månader)</string>
-    <string name="underlag_garanti_slut">Garanti gäller till</string>
-    <string name="underlag_reklamation_slut">Reklamationsrätt till</string>
+    <string name="underlag_garanti_manader">Garanti, frivillig (månader)</string>
+    <string name="underlag_garanti_slut">Garanti (frivillig) gäller till</string>
+    <string name="underlag_reklamation_slut">Reklamationsrätt (lag) till</string>
     <string name="underlag_presumtion_slut">Presumtion till</string>
     <string name="underlag_reklamation_status">Reklamationsstatus</string>
     <string name="underlag_status_fel_antas_funnits">Fel antas ha funnits vid köpet</string>
@@ -136,4 +136,32 @@
     <string name="tillbaka">Tillbaka</string>
     <string name="stang">Stäng</string>
     <string name="mer_meny">Fler alternativ</string>
+    <string name="falt_oppet_kop">Öppet köp (dagar)</string>
+    <string name="oppet_kop_chip_inget">Inget</string>
+    <string name="oppet_kop_chip_14">14 dagar</string>
+    <string name="oppet_kop_chip_30">30 dagar</string>
+    <string name="oppet_kop_chip_annat">Annat</string>
+    <string name="oppet_kop_hjalp">Öppet köp är butikens frivilliga erbjudande och skiljer mellan butiker och varor. Kontrollera på kvittot.</string>
+    <string name="garanti_hjalp">Garanti är frivillig (tillverkare eller butik). Reklamationsrätten enligt lag gäller oavsett garanti.</string>
+    <string name="falt_varutyp">Vilken sorts vara? (valfritt)</string>
+    <string name="varutyp_elektronik">Elektronik</string>
+    <string name="varutyp_klader_skor">Kläder och skor</string>
+    <string name="varutyp_hem_bygg">Hem och bygg</string>
+    <string name="varutyp_mat_dryck">Mat och dryck</string>
+    <string name="varutyp_ovrigt">Övrigt</string>
+    <string name="lista_oppet_kop_till">Öppet köp till %1$s</string>
+    <string name="detalj_oppet_kop_rubrik">Öppet köp (butikens erbjudande)</string>
+    <string name="detalj_oppet_kop_till">Öppet köp till %1$s</string>
+    <string name="detalj_oppet_kop_gick_ut">Öppet köp gick ut %1$s</string>
+    <string name="detalj_oppet_kop_forklaring">Öppet köp är butikens frivilliga erbjudande, inte lag. Villkoren står på kvittot eller hos butiken och skiljer mellan butiker och varor.</string>
+    <string name="detalj_garanti_rubrik">Garanti (frivillig)</string>
+    <string name="detalj_garanti_till">Garanti till %1$s</string>
+    <string name="detalj_garanti_gick_ut">Garantin gick ut %1$s</string>
+    <string name="detalj_garanti_forklaring">Garanti ges av tillverkare eller butik och varierar. Den ersätter inte din reklamationsrätt enligt lag.</string>
+    <string name="detalj_reklamation_oavsett_garanti">Reklamationsrätten gäller oavsett garanti.</string>
+    <string name="paminnelse_notis_oppet_kop_titel">Öppet köp går snart ut</string>
+    <string name="paminnelse_notis_oppet_kop_text">Öppet köp för %1$s går ut %2$s</string>
+    <string name="underlag_oppet_kop">Öppet köp, dagar (butikens erbjudande)</string>
+    <string name="underlag_oppet_kop_slut">Öppet köp till</string>
+    <string name="underlag_varutyp">Typ av vara</string>
 </resources>

@@ -2,6 +2,8 @@ package se.tmconnect.garantivalvet.export
 
 import se.tmconnect.garantivalvet.data.Kop
 import java.time.LocalDate
+import se.tmconnect.garantivalvet.regler.Varutyp
+import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
 
 const val SAKERHETSKOPIA_VERSION = 1
 const val SAKERHETSKOPIA_KOP_JSON = "kop.json"
@@ -17,6 +19,8 @@ data class SakerhetskopiaKop(
     val prisOre: Long? = null,
     val anteckning: String? = null,
     val kvittoFil: String? = null,
+    val oppetKopDagar: Int? = null,
+    val varutyp: String? = null,
 )
 
 data class SakerhetskopiaInnehall(
@@ -39,6 +43,8 @@ fun kopTillSakerhetskopia(kop: Kop): SakerhetskopiaKop =
         prisOre = kop.prisOre,
         anteckning = kop.anteckning,
         kvittoFil = kop.kvittoFil,
+        oppetKopDagar = kop.oppetKopDagar,
+        varutyp = kop.varutyp,
     )
 
 fun sakerhetskopiaKopTillKop(export: SakerhetskopiaKop, kvittoFil: String? = export.kvittoFil): Kop =
@@ -50,6 +56,8 @@ fun sakerhetskopiaKopTillKop(export: SakerhetskopiaKop, kvittoFil: String? = exp
         prisOre = export.prisOre,
         anteckning = export.anteckning?.trim()?.takeIf { it.isNotEmpty() },
         kvittoFil = kvittoFil,
+        oppetKopDagar = giltigaOppetKopDagar(export.oppetKopDagar),
+        varutyp = Varutyp.franNamn(export.varutyp)?.name,
     )
 
 /** Dubblett om de fem fälten matchar ett befintligt köp (enligt BESLUTSLOGG). */
