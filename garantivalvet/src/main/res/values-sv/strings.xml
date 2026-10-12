@@ -223,4 +223,5 @@
     <string name="brev_krav_hava">hävar köpet och betalar tillbaka pengarna</string>
     <string name="brev_avslut">Jag ser fram emot ert svar.</string>
     <string name="brev_halsning">Med vänliga hälsningar</string>
+    <string name="dela_in_fel">Kunde inte läsa kvittot. Dela en bild eller en PDF.</string>
 </resources>
