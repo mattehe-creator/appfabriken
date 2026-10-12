@@ -1,5 +1,7 @@
 # Uppdrag: läs av kvittot och föreslå köpuppgifter
 
+> **KLART 2026-10-12: gör ingenting.** Claude byggde hela funktionen själv i #117 (mergad, commit `ddce0ce`) på Mattias begäran. Koden finns redan på `main`: `regler/KvittoTolkare.kt`, `ocr/`, formuläret och `IngenNatverkTest`. Workflowet skickade ändå den här filen till Cursor vid mergen. Öppna ingen PR och skapa inga uppgifter. Behövs det en ändring blir det ett nytt uppdrag.
+
 Läs CLAUDE.md, ARBETSFLODE.md och uppgifter/MALL.md först och följ dem. Ändra inget utöver uppdraget.
 
 ## Bakgrund
