@@ -58,12 +58,17 @@
     {
       "namn": "Fel från provet (PDF, Pro i debug)",
       "vikt": 3,
-      "status": "pagar"
+      "status": "klar"
     },
     {
       "namn": "Ny design",
       "vikt": 13,
-      "status": "kvar"
+      "status": "klar"
+    },
+    {
+      "namn": "Reklamationshjälp, delning in, kvittobild, butikens kontakt",
+      "vikt": 0,
+      "status": "klar"
     },
     {
       "namn": "Mattias provar igen",
