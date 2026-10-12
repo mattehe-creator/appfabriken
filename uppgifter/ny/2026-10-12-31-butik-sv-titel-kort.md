@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-12-butiksmaterial.md
 försök: 1
-beror-på: cursor:2026-10-12-butiksmaterial
+beror-på: ingen
 
 ## Ändra bara dessa filer
 - garantivalvet/butik/sv/titel.txt

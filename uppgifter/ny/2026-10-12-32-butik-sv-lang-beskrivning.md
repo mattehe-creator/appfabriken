@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-12-butiksmaterial.md
 försök: 1
-beror-på: cursor:2026-10-12-butiksmaterial
+beror-på: 2026-10-12-31-butik-sv-titel-kort.md
 
 ## Ändra bara dessa filer
 - garantivalvet/butik/sv/lang.txt
