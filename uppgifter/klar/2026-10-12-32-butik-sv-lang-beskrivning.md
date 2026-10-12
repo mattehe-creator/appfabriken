@@ -33,3 +33,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*ButikTexterTest"
 - Ändra titel, kort beskrivning eller engelska filer.
 - Lägga till beroenden.
 - Ändra appkod eller manifest.
+
+utfall: underkänd 2026-10-12 av Cursor (PR #86). Ersatt av 2026-10-12-32-butik-sv-lang-beskrivning-f2.md
