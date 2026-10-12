@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-12-ny-design.md
 försök: 1
-beror-på: 2026-10-12-42-detalj-tidslinje-berakning.md, cursor:2026-10-12-ny-design
+beror-på: 2026-10-12-42-detalj-tidslinje-berakning.md, cursor:2026-10-12-ny-design-f2
 
 ## Ändra bara dessa filer
 - garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/ui/TidslinjeStapel.kt (ny)
