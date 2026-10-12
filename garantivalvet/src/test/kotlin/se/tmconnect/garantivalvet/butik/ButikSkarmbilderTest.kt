@@ -20,13 +20,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.test.core.app.ApplicationProvider
+import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.captureScreenRoboImage
+import java.io.File
 import java.time.LocalDate
 import java.util.Locale
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Before
+import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
@@ -72,6 +78,8 @@ private val noOp: () -> Unit = {}
 
 class ButikRoboActivity : ComponentActivity()
 
+@OptIn(ExperimentalRoborazziApi::class)
+@FixMethodOrder(MethodSorters.JVM)
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @LooperMode(LooperMode.Mode.PAUSED)
@@ -94,6 +102,7 @@ abstract class ButikSkarmbilderBas {
 
     private fun captureSkarm(
         filnamn: String,
+        helSkarm: Boolean = false,
         innehall: @androidx.compose.runtime.Composable () -> Unit,
     ) {
         RuntimeEnvironment.setQualifiers(skarmQualifiers())
@@ -106,7 +115,12 @@ abstract class ButikSkarmbilderBas {
             }
         }
         ShadowLooper.idleMainLooper()
-        activity.window.decorView.captureRoboImage("butik/skarmbilder/${sprakKatalog()}/$filnamn")
+        val filSokvag = "butik/skarmbilder/${sprakKatalog()}/$filnamn"
+        if (helSkarm) {
+            captureScreenRoboImage(filSokvag)
+        } else {
+            activity.window.decorView.captureRoboImage(filSokvag)
+        }
     }
 
     private fun captureFunktionsgrafik() {
@@ -231,7 +245,7 @@ abstract class ButikSkarmbilderBas {
 
     @Test
     fun proDialog() {
-        captureSkarm("04-pro-dialog.png") {
+        captureSkarm("04-pro-dialog.png", helSkarm = true) {
             KopListaSkarm(
                 kopLista = exempelLista,
                 onLaggTill = noOp,
@@ -248,6 +262,17 @@ abstract class ButikSkarmbilderBas {
                 onHamtaSakerhetskopia = noOp,
             )
         }
+    }
+
+    @Test
+    fun proDialogSkarmbildSkiljerSigFranLista() {
+        val katalog = File("butik/skarmbilder/${sprakKatalog()}")
+        val lista = katalog.resolve("01-lista.png").readBytes()
+        val proDialog = katalog.resolve("04-pro-dialog.png").readBytes()
+        assertFalse(
+            "04-pro-dialog.png får inte vara identisk med 01-lista.png (${sprakKatalog()})",
+            lista.contentEquals(proDialog),
+        )
     }
 }
 
