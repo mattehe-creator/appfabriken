@@ -79,6 +79,7 @@ fun KopFormularSkarm(
     initialOppetKop: Int? = null,
     initialVarutyp: String? = null,
     lasInitialtKvitto: Boolean = false,
+    onRotera: (medurs: Boolean) -> Unit = {},
     kvittoUri: Uri?,
     onValjBild: () -> Unit,
     onTaFoto: () -> Unit,
@@ -129,24 +130,43 @@ fun KopFormularSkarm(
     }
     var laserKvitto by remember { mutableStateOf(false) }
     var ingetHittades by remember { mutableStateOf(false) }
+    var lasIgen by remember { mutableIntStateOf(0) }
+    var forslagVaror by remember { mutableStateOf<List<String>>(emptyList()) }
 
     // Läs av kvittot när användaren fotar eller byter det. Ett redan sparat kvitto läses inte om.
     val startUri = remember { if (lasInitialtKvitto) null else kvittoUri }
-    LaunchedEffect(kvittoUri) {
-        if (kvittoUri == null || kvittoUri == startUri) return@LaunchedEffect
+    LaunchedEffect(kvittoUri, lasIgen) {
+        if (kvittoUri == null || (kvittoUri == startUri && lasIgen == 0)) return@LaunchedEffect
         laserKvitto = true
         ingetHittades = false
         try {
             val forslag = lasKvitto(kvittoUri)
             ingetHittades = forslag == null
             if (forslag != null) {
-                val ny = fyllTommaFalt(forslag, varKopt, prisText, kopdatum, LocalDate.now(), nuvarandeOppetKop())
-                varKopt = ny.varKopt
-                prisText = ny.prisText
-                kopdatum = ny.kopdatum
-                if (ny.butikFranKvitto) forslagButik = true
-                if (ny.prisFranKvitto) forslagPris = true
-                if (ny.datumFranKvitto) forslagDatum = true
+                // Förslag som kom från ett tidigare avläst kvitto och inte ändrats av användaren får bytas ut vid ny
+                // avläsning (rotera, läs av igen). Det användaren själv skrivit ändras aldrig.
+                val idag = LocalDate.now()
+                val ny = fyllTommaFalt(
+                    forslag,
+                    varKopt = if (forslagButik) "" else varKopt,
+                    prisText = if (forslagPris) "" else prisText,
+                    kopdatum = if (forslagDatum) idag else kopdatum,
+                    idag = idag,
+                    oppetKopDagar = if (forslagOppetKop) null else nuvarandeOppetKop(),
+                )
+                forslagVaror = forslag.varor
+                if (ny.butikFranKvitto) {
+                    varKopt = ny.varKopt
+                    forslagButik = true
+                }
+                if (ny.prisFranKvitto) {
+                    prisText = ny.prisText
+                    forslagPris = true
+                }
+                if (ny.datumFranKvitto) {
+                    kopdatum = ny.kopdatum
+                    forslagDatum = true
+                }
                 if (ny.oppetKopFranKvitto) {
                     oppetKopIndex = oppetKopIndexFor(ny.oppetKopDagar)
                     oppetKopAnnat = if (oppetKopIndex == 3) ny.oppetKopDagar.toString() else ""
@@ -272,6 +292,8 @@ fun KopFormularSkarm(
                 onValjBild = onValjBild,
                 onTaFoto = onTaFoto,
                 onTaBortKvitto = onTaBortKvitto,
+                onRotera = onRotera,
+                onLasIgen = { lasIgen++ },
             )
             if (laserKvitto) {
                 Text(
@@ -293,6 +315,25 @@ fun KopFormularSkarm(
                 isError = FormularFel.VAD_SAKNAS in fel,
                 modifier = Modifier.fillMaxWidth(),
             )
+            if (vad.isBlank() && forslagVaror.isNotEmpty()) {
+                Text(
+                    text = stringResource(R.string.kvitto_varu_forslag),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    forslagVaror.forEach { namn ->
+                        FilterChip(
+                            selected = false,
+                            onClick = { vad = namn },
+                            label = { Text(text = namn) },
+                        )
+                    }
+                }
+            }
             if (FormularFel.VAD_SAKNAS in fel) {
                 Text(
                     text = stringResource(R.string.fel_vad_saknas),
@@ -511,6 +552,8 @@ private fun KvittoKort(
     onValjBild: () -> Unit,
     onTaFoto: () -> Unit,
     onTaBortKvitto: () -> Unit,
+    onRotera: (medurs: Boolean) -> Unit,
+    onLasIgen: () -> Unit,
 ) {
     val context = LocalContext.current
     Card(
@@ -558,6 +601,32 @@ private fun KvittoKort(
                     OutlinedButton(onClick = onTaBortKvitto, modifier = Modifier.weight(1f)) {
                         Text(text = stringResource(R.string.kvitto_ta_bort))
                     }
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(
+                        onClick = { onRotera(false) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp),
+                    ) {
+                        Text(text = stringResource(R.string.kvitto_rotera_vanster))
+                    }
+                    OutlinedButton(
+                        onClick = { onRotera(true) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp),
+                    ) {
+                        Text(text = stringResource(R.string.kvitto_rotera_hoger))
+                    }
+                }
+                TextButton(
+                    onClick = onLasIgen,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 48.dp),
+                ) {
+                    Text(text = stringResource(R.string.kvitto_las_igen))
                 }
             } else {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

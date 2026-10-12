@@ -247,6 +247,25 @@ class KopViewModel(
         _tillfalligtKvittoUri.value = uri
     }
 
+    /** Bild vald i galleriet eller nytt kamerafoto: görs upprätt (EXIF) innan den visas och läses av. */
+    fun valjBild(uri: Uri) {
+        viewModelScope.launch {
+            val upprat = withContext(Dispatchers.IO) { kvittoLager.normalisera(uri) }
+            sattTillfalligtKvitto(upprat ?: uri)
+        }
+    }
+
+    /** Roterar kvittot i formuläret 90 grader (medurs eller moturs) och läser av det igen. */
+    fun roteraKvitto(medurs: Boolean) {
+        val kalla = _tillfalligtKvittoUri.value ?: _valtKop.value?.let { kvittoUriForFormular(it) } ?: return
+        viewModelScope.launch {
+            val roterad = withContext(Dispatchers.IO) { kvittoLager.normalisera(kalla, if (medurs) 90 else 270) }
+            if (roterad != null) {
+                sattTillfalligtKvitto(roterad)
+            }
+        }
+    }
+
     private val _delatKvitto = MutableStateFlow(false)
 
     /** Sant när formuläret öppnades med ett kvitto som delats till appen, och det ska läsas av direkt. */

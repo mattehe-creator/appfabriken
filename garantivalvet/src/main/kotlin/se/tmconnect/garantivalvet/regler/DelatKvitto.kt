@@ -2,7 +2,6 @@ package se.tmconnect.garantivalvet.regler
 
 const val PDF_MAL_BREDD = 1_600
 const val PDF_MAX_HOJD = 3_200
-const val DELAT_KVITTO_MAX_BYTES = 20 * 1024 * 1024
 
 /** Bara bilder och PDF kan tas emot som delat kvitto. */
 fun arDelbartKvitto(mime: String?): Boolean =

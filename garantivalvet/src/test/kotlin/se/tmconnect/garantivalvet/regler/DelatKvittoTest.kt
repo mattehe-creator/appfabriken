@@ -38,3 +38,23 @@ class DelatKvittoTest {
         assertEquals(PDF_MAL_BREDD to PDF_MAL_BREDD, beraknaPdfStorlek(100, -1))
     }
 }
+
+class ExifOrienteringTest {
+    @Test
+    fun orienteringarGerRattGrader() {
+        assertEquals(0, exifOrienteringTillGrader(1))
+        assertEquals(90, exifOrienteringTillGrader(6))
+        assertEquals(180, exifOrienteringTillGrader(3))
+        assertEquals(270, exifOrienteringTillGrader(8))
+        assertEquals(0, exifOrienteringTillGrader(0))
+        assertEquals(0, exifOrienteringTillGrader(2))
+    }
+
+    @Test
+    fun rotationerSummerasOchHallsInomEttVarv() {
+        assertEquals(0, summeraRotation(270, 90))
+        assertEquals(270, summeraRotation(0, -90))
+        assertEquals(90, summeraRotation(90, 0))
+        assertEquals(180, summeraRotation(90, 90))
+    }
+}

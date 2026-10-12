@@ -224,4 +224,8 @@
     <string name="brev_avslut">I look forward to your reply.</string>
     <string name="brev_halsning">Kind regards</string>
     <string name="dela_in_fel">Could not read the receipt. Share an image or a PDF.</string>
+    <string name="kvitto_rotera_vanster">Rotate left</string>
+    <string name="kvitto_rotera_hoger">Rotate right</string>
+    <string name="kvitto_las_igen">Read again</string>
+    <string name="kvitto_varu_forslag">Suggestions from the receipt:</string>
 </resources>
