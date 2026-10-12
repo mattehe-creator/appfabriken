@@ -24,8 +24,9 @@ Omfång i IDEURVAL.md.
   1. Fel från provet: Pro-dialog på alla skärmar och testläge för Pro i debug-APK:n (uppdrag `2026-10-12-provfel-pdf-pro`, Cursor).
   2. Ny design: fullständigt tema, startsidan är listan, inställningar under kugghjul, nytt formulär, ny detaljsida med statuskort och tidslinje, nya skärmbilder (uppdrag `2026-10-12-ny-design`).
   2b. Del B (uppgift 38–46) klar 2026-10-12. Skärmbilderna genereras om (uppdrag `2026-10-12-skarmbilder-efter-del-b`, Cursor).
-  2c. Kvittoavläsning på enheten (ML Kit, gratis): butik, datum och pris föreslås i formuläret. Byggd av Claude och mergad (#117, 2026-10-12); väntar på Mattias prov med riktiga kvitton. Uppdraget `2026-10-12-kvittoavlasning` är klart, Cursor ska inte göra det igen.
-  3. Mattias provar igen på telefon (efter 2c).
+  2c. Kvittoavläsning på enheten (ML Kit, gratis): butik, datum och pris föreslås i formuläret. Byggd av Claude och mergad (#117, #119, #121, 2026-10-12); Mattias provade på tre riktiga kvitton och parsern rättades efter det. Uppdraget `2026-10-12-kvittoavlasning` är klart, Cursor ska inte göra det igen.
+  2d. Öppet köp (läses ur kvittot), varutyp och garanti/reklamation som tre skilda delar (uppdrag `2026-10-12-oppet-kop-garanti-reklamation`, Cursor + lokal modell, databasversion 3). Mattias vill ha det i 1.0 före Play.
+  3. Mattias provar igen på telefon (efter 2d).
   4. Play Console: internt testspår, produkten `pro`, prova köpet.
 - Klart: butiksmaterial i `garantivalvet/butik/` (texter, skärmbilder, Data safety) och datum/pris i enhetens språk (#79–#94).
 

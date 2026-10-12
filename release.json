@@ -5,12 +5,12 @@
   "steg": [
     {
       "namn": "Grundplatta och flöde",
-      "vikt": 13,
+      "vikt": 6,
       "status": "klar"
     },
     {
       "namn": "Köp: lista och formulär",
-      "vikt": 8,
+      "vikt": 6,
       "status": "klar"
     },
     {
@@ -25,7 +25,7 @@
     },
     {
       "namn": "Reklamationsrätt",
-      "vikt": 8,
+      "vikt": 7,
       "status": "klar"
     },
     {
@@ -40,12 +40,12 @@
     },
     {
       "namn": "Export: PDF och säkerhetskopia",
-      "vikt": 10,
+      "vikt": 8,
       "status": "klar"
     },
     {
       "namn": "Butiksmaterial",
-      "vikt": 5,
+      "vikt": 3,
       "status": "klar"
     },
     {
@@ -61,8 +61,18 @@
       "status": "pagar"
     },
     {
+      "namn": "Kvittoavläsning (ML Kit)",
+      "vikt": 6,
+      "status": "klar"
+    },
+    {
       "namn": "Ny design",
       "vikt": 13,
+      "status": "kvar"
+    },
+    {
+      "namn": "Öppet köp, varutyp, garanti och reklamation",
+      "vikt": 8,
       "status": "kvar"
     },
     {
