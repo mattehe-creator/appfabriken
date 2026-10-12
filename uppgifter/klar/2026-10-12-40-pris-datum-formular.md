@@ -28,3 +28,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*FormularValideringTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-12 (suffix via stringResource i stället för hårdkodad " kr" i trailingIcon)
