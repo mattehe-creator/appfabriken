@@ -39,3 +39,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*ButikSkarmbilder*"
 - Lägga till beroenden.
 - Ändra databasschemat.
 - Ta bort eller förenkla grupperad lista eller `TomListaInnehall`.
+
+utfall: godkänd 2026-10-12 (inget)
