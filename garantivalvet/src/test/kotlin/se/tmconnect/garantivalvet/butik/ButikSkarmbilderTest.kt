@@ -71,7 +71,13 @@ abstract class ButikSkarmbilderBas {
         val app = ApplicationProvider.getApplicationContext<Application>()
         val config = Configuration(app.resources.configuration)
         config.setLocale(locale)
-        app.resources.updateConfiguration(config, app.resources.displayMetrics)
+        // Använd den nya metoden för att uppdatera konfigurationen
+        try {
+            app.resources.updateConfiguration(config, app.resources.displayMetrics)
+        } catch (e: Exception) {
+            // Fallback om updateConfiguration inte fungerar
+            RuntimeEnvironment.setQualifiers(skarmQualifiers())
+        }
     }
 
     protected abstract fun exempelLista(): List<Kop>
