@@ -310,3 +310,90 @@ fun KopFormularSkarm(
         }
     }
 }
+
+// Återställ KvittoKort-funktionen som nämns i uppgiften
+@Composable
+fun KvittoKort(
+    kvittoUri: Uri?,
+    onValjBild: () -> Unit,
+    onTaFoto: () -> Unit,
+    onTaBortKvitto: () -> Unit,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.kvitto_fornhandsvisning),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            
+            if (kvittoUri != null) {
+                // Visa kvittobild om den finns
+                val context = LocalContext.current
+                val bitmap = remember(kvittoUri) {
+                    try {
+                        BitmapFactory.decodeStream(context.contentResolver.openInputStream(kvittoUri))
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
+                
+                if (bitmap != null) {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = stringResource(R.string.kvitto_fornhandsvisning),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp)
+                            .padding(bottom = 8.dp),
+                        contentScale = ContentScale.FillWidth
+                    )
+                }
+                
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = { onTaBortKvitto() },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = stringResource(R.string.kvitto_ta_bort))
+                    }
+                    
+                    Button(
+                        onClick = { onTaFoto() },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = stringResource(R.string.kvitto_byt))
+                    }
+                }
+            } else {
+                // Visa knappar för att lägga till kvitto
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = { onValjBild() },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = stringResource(R.string.kvitto_valj_bild))
+                    }
+                    
+                    Button(
+                        onClick = { onTaFoto() },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = stringResource(R.string.kvitto_ta_foto))
+                    }
+                }
+            }
+        }
+    }
+}
