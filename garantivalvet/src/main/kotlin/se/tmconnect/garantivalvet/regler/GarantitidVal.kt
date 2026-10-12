@@ -8,7 +8,6 @@ object GarantitidVal {
         return when (chipIndex) {
             in CHIP_MANADER.indices -> CHIP_MANADER[chipIndex]
             3 -> {
-                // För "Annat" - tolka texten som ett positivt heltal
                 try {
                     val antal = annatText.toInt()
                     if (antal > 0) antal else null

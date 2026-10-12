@@ -43,3 +43,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*GarantitidValTest"
 - Lägga till beroenden.
 - Ändra databasschemat.
 - Ta bort eller kommentera bort kvitto-kortet.
+
+utfall: godkänd 2026-10-12 (KvittoKort, chip-index vid redigering, chip-strängresurser)
