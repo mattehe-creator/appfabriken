@@ -25,7 +25,9 @@ Omfång i IDEURVAL.md.
   2. Ny design: fullständigt tema, startsidan är listan, inställningar under kugghjul, nytt formulär, ny detaljsida med statuskort och tidslinje, nya skärmbilder (uppdrag `2026-10-12-ny-design`).
   2b. Del B (uppgift 38–46) klar 2026-10-12. Skärmbilderna genereras om (uppdrag `2026-10-12-skarmbilder-efter-del-b`, Cursor).
   2c. Kvittoavläsning på enheten (ML Kit, gratis): butik, datum och pris föreslås i formuläret. Byggd av Claude och mergad (#117, 2026-10-12); väntar på Mattias prov med riktiga kvitton. Uppdraget `2026-10-12-kvittoavlasning` är klart, Cursor ska inte göra det igen.
-  3. Mattias provar igen på telefon (efter 2c).
+  2d. Klart 2026-10-12: öppet köp (läses ur kvittot), varutyp och garanti, reklamationsrätt och öppet köp som tre skilda delar (databasversion 3). Byggt av Claude direkt på Mattias begäran, ingen uppdragsfil.
+  2e. Klart 2026-10-12 på Mattias begäran, byggt av Claude: Pro tar bara bort gränsen på 15 köp (PDF, säkerhetskopia och reklamationshjälp är gratis); varutyper med egna regler (mat och dryck är färskvaror, växter); reklamationshjälp (färdigt meddelande till företaget) och reklamationslogg med påminnelser (databasversion 4); dela in kvitton från mejl, galleri och PDF; bilder görs upprätta (EXIF), kan roteras och läsas av igen, förslag på varunamn; butikens kontaktuppgifter (databasversion 5). Kvar: flera bilder per köp (databasversion 6).
+  3. Mattias provar igen på telefon (efter 2e).
   4. Play Console: internt testspår, produkten `pro`, prova köpet.
 - Klart: butiksmaterial i `garantivalvet/butik/` (texter, skärmbilder, Data safety) och datum/pris i enhetens språk (#79–#94).
 
