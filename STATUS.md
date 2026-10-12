@@ -23,6 +23,7 @@ Omfång i IDEURVAL.md.
 - Kvar i 1.0, i ordning:
   1. Fel från provet: Pro-dialog på alla skärmar och testläge för Pro i debug-APK:n (uppdrag `2026-10-12-provfel-pdf-pro`, Cursor).
   2. Ny design: fullständigt tema, startsidan är listan, inställningar under kugghjul, nytt formulär, ny detaljsida med statuskort och tidslinje, nya skärmbilder (uppdrag `2026-10-12-ny-design`).
+  2b. Del B (uppgift 38–46) klar 2026-10-12. Skärmbilderna genereras om (uppdrag `2026-10-12-skarmbilder-efter-del-b`, Cursor).
   3. Mattias provar igen på telefon.
   4. Play Console: internt testspår, produkten `pro`, prova köpet.
 - Klart: butiksmaterial i `garantivalvet/butik/` (texter, skärmbilder, Data safety) och datum/pris i enhetens språk (#79–#94).
