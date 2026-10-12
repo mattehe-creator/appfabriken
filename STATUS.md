@@ -1,6 +1,6 @@
 # Status
 
-Uppdaterad 2026-10-11.
+Uppdaterad 2026-10-12.
 
 ## Klart: Grundplattan (2026-10-08–09)
 
@@ -18,9 +18,10 @@ Omfång i IDEURVAL.md.
 - Klart: reklamationsrätt enligt konsumentköplagen (uppdrag `2026-10-09-reklamationsratt`, uppgift 12–17). Frister kontrollerade mot riksdagen.se: 3 år felansvar (4 kap. 14 §), 2 år presumtion (4 kap. 17 §), 2 månaders reklamation (5 kap. 2 §), gäller köp från 2022-05-01.
 - Klart: gratisgräns (15 köp) och Pro via Google Play Billing, i `:karna` (uppdrag `2026-10-11-pro-gratisgrans`, uppgift 18–21).
 - Klart: reklamationsunderlag som PDF (Pro) och `allowBackup=false` (uppdrag `2026-10-11-export-pdf`, uppgift 22–25).
-- Pågår: säkerhetskopia till fil och import (Pro), uppdrag `2026-10-11-export-sakerhetskopia`. Del A mergad (#71), uppgift 27–30 kvar.
+- Klart: säkerhetskopia till fil och import (Pro), uppdrag `2026-10-11-export-sakerhetskopia`, uppgift 26–30 och 34.
 - Kvar i 1.0, i ordning:
-  1. Butiksmaterial i `garantivalvet/butik/`: texter, skärmbilder, Data safety-svar (uppdrag `2026-10-12-butiksmaterial` skickat 2026-10-12).
+  1. Butiksmaterial i `garantivalvet/butik/`: texter, skärmbilder och Data safety-svar finns (#79–#90). Kvar: datum i enhetens språk och engelsk exempeldata i de engelska bilderna (uppdrag `2026-10-12-sprakformat-och-engelska-skarmbilder`).
+  2. Mattias provar på telefon.
 
 - Mätaren i panelen (procent klart, beräknat releasedatum, tokens) styrs av `release.json`. Claude uppdaterar den när ett steg ändras.
 
