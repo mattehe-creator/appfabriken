@@ -1,7 +1,6 @@
 package se.tmconnect.garantivalvet.butik
 
 import android.app.Application
-import android.content.res.Configuration
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -25,7 +24,6 @@ import com.github.takahirom.roborazzi.captureRoboImage
 import com.github.takahirom.roborazzi.captureScreenRoboImage
 import java.io.File
 import java.time.LocalDate
-import java.util.Locale
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Before
@@ -48,32 +46,6 @@ import se.tmconnect.garantivalvet.ui.KopListaSkarm
 import se.tmconnect.karna.tema.AppfabrikFarger
 import se.tmconnect.karna.tema.AppfabrikTema
 
-private val exempelLista = listOf(
-    Kop(
-        id = 1,
-        vad = "Diskmaskin",
-        varKopt = "Lokal vitvaruhandel",
-        kopdatum = LocalDate.of(2025, 3, 10),
-        garantiManader = 24,
-    ),
-    Kop(
-        id = 2,
-        vad = "Mobiltelefon",
-        varKopt = "Telefonbutiken i centrum",
-        kopdatum = LocalDate.of(2025, 8, 1),
-        garantiManader = 12,
-    ),
-    Kop(
-        id = 3,
-        vad = "Cykel",
-        varKopt = "Sport och fritid",
-        kopdatum = LocalDate.of(2024, 11, 20),
-        garantiManader = 36,
-    ),
-)
-
-private val exempelDetalj = exempelLista.first()
-
 private val noOp: () -> Unit = {}
 
 class ButikRoboActivity : ComponentActivity()
@@ -92,13 +64,15 @@ abstract class ButikSkarmbilderBas {
 
     @Before
     fun ställInSprak() {
-        val locale = Locale.forLanguageTag(localeTag())
-        Locale.setDefault(locale)
-        val app = ApplicationProvider.getApplicationContext<Application>()
-        val config = Configuration(app.resources.configuration)
-        config.setLocale(locale)
-        app.resources.updateConfiguration(config, app.resources.displayMetrics)
+        // Använd endast qualifiers för att sätta rätt språk och skärmstorlek
+        RuntimeEnvironment.setQualifiers(skarmQualifiers())
     }
+
+    protected abstract fun exempelLista(): List<Kop>
+
+    protected abstract fun exempelDetalj(): Kop
+
+    protected abstract fun exempelFormular(): Kop
 
     private fun captureSkarm(
         filnamn: String,
@@ -185,7 +159,7 @@ abstract class ButikSkarmbilderBas {
     fun lista() {
         captureSkarm("01-lista.png") {
             KopListaSkarm(
-                kopLista = exempelLista,
+                kopLista = exempelLista(),
                 onLaggTill = noOp,
                 onOppna = {},
                 paminnelserPa = true,
@@ -206,7 +180,7 @@ abstract class ButikSkarmbilderBas {
     fun detaljMedReklamationsratt() {
         captureSkarm("02-detalj-reklamation.png") {
             KopDetaljSkarm(
-                kop = exempelDetalj,
+                kop = exempelDetalj(),
                 kvittoUri = null,
                 onOppnaKvitto = noOp,
                 onAndra = noOp,
@@ -224,15 +198,16 @@ abstract class ButikSkarmbilderBas {
 
     @Test
     fun formulär() {
+        val formularData = exempelFormular()
         captureSkarm("03-formular.png") {
             KopFormularSkarm(
                 titel = stringResource(R.string.lagg_till_titel),
-                initialVad = "Diskmaskin",
-                initialVar = "Lokal vitvaruhandel",
-                initialGarantiManader = "24",
+                initialVad = formularData.vad,
+                initialVar = formularData.varKopt!!,
+                initialGarantiManader = formularData.garantiManader.toString(),
                 initialPris = "8990",
                 initialAnteckning = "Extended warranty registered.",
-                initialKopdatum = LocalDate.of(2025, 3, 10),
+                initialKopdatum = formularData.kopdatum,
                 kvittoUri = null,
                 onValjBild = noOp,
                 onTaFoto = noOp,
@@ -247,7 +222,7 @@ abstract class ButikSkarmbilderBas {
     fun proDialog() {
         captureSkarm("04-pro-dialog.png", helSkarm = true) {
             KopListaSkarm(
-                kopLista = exempelLista,
+                kopLista = exempelLista(),
                 onLaggTill = noOp,
                 onOppna = {},
                 paminnelserPa = true,
@@ -285,6 +260,40 @@ class ButikSkarmbilderSvTest : ButikSkarmbilderBas() {
     override fun skarmQualifiers() = "sv-rSE-w360dp-h640dp-port-xxhdpi"
 
     override fun funktionsgrafikQualifiers() = "sv-rSE-w1024dp-h500dp-mdpi"
+    
+    override fun exempelLista(): List<Kop> {
+        return listOf(
+            Kop(
+                id = 1,
+                vad = "Diskmaskin",
+                varKopt = "Lokal vitvaruhandel",
+                kopdatum = LocalDate.of(2025, 3, 10),
+                garantiManader = 24,
+            ),
+            Kop(
+                id = 2,
+                vad = "Mobiltelefon",
+                varKopt = "Telefonbutiken i centrum",
+                kopdatum = LocalDate.of(2025, 8, 1),
+                garantiManader = 12,
+            ),
+            Kop(
+                id = 3,
+                vad = "Cykel",
+                varKopt = "Sport och fritid",
+                kopdatum = LocalDate.of(2024, 11, 20),
+                garantiManader = 36,
+            ),
+        )
+    }
+
+    override fun exempelDetalj(): Kop {
+        return exempelLista()[0]
+    }
+
+    override fun exempelFormular(): Kop {
+        return exempelLista()[0]
+    }
 }
 
 @Config(application = Application::class, sdk = [35])
@@ -296,6 +305,40 @@ class ButikSkarmbilderEnTest : ButikSkarmbilderBas() {
     override fun skarmQualifiers() = "en-rGB-w360dp-h640dp-port-xxhdpi"
 
     override fun funktionsgrafikQualifiers() = "en-rGB-w1024dp-h500dp-mdpi"
+    
+    override fun exempelLista(): List<Kop> {
+        return listOf(
+            Kop(
+                id = 1,
+                vad = "Dishwasher",
+                varKopt = "Local appliance store",
+                kopdatum = LocalDate.of(2025, 3, 10),
+                garantiManader = 24,
+            ),
+            Kop(
+                id = 2,
+                vad = "Mobile phone",
+                varKopt = "Phone shop downtown",
+                kopdatum = LocalDate.of(2025, 8, 1),
+                garantiManader = 12,
+            ),
+            Kop(
+                id = 3,
+                vad = "Bicycle",
+                varKopt = "Sports shop",
+                kopdatum = LocalDate.of(2024, 11, 20),
+                garantiManader = 36,
+            ),
+        )
+    }
+
+    override fun exempelDetalj(): Kop {
+        return exempelLista()[0]
+    }
+
+    override fun exempelFormular(): Kop {
+        return exempelLista()[0]
+    }
 }
 
 @RunWith(RobolectricTestRunner::class)
