@@ -33,10 +33,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
+import java.util.Locale
 import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.regler.KONSUMENTKOP_IKRAFT
@@ -67,6 +68,9 @@ fun KopDetaljSkarm(
 ) {
     var visaBekraftaTaBort by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
+    
+    // Hämta enhetens locale
+    val locale = LocalConfiguration.current.locales[0]
 
     if (visaBekraftaTaBort) {
         AlertDialog(
@@ -111,13 +115,13 @@ fun KopDetaljSkarm(
             }
 
             Text(
-                text = stringResource(R.string.falt_datum) + ": " + formateraDatum(kop.kopdatum),
+                text = stringResource(R.string.falt_datum) + ": " + formateraDatum(kop.kopdatum, locale),
                 style = MaterialTheme.typography.bodyLarge,
             )
 
             kop.prisOre?.let {
                 Text(
-                    text = stringResource(R.string.falt_pris) + ": " + formateraPrisKr(it),
+                    text = stringResource(R.string.falt_pris) + ": " + formateraPrisKr(it, locale),
                     style = MaterialTheme.typography.bodyLarge,
                 )
             }
@@ -134,7 +138,7 @@ fun KopDetaljSkarm(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = stringResource(R.string.lista_garanti_slut, formateraDatum(garantiSlutDatum)),
+                    text = stringResource(R.string.lista_garanti_slut, formateraDatum(garantiSlutDatum, locale)),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.weight(1f),
                 )
@@ -162,7 +166,7 @@ fun KopDetaljSkarm(
             if (reklamationSlutDatum != null) {
                 // Visa reklamationsinformation för köp efter 2022-05-01
                 Text(
-                    text = stringResource(R.string.detalj_reklamation_till, formateraDatum(reklamationSlutDatum)),
+                    text = stringResource(R.string.detalj_reklamation_till, formateraDatum(reklamationSlutDatum, locale)),
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Text(
