@@ -14,7 +14,7 @@ beror-på: 2026-10-12-38-gratisgrans-kort.md
 
 ## Uppgift
 1. `KopListaSkarm` i `KopSkarmar.kt` får två nya parametrar: `arPro: Boolean` och `onVisaProDialog: () -> Unit`.
-2. När listan inte är tom och `skaVisaGratisGransVarning(kopLista.size, arPro)` är true: lägg ett `Card` som första `item` i `LazyColumn`, före köpen. Kortet visar `stringResource(R.string.pro_kvar_gratis, kvittonKvarGratis(kopLista.size))` och en `TextButton` med befintlig sträng för Pro (till exempel `installningar_pro_rad` eller den Pro-sträng som redan finns) som anropar `onVisaProDialog`. Tryckytan minst 48 dp.
+2. När listan inte är tom och `skaVisaGratisGransVarning(kopLista.size, arPro)` är true: lägg ett `Card` som första `item` i `LazyColumn`, före köpen. Kortet visar `stringResource(R.string.pro_kvar_gratis, kvittonKvarGratis(kopLista.size))` och en `TextButton` med den befintliga strängen `pro_las_upp` som anropar `onVisaProDialog`. Tryckytan minst 48 dp.
 3. I `MainActivity.kt`, där `KopListaSkarm(` anropas: skicka `arPro = arPro` och `onVisaProDialog = viewModel::visaProDialog` (båda finns redan i samma block).
 
 Inga nya strängar och inga hårdkodade texter eller färger.
