@@ -296,23 +296,16 @@ class MainActivity : ComponentActivity() {
                             behorighetNekad = behorighetNekad,
                             arPro = arPro,
                             onVisaProDialog = viewModel::visaProDialog,
+                            // Säkerhetskopia och PDF är gratis för alla; Pro tar bara bort gränsen på 15 köp.
                             onSparaSakerhetskopia = {
-                                if (arPro) {
-                                    createSakerhetskopiaContract.launch(
-                                        sakerhetskopiaFilnamn(LocalDate.now()),
-                                    )
-                                } else {
-                                    viewModel.visaProDialog()
-                                }
+                                createSakerhetskopiaContract.launch(
+                                    sakerhetskopiaFilnamn(LocalDate.now()),
+                                )
                             },
                             onHamtaSakerhetskopia = {
-                                if (arPro) {
-                                    openSakerhetskopiaContract.launch(
-                                        arrayOf("application/zip", "application/octet-stream"),
-                                    )
-                                } else {
-                                    viewModel.visaProDialog()
-                                }
+                                openSakerhetskopiaContract.launch(
+                                    arrayOf("application/zip", "application/octet-stream"),
+                                )
                             },
                             onTillbaka = viewModel::visaLista,
                             debugInstallningar = {

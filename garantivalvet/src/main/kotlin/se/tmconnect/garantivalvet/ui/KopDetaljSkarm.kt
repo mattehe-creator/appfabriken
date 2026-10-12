@@ -165,31 +165,12 @@ fun KopDetaljSkarm(
                     .padding(16.dp),
             ) {
                 Button(
-                    onClick = {
-                        if (arPro) {
-                            onExportPdf()
-                        } else {
-                            onVisaProDialog()
-                        }
-                    },
+                    onClick = onExportPdf,
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(min = 48.dp),
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(text = stringResource(R.string.export_pdf))
-                        if (!arPro) {
-                            Text(
-                                text = stringResource(R.string.pro_mark),
-                                style = MaterialTheme.typography.labelSmall,
-                                modifier = Modifier.padding(start = 8.dp),
-                            )
-                        }
-                    }
+                    Text(text = stringResource(R.string.export_pdf))
                 }
             }
         },

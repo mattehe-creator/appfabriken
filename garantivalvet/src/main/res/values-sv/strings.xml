@@ -89,7 +89,7 @@
     <!-- Pro -->
     <string name="pro">Pro</string>
     <string name="pro_las_upp">Lås upp Pro</string>
-    <string name="pro_forklaring">Gratisversionen sparar upp till 15 köp. Pro är ett engångsköp utan prenumeration och låser upp obegränsat antal köp.</string>
+    <string name="pro_forklaring">Allt i appen är gratis, men gratisversionen sparar upp till 15 köp. Pro är ett engångsköp utan prenumeration och tar bort gränsen.</string>
     <string name="pro_du_har">Du har Pro</string>
     <string name="pro_kop_misslyckades">Köpet kunde inte genomföras. Försök igen.</string>
     <string name="pro_grans_nadd">Gränsen är nådd: 15 köp</string>
