@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -22,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,6 +34,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
+import se.tmconnect.garantivalvet.regler.skaVisaGratisGransVarning
+import se.tmconnect.garantivalvet.regler.kvittonKvarGratis
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +45,8 @@ fun KopListaSkarm(
     onLaggTill: () -> Unit,
     onOppna: (Long) -> Unit,
     onOppnaInstallningar: () -> Unit,
+    arPro: Boolean,
+    onVisaProDialog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -87,6 +94,32 @@ fun KopListaSkarm(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                if (skaVisaGratisGransVarning(kopLista.size, arPro)) {
+                    item {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.pro_kvar_gratis, kvittonKvarGratis(kopLista.size)),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                                TextButton(
+                                    onClick = onVisaProDialog,
+                                    modifier = Modifier.heightIn(min = 48.dp)
+                                ) {
+                                    Text(text = stringResource(R.string.pro_las_upp))
+                                }
+                            }
+                        }
+                    }
+                }
+                
                 items(kopLista, key = { it.id }) { kop ->
                     KopListRad(
                         kop = kop,
@@ -95,44 +128,6 @@ fun KopListaSkarm(
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun TomListaInnehall(
-    onLaggTill: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier.padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_kvitto),
-            contentDescription = null,
-            modifier = Modifier.padding(bottom = 16.dp),
-            tint = MaterialTheme.colorScheme.primary,
-        )
-        Text(
-            text = stringResource(R.string.tom_lista_rubrik),
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 8.dp),
-        )
-        Text(
-            text = stringResource(R.string.tom_lista_beskrivning),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = 24.dp),
-        )
-        Button(
-            onClick = onLaggTill,
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 48.dp),
-        ) {
-            Text(text = stringResource(R.string.tom_lista_knapp))
         }
     }
 }
