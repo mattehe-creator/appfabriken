@@ -1,6 +1,5 @@
 package se.tmconnect.garantivalvet.ui
 
-import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -24,7 +22,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import se.tmconnect.garantivalvet.R
@@ -40,42 +37,12 @@ fun KopListaSkarm(
     onPaminnelserAndras: (Boolean) -> Unit,
     behorighetNekad: Boolean,
     arPro: Boolean,
-    proDialogSynlig: Boolean,
     onVisaProDialog: () -> Unit,
-    onStangProDialog: () -> Unit,
-    onKopPro: (Activity) -> Unit,
     onSparaSakerhetskopia: () -> Unit,
     onHamtaSakerhetskopia: () -> Unit,
+    debugInstallningar: @Composable () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    // Visa Pro-dialog om den är synlig
-    if (proDialogSynlig) {
-        val context = LocalContext.current
-        AlertDialog(
-            onDismissRequest = { onStangProDialog() },
-            title = { Text(text = stringResource(R.string.pro)) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(text = stringResource(R.string.pro_forklaring))
-                    Text(text = stringResource(R.string.pro_grans_nadd))
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = { onKopPro(context as Activity) },
-                    modifier = Modifier.heightIn(min = 48.dp)
-                ) {
-                    Text(text = stringResource(R.string.pro_las_upp))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { onStangProDialog() }) {
-                    Text(text = stringResource(R.string.pro_inte_nu))
-                }
-            },
-        )
-    }
-
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -101,6 +68,8 @@ fun KopListaSkarm(
                             Text(text = stringResource(R.string.pro_las_upp))
                         }
                     }
+
+                    debugInstallningar()
 
                     Row(
                         modifier = Modifier

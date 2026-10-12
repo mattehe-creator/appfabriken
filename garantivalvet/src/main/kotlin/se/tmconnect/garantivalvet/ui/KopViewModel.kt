@@ -293,6 +293,13 @@ class KopViewModel(
         _proDialogSynlig.value = false
     }
 
+    /** Slår på eller av debug-testläge Pro (endast debug-bygge). */
+    fun sattDebugProTestlagePa(pa: Boolean) {
+        viewModelScope.launch {
+            installningarLager.sattDebugProTestlagePa(pa)
+        }
+    }
+
     /** Meddelar att PDF-export lyckades */
     fun meddelaExportSparad() {
         _exportPdfMeddelande.value = ExportPdfMeddelande.Sparad

@@ -41,31 +41,37 @@ import se.tmconnect.garantivalvet.export.sakerhetskopiaFilnamn
 import se.tmconnect.garantivalvet.paminnelse.PaminnelseWorker
 import se.tmconnect.garantivalvet.regler.UnderlagEtiketter
 import se.tmconnect.garantivalvet.regler.byggUnderlag
+import se.tmconnect.garantivalvet.pro.ProKallaSkapare
+import se.tmconnect.garantivalvet.ui.GarantivalvetDebugInstallningar
 import se.tmconnect.garantivalvet.ui.KopDetaljSkarm
 import se.tmconnect.garantivalvet.ui.KopFormularSkarm
 import se.tmconnect.garantivalvet.ui.KopListaSkarm
 import se.tmconnect.garantivalvet.ui.KopSkarm
 import se.tmconnect.garantivalvet.ui.KopViewModel
 import se.tmconnect.garantivalvet.ui.KopViewModelFactory
+import se.tmconnect.garantivalvet.ui.ProDialog
 import se.tmconnect.garantivalvet.ui.SakerhetskopiaMeddelande
 import se.tmconnect.garantivalvet.ui.KvittoHelskarm
 import se.tmconnect.karna.pro.ProKalla
-import se.tmconnect.karna.pro.skapaPlayProKalla
 import se.tmconnect.karna.tema.AppfabrikTema
 
 class MainActivity : ComponentActivity() {
+    private val installningarLager: InstallningarLager by lazy {
+        InstallningarLager(applicationContext)
+    }
+
     private val proKalla: ProKalla by lazy {
-        skapaPlayProKalla(
+        ProKallaSkapare.skapa(
             applicationContext,
             ProKonfig.PRODUKT_ID,
             lifecycleScope,
+            installningarLager,
         )
     }
 
     private val viewModel: KopViewModel by viewModels {
         val databas = GarantiDatabas.hamta(applicationContext)
         val kvittoLager = KvittoLager(applicationContext)
-        val installningarLager = InstallningarLager(applicationContext)
         KopViewModelFactory(
             KopRepository(databas.kopDao(), kvittoLager),
             kvittoLager,
@@ -262,10 +268,13 @@ class MainActivity : ComponentActivity() {
                             },
                             behorighetNekad = behorighetNekad,
                             arPro = arPro,
-                            proDialogSynlig = proDialogSynlig,
                             onVisaProDialog = viewModel::visaProDialog,
-                            onStangProDialog = viewModel::stangProDialog,
-                            onKopPro = { activity -> proKalla.kop(activity) },
+                            debugInstallningar = {
+                                GarantivalvetDebugInstallningar(
+                                    arPro = arPro,
+                                    onTestlageProAndras = viewModel::sattDebugProTestlagePa,
+                                )
+                            },
                             onSparaSakerhetskopia = {
                                 createSakerhetskopiaContract.launch(
                                     sakerhetskopiaFilnamn(LocalDate.now()),
@@ -459,6 +468,14 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+
+                    if (proDialogSynlig) {
+                        ProDialog(
+                            onDismiss = viewModel::stangProDialog,
+                            onKopPro = { activity -> proKalla.kop(activity) },
+                        )
+                    }
+
                     SnackbarHost(
                         hostState = snackbarHostState,
                         modifier = Modifier.align(Alignment.BottomCenter),
