@@ -39,3 +39,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*ButikTexterTest"
 - Ändra svenska filer eller butiksbilder.
 - Lägga till beroenden.
 - Ändra appkod eller manifest.
+
+utfall: godkänd 2026-10-12 (utökade en/lang.txt enligt sv-struktur; lade Pro-rad i en/kort.txt)
