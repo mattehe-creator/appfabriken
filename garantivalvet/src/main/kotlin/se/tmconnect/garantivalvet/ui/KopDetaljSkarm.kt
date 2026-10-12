@@ -1,8 +1,6 @@
 package se.tmconnect.garantivalvet.ui
 
-import android.graphics.BitmapFactory
 import android.net.Uri
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -46,7 +43,6 @@ import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.garantivalvet.regler.formateraPrisKr
 import se.tmconnect.garantivalvet.regler.garantiSlut
 import se.tmconnect.garantivalvet.regler.kopStatus
-import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
 import se.tmconnect.garantivalvet.regler.reklamationSlut
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -194,45 +190,6 @@ fun KopDetaljSkarm(
                     text = stringResource(R.string.falt_anteckning) + ": $it",
                     style = MaterialTheme.typography.bodyLarge,
                 )
-            }
-
-            kvittoUri?.let { uri ->
-                val context = LocalContext.current
-                val bitmap = remember(uri) {
-                    try {
-                        // Läs först måtten utan att ladda hela bilden
-                        val options = BitmapFactory.Options().apply {
-                            inJustDecodeBounds = true
-                        }
-                        
-                        context.contentResolver.openInputStream(uri)?.use { input ->
-                            BitmapFactory.decodeStream(input, null, options)
-                        }
-                        
-                        // Beräkna inSampleSize baserat på storlek (max 480 px på längsta sidan)
-                        val sampleSize = beraknaInSampleSize(options.outWidth, options.outHeight, maxSida = 480)
-                        
-                        // Läs bilden med rätt inSampleSize
-                        context.contentResolver.openInputStream(uri)?.use { input ->
-                            val decodeOptions = BitmapFactory.Options().apply {
-                                inSampleSize = sampleSize
-                            }
-                            BitmapFactory.decodeStream(input, null, decodeOptions)
-                        }
-                    } catch (_: Exception) {
-                        null
-                    }
-                }
-                bitmap?.let { decoded ->
-                    Image(
-                        bitmap = decoded.asImageBitmap(),
-                        contentDescription = stringResource(R.string.kvitto_fornhandsvisning),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(160.dp)
-                            .clickable(onClick = onOppnaKvitto),
-                    )
-                }
             }
 
             Button(
