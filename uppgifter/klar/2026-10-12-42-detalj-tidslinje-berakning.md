@@ -35,3 +35,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*TidslinjeTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-12 (test mot exempel ≈0,33; null via reklamationSlut; ChronoUnit-import)

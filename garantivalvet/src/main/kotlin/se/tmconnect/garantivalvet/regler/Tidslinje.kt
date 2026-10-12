@@ -1,6 +1,7 @@
 package se.tmconnect.garantivalvet.regler
 
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 data class TidslinjeMarkorer(
     val garantiSlutAndel: Float,
@@ -9,25 +10,18 @@ data class TidslinjeMarkorer(
 )
 
 fun beraknaTidslinje(kopdatum: LocalDate, garantiManader: Int, idag: LocalDate): TidslinjeMarkorer? {
-    if (kopdatum.isBefore(KONSUMENTKOP_IKRAFT)) {
-        return null
-    }
-    
+    val reklamationSlut = reklamationSlut(kopdatum) ?: return null
+    val presumtionSlutDatum = presumtionSlut(kopdatum) ?: return null
+
     val garantiSlut = garantiSlut(kopdatum, garantiManader)
-    val reklamationSlut = reklamationSlut(kopdatum)!!
-    
-    // Beräkna totala intervallet i dagar
-    val totalDagar = java.time.temporal.ChronoUnit.DAYS.between(kopdatum, reklamationSlut).toDouble()
-    
-    // Om det inte finns något intervall, returnera null
+    val totalDagar = ChronoUnit.DAYS.between(kopdatum, reklamationSlut).toDouble()
     if (totalDagar <= 0) {
         return null
     }
-    
-    // Beräkna positioner i intervallet
-    val garantiSlutDagar = java.time.temporal.ChronoUnit.DAYS.between(kopdatum, garantiSlut).toDouble()
-    val presumtionSlutDagar = java.time.temporal.ChronoUnit.DAYS.between(kopdatum, presumtionSlut(kopdatum)!!).toDouble()
-    val idagDagar = java.time.temporal.ChronoUnit.DAYS.between(kopdatum, idag).toDouble()
+
+    val garantiSlutDagar = ChronoUnit.DAYS.between(kopdatum, garantiSlut).toDouble()
+    val presumtionSlutDagar = ChronoUnit.DAYS.between(kopdatum, presumtionSlutDatum).toDouble()
+    val idagDagar = ChronoUnit.DAYS.between(kopdatum, idag).toDouble()
     
     // Konvertera till andelar (0f..1f)
     val garantiSlutAndel = (garantiSlutDagar / totalDagar).toFloat().coerceIn(0f, 1f)

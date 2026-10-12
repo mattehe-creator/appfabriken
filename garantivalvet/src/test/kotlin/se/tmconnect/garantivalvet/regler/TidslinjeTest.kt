@@ -14,9 +14,8 @@ class TidslinjeTest {
         val result = beraknaTidslinje(kopdatum, 12, idag)
         
         assertNotNull(result)
-        assertTrue(result!!.garantiSlutAndel > 0f)
-        assertTrue(result.presumtionSlutAndel > 0f)
-        assertTrue(result.idagAndel > 0f)
+        assertEquals(0.33f, result!!.garantiSlutAndel, 0.02f)
+        assertTrue(result.idagAndel in 0f..1f)
         assertTrue(result.idagAndel < result.garantiSlutAndel)
         assertTrue(result.garantiSlutAndel < result.presumtionSlutAndel)
     }
