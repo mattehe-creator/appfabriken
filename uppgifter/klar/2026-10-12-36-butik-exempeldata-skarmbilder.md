@@ -43,3 +43,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*ButikSkarmbilder*"
 - Ändra appkod utöver testfilen.
 - Ändra `garantivalvet/butik/sv/*.txt`, `en/*.txt` eller `data-safety.md`.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-12 (Roborazzi en-skärmbilder, oanvända importer)
