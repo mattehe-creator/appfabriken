@@ -31,3 +31,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*FormateringTest"
 - Ändra `Formatering.kt` eller dess tester.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-12 inget
