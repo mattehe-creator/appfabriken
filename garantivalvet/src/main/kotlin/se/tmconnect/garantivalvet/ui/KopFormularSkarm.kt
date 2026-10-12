@@ -43,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -155,6 +156,8 @@ fun KopFormularSkarm(
         }
     }
 
+    val locale = LocalConfiguration.current.locales[0]
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -213,7 +216,7 @@ fun KopFormularSkarm(
             )
 
             OutlinedTextField(
-                value = formateraDatum(kopdatum),
+                value = formateraDatum(kopdatum, locale),
                 onValueChange = { },
                 label = { Text(text = stringResource(R.string.falt_datum)) },
                 readOnly = true,
