@@ -1,1 +1,12 @@
-Platshållare: den långa svenska butiksbeskrivningen skrivs i uppgift 32. Appen sparar köp och kvitton lokalt, visar garantitid och information om reklamationsfrister enligt konsumentköplagen för köp i Sverige (inte juridisk rådgivning), fungerar offline utan reklam eller analys, och erbjuder Pro som engångsköp.
+Säkerhetskopia av kvitton och garantier. Funktioner:
+• Lagring offline
+• Inga konton eller reklam
+• Gratis upp till 15 köp
+• Pro (engångsköp) ger obegränsat antal
+• PDF-underlag och säkerhetskopia
+
+Garantivalvet är en app för att spara och hantera kvitton och garantier offline. Du kan lägga till köp, se information om reklamationsrätt och exportera som PDF.
+
+Reklamationsrätten är information om konsumentköplagen (2022:260) och gäller endast för köp i Sverige. Appen visar garantitiden och hjälper dig att hålla reda på när du kan göra en reklamation.
+
+Appen fungerar helt offline, kräver ingen internetanslutning och har ingen analys eller reklam. Inga konton behövs. All data lagras lokalt på din telefon.
