@@ -173,7 +173,10 @@
     <string name="detalj_oppet_kop_mat">Food and drink are not always covered by a return period.</string>
     <string name="detalj_oppet_kop_oanvand">The item should normally be unused.</string>
     <string name="detalj_reklamation_bevis">For the first two years the seller must show that the fault did not exist when you bought the item. After that you must show that it did. A warranty can then be better.</string>
-    <string name="detalj_reklamation_slitage">Normal wear is not a fault. The fault must have existed when you received the item. For used goods the fault is judged by the item’s age, condition and price.</string>
+    <string name="detalj_reklamation_slitage">Normal wear is not a fault. The fault must have existed when you received the item.</string>
     <string name="underlag_farskvara">Type of item</string>
     <string name="underlag_farskvara_text">Fresh goods (food and drink): the time to complain is considerably shorter than three years.</string>
+    <string name="varutyp_vaxter">Plants</string>
+    <string name="varutyp_vaxter_hjalp">Plants have a three-year right to claim faults like other goods, but you must have cared for the plant according to the care instructions. Cut flowers are fresh goods: choose Food and drink.</string>
+    <string name="detalj_reklamation_vaxter">You must have cared for the plant according to the care instructions you received. Keep photos showing how the plant looked on delivery. Cut flowers count as fresh goods.</string>
 </resources>

@@ -20,6 +20,7 @@ class VarutypReglerTest {
         assertFalse(arFarskvara("ELEKTRONIK"))
         assertFalse(arFarskvara("KLADER_SKOR"))
         assertFalse(arFarskvara("HEM_BYGG"))
+        assertFalse(arFarskvara("VAXTER"))
         assertFalse(arFarskvara("OVRIGT"))
         assertFalse(arFarskvara(null))
         assertFalse(arFarskvara("okänd"))
@@ -30,12 +31,14 @@ class VarutypReglerTest {
         assertEquals(KopStatus.FARSKVARA, statusForKop(kop("MAT_DRYCK"), idag))
         assertEquals(KopStatus.GARANTI_GALLER, statusForKop(kop("ELEKTRONIK"), idag))
         assertEquals(KopStatus.GARANTI_GALLER, statusForKop(kop(null), idag))
+        assertEquals(KopStatus.GARANTI_GALLER, statusForKop(kop("VAXTER"), idag))
     }
 
     @Test
     fun farskvaraHarIngenGarantiEllerReklamationsfrist() {
         assertNull(narmasteFrist(kop("MAT_DRYCK"), idag))
         assertEquals(NarmasteFristTyp.GARANTI, narmasteFrist(kop("ELEKTRONIK"), idag)!!.typ)
+        assertEquals(NarmasteFristTyp.GARANTI, narmasteFrist(kop("VAXTER"), idag)!!.typ)
     }
 
     @Test

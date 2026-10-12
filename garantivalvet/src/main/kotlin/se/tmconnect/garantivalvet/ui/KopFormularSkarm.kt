@@ -449,9 +449,11 @@ fun KopFormularSkarm(
                 text = stringResource(R.string.falt_varutyp),
                 style = MaterialTheme.typography.labelLarge,
             )
-            if (varutyp == Varutyp.MAT_DRYCK) {
+            if (varutyp == Varutyp.MAT_DRYCK || varutyp == Varutyp.VAXTER) {
                 Text(
-                    text = stringResource(R.string.varutyp_mat_hjalp),
+                    text = stringResource(
+                        if (varutyp == Varutyp.MAT_DRYCK) R.string.varutyp_mat_hjalp else R.string.varutyp_vaxter_hjalp,
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
