@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -35,6 +36,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +54,8 @@ import java.time.LocalDate
 import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.regler.FormularFel
 import se.tmconnect.garantivalvet.regler.GarantitidVal
+import se.tmconnect.garantivalvet.regler.KvittoForslag
+import se.tmconnect.garantivalvet.regler.fyllTommaFalt
 import se.tmconnect.garantivalvet.regler.tolkaPrisTillOre
 import se.tmconnect.garantivalvet.regler.valideraKopFormular
 import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
@@ -75,6 +79,7 @@ fun KopFormularSkarm(
     onSpara: (vad: String, varKopt: String?, kopdatum: LocalDate, garantiManader: Int, prisOre: Long?, anteckning: String?) -> Unit,
     onStang: () -> Unit,
     modifier: Modifier = Modifier,
+    lasKvitto: suspend (Uri) -> KvittoForslag? = { null },
 ) {
     var vad by remember(initialVad) { mutableStateOf(initialVad) }
     var varKopt by remember(initialVar) { mutableStateOf(initialVar) }
@@ -82,10 +87,37 @@ fun KopFormularSkarm(
     var anteckning by remember(initialAnteckning) { mutableStateOf(initialAnteckning ?: "") }
     var kopdatum by remember(initialKopdatum) { mutableStateOf(initialKopdatum) }
 
+    var forslagButik by remember { mutableStateOf(false) }
+    var forslagDatum by remember { mutableStateOf(false) }
+    var forslagPris by remember { mutableStateOf(false) }
+    var laserKvitto by remember { mutableStateOf(false) }
+
+    // Läs av kvittot när användaren fotar eller byter det. Ett redan sparat kvitto läses inte om.
+    val startUri = remember { kvittoUri }
+    LaunchedEffect(kvittoUri) {
+        if (kvittoUri == null || kvittoUri == startUri) return@LaunchedEffect
+        laserKvitto = true
+        try {
+            val forslag = lasKvitto(kvittoUri)
+            if (forslag != null) {
+                val ny = fyllTommaFalt(forslag, varKopt, prisText, kopdatum, LocalDate.now())
+                varKopt = ny.varKopt
+                prisText = ny.prisText
+                kopdatum = ny.kopdatum
+                if (ny.butikFranKvitto) forslagButik = true
+                if (ny.prisFranKvitto) forslagPris = true
+                if (ny.datumFranKvitto) forslagDatum = true
+            }
+        } finally {
+            laserKvitto = false
+        }
+    }
+
     var visarDatumvaljare by remember { mutableStateOf(false) }
     val datumValjare = rememberDatePickerState(
         initialSelectedDateMillis = kopdatum.toEpochDay() * 86_400_000,
     )
+    LaunchedEffect(kopdatum) { datumValjare.selectedDateMillis = kopdatum.toEpochDay() * 86_400_000 }
 
     var fel by remember { mutableStateOf<List<FormularFel>>(emptyList()) }
 
@@ -116,6 +148,7 @@ fun KopFormularSkarm(
                     onClick = {
                         datumValjare.selectedDateMillis?.let { millis ->
                             kopdatum = LocalDate.ofEpochDay(millis / 86_400_000)
+                            forslagDatum = false
                         }
                         visarDatumvaljare = false
                     },
@@ -193,6 +226,13 @@ fun KopFormularSkarm(
                 onTaFoto = onTaFoto,
                 onTaBortKvitto = onTaBortKvitto,
             )
+            if (laserKvitto) {
+                Text(
+                    text = stringResource(R.string.kvitto_laser),
+                    style = MaterialTheme.typography.labelLarge,
+                )
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
 
             OutlinedTextField(
                 value = vad,
@@ -210,8 +250,16 @@ fun KopFormularSkarm(
 
             OutlinedTextField(
                 value = varKopt,
-                onValueChange = { varKopt = it },
+                onValueChange = {
+                    varKopt = it
+                    forslagButik = false
+                },
                 label = { Text(text = stringResource(R.string.falt_var)) },
+                supportingText = if (forslagButik) {
+                    { Text(text = stringResource(R.string.kvitto_forslag)) }
+                } else {
+                    null
+                },
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -219,6 +267,11 @@ fun KopFormularSkarm(
                 value = formateraDatum(kopdatum, locale),
                 onValueChange = { },
                 label = { Text(text = stringResource(R.string.falt_datum)) },
+                supportingText = if (forslagDatum) {
+                    { Text(text = stringResource(R.string.kvitto_forslag)) }
+                } else {
+                    null
+                },
                 readOnly = true,
                 trailingIcon = {
                     IconButton(onClick = { visarDatumvaljare = true }) {
@@ -292,8 +345,16 @@ fun KopFormularSkarm(
 
             OutlinedTextField(
                 value = prisText,
-                onValueChange = { prisText = it },
+                onValueChange = {
+                    prisText = it
+                    forslagPris = false
+                },
                 label = { Text(text = stringResource(R.string.falt_pris)) },
+                supportingText = if (forslagPris) {
+                    { Text(text = stringResource(R.string.kvitto_forslag)) }
+                } else {
+                    null
+                },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 suffix = { Text(text = stringResource(R.string.falt_pris_suffix)) },
                 modifier = Modifier.fillMaxWidth(),

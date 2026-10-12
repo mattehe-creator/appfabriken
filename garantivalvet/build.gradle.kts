@@ -82,6 +82,7 @@ dependencies {
     testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:$roborazziVersion")
     testImplementation("io.github.takahirom.roborazzi:roborazzi-junit-rule:$roborazziVersion")
 
+    implementation("com.google.mlkit:text-recognition:16.0.1")
     implementation("androidx.work:work-runtime-ktx:2.10.1")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 }

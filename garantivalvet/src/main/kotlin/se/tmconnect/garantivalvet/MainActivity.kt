@@ -12,6 +12,10 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import se.tmconnect.garantivalvet.ocr.KvittoLasare
+import se.tmconnect.garantivalvet.ocr.MlKitKvittoLasare
+import se.tmconnect.garantivalvet.regler.KvittoForslag
+import se.tmconnect.garantivalvet.regler.tolkaKvitto
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHost
@@ -61,6 +65,12 @@ import se.tmconnect.karna.tema.AppfabrikTema
 class MainActivity : ComponentActivity() {
     private val installningarLager: InstallningarLager by lazy {
         InstallningarLager(applicationContext)
+    }
+
+    private val kvittoLasare: KvittoLasare by lazy { MlKitKvittoLasare(applicationContext) }
+
+    private val lasKvitto: suspend (Uri) -> KvittoForslag? = { uri ->
+        kvittoLasare.lasText(uri)?.let { tolkaKvitto(it, LocalDate.now()) }?.takeUnless { it.arTomt }
     }
 
     private val proKalla: ProKalla by lazy {
@@ -365,6 +375,7 @@ class MainActivity : ComponentActivity() {
                                 takePictureContract.launch(uri)
                             },
                             onTaBortKvitto = viewModel::markeraKvittoForBorttagning,
+                            lasKvitto = lasKvitto,
                             onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning ->
                                 viewModel.sparaNyttKop(
                                     vad = vad,
@@ -413,6 +424,7 @@ class MainActivity : ComponentActivity() {
                                     takePictureContract.launch(uri)
                                 },
                                 onTaBortKvitto = viewModel::markeraKvittoForBorttagning,
+                                lasKvitto = lasKvitto,
                                 onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning ->
                                     viewModel.uppdateraKop(
                                         kop.copy(
