@@ -21,4 +21,15 @@ class FormateringTest {
         val datum = LocalDate.of(2026, 3, 15)
         assertEquals("15 mars 2026", formateraDatum(datum, Locale.forLanguageTag("sv-SE")))
     }
+    
+    @Test
+    fun testFormateraDatumEngelska() {
+        val datum = LocalDate.of(2026, 8, 1)
+        assertEquals("Aug 1, 2026", formateraDatum(datum, Locale.ENGLISH))
+    }
+    
+    @Test
+    fun testFormateraPrisKrEngelska() {
+        assertEquals("1,234.50 kr", formateraPrisKr(123450L, Locale.US))
+    }
 }
