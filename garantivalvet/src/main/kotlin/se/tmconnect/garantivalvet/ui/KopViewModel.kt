@@ -344,18 +344,16 @@ class KopViewModel(
             try {
                 val inputStream = appContext.contentResolver.openInputStream(uri)
                     ?: throw java.io.IOException()
-                val resultat = Sakerhetskopia.lasIn(inputStream)
-                
-                when (resultat) {
-                    is SakerhetskopiaLasResult.Ok -> {
-                        importeraSakerhetskopia(resultat)
-                    }
-                    SakerhetskopiaLasResult.Fel.OkandVersion -> {
-                        _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.NyareVersion
-                    }
-                    SakerhetskopiaLasResult.Fel.TrasigFil,
-                    SakerhetskopiaLasResult.Fel.SaknarKopJson -> {
-                        _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.KundeInteLasas
+                inputStream.use { stream ->
+                    when (val resultat = Sakerhetskopia.lasIn(stream)) {
+                        is SakerhetskopiaLasResult.Ok -> importeraSakerhetskopia(resultat)
+                        SakerhetskopiaLasResult.Fel.OkandVersion -> {
+                            _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.NyareVersion
+                        }
+                        SakerhetskopiaLasResult.Fel.TrasigFil,
+                        SakerhetskopiaLasResult.Fel.SaknarKopJson -> {
+                            _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.KundeInteLasas
+                        }
                     }
                 }
             } catch (_: Exception) {
@@ -367,27 +365,24 @@ class KopViewModel(
     /**
      * Importerar säkerhetskopia
      */
-    private fun importeraSakerhetskopia(resultat: SakerhetskopiaLasResult.Ok) {
-        viewModelScope.launch {
-            try {
-                val importResultat = repository.importeraSakerhetskopia(
-                    resultat.innehall,
-                    resultat.kvittoFiler
-                )
-                
-                // Om påminnelser är aktiva, synka jobbet
-                val paminnelserPa = installningarLager.paminnelserPa.first()
-                if (paminnelserPa) {
-                    PaminnelsePlanerare.synka(appContext, true)
-                }
-                
-                _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.Importerad(
-                    tillagda = importResultat.tillagda,
-                    hoppadeOver = importResultat.hoppadeOver
-                )
-            } catch (_: Exception) {
-                _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.KundeInteLasas
+    private suspend fun importeraSakerhetskopia(resultat: SakerhetskopiaLasResult.Ok) {
+        try {
+            val importResultat = repository.importeraSakerhetskopia(
+                resultat.innehall,
+                resultat.kvittoFiler,
+            )
+
+            val paminnelserPa = installningarLager.paminnelserPa.first()
+            if (paminnelserPa) {
+                PaminnelsePlanerare.synka(appContext, true)
             }
+
+            _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.Importerad(
+                tillagda = importResultat.tillagda,
+                hoppadeOver = importResultat.hoppadeOver,
+            )
+        } catch (_: Exception) {
+            _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.KundeInteLasas
         }
     }
 
