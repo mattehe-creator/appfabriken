@@ -57,6 +57,7 @@
     <string name="kvitto_saknas">Inget kvitto</string>
     <string name="kvitto_ta_bort">Ta bort kvitto</string>
     <string name="kvitto_laser">Läser av kvittot…</string>
+    <string name="kvitto_inget_hittades">Hittade inget användbart på kvittot – fyll i uppgifterna själv</string>
     <string name="kvitto_forslag">Förslag från kvittot – kontrollera</string>
     <string name="kvitto_fornhandsvisning">Förhandsvisning av kvitto</string>
     <string name="kvitto_har_kvitto">Har kvitto</string>

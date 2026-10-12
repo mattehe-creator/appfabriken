@@ -219,6 +219,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppfabrikTema {
                 val kopLista by viewModel.kopLista.collectAsState()
+                // Måste läsas här: annars ritas formuläret inte om när ett kvitto fotas eller väljs.
+                val tillfalligtKvitto by viewModel.tillfalligtKvittoUri.collectAsState()
                 val aktivSkarm by viewModel.aktivSkarm.collectAsState()
                 val valtKop by viewModel.valtKop.collectAsState()
                 val paminnelserPa by viewModel.paminnelserPa.collectAsState()
@@ -363,7 +365,7 @@ class MainActivity : ComponentActivity() {
                             initialPris = null,
                             initialAnteckning = null,
                             initialKopdatum = LocalDate.now(),
-                            kvittoUri = viewModel.kvittoUriForFormular(null),
+                            kvittoUri = tillfalligtKvitto ?: viewModel.kvittoUriForFormular(null),
                             onValjBild = {
                                 pickImageContract.launch(
                                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
@@ -412,7 +414,7 @@ class MainActivity : ComponentActivity() {
                                 initialPris = kop.prisOre?.let { (it / 100.0).toString() },
                                 initialAnteckning = kop.anteckning,
                                 initialKopdatum = kop.kopdatum,
-                                kvittoUri = viewModel.kvittoUriForFormular(kop),
+                                kvittoUri = tillfalligtKvitto ?: viewModel.kvittoUriForFormular(kop),
                                 onValjBild = {
                                     pickImageContract.launch(
                                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),

@@ -91,14 +91,17 @@ fun KopFormularSkarm(
     var forslagDatum by remember { mutableStateOf(false) }
     var forslagPris by remember { mutableStateOf(false) }
     var laserKvitto by remember { mutableStateOf(false) }
+    var ingetHittades by remember { mutableStateOf(false) }
 
     // Läs av kvittot när användaren fotar eller byter det. Ett redan sparat kvitto läses inte om.
     val startUri = remember { kvittoUri }
     LaunchedEffect(kvittoUri) {
         if (kvittoUri == null || kvittoUri == startUri) return@LaunchedEffect
         laserKvitto = true
+        ingetHittades = false
         try {
             val forslag = lasKvitto(kvittoUri)
+            ingetHittades = forslag == null
             if (forslag != null) {
                 val ny = fyllTommaFalt(forslag, varKopt, prisText, kopdatum, LocalDate.now())
                 varKopt = ny.varKopt
@@ -232,6 +235,11 @@ fun KopFormularSkarm(
                     style = MaterialTheme.typography.labelLarge,
                 )
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            } else if (ingetHittades) {
+                Text(
+                    text = stringResource(R.string.kvitto_inget_hittades),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
             }
 
             OutlinedTextField(
