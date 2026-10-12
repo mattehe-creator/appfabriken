@@ -40,3 +40,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*FormateringTest"
 - Ändra andra filer (inklusive `MainActivity.kt` om locale redan skickas till `byggUnderlag`).
 - Lägga till beroenden.
 - Ändra lagrade värden eller `Formatering.kt`.
+
+utfall: godkänd 2026-10-12 (två assertEquals enligt uppgiftens svenska exempel i FormateringTest)
