@@ -162,4 +162,26 @@ class SakerhetskopiaJsonTest {
         assertEquals(null, kop.oppetKopDagar)
         assertEquals(null, kop.varutyp)
     }
+
+    @Test
+    fun reklamationsloggenGarRundtur() {
+        val innehall =
+            SakerhetskopiaInnehall(
+                version = 1,
+                skapad = "2026-10-12",
+                kop =
+                    listOf(
+                        SakerhetskopiaKop(
+                            vad = "Kabel",
+                            kopdatum = LocalDate.of(2026, 9, 1),
+                            garantiManader = 24,
+                            felUpptackt = LocalDate.of(2026, 10, 1),
+                            felBeskrivning = "Trasig \"kontakt\"",
+                            reklamerad = LocalDate.of(2026, 10, 5),
+                        ),
+                    ),
+            )
+        val las = lasSakerhetskopiaJson(skrivSakerhetskopiaJson(innehall)) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals(innehall, las.innehall)
+    }
 }

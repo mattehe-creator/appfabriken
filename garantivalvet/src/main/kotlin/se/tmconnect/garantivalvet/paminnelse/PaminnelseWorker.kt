@@ -25,7 +25,11 @@ import se.tmconnect.garantivalvet.regler.FristTyp
 import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.garantivalvet.regler.fristNyckel
 import se.tmconnect.garantivalvet.regler.fristerSomSkaAviseras
+import se.tmconnect.garantivalvet.regler.ReklamationsLogg
 import se.tmconnect.garantivalvet.regler.arFarskvara
+import se.tmconnect.garantivalvet.regler.arnAnmalanSenast
+import se.tmconnect.garantivalvet.regler.reklamationsLogg
+import se.tmconnect.garantivalvet.regler.reklamerasSenast
 import se.tmconnect.garantivalvet.regler.garantiSlut
 import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
 import se.tmconnect.garantivalvet.regler.oppetKopSlut
@@ -69,6 +73,9 @@ class PaminnelseWorker(
                     R.string.paminnelse_notis_reklamation_text
                 FristTyp.OPPET_KOP -> R.string.paminnelse_notis_oppet_kop_titel to
                     R.string.paminnelse_notis_oppet_kop_text
+                FristTyp.REKLAMERA_SENAST -> R.string.paminnelse_notis_reklamera_titel to
+                    R.string.paminnelse_notis_reklamera_text
+                FristTyp.ARN -> R.string.paminnelse_notis_arn_titel to R.string.paminnelse_notis_arn_text
             }
             visaNotis(
                 notisId = frist.kopId.toInt(),
@@ -160,9 +167,16 @@ class PaminnelseWorker(
         val oppetKop = giltigaOppetKopDagar(kop.oppetKopDagar)?.let { dagar ->
             Frist(kopId = kop.id, typ = FristTyp.OPPET_KOP, slutdatum = oppetKopSlut(kop.kopdatum, dagar))
         }
+        val reklamationsLogg = when (reklamationsLogg(kop)) {
+            ReklamationsLogg.REKLAMERAD ->
+                Frist(kopId = kop.id, typ = FristTyp.ARN, slutdatum = arnAnmalanSenast(kop.reklamerad!!))
+            ReklamationsLogg.FEL_UPPTACKT ->
+                Frist(kopId = kop.id, typ = FristTyp.REKLAMERA_SENAST, slutdatum = reklamerasSenast(kop.felUpptackt!!))
+            ReklamationsLogg.INGEN -> null
+        }
         // Färskvaror har ingen längre frist att påminna om (se arFarskvara).
-        if (arFarskvara(kop)) return listOfNotNull(oppetKop)
-        return listOfNotNull(oppetKop, garanti, reklamation)
+        if (arFarskvara(kop)) return listOfNotNull(oppetKop, reklamationsLogg)
+        return listOfNotNull(oppetKop, garanti, reklamation, reklamationsLogg)
     }
 
     companion object {
