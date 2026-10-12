@@ -224,4 +224,8 @@
     <string name="brev_avslut">Jag ser fram emot ert svar.</string>
     <string name="brev_halsning">Med vänliga hälsningar</string>
     <string name="dela_in_fel">Kunde inte läsa kvittot. Dela en bild eller en PDF.</string>
+    <string name="kvitto_rotera_vanster">Rotera vänster</string>
+    <string name="kvitto_rotera_hoger">Rotera höger</string>
+    <string name="kvitto_las_igen">Läs av igen</string>
+    <string name="kvitto_varu_forslag">Förslag från kvittot:</string>
 </resources>

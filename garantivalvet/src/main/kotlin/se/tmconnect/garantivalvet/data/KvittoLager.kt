@@ -4,16 +4,19 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.pdf.PdfRenderer
+import android.media.ExifInterface
 import android.net.Uri
 import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
-import se.tmconnect.garantivalvet.regler.DELAT_KVITTO_MAX_BYTES
 import se.tmconnect.garantivalvet.regler.arPdf
 import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
 import se.tmconnect.garantivalvet.regler.beraknaPdfStorlek
+import se.tmconnect.garantivalvet.regler.exifOrienteringTillGrader
+import se.tmconnect.garantivalvet.regler.summeraRotation
 import se.tmconnect.garantivalvet.regler.beraknaNedskaladStorlek
 
 /**
@@ -84,7 +87,7 @@ class KvittoLager(
         val katalog = File(context.cacheDir, KAMERA_CACHE_MAPP).also { it.mkdirs() }
         val fil = File(katalog, "${UUID.randomUUID()}.jpg")
         val klar = try {
-            if (arPdf(mime)) renderaPdfForstaSidan(kalla, fil) else kopieraBild(kalla, fil)
+            if (arPdf(mime)) renderaPdfForstaSidan(kalla, fil) else normaliseraTillFil(kalla, 0, fil)
         } catch (_: Exception) {
             false
         }
@@ -95,26 +98,69 @@ class KvittoLager(
         return FileProvider.getUriForFile(context, fileProviderAuthority(context), fil)
     }
 
-    private fun kopieraBild(kalla: Uri, mal: File): Boolean {
-        val ok = context.contentResolver.openInputStream(kalla)?.use { input ->
-            FileOutputStream(mal).use { ut ->
-                val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-                var totalt = 0L
-                while (true) {
-                    val last = input.read(buffer)
-                    if (last < 0) break
-                    totalt += last
-                    if (totalt > DELAT_KVITTO_MAX_BYTES) return false
-                    ut.write(buffer, 0, last)
-                }
-                true
-            }
-        } ?: return false
-        if (!ok) return false
-        val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        BitmapFactory.decodeFile(mal.absolutePath, options)
-        return options.outWidth > 0 && options.outHeight > 0
+    /**
+     * Gör en kopia i cache där bilden står rätt: EXIF-orienteringen läggs in i pixlarna (BitmapFactory ignorerar den)
+     * och bilden roteras [extraGrader] medurs. Skalas ned till högst 2000 px. Returnerar FileProvider-URI, eller
+     * `null` om bilden inte gick att läsa.
+     */
+    fun normalisera(kalla: Uri, extraGrader: Int = 0): Uri? {
+        val katalog = File(context.cacheDir, KAMERA_CACHE_MAPP).also { it.mkdirs() }
+        val fil = File(katalog, "${UUID.randomUUID()}.jpg")
+        val klar = try {
+            normaliseraTillFil(kalla, extraGrader, fil)
+        } catch (_: Exception) {
+            false
+        }
+        if (!klar) {
+            fil.delete()
+            return null
+        }
+        return FileProvider.getUriForFile(context, fileProviderAuthority(context), fil)
     }
+
+    private fun normaliseraTillFil(kalla: Uri, extraGrader: Int, mal: File): Boolean {
+        val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        context.contentResolver.openInputStream(kalla)?.use { BitmapFactory.decodeStream(it, null, options) }
+            ?: return false
+        if (options.outWidth <= 0 || options.outHeight <= 0) return false
+        val bitmap = context.contentResolver.openInputStream(kalla)?.use { input ->
+            BitmapFactory.decodeStream(
+                input,
+                null,
+                BitmapFactory.Options().apply { inSampleSize = beraknaInSampleSize(options.outWidth, options.outHeight) },
+            )
+        } ?: return false
+        val grader = summeraRotation(exifGrader(kalla), extraGrader)
+        val rakt = if (grader == 0) {
+            bitmap
+        } else {
+            Bitmap.createBitmap(
+                bitmap,
+                0,
+                0,
+                bitmap.width,
+                bitmap.height,
+                Matrix().apply { postRotate(grader.toFloat()) },
+                true,
+            ).also { if (it !== bitmap) bitmap.recycle() }
+        }
+        return try {
+            FileOutputStream(mal).use { ut -> rakt.compress(Bitmap.CompressFormat.JPEG, 90, ut) }
+        } finally {
+            rakt.recycle()
+        }
+    }
+
+    private fun exifGrader(kalla: Uri): Int =
+        try {
+            context.contentResolver.openInputStream(kalla)?.use { input ->
+                exifOrienteringTillGrader(
+                    ExifInterface(input).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL),
+                )
+            } ?: 0
+        } catch (_: Exception) {
+            0
+        }
 
     private fun renderaPdfForstaSidan(kalla: Uri, mal: File): Boolean {
         val pfd = context.contentResolver.openFileDescriptor(kalla, "r") ?: return false

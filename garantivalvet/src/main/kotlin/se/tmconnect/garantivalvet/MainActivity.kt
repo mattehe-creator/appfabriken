@@ -104,7 +104,7 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
         uri?.let {
-            viewModel.sattTillfalligtKvitto(it)
+            viewModel.valjBild(it)
         }
     }
 
@@ -114,7 +114,7 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.TakePicture()
     ) { success ->
         if (success && kameraUri != null) {
-            viewModel.sattTillfalligtKvitto(kameraUri!!)
+            viewModel.valjBild(kameraUri!!)
         }
     }
 
@@ -373,6 +373,7 @@ class MainActivity : ComponentActivity() {
                             initialOppetKop = null,
                             initialVarutyp = null,
                             lasInitialtKvitto = delatKvitto,
+                            onRotera = viewModel::roteraKvitto,
                             kvittoUri = tillfalligtKvitto ?: viewModel.kvittoUriForFormular(null),
                             onValjBild = {
                                 pickImageContract.launch(
@@ -426,6 +427,7 @@ class MainActivity : ComponentActivity() {
                                 initialKopdatum = kop.kopdatum,
                                 initialOppetKop = kop.oppetKopDagar,
                                 initialVarutyp = kop.varutyp,
+                                onRotera = viewModel::roteraKvitto,
                                 kvittoUri = tillfalligtKvitto ?: viewModel.kvittoUriForFormular(kop),
                                 onValjBild = {
                                     pickImageContract.launch(
