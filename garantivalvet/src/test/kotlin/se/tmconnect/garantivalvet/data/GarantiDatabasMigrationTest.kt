@@ -68,7 +68,7 @@ class GarantiDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, GarantiDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .allowMainThreadQueries()
             .build()
 

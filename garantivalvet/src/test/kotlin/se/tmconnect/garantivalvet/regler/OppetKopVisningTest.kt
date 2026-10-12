@@ -7,6 +7,8 @@ import org.junit.Test
 import se.tmconnect.garantivalvet.data.Kop
 
 class OppetKopVisningTest {
+    private fun sv(datum: LocalDate) = formateraDatum(datum, java.util.Locale.forLanguageTag("sv-SE"))
+
     private fun kop(vad: String, oppetKopDagar: Int?, kopdatum: LocalDate = LocalDate.of(2026, 9, 1)) =
         Kop(vad = vad, kopdatum = kopdatum, garantiManader = 24, oppetKopDagar = oppetKopDagar)
 
@@ -77,10 +79,10 @@ class OppetKopVisningTest {
         val underlag = byggUnderlag(k, LocalDate.of(2026, 9, 10), etiketter, "Underlag")
         val rader = underlag.rader.associate { it.etikett to it.varde }
         assertEquals("30", rader["Öppet köp dagar"])
-        assertEquals("2026-10-01", rader["Öppet köp till"])
+        assertEquals(sv(LocalDate.of(2026, 10, 1)), rader["Öppet köp till"])
         assertEquals("Elektronik", rader["Typ av vara"])
-        assertEquals("2028-09-01", rader["Garanti till"])
-        assertEquals("2029-09-01", rader["Reklamation till"])
+        assertEquals(sv(LocalDate.of(2028, 9, 1)), rader["Garanti till"])
+        assertEquals(sv(LocalDate.of(2029, 9, 1)), rader["Reklamation till"])
     }
 
     @Test
