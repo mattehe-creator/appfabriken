@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -21,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,6 +34,8 @@ import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.regler.ListaGrupp
 import se.tmconnect.garantivalvet.regler.listaGrupp
+import se.tmconnect.garantivalvet.regler.skaVisaGratisGransVarning
+import se.tmconnect.garantivalvet.regler.kvittonKvarGratis
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,6 +46,8 @@ fun KopListaSkarm(
     onLaggTill: () -> Unit,
     onOppna: (Long) -> Unit,
     onOppnaInstallningar: () -> Unit,
+    arPro: Boolean = false,
+    onVisaProDialog: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -102,6 +108,33 @@ fun KopListaSkarm(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                // Lägg till varningskortet om det behövs
+                if (skaVisaGratisGransVarning(kopLista.size, arPro)) {
+                    item(key = "varningskort") {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.pro_kvar_gratis, kvittonKvarGratis(kopLista.size)),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                                TextButton(
+                                    onClick = onVisaProDialog,
+                                    modifier = Modifier.heightIn(min = 48.dp)
+                                ) {
+                                    Text(text = stringResource(R.string.pro_las_upp))
+                                }
+                            }
+                        }
+                    }
+                }
+
                 gruppOrdning.forEach { grupp ->
                     val kopIGrupp = grupperadLista[grupp] ?: return@forEach
                     item(key = "rubrik_$grupp") {
