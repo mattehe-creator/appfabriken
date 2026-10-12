@@ -33,3 +33,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*GratisGransTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-12 (inget)
