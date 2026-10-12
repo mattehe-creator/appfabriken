@@ -12,6 +12,10 @@
     <string name="falt_vad">Vad köpte du?</string>
     <string name="falt_var">Var (valfritt)</string>
     <string name="falt_garanti_manader">Garantitid (månader)</string>
+    <string name="garanti_chip_12">12 månader</string>
+    <string name="garanti_chip_24">24 månader</string>
+    <string name="garanti_chip_36">36 månader</string>
+    <string name="garanti_chip_annat">Annat</string>
     <string name="spara">Spara</string>
     <string name="avbryt">Avbryt</string>
     <string name="andra">Ändra</string>
