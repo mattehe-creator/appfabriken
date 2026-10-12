@@ -29,7 +29,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import se.tmconnect.garantivalvet.R
@@ -90,15 +89,7 @@ fun KopListaSkarm(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Tom lista - visar ikon, rubrik, beskrivning och knapp
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_receipt),
-                        contentDescription = stringResource(R.string.tom_lista_rubrik),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier
-                            .size(96.dp)
-                    )
-                    
+                    // Tom lista - visar rubrik, beskrivning och knapp
                     Text(
                         text = stringResource(R.string.tom_lista_rubrik),
                         style = MaterialTheme.typography.titleMedium,
