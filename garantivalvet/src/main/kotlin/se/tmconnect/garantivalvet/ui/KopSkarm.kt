@@ -3,6 +3,8 @@ package se.tmconnect.garantivalvet.ui
 sealed interface KopSkarm {
     data object Lista : KopSkarm
 
+    data object Installningar : KopSkarm
+
     data object LaggTill : KopSkarm
 
     data class Detalj(val kopId: Long) : KopSkarm
