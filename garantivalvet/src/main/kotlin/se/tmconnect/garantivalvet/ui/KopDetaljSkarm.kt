@@ -2,6 +2,7 @@ package se.tmconnect.garantivalvet.ui
 
 import android.graphics.BitmapFactory
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -202,7 +203,7 @@ fun KopDetaljSkarm(
                 chipFarger = chipFarger,
                 locale = locale,
                 idag = idag,
-                tidslinjeMarkorer = tidslinjeMarkorer
+                tidslinjeMarkorer = tidslinjeMarkorer,
             )
 
             kvittoUri?.let { uri ->
@@ -246,7 +247,7 @@ private fun StatusKort(
     chipFarger: StatusChipFarger,
     locale: java.util.Locale,
     idag: LocalDate,
-    tidslinjeMarkorer: TidslinjeMarkorer?
+    tidslinjeMarkorer: TidslinjeMarkorer?,
 ) {
     val narmaste = narmasteFrist(kop, idag)
     val huvudText = when {
@@ -380,6 +381,8 @@ private fun KvittoBild(uri: Uri, onOppnaKvitto: () -> Unit) {
 @Composable
 private fun ReklamationsKort(kop: Kop, locale: java.util.Locale) {
     val reklamationSlutDatum = reklamationSlut(kop.kopdatum)
+    var expanderad by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = AppfabrikKortForm,
@@ -390,6 +393,7 @@ private fun ReklamationsKort(kop: Kop, locale: java.util.Locale) {
                 text = stringResource(R.string.detalj_reklamation_kort_rubrik),
                 style = MaterialTheme.typography.titleMedium,
             )
+
             if (reklamationSlutDatum != null) {
                 Text(
                     text = stringResource(
@@ -398,11 +402,28 @@ private fun ReklamationsKort(kop: Kop, locale: java.util.Locale) {
                     ),
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                Text(
-                    text = stringResource(R.string.detalj_reklamation_forklaring),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+
+                TextButton(
+                    onClick = { expanderad = !expanderad },
+                    modifier = Modifier.padding(top = 4.dp)
+                ) {
+                    Text(text = stringResource(R.string.detalj_reklamation_las_mer))
+                }
+                
+                AnimatedVisibility(visible = expanderad) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = stringResource(R.string.detalj_reklamation_forklaring),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                            text = stringResource(R.string.detalj_reklamation_vagledning),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
             } else if (kop.kopdatum.isBefore(KONSUMENTKOP_IKRAFT)) {
                 Text(
                     text = stringResource(R.string.detalj_reklamation_aldre_lag),
