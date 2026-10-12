@@ -26,3 +26,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*TidslinjeTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-12 (beraknaInSampleSize återställd, temafärger, canvasbredd, contentDescription)

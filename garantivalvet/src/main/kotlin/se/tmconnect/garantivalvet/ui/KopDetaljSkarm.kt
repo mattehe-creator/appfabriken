@@ -53,6 +53,7 @@ import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.regler.KONSUMENTKOP_IKRAFT
 import se.tmconnect.garantivalvet.regler.KopStatus
+import se.tmconnect.garantivalvet.regler.TidslinjeMarkorer
 import se.tmconnect.garantivalvet.regler.appfabrikStatusFran
 import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.garantivalvet.regler.formateraPrisKr
@@ -61,6 +62,7 @@ import se.tmconnect.garantivalvet.regler.NarmasteFristTyp
 import se.tmconnect.garantivalvet.regler.narmasteFrist
 import se.tmconnect.garantivalvet.regler.reklamationSlut
 import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
+import se.tmconnect.garantivalvet.regler.beraknaTidslinje
 import se.tmconnect.garantivalvet.regler.visaMedVersal
 import se.tmconnect.karna.tema.AppfabrikKortForm
 import se.tmconnect.karna.tema.StatusChipFarger
@@ -86,6 +88,7 @@ fun KopDetaljSkarm(
     val idag = LocalDate.now()
     val status = kopStatus(kop.kopdatum, kop.garantiManader, idag)
     val chipFarger = statusChipFarger(appfabrikStatusFran(status))
+    val tidslinjeMarkorer = beraknaTidslinje(kop.kopdatum, kop.garantiManader, idag)
 
     if (visaBekraftaTaBort) {
         AlertDialog(
@@ -199,6 +202,7 @@ fun KopDetaljSkarm(
                 chipFarger = chipFarger,
                 locale = locale,
                 idag = idag,
+                tidslinjeMarkorer = tidslinjeMarkorer
             )
 
             kvittoUri?.let { uri ->
@@ -242,6 +246,7 @@ private fun StatusKort(
     chipFarger: StatusChipFarger,
     locale: java.util.Locale,
     idag: LocalDate,
+    tidslinjeMarkorer: TidslinjeMarkorer?
 ) {
     val narmaste = narmasteFrist(kop, idag)
     val huvudText = when {
@@ -293,6 +298,11 @@ private fun StatusKort(
                     ),
                 )
             }
+
+            tidslinjeMarkorer?.let {
+                TidslinjeStapel(markorer = it, contentDescription = huvudText)
+            }
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
