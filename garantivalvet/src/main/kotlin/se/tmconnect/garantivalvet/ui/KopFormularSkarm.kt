@@ -56,6 +56,7 @@ import java.time.LocalDate
 import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.regler.FormularFel
 import se.tmconnect.garantivalvet.regler.GarantitidVal
+import se.tmconnect.garantivalvet.regler.ButikKontakt
 import se.tmconnect.garantivalvet.regler.KvittoForslag
 import se.tmconnect.garantivalvet.regler.Varutyp
 import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
@@ -78,6 +79,7 @@ fun KopFormularSkarm(
     initialKopdatum: LocalDate,
     initialOppetKop: Int? = null,
     initialVarutyp: String? = null,
+    initialKontakt: ButikKontakt = ButikKontakt(),
     lasInitialtKvitto: Boolean = false,
     onRotera: (medurs: Boolean) -> Unit = {},
     kvittoUri: Uri?,
@@ -93,6 +95,7 @@ fun KopFormularSkarm(
         anteckning: String?,
         oppetKopDagar: Int?,
         varutyp: String?,
+        kontakt: ButikKontakt,
     ) -> Unit,
     onStang: () -> Unit,
     modifier: Modifier = Modifier,
@@ -108,6 +111,11 @@ fun KopFormularSkarm(
     var forslagDatum by remember { mutableStateOf(false) }
     var forslagPris by remember { mutableStateOf(false) }
     var forslagOppetKop by remember { mutableStateOf(false) }
+    var epost by remember(initialKontakt) { mutableStateOf(initialKontakt.epost.orEmpty()) }
+    var telefon by remember(initialKontakt) { mutableStateOf(initialKontakt.telefon.orEmpty()) }
+    var orgnr by remember(initialKontakt) { mutableStateOf(initialKontakt.orgnr.orEmpty()) }
+    var forslagKontakt by remember { mutableStateOf(false) }
+    var visarKontakt by remember(initialKontakt) { mutableStateOf(!initialKontakt.arTom) }
 
     // Öppet köp: chips Inget / 14 / 30 / Annat (index 3, med fritt antal dagar).
     fun oppetKopIndexFor(dagar: Int?): Int = when (dagar) {
@@ -153,6 +161,11 @@ fun KopFormularSkarm(
                     kopdatum = if (forslagDatum) idag else kopdatum,
                     idag = idag,
                     oppetKopDagar = if (forslagOppetKop) null else nuvarandeOppetKop(),
+                    kontakt = if (forslagKontakt) {
+                        ButikKontakt()
+                    } else {
+                        ButikKontakt(epost.ifBlank { null }, telefon.ifBlank { null }, orgnr.ifBlank { null })
+                    },
                 )
                 forslagVaror = forslag.varor
                 if (ny.butikFranKvitto) {
@@ -166,6 +179,13 @@ fun KopFormularSkarm(
                 if (ny.datumFranKvitto) {
                     kopdatum = ny.kopdatum
                     forslagDatum = true
+                }
+                if (ny.kontaktFranKvitto) {
+                    epost = ny.kontakt.epost.orEmpty()
+                    telefon = ny.kontakt.telefon.orEmpty()
+                    orgnr = ny.kontakt.orgnr.orEmpty()
+                    forslagKontakt = true
+                    visarKontakt = true
                 }
                 if (ny.oppetKopFranKvitto) {
                     oppetKopIndex = oppetKopIndexFor(ny.oppetKopDagar)
@@ -252,6 +272,7 @@ fun KopFormularSkarm(
                 anteckning.takeIf { it.isNotBlank() },
                 nuvarandeOppetKop(),
                 varutyp?.name,
+                ButikKontakt(epost.ifBlank { null }, telefon.ifBlank { null }, orgnr.ifBlank { null }),
             )
         }
     }
@@ -355,6 +376,48 @@ fun KopFormularSkarm(
                 },
                 modifier = Modifier.fillMaxWidth(),
             )
+
+            TextButton(onClick = { visarKontakt = !visarKontakt }) {
+                Text(text = stringResource(R.string.falt_butik_kontakt))
+            }
+            if (visarKontakt) {
+                OutlinedTextField(
+                    value = epost,
+                    onValueChange = {
+                        epost = it
+                        forslagKontakt = false
+                    },
+                    label = { Text(text = stringResource(R.string.falt_butik_epost)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                OutlinedTextField(
+                    value = telefon,
+                    onValueChange = {
+                        telefon = it
+                        forslagKontakt = false
+                    },
+                    label = { Text(text = stringResource(R.string.falt_butik_telefon)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                OutlinedTextField(
+                    value = orgnr,
+                    onValueChange = {
+                        orgnr = it
+                        forslagKontakt = false
+                    },
+                    label = { Text(text = stringResource(R.string.falt_butik_orgnr)) },
+                    supportingText = {
+                        Text(
+                            text = stringResource(
+                                if (forslagKontakt) R.string.kvitto_forslag else R.string.butik_kontakt_hjalp,
+                            ),
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
 
             OutlinedTextField(
                 value = formateraDatum(kopdatum, locale),

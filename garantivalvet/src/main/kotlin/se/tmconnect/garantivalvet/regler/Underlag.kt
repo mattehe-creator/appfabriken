@@ -36,6 +36,9 @@ data class UnderlagEtiketter(
     val varutyp: String = "",
     val farskvara: String = "",
     val farskvaraText: String = "",
+    val butikEpost: String = "",
+    val butikTelefon: String = "",
+    val butikOrgnr: String = "",
     /** Visningsnamn per [Varutyp.name]. */
     val varutyper: Map<String, String> = emptyMap(),
 )
@@ -53,6 +56,16 @@ fun byggUnderlag(
 
     kop.varKopt?.takeIf { it.isNotBlank() }?.let { varKopt ->
         rader.add(UnderlagRad(etiketter.varKopt, varKopt))
+    }
+
+    kop.butikEpost?.takeIf { it.isNotBlank() && etiketter.butikEpost.isNotEmpty() }?.let {
+        rader.add(UnderlagRad(etiketter.butikEpost, it))
+    }
+    kop.butikTelefon?.takeIf { it.isNotBlank() && etiketter.butikTelefon.isNotEmpty() }?.let {
+        rader.add(UnderlagRad(etiketter.butikTelefon, it))
+    }
+    kop.butikOrgnr?.takeIf { it.isNotBlank() && etiketter.butikOrgnr.isNotEmpty() }?.let {
+        rader.add(UnderlagRad(etiketter.butikOrgnr, it))
     }
 
     rader.add(UnderlagRad(etiketter.kopdatum, formateraDatum(kop.kopdatum, locale)))

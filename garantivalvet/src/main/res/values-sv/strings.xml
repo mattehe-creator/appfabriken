@@ -228,4 +228,15 @@
     <string name="kvitto_rotera_hoger">Rotera höger</string>
     <string name="kvitto_las_igen">Läs av igen</string>
     <string name="kvitto_varu_forslag">Förslag från kvittot:</string>
+    <string name="falt_butik_kontakt">Butikens kontaktuppgifter (valfritt)</string>
+    <string name="falt_butik_epost">E-post</string>
+    <string name="falt_butik_telefon">Telefon</string>
+    <string name="falt_butik_orgnr">Organisationsnummer</string>
+    <string name="butik_kontakt_hjalp">Hämtas från kvittot när det går. Nummer som liknar personnummer sparas inte.</string>
+    <string name="detalj_butik_kontakt">Butikens kontakt</string>
+    <string name="mejla_butiken">Mejla butiken</string>
+    <string name="ring_butiken">Ring butiken</string>
+    <string name="underlag_butik_epost">Butikens e-post</string>
+    <string name="underlag_butik_telefon">Butikens telefon</string>
+    <string name="underlag_butik_orgnr">Butikens organisationsnummer</string>
 </resources>

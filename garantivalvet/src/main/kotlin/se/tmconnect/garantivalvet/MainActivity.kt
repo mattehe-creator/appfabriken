@@ -14,6 +14,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import se.tmconnect.garantivalvet.ocr.KvittoLasare
 import se.tmconnect.garantivalvet.ocr.MlKitKvittoLasare
+import se.tmconnect.garantivalvet.regler.ButikKontakt
 import se.tmconnect.garantivalvet.regler.KvittoForslag
 import se.tmconnect.garantivalvet.regler.Varutyp
 import se.tmconnect.garantivalvet.regler.arDelbartKvitto
@@ -341,6 +342,8 @@ class MainActivity : ComponentActivity() {
                                 onVisaProDialog = viewModel::visaProDialog,
                                 onReklamera = { viewModel.visaReklamera(kop.id) },
                                 onMarkeraReklamerad = viewModel::markeraReklamerad,
+                                onMejlaButik = { epost -> mejlaButik(epost) },
+                                onRingButik = { telefon -> ringButik(telefon) },
                             )
                         }
                     }
@@ -387,7 +390,7 @@ class MainActivity : ComponentActivity() {
                             },
                             onTaBortKvitto = viewModel::markeraKvittoForBorttagning,
                             lasKvitto = lasKvitto,
-                            onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning, oppetKopDagar, varutyp ->
+                            onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning, oppetKopDagar, varutyp, kontakt ->
                                 viewModel.sparaNyttKop(
                                     vad = vad,
                                     varKopt = varKopt,
@@ -397,6 +400,7 @@ class MainActivity : ComponentActivity() {
                                     anteckning = anteckning,
                                     oppetKopDagar = oppetKopDagar,
                                     varutyp = varutyp,
+                                    kontakt = kontakt,
                                 )
                             },
                             onStang = viewModel::visaLista,
@@ -427,6 +431,7 @@ class MainActivity : ComponentActivity() {
                                 initialKopdatum = kop.kopdatum,
                                 initialOppetKop = kop.oppetKopDagar,
                                 initialVarutyp = kop.varutyp,
+                                initialKontakt = ButikKontakt(kop.butikEpost, kop.butikTelefon, kop.butikOrgnr),
                                 onRotera = viewModel::roteraKvitto,
                                 kvittoUri = tillfalligtKvitto ?: viewModel.kvittoUriForFormular(kop),
                                 onValjBild = {
@@ -441,7 +446,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onTaBortKvitto = viewModel::markeraKvittoForBorttagning,
                                 lasKvitto = lasKvitto,
-                                onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning, oppetKopDagar, varutyp ->
+                                onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning, oppetKopDagar, varutyp, kontakt ->
                                     viewModel.uppdateraKop(
                                         kop.copy(
                                             vad = vad.trim(),
@@ -452,6 +457,9 @@ class MainActivity : ComponentActivity() {
                                             anteckning = anteckning?.trim()?.takeIf { it.isNotEmpty() },
                                             oppetKopDagar = giltigaOppetKopDagar(oppetKopDagar),
                                             varutyp = Varutyp.franNamn(varutyp)?.name,
+                                            butikEpost = kontakt.epost?.trim()?.takeIf { it.isNotEmpty() },
+                                            butikTelefon = kontakt.telefon?.trim()?.takeIf { it.isNotEmpty() },
+                                            butikOrgnr = kontakt.orgnr?.trim()?.takeIf { it.isNotEmpty() },
                                         ),
                                     )
                                 },
@@ -504,6 +512,9 @@ class MainActivity : ComponentActivity() {
         varutyp = getString(R.string.underlag_varutyp),
         farskvara = getString(R.string.underlag_farskvara),
         farskvaraText = getString(R.string.underlag_farskvara_text),
+        butikEpost = getString(R.string.underlag_butik_epost),
+        butikTelefon = getString(R.string.underlag_butik_telefon),
+        butikOrgnr = getString(R.string.underlag_butik_orgnr),
         varutyper = Varutyp.entries.associate { it.name to getString(varutypText(it)) },
     )
 
@@ -512,6 +523,7 @@ class MainActivity : ComponentActivity() {
         val kvittoUri = viewModel.sparatKvittoUri(kop)
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "message/rfc822"
+            kop.butikEpost?.takeIf { it.isNotBlank() }?.let { putExtra(Intent.EXTRA_EMAIL, arrayOf(it)) }
             putExtra(Intent.EXTRA_SUBJECT, amne)
             putExtra(Intent.EXTRA_TEXT, text)
             if (kvittoUri != null) {
@@ -524,6 +536,23 @@ class MainActivity : ComponentActivity() {
             startActivity(Intent.createChooser(intent, getString(R.string.reklamera_skicka_mejl)))
         } catch (_: android.content.ActivityNotFoundException) {
             android.widget.Toast.makeText(this, R.string.reklamera_inget_mejl, android.widget.Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun mejlaButik(epost: String) {
+        try {
+            startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + Uri.encode(epost))))
+        } catch (_: android.content.ActivityNotFoundException) {
+            android.widget.Toast.makeText(this, R.string.reklamera_inget_mejl, android.widget.Toast.LENGTH_LONG).show()
+        }
+    }
+
+    /** Öppnar uppringaren med numret ifyllt; användaren trycker själv på ring. Ingen behörighet behövs. */
+    private fun ringButik(telefon: String) {
+        val nummer = telefon.filter { it.isDigit() || it == '+' }
+        try {
+            startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$nummer")))
+        } catch (_: android.content.ActivityNotFoundException) {
         }
     }
 

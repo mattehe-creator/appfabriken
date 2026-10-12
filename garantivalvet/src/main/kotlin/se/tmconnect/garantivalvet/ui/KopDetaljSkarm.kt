@@ -94,6 +94,8 @@ fun KopDetaljSkarm(
     modifier: Modifier = Modifier,
     onReklamera: () -> Unit = {},
     onMarkeraReklamerad: (LocalDate?) -> Unit = {},
+    onMejlaButik: (String) -> Unit = {},
+    onRingButik: (String) -> Unit = {},
 ) {
     var visaBekraftaTaBort by remember { mutableStateOf(false) }
     var visaMeny by remember { mutableStateOf(false) }
@@ -209,6 +211,7 @@ fun KopDetaljSkarm(
             )
 
             ReklamationsLoggKort(kop = kop, locale = locale, onMarkeraReklamerad = onMarkeraReklamerad)
+            ButikKontaktKort(kop = kop, onMejla = onMejlaButik, onRing = onRingButik)
 
             kvittoUri?.let { uri ->
                 KvittoBild(uri = uri, onOppnaKvitto = onOppnaKvitto)
@@ -484,6 +487,33 @@ private fun ReklamationsLoggKort(
                 }
                 ReklamationsLogg.INGEN -> Unit
             }
+        }
+    }
+}
+
+/** Butikens kontaktuppgifter från kvittot, med knappar för att mejla eller ringa. Visas bara när något finns. */
+@Composable
+private fun ButikKontaktKort(kop: Kop, onMejla: (String) -> Unit, onRing: (String) -> Unit) {
+    val epost = kop.butikEpost?.takeIf { it.isNotBlank() }
+    val telefon = kop.butikTelefon?.takeIf { it.isNotBlank() }
+    val orgnr = kop.butikOrgnr?.takeIf { it.isNotBlank() }
+    if (epost == null && telefon == null && orgnr == null) return
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = AppfabrikKortForm,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+    ) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(text = stringResource(R.string.detalj_butik_kontakt), style = MaterialTheme.typography.titleMedium)
+            epost?.let {
+                DetaljRad(etikett = stringResource(R.string.falt_butik_epost), varde = it)
+                TextButton(onClick = { onMejla(it) }) { Text(text = stringResource(R.string.mejla_butiken)) }
+            }
+            telefon?.let {
+                DetaljRad(etikett = stringResource(R.string.falt_butik_telefon), varde = it)
+                TextButton(onClick = { onRing(it) }) { Text(text = stringResource(R.string.ring_butiken)) }
+            }
+            orgnr?.let { DetaljRad(etikett = stringResource(R.string.falt_butik_orgnr), varde = it) }
         }
     }
 }

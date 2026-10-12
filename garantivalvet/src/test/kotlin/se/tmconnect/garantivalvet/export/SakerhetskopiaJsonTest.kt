@@ -184,4 +184,26 @@ class SakerhetskopiaJsonTest {
         val las = lasSakerhetskopiaJson(skrivSakerhetskopiaJson(innehall)) as SakerhetskopiaJsonLasResult.Ok
         assertEquals(innehall, las.innehall)
     }
+
+    @Test
+    fun butikensKontaktGarRundtur() {
+        val innehall =
+            SakerhetskopiaInnehall(
+                version = 1,
+                skapad = "2026-10-12",
+                kop =
+                    listOf(
+                        SakerhetskopiaKop(
+                            vad = "Kabel",
+                            kopdatum = LocalDate.of(2026, 9, 1),
+                            garantiManader = 24,
+                            butikEpost = "kundtjanst@butik.se",
+                            butikTelefon = "077-520 00 00",
+                            butikOrgnr = "556297-3320",
+                        ),
+                    ),
+            )
+        val las = lasSakerhetskopiaJson(skrivSakerhetskopiaJson(innehall)) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals(innehall, las.innehall)
+    }
 }

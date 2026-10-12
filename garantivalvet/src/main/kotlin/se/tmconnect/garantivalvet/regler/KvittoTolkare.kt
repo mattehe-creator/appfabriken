@@ -11,9 +11,11 @@ data class KvittoForslag(
     val oppetKopDagar: Int? = null,
     /** Förslag på vad som köpts, ur kvittorader med belopp. */
     val varor: List<String> = emptyList(),
+    val kontakt: ButikKontakt = ButikKontakt(),
 ) {
     val arTomt: Boolean
-        get() = butik == null && datum == null && prisOre == null && oppetKopDagar == null && varor.isEmpty()
+        get() = butik == null && datum == null && prisOre == null && oppetKopDagar == null && varor.isEmpty() &&
+            kontakt.arTom
 }
 
 private val ISO_DATUM = Regex("""(?<!\d)(\d{4})[-./](\d{1,2})[-./](\d{1,2})(?!\d)""")
@@ -49,6 +51,7 @@ fun tolkaKvitto(text: String, idag: LocalDate): KvittoForslag {
         prisOre = hittaPris(rader),
         oppetKopDagar = tolkaOppetKop(text),
         varor = hittaVarorader(text),
+        kontakt = hittaButikKontakt(text),
     )
 }
 
@@ -201,6 +204,8 @@ data class Ifyllning(
     val datumFranKvitto: Boolean,
     val oppetKopDagar: Int? = null,
     val oppetKopFranKvitto: Boolean = false,
+    val kontakt: ButikKontakt = ButikKontakt(),
+    val kontaktFranKvitto: Boolean = false,
 )
 
 /**
@@ -214,11 +219,15 @@ fun fyllTommaFalt(
     kopdatum: LocalDate,
     idag: LocalDate,
     oppetKopDagar: Int? = null,
+    kontakt: ButikKontakt = ButikKontakt(),
 ): Ifyllning {
     val butik = forslag.butik?.takeIf { varKopt.isBlank() }
     val pris = forslag.prisOre?.takeIf { prisText.isBlank() }
     val datum = forslag.datum?.takeIf { kopdatum == idag && it != kopdatum }
     val oppetKop = forslag.oppetKopDagar?.takeIf { oppetKopDagar == null }
+    val epost = forslag.kontakt.epost?.takeIf { kontakt.epost.isNullOrBlank() }
+    val telefon = forslag.kontakt.telefon?.takeIf { kontakt.telefon.isNullOrBlank() }
+    val orgnr = forslag.kontakt.orgnr?.takeIf { kontakt.orgnr.isNullOrBlank() }
     return Ifyllning(
         varKopt = butik ?: varKopt,
         prisText = pris?.let { prisOreTillFaltText(it) } ?: prisText,
@@ -228,5 +237,7 @@ fun fyllTommaFalt(
         datumFranKvitto = datum != null,
         oppetKopDagar = oppetKop ?: oppetKopDagar,
         oppetKopFranKvitto = oppetKop != null,
+        kontakt = ButikKontakt(epost ?: kontakt.epost, telefon ?: kontakt.telefon, orgnr ?: kontakt.orgnr),
+        kontaktFranKvitto = epost != null || telefon != null || orgnr != null,
     )
 }
