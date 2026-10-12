@@ -232,9 +232,7 @@ fun KopFormularSkarm(
                 onValueChange = { prisText = it },
                 label = { Text(text = stringResource(R.string.falt_pris)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                trailingIcon = {
-                    Text(text = " kr")
-                },
+                suffix = { Text(text = stringResource(R.string.falt_pris_suffix)) },
                 modifier = Modifier.fillMaxWidth(),
             )
             if (FormularFel.PRIS_OGILTIGT in fel) {
