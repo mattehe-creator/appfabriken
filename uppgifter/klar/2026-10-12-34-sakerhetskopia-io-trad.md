@@ -32,3 +32,5 @@ gradle :garantivalvet:testDebugUnitTest
 - Ändra andra filer eller andra funktioner i `KopViewModel`.
 - Lägga till beroenden (`kotlinx.coroutines` finns redan).
 - Ändra strängar, databasschemat eller felmeddelandena.
+
+utfall: godkänd 2026-10-12 (återinförde withContext(Dispatchers.IO) som lokal modell tagit bort; la öppning av strömmar inuti IO-blocket)

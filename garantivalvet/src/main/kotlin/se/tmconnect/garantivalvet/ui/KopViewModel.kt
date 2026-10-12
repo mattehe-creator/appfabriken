@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import java.time.LocalDate
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import se.tmconnect.garantivalvet.data.InstallningarLager
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.data.KopRepository
@@ -324,9 +326,13 @@ class KopViewModel(
         viewModelScope.launch {
             try {
                 val kop = allaKopForExport()
-                val outputStream = appContext.contentResolver.openOutputStream(uri)
-                    ?: throw java.io.IOException()
-                Sakerhetskopia.skriv(outputStream, kop, kvittoLager)
+                withContext(Dispatchers.IO) {
+                    val outputStream = appContext.contentResolver.openOutputStream(uri)
+                        ?: throw java.io.IOException()
+                    outputStream.use {
+                        Sakerhetskopia.skriv(it, kop, kvittoLager)
+                    }
+                }
                 _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.Sparad
             } catch (_: Exception) {
                 _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.KundeInteLasas
@@ -340,9 +346,13 @@ class KopViewModel(
     fun lasInSakerhetskopia(uri: Uri) {
         viewModelScope.launch {
             try {
-                val inputStream = appContext.contentResolver.openInputStream(uri)
-                    ?: throw java.io.IOException()
-                val resultat = Sakerhetskopia.lasIn(inputStream)
+                val resultat = withContext(Dispatchers.IO) {
+                    val inputStream = appContext.contentResolver.openInputStream(uri)
+                        ?: throw java.io.IOException()
+                    inputStream.use { stream ->
+                        Sakerhetskopia.lasIn(stream)
+                    }
+                }
                 when (resultat) {
                     is SakerhetskopiaLasResult.Ok -> importeraSakerhetskopia(resultat)
                     SakerhetskopiaLasResult.Fel.OkandVersion -> {
@@ -364,10 +374,12 @@ class KopViewModel(
      */
     private suspend fun importeraSakerhetskopia(resultat: SakerhetskopiaLasResult.Ok) {
         try {
-            val importResultat = repository.importeraSakerhetskopia(
-                resultat.innehall,
-                resultat.kvittoFiler,
-            )
+            val importResultat = withContext(Dispatchers.IO) {
+                repository.importeraSakerhetskopia(
+                    resultat.innehall,
+                    resultat.kvittoFiler,
+                )
+            }
             val paminnelserPa = installningarLager.paminnelserPa.first()
             if (paminnelserPa) {
                 PaminnelsePlanerare.synka(appContext, true)
