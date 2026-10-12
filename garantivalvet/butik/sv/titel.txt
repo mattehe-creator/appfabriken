@@ -1,1 +1,3 @@
-Garantivalvet
+Garantivalvet````
+
+garantivalvet\butik\sv\kort.txt
