@@ -1,1 +1,3 @@
-Placeholder: the full English store description is written in task 33. The app stores purchases and receipts on device, shows warranty dates and informational text about Swedish consumer-claim periods (not legal advice), works offline with no ads or analytics, and offers a one-time Pro upgrade.
+Store your purchases and receipts offline with Warranty Vault. The app shows warranty dates and information about Swedish consumer claim periods (not legal advice) for purchases made in Sweden. It works completely offline with no internet permission, no accounts, no ads, and no analytics. All data stays on your device until you choose to export it.
+
+Free up to 15 purchases. The Pro upgrade (one-time purchase) unlocks unlimited purchases, PDF receipts, and backup.
