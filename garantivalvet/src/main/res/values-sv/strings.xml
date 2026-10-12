@@ -12,6 +12,7 @@
     <string name="falt_vad">Vad köpte du?</string>
     <string name="falt_var">Var (valfritt)</string>
     <string name="falt_garanti_manader">Garantitid (månader)</string>
+    <string name="falt_pris_suffix">kr</string>
     <string name="spara">Spara</string>
     <string name="avbryt">Avbryt</string>
     <string name="andra">Ändra</string>

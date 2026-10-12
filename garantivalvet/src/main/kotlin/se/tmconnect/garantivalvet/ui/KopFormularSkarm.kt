@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -50,6 +51,7 @@ import se.tmconnect.garantivalvet.regler.FormularFel
 import se.tmconnect.garantivalvet.regler.tolkaPrisTillOre
 import se.tmconnect.garantivalvet.regler.valideraKopFormular
 import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
+import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.karna.tema.AppfabrikKortForm
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -188,16 +190,21 @@ fun KopFormularSkarm(
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            Text(
-                text = stringResource(R.string.falt_datum),
-                style = MaterialTheme.typography.labelLarge,
-            )
-            Button(
-                onClick = { visarDatumvaljare = true },
+            OutlinedTextField(
+                value = formateraDatum(kopdatum),
+                onValueChange = { },
+                label = { Text(text = stringResource(R.string.falt_datum)) },
+                readOnly = true,
+                trailingIcon = {
+                    IconButton(onClick = { visarDatumvaljare = true }) {
+                        Icon(
+                            imageVector = Icons.Filled.DateRange,
+                            contentDescription = stringResource(R.string.falt_datum)
+                        )
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = kopdatum.toString())
-            }
+            )
             if (FormularFel.KOPDATUM_FRAMTID in fel) {
                 Text(
                     text = stringResource(R.string.fel_datum),
@@ -224,6 +231,10 @@ fun KopFormularSkarm(
                 value = prisText,
                 onValueChange = { prisText = it },
                 label = { Text(text = stringResource(R.string.falt_pris)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                trailingIcon = {
+                    Text(text = " kr")
+                },
                 modifier = Modifier.fillMaxWidth(),
             )
             if (FormularFel.PRIS_OGILTIGT in fel) {
