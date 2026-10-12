@@ -47,6 +47,7 @@ Följande lagras **på enheten** för appens funktion. Det ska **inte** markeras
 | Köpinformation (namn på sak, datum, pris, garantimånader, anteckningar) | Lista, påminnelser, PDF, export | Nej |
 | Valfri butiks-/plats-text (“var köpt”) | Visning i appen | Nej |
 | Kvitto-/foton | Kopplade till köp, visas i appen och kan ingå i export | Nej |
+| Kvittotext (OCR) | Avläses **på enheten** (ML Kit, medföljande modell) för att föreslå formulärfält; text sparas inte separat och skickas inte till utvecklaren | Nej |
 | Pro-status (köpt eller inte) | Låser upp funktioner | Nej (lagras lokalt; verifiering via Play) |
 
 **Motivering:** Room (`kop`-tabell), filer via `KvittoLager`, DataStore för inställningar och Pro-flagga.
