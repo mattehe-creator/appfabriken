@@ -20,6 +20,7 @@ import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
 import se.tmconnect.garantivalvet.export.Sakerhetskopia
+import se.tmconnect.garantivalvet.export.SakerhetskopiaLasResult
 import se.tmconnect.garantivalvet.paminnelse.PaminnelsePlanerare
 import se.tmconnect.garantivalvet.regler.kanLaggaTill
 import se.tmconnect.garantivalvet.regler.sorteraEfterNarmasteFrist
@@ -33,6 +34,8 @@ sealed class ExportPdfMeddelande {
 sealed class SakerhetskopiaMeddelande {
     data object Sparad : SakerhetskopiaMeddelande()
     data object KundeInteLasas : SakerhetskopiaMeddelande()
+    data class Importerad(val tillagda: Int, val hoppadeOver: Int) : SakerhetskopiaMeddelande()
+    data object NyareVersion : SakerhetskopiaMeddelande()
 }
 
 class KopViewModel(
@@ -327,6 +330,61 @@ class KopViewModel(
                     Sakerhetskopia.skriv(it, kop, kvittoLager)
                 }
                 _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.Sparad
+            } catch (_: Exception) {
+                _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.KundeInteLasas
+            }
+        }
+    }
+
+    /**
+     * Läser in säkerhetskopia från angiven URI
+     */
+    fun lasInSakerhetskopia(uri: Uri) {
+        viewModelScope.launch {
+            try {
+                val inputStream = appContext.contentResolver.openInputStream(uri)
+                    ?: throw java.io.IOException()
+                val resultat = Sakerhetskopia.lasIn(inputStream)
+                
+                when (resultat) {
+                    is SakerhetskopiaLasResult.Ok -> {
+                        importeraSakerhetskopia(resultat)
+                    }
+                    SakerhetskopiaLasResult.Fel.OkandVersion -> {
+                        _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.NyareVersion
+                    }
+                    SakerhetskopiaLasResult.Fel.TrasigFil,
+                    SakerhetskopiaLasResult.Fel.SaknarKopJson -> {
+                        _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.KundeInteLasas
+                    }
+                }
+            } catch (_: Exception) {
+                _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.KundeInteLasas
+            }
+        }
+    }
+
+    /**
+     * Importerar säkerhetskopia
+     */
+    private fun importeraSakerhetskopia(resultat: SakerhetskopiaLasResult.Ok) {
+        viewModelScope.launch {
+            try {
+                val importResultat = repository.importeraSakerhetskopia(
+                    resultat.innehall,
+                    resultat.kvittoFiler
+                )
+                
+                // Om påminnelser är aktiva, synka jobbet
+                val paminnelserPa = installningarLager.paminnelserPa.first()
+                if (paminnelserPa) {
+                    PaminnelsePlanerare.synka(appContext, true)
+                }
+                
+                _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.Importerad(
+                    tillagda = importResultat.tillagda,
+                    hoppadeOver = importResultat.hoppadeOver
+                )
             } catch (_: Exception) {
                 _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.KundeInteLasas
             }
