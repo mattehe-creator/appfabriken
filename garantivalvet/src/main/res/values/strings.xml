@@ -57,6 +57,7 @@
     <string name="kvitto_saknas">No receipt</string>
     <string name="kvitto_ta_bort">Remove receipt</string>
     <string name="kvitto_laser">Reading receipt…</string>
+    <string name="kvitto_inget_hittades">Couldn’t read anything useful from the receipt – please fill in the details yourself</string>
     <string name="kvitto_forslag">Suggested from the receipt – please check</string>
     <string name="kvitto_fornhandsvisning">Receipt preview</string>
     <string name="kvitto_har_kvitto">Has receipt</string>
