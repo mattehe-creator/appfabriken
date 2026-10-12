@@ -23,6 +23,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.github.takahirom.roborazzi.captureRoboImage
 import java.time.LocalDate
 import java.util.Locale
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -106,6 +107,64 @@ abstract class ButikSkarmbilderBas {
         }
         ShadowLooper.idleMainLooper()
         activity.window.decorView.captureRoboImage("butik/skarmbilder/${sprakKatalog()}/$filnamn")
+    }
+
+    private fun captureFunktionsgrafik() {
+        RuntimeEnvironment.setQualifiers(funktionsgrafikQualifiers())
+        val activity = Robolectric.buildActivity(ButikRoboActivity::class.java)
+            .setup()
+            .get()
+        activity.setContent {
+            AppfabrikTema(morkt = false) {
+                Box(
+                    modifier = Modifier
+                        .size(1024.dp, 500.dp)
+                        .background(AppfabrikFarger.LjusPrimar),
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    Column(modifier = Modifier.padding(horizontal = 64.dp)) {
+                        Text(
+                            text = stringResource(R.string.app_name),
+                            style = MaterialTheme.typography.displaySmall,
+                            color = Color.White,
+                        )
+                        Text(
+                            text = stringResource(R.string.pro_forklaring),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.White.copy(alpha = 0.92f),
+                            modifier = Modifier.padding(top = 12.dp),
+                        )
+                    }
+                }
+            }
+        }
+        ShadowLooper.idleMainLooper()
+        activity.window.decorView.captureRoboImage("butik/funktionsgrafik-${sprakKatalog()}.png")
+    }
+
+    protected abstract fun funktionsgrafikQualifiers(): String
+
+    @Test
+    fun skarmQualifiersLaddarRattSprak() {
+        RuntimeEnvironment.setQualifiers(skarmQualifiers())
+        val app = ApplicationProvider.getApplicationContext<Application>()
+        val appNamn = app.getString(R.string.app_name)
+        val laggTill = app.getString(R.string.lagg_till)
+        when (sprakKatalog()) {
+            "sv" -> {
+                assertEquals("Garantivalvet", appNamn)
+                assertEquals("Lägg till", laggTill)
+            }
+            "en" -> {
+                assertEquals("Warranty Vault", appNamn)
+                assertEquals("Add", laggTill)
+            }
+        }
+    }
+
+    @Test
+    fun funktionsgrafik() {
+        captureFunktionsgrafik()
     }
 
     @Test
@@ -198,7 +257,9 @@ class ButikSkarmbilderSvTest : ButikSkarmbilderBas() {
 
     override fun localeTag() = "sv-SE"
 
-    override fun skarmQualifiers() = "w360dp-h640dp-port-xxhdpi"
+    override fun skarmQualifiers() = "sv-rSE-w360dp-h640dp-port-xxhdpi"
+
+    override fun funktionsgrafikQualifiers() = "sv-rSE-w1024dp-h500dp-mdpi"
 }
 
 @Config(application = Application::class, sdk = [35])
@@ -207,7 +268,9 @@ class ButikSkarmbilderEnTest : ButikSkarmbilderBas() {
 
     override fun localeTag() = "en-GB"
 
-    override fun skarmQualifiers() = "w360dp-h640dp-port-xxhdpi"
+    override fun skarmQualifiers() = "en-rGB-w360dp-h640dp-port-xxhdpi"
+
+    override fun funktionsgrafikQualifiers() = "en-rGB-w1024dp-h500dp-mdpi"
 }
 
 @RunWith(RobolectricTestRunner::class)
@@ -215,40 +278,6 @@ class ButikSkarmbilderEnTest : ButikSkarmbilderBas() {
 @LooperMode(LooperMode.Mode.PAUSED)
 @Config(application = Application::class, sdk = [35])
 class ButikPlayTillgangarTest {
-    @Test
-    fun funktionsgrafik() {
-        RuntimeEnvironment.setQualifiers("w1024dp-h500dp-mdpi")
-        val activity = Robolectric.buildActivity(ButikRoboActivity::class.java)
-            .setup()
-            .get()
-        activity.setContent {
-            AppfabrikTema(morkt = false) {
-                Box(
-                    modifier = Modifier
-                        .size(1024.dp, 500.dp)
-                        .background(AppfabrikFarger.LjusPrimar),
-                    contentAlignment = Alignment.CenterStart,
-                ) {
-                    Column(modifier = Modifier.padding(horizontal = 64.dp)) {
-                        Text(
-                            text = stringResource(R.string.app_name),
-                            style = MaterialTheme.typography.displaySmall,
-                            color = Color.White,
-                        )
-                        Text(
-                            text = "Kvitton, garantier och reklamationsfrister – helt offline",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.White.copy(alpha = 0.92f),
-                            modifier = Modifier.padding(top = 12.dp),
-                        )
-                    }
-                }
-            }
-        }
-        ShadowLooper.idleMainLooper()
-        activity.window.decorView.captureRoboImage("butik/funktionsgrafik.png")
-    }
-
     @Test
     fun ikon512() {
         RuntimeEnvironment.setQualifiers("w512dp-h512dp-mdpi")

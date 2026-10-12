@@ -17,7 +17,8 @@ Teckengränser och URL-förbud kontrolleras av `ButikTexterTest`.
 |------------|---------|----------|
 | `skarmbilder/sv/` | 1080 × 1920 (porträtt) | Lista, detalj med reklamationsinfo, formulär, Pro-dialog |
 | `skarmbilder/en/` | 1080 × 1920 | Samma skärmar på engelska |
-| `funktionsgrafik.png` | 1024 × 500 | Appnamn och kort tagline i appens tema |
+| `funktionsgrafik-sv.png` | 1024 × 500 | Appnamn och kort rad på svenska (från strängresurser) |
+| `funktionsgrafik-en.png` | 1024 × 500 | Appnamn och kort rad på engelska |
 | `ikon-512.png` | 512 × 512 | Butiksikon renderad från launcher-grafik |
 
 Alla skärmbilder använder påhittade köp (t.ex. diskmaskin, mobiltelefon, cykel).
@@ -34,7 +35,7 @@ Kör från repots rot (kräver Android SDK enligt CI):
 ./gradlew :garantivalvet:recordRoborazziDebug
 ```
 
-Det kör Roborazzi-testerna i `:garantivalvet` och skriver PNG-filer till denna mapp (`butik/skarmbilder/`, plus `funktionsgrafik.png` och `ikon-512.png` i `butik/`).
+Det kör Roborazzi-testerna i `:garantivalvet` och skriver PNG-filer till denna mapp (`butik/skarmbilder/`, plus `funktionsgrafik-sv.png`, `funktionsgrafik-en.png` och `ikon-512.png` i `butik/`).
 
 Verifiera att bilderna är oförändade:
 
