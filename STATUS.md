@@ -20,8 +20,9 @@ Omfång i IDEURVAL.md.
 - Klart: reklamationsunderlag som PDF (Pro) och `allowBackup=false` (uppdrag `2026-10-11-export-pdf`, uppgift 22–25).
 - Klart: säkerhetskopia till fil och import (Pro), uppdrag `2026-10-11-export-sakerhetskopia`, uppgift 26–30 och 34.
 - Kvar i 1.0, i ordning:
-  1. Butiksmaterial i `garantivalvet/butik/`: texter, skärmbilder och Data safety-svar finns (#79–#90). Kvar: datum i enhetens språk och engelsk exempeldata i de engelska bilderna (uppdrag `2026-10-12-sprakformat-och-engelska-skarmbilder`).
-  2. Mattias provar på telefon.
+  1. Mattias provar på telefon (APK i releasen `senaste-main`). Fel han hittar blir nya uppdrag.
+- Klart: butiksmaterial i `garantivalvet/butik/` (texter, skärmbilder, Data safety) och datum/pris i enhetens språk (#79–#94).
+- Inget nytt uppdrag skrivs innan Mattias provat: högst en app i aktiv utveckling tills den första är publicerad (CLAUDE.md punkt 10).
 
 - Mätaren i panelen (procent klart, beräknat releasedatum, tokens) styrs av `release.json`. Claude uppdaterar den när ett steg ändras.
 
