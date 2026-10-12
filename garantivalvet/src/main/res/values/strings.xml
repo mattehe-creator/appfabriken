@@ -12,6 +12,10 @@
     <string name="falt_vad">What did you buy?</string>
     <string name="falt_var">Where (optional)</string>
     <string name="falt_garanti_manader">Warranty (months)</string>
+    <string name="garanti_chip_12">12 mo</string>
+    <string name="garanti_chip_24">24 mo</string>
+    <string name="garanti_chip_36">36 mo</string>
+    <string name="garanti_chip_annat">Other</string>
     <string name="falt_pris_suffix">kr</string>
     <string name="spara">Save</string>
     <string name="avbryt">Cancel</string>

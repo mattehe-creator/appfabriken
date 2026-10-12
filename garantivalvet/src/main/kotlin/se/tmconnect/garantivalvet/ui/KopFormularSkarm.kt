@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Card
@@ -35,6 +36,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.regler.FormularFel
+import se.tmconnect.garantivalvet.regler.GarantitidVal
 import se.tmconnect.garantivalvet.regler.tolkaPrisTillOre
 import se.tmconnect.garantivalvet.regler.valideraKopFormular
 import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
@@ -74,7 +77,6 @@ fun KopFormularSkarm(
 ) {
     var vad by remember(initialVad) { mutableStateOf(initialVad) }
     var varKopt by remember(initialVar) { mutableStateOf(initialVar) }
-    var garantiManader by remember(initialGarantiManader) { mutableStateOf(initialGarantiManader) }
     var prisText by remember(initialPris) { mutableStateOf(initialPris ?: "") }
     var anteckning by remember(initialAnteckning) { mutableStateOf(initialAnteckning ?: "") }
     var kopdatum by remember(initialKopdatum) { mutableStateOf(initialKopdatum) }
@@ -85,6 +87,25 @@ fun KopFormularSkarm(
     )
 
     var fel by remember { mutableStateOf<List<FormularFel>>(emptyList()) }
+
+    val chipManader = GarantitidVal.CHIP_MANADER
+    var valdChipIndex by remember(initialGarantiManader) {
+        mutableIntStateOf(
+            when (val parsed = initialGarantiManader.trim().toIntOrNull()) {
+                in chipManader -> chipManader.indexOf(parsed)
+                null -> chipManader.indexOf(GarantitidVal.FORVALD_MANADER)
+                else -> 3
+            },
+        )
+    }
+    var annatText by remember(initialGarantiManader) {
+        mutableStateOf(
+            when (val parsed = initialGarantiManader.trim().toIntOrNull()) {
+                in chipManader -> ""
+                else -> initialGarantiManader.trim()
+            },
+        )
+    }
 
     if (visarDatumvaljare) {
         DatePickerDialog(
@@ -113,20 +134,21 @@ fun KopFormularSkarm(
 
     fun spara() {
         val idag = LocalDate.now()
+        val garantiManader = GarantitidVal.manaderFranVal(valdChipIndex, annatText)
         fel = valideraKopFormular(
             vad,
-            garantiManader.trim().toIntOrNull() ?: -1,
+            garantiManader ?: -1,
             kopdatum,
             idag,
             prisText,
         )
-        if (fel.isEmpty()) {
+        if (fel.isEmpty() && garantiManader != null) {
             val prisOre = tolkaPrisTillOre(prisText)
             onSpara(
                 vad,
                 varKopt.takeIf { it.isNotBlank() },
                 kopdatum,
-                garantiManader.trim().toInt(),
+                garantiManader,
                 prisOre,
                 anteckning.takeIf { it.isNotBlank() },
             )
@@ -212,14 +234,52 @@ fun KopFormularSkarm(
                 )
             }
 
-            OutlinedTextField(
-                value = garantiManader,
-                onValueChange = { garantiManader = it },
-                label = { Text(text = stringResource(R.string.falt_garanti_manader)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                isError = FormularFel.GARANTI_OGILTIG in fel,
-                modifier = Modifier.fillMaxWidth(),
+            Text(
+                text = stringResource(R.string.falt_garanti_manader),
+                style = MaterialTheme.typography.labelLarge,
             )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                chipManader.forEachIndexed { index, manader ->
+                    FilterChip(
+                        selected = valdChipIndex == index,
+                        onClick = {
+                            valdChipIndex = index
+                            annatText = ""
+                        },
+                        label = {
+                            Text(
+                                text = stringResource(
+                                    when (manader) {
+                                        12 -> R.string.garanti_chip_12
+                                        24 -> R.string.garanti_chip_24
+                                        else -> R.string.garanti_chip_36
+                                    },
+                                ),
+                            )
+                        },
+                    )
+                }
+                FilterChip(
+                    selected = valdChipIndex == 3,
+                    onClick = {
+                        valdChipIndex = 3
+                        annatText = ""
+                    },
+                    label = { Text(text = stringResource(R.string.garanti_chip_annat)) },
+                )
+            }
+            if (valdChipIndex == 3) {
+                OutlinedTextField(
+                    value = annatText,
+                    onValueChange = { annatText = it },
+                    label = { Text(text = stringResource(R.string.falt_garanti_manader)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
             if (FormularFel.GARANTI_OGILTIG in fel) {
                 Text(
                     text = stringResource(R.string.fel_garanti),
