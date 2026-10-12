@@ -5,18 +5,27 @@ import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -41,6 +50,7 @@ import se.tmconnect.garantivalvet.regler.FormularFel
 import se.tmconnect.garantivalvet.regler.tolkaPrisTillOre
 import se.tmconnect.garantivalvet.regler.valideraKopFormular
 import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
+import se.tmconnect.karna.tema.AppfabrikKortForm
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +67,7 @@ fun KopFormularSkarm(
     onTaFoto: () -> Unit,
     onTaBortKvitto: () -> Unit,
     onSpara: (vad: String, varKopt: String?, kopdatum: LocalDate, garantiManader: Int, prisOre: Long?, anteckning: String?) -> Unit,
-    onAvbryt: () -> Unit,
+    onStang: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var vad by remember(initialVad) { mutableStateOf(initialVad) }
@@ -66,44 +76,80 @@ fun KopFormularSkarm(
     var prisText by remember(initialPris) { mutableStateOf(initialPris ?: "") }
     var anteckning by remember(initialAnteckning) { mutableStateOf(initialAnteckning ?: "") }
     var kopdatum by remember(initialKopdatum) { mutableStateOf(initialKopdatum) }
-    
-    var visarDatumväljare by remember { mutableStateOf(false) }
-    val datumVäljare = rememberDatePickerState(
-        initialSelectedDateMillis = kopdatum.toEpochDay() * 86400000
+
+    var visarDatumvaljare by remember { mutableStateOf(false) }
+    val datumValjare = rememberDatePickerState(
+        initialSelectedDateMillis = kopdatum.toEpochDay() * 86_400_000,
     )
-    
-    // Valideringsfel
+
     var fel by remember { mutableStateOf<List<FormularFel>>(emptyList()) }
-    
-    if (visarDatumväljare) {
+
+    if (visarDatumvaljare) {
         DatePickerDialog(
-            onDismissRequest = { visarDatumväljare = false },
+            onDismissRequest = { visarDatumvaljare = false },
             confirmButton = {
                 Button(
                     onClick = {
-                        datumVäljare.selectedDateMillis?.let { millis ->
-                            kopdatum = LocalDate.ofEpochDay(millis / 86400000)
+                        datumValjare.selectedDateMillis?.let { millis ->
+                            kopdatum = LocalDate.ofEpochDay(millis / 86_400_000)
                         }
-                        visarDatumväljare = false
-                    }
+                        visarDatumvaljare = false
+                    },
                 ) {
                     Text(text = stringResource(R.string.spara))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { visarDatumväljare = false }) {
+                TextButton(onClick = { visarDatumvaljare = false }) {
                     Text(text = stringResource(R.string.avbryt))
                 }
-            }
+            },
         ) {
-            DatePicker(state = datumVäljare)
+            DatePicker(state = datumValjare)
         }
     }
-    
+
+    fun spara() {
+        val idag = LocalDate.now()
+        fel = valideraKopFormular(
+            vad,
+            garantiManader.trim().toIntOrNull() ?: -1,
+            kopdatum,
+            idag,
+            prisText,
+        )
+        if (fel.isEmpty()) {
+            val prisOre = tolkaPrisTillOre(prisText)
+            onSpara(
+                vad,
+                varKopt.takeIf { it.isNotBlank() },
+                kopdatum,
+                garantiManader.trim().toInt(),
+                prisOre,
+                anteckning.takeIf { it.isNotBlank() },
+            )
+        }
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(title = { Text(text = titel) })
+            TopAppBar(
+                title = { Text(text = titel) },
+                navigationIcon = {
+                    IconButton(onClick = onStang) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = stringResource(R.string.stang),
+                        )
+                    }
+                },
+                actions = {
+                    TextButton(onClick = { spara() }) {
+                        Text(text = stringResource(R.string.spara))
+                    }
+                },
+            )
         },
     ) { innerPadding ->
         Column(
@@ -114,7 +160,13 @@ fun KopFormularSkarm(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            // Fält: vad
+            KvittoKort(
+                kvittoUri = kvittoUri,
+                onValjBild = onValjBild,
+                onTaFoto = onTaFoto,
+                onTaBortKvitto = onTaBortKvitto,
+            )
+
             OutlinedTextField(
                 value = vad,
                 onValueChange = { vad = it },
@@ -125,37 +177,34 @@ fun KopFormularSkarm(
             if (FormularFel.VAD_SAKNAS in fel) {
                 Text(
                     text = stringResource(R.string.fel_vad_saknas),
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
-            
-            // Fält: var (valfritt)
+
             OutlinedTextField(
                 value = varKopt,
                 onValueChange = { varKopt = it },
                 label = { Text(text = stringResource(R.string.falt_var)) },
                 modifier = Modifier.fillMaxWidth(),
             )
-            
-            // Fält: köpdatum
+
             Text(
                 text = stringResource(R.string.falt_datum),
-                modifier = Modifier.padding(top = 8.dp)
+                style = MaterialTheme.typography.labelLarge,
             )
             Button(
-                onClick = { visarDatumväljare = true },
-                modifier = Modifier.fillMaxWidth()
+                onClick = { visarDatumvaljare = true },
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = kopdatum.toString())
             }
             if (FormularFel.KOPDATUM_FRAMTID in fel) {
                 Text(
                     text = stringResource(R.string.fel_datum),
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
-            
-            // Fält: garantitid i månader
+
             OutlinedTextField(
                 value = garantiManader,
                 onValueChange = { garantiManader = it },
@@ -167,11 +216,10 @@ fun KopFormularSkarm(
             if (FormularFel.GARANTI_OGILTIG in fel) {
                 Text(
                     text = stringResource(R.string.fel_garanti),
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
-            
-            // Fält: pris (valfritt)
+
             OutlinedTextField(
                 value = prisText,
                 onValueChange = { prisText = it },
@@ -181,110 +229,93 @@ fun KopFormularSkarm(
             if (FormularFel.PRIS_OGILTIGT in fel) {
                 Text(
                     text = stringResource(R.string.fel_pris),
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
-            
-            // Fält: anteckning (valfritt)
+
             OutlinedTextField(
                 value = anteckning,
                 onValueChange = { anteckning = it },
                 label = { Text(text = stringResource(R.string.falt_anteckning)) },
                 modifier = Modifier.fillMaxWidth(),
             )
-            
-            // Kvittoknappar
-            val context = LocalContext.current
+        }
+    }
+}
+
+@Composable
+private fun KvittoKort(
+    kvittoUri: Uri?,
+    onValjBild: () -> Unit,
+    onTaFoto: () -> Unit,
+    onTaBortKvitto: () -> Unit,
+) {
+    val context = LocalContext.current
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = AppfabrikKortForm,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
             if (kvittoUri != null) {
-                // Förhandsvisning av kvitto
                 val bitmap = remember(kvittoUri) {
                     try {
-                        // Läs först måtten utan att ladda hela bilden
-                        val options = BitmapFactory.Options().apply {
-                            inJustDecodeBounds = true
+                        val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                        context.contentResolver.openInputStream(kvittoUri)?.use {
+                            BitmapFactory.decodeStream(it, null, options)
                         }
-                        
-                        context.contentResolver.openInputStream(kvittoUri)?.use { input ->
-                            BitmapFactory.decodeStream(input, null, options)
-                        }
-                        
-                        // Beräkna inSampleSize baserat på storlek (max 480 px på längsta sidan)
                         val sampleSize = beraknaInSampleSize(options.outWidth, options.outHeight, maxSida = 480)
-                        
-                        // Läs bilden med rätt inSampleSize
                         context.contentResolver.openInputStream(kvittoUri)?.use { input ->
-                            val decodeOptions = BitmapFactory.Options().apply {
-                                inSampleSize = sampleSize
-                            }
-                            BitmapFactory.decodeStream(input, null, decodeOptions)
+                            BitmapFactory.decodeStream(
+                                input,
+                                null,
+                                BitmapFactory.Options().apply { inSampleSize = sampleSize },
+                            )
                         }
                     } catch (_: Exception) {
                         null
                     }
                 }
-                
                 if (bitmap != null) {
                     Image(
                         bitmap = bitmap.asImageBitmap(),
                         contentDescription = stringResource(R.string.kvitto_fornhandsvisning),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(120.dp),
-                        contentScale = ContentScale.Crop
+                            .height(160.dp),
+                        contentScale = ContentScale.Crop,
                     )
                 }
-                
-                // Knapp: ta bort kvitto
-                Button(
-                    onClick = onTaBortKvitto,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(text = stringResource(R.string.kvitto_ta_bort))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(onClick = onValjBild, modifier = Modifier.weight(1f)) {
+                        Text(text = stringResource(R.string.kvitto_byt))
+                    }
+                    OutlinedButton(onClick = onTaBortKvitto, modifier = Modifier.weight(1f)) {
+                        Text(text = stringResource(R.string.kvitto_ta_bort))
+                    }
                 }
             } else {
-                // Knappar: välj bild och ta foto
-                Button(
-                    onClick = onValjBild,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(text = stringResource(R.string.kvitto_valj_bild))
-                }
-                
-                Button(
-                    onClick = onTaFoto,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(text = stringResource(R.string.kvitto_ta_foto))
-                }
-            }
-            
-            // Knapp: spara
-            Button(
-                onClick = {
-                    // Validera formuläret
-                    val idag = LocalDate.now()
-                    fel = valideraKopFormular(vad, garantiManader.trim().toIntOrNull() ?: -1, kopdatum, idag, prisText)
-                    
-                    if (fel.isEmpty()) {
-                        val prisOre = tolkaPrisTillOre(prisText)
-                        onSpara(
-                            vad,
-                            varKopt.takeIf { it.isNotBlank() },
-                            kopdatum,
-                            garantiManader.trim().toInt(),
-                            prisOre,
-                            anteckning.takeIf { it.isNotBlank() },
-                        )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(
+                        onClick = onTaFoto,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp),
+                    ) {
+                        Text(text = stringResource(R.string.kvitto_fotografera))
                     }
-                },
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(R.string.spara))
-            }
-            
-            // Knapp: avbryt
-            TextButton(onClick = onAvbryt, modifier = Modifier.fillMaxWidth()) {
-                Text(text = stringResource(R.string.avbryt))
+                    OutlinedButton(
+                        onClick = onValjBild,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp),
+                    ) {
+                        Text(text = stringResource(R.string.kvitto_valj_bild))
+                    }
+                }
             }
         }
     }

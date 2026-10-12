@@ -40,6 +40,7 @@ import org.robolectric.annotation.LooperMode
 import org.robolectric.shadows.ShadowLooper
 import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
+import se.tmconnect.garantivalvet.ui.InstallningarSkarm
 import se.tmconnect.garantivalvet.ui.KopDetaljSkarm
 import se.tmconnect.garantivalvet.ui.KopFormularSkarm
 import se.tmconnect.garantivalvet.ui.KopListaSkarm
@@ -59,13 +60,10 @@ class ButikRoboActivity : ComponentActivity()
 abstract class ButikSkarmbilderBas {
     protected abstract fun sprakKatalog(): String
 
-    protected abstract fun localeTag(): String
-
     protected abstract fun skarmQualifiers(): String
 
     @Before
     fun ställInSprak() {
-        // Använd endast qualifiers för att sätta rätt språk och skärmstorlek
         RuntimeEnvironment.setQualifiers(skarmQualifiers())
     }
 
@@ -138,15 +136,15 @@ abstract class ButikSkarmbilderBas {
         RuntimeEnvironment.setQualifiers(skarmQualifiers())
         val app = ApplicationProvider.getApplicationContext<Application>()
         val appNamn = app.getString(R.string.app_name)
-        val laggTill = app.getString(R.string.lagg_till)
+        val fab = app.getString(R.string.fab_nytt_kvitto)
         when (sprakKatalog()) {
             "sv" -> {
                 assertEquals("Garantivalvet", appNamn)
-                assertEquals("Lägg till", laggTill)
+                assertEquals("Nytt kvitto", fab)
             }
             "en" -> {
                 assertEquals("Warranty Vault", appNamn)
-                assertEquals("Add", laggTill)
+                assertEquals("New receipt", fab)
             }
         }
     }
@@ -161,15 +159,10 @@ abstract class ButikSkarmbilderBas {
         captureSkarm("01-lista.png") {
             KopListaSkarm(
                 kopLista = exempelLista(),
+                kvittoUriFor = { null },
                 onLaggTill = noOp,
                 onOppna = {},
-                paminnelserPa = true,
-                onPaminnelserAndras = {},
-                behorighetNekad = false,
-                arPro = false,
-                onVisaProDialog = noOp,
-                onSparaSakerhetskopia = noOp,
-                onHamtaSakerhetskopia = noOp,
+                onOppnaInstallningar = noOp,
             )
         }
     }
@@ -186,10 +179,7 @@ abstract class ButikSkarmbilderBas {
                 onTillbaka = noOp,
                 arPro = false,
                 onExportPdf = noOp,
-                onDelaPdf = noOp,
                 onVisaProDialog = noOp,
-                exportPdfMeddelande = null,
-                onExportMeddelandeVisat = noOp,
             )
         }
     }
@@ -211,7 +201,7 @@ abstract class ButikSkarmbilderBas {
                 onTaFoto = noOp,
                 onTaBortKvitto = noOp,
                 onSpara = { _, _, _, _, _, _ -> },
-                onAvbryt = noOp,
+                onStang = noOp,
             )
         }
     }
@@ -221,8 +211,22 @@ abstract class ButikSkarmbilderBas {
         captureSkarm("04-pro-dialog.png", helSkarm = true) {
             KopListaSkarm(
                 kopLista = exempelLista(),
+                kvittoUriFor = { null },
                 onLaggTill = noOp,
                 onOppna = {},
+                onOppnaInstallningar = noOp,
+            )
+            ProDialog(
+                onDismiss = noOp,
+                onKopPro = {},
+            )
+        }
+    }
+
+    @Test
+    fun installningar() {
+        captureSkarm("05-installningar.png") {
+            InstallningarSkarm(
                 paminnelserPa = true,
                 onPaminnelserAndras = {},
                 behorighetNekad = false,
@@ -230,10 +234,7 @@ abstract class ButikSkarmbilderBas {
                 onVisaProDialog = noOp,
                 onSparaSakerhetskopia = noOp,
                 onHamtaSakerhetskopia = noOp,
-            )
-            ProDialog(
-                onDismiss = noOp,
-                onKopPro = {},
+                onTillbaka = noOp,
             )
         }
     }
@@ -254,12 +255,10 @@ abstract class ButikSkarmbilderBas {
 class ButikSkarmbilderSvTest : ButikSkarmbilderBas() {
     override fun sprakKatalog() = "sv"
 
-    override fun localeTag() = "sv-SE"
-
     override fun skarmQualifiers() = "sv-rSE-w360dp-h640dp-port-xxhdpi"
 
     override fun funktionsgrafikQualifiers() = "sv-rSE-w1024dp-h500dp-mdpi"
-    
+
     override fun exempelLista(): List<Kop> {
         return listOf(
             Kop(
@@ -286,25 +285,19 @@ class ButikSkarmbilderSvTest : ButikSkarmbilderBas() {
         )
     }
 
-    override fun exempelDetalj(): Kop {
-        return exempelLista()[0]
-    }
+    override fun exempelDetalj(): Kop = exempelLista()[0]
 
-    override fun exempelFormular(): Kop {
-        return exempelLista()[0]
-    }
+    override fun exempelFormular(): Kop = exempelLista()[0]
 }
 
 @Config(application = Application::class, sdk = [35])
 class ButikSkarmbilderEnTest : ButikSkarmbilderBas() {
     override fun sprakKatalog() = "en"
 
-    override fun localeTag() = "en-GB"
-
     override fun skarmQualifiers() = "en-rGB-w360dp-h640dp-port-xxhdpi"
 
     override fun funktionsgrafikQualifiers() = "en-rGB-w1024dp-h500dp-mdpi"
-    
+
     override fun exempelLista(): List<Kop> {
         return listOf(
             Kop(
@@ -331,13 +324,9 @@ class ButikSkarmbilderEnTest : ButikSkarmbilderBas() {
         )
     }
 
-    override fun exempelDetalj(): Kop {
-        return exempelLista()[0]
-    }
+    override fun exempelDetalj(): Kop = exempelLista()[0]
 
-    override fun exempelFormular(): Kop {
-        return exempelLista()[0]
-    }
+    override fun exempelFormular(): Kop = exempelLista()[0]
 }
 
 @RunWith(RobolectricTestRunner::class)

@@ -2,6 +2,10 @@
 <resources>
     <string name="app_name">Warranty Vault</string>
     <string name="tom_lista">No purchases yet. Add your first receipt to keep track of warranties and return deadlines.</string>
+    <string name="tom_lista_rubrik">Save your first receipt</string>
+    <string name="tom_lista_beskrivning">The app tracks your warranty and three-year right to claim faults, and reminds you before time runs out.</string>
+    <string name="tom_lista_knapp">Add receipt</string>
+    <string name="fab_nytt_kvitto">New receipt</string>
     <string name="lagg_till">Add</string>
     <string name="lagg_till_titel">Add purchase</string>
     <string name="andra_titel">Edit purchase</string>
@@ -19,6 +23,11 @@
     <string name="status_utgangen">Expired</string>
     <string name="status_reklamation_galler">Consumer claim period active</string>
     <string name="lista_garanti_slut">Warranty ends %1$s</string>
+    <string name="lista_garanti_till">Warranty until %1$s</string>
+    <string name="lista_reklamation_till">Right to claim until %1$s</string>
+    <string name="lista_grupp_snart">Ending soon</string>
+    <string name="lista_grupp_galler">Active</string>
+    <string name="lista_grupp_utgangna">Expired</string>
     
     <!-- Formulär -->
     <string name="falt_datum">Purchase date</string>
@@ -38,6 +47,9 @@
     <!-- Kvittofunktioner -->
     <string name="kvitto_valj_bild">Choose image</string>
     <string name="kvitto_ta_foto">Take photo</string>
+    <string name="kvitto_fotografera">Take photo</string>
+    <string name="kvitto_byt">Replace</string>
+    <string name="kvitto_saknas">No receipt</string>
     <string name="kvitto_ta_bort">Remove receipt</string>
     <string name="kvitto_fornhandsvisning">Receipt preview</string>
     <string name="kvitto_har_kvitto">Has receipt</string>
@@ -60,6 +72,8 @@
     <!-- Reklamationsrätt -->
     <string name="detalj_reklamation_till">Right to claim until %1$s</string>
     <string name="detalj_reklamation_rubrik">Right to claim faults</string>
+    <string name="detalj_reklamation_kort_rubrik">Your right to claim faults</string>
+    <string name="detalj_reklamation_las_mer">Read more</string>
     <string name="detalj_reklamation_forklaring">You can claim faults that appear within three years of purchase. Faults that appear within two years are presumed to have existed at purchase. Counted from the purchase date and applies to goods bought from a business.</string>
     <string name="detalj_reklamation_vagledning">This information is for guidance only and does not constitute legal advice.</string>
     <string name="detalj_reklamation_aldre_lag">Purchases before May 1, 2022 are subject to older rules.</string>
@@ -72,6 +86,10 @@
     <string name="pro_kop_misslyckades">The purchase could not be completed. Try again.</string>
     <string name="pro_grans_nadd">Limit reached: 15 purchases</string>
     <string name="pro_inte_nu">Not now</string>
+    <string name="pro_inte_aktiv">Not purchased</string>
+    <string name="pro_app_rubrik">Warranty Vault Pro</string>
+    <string name="pro_mark">Pro</string>
+    <string name="pro_kvar_gratis">%1$d receipts left in the free version</string>
     <string name="debug_pro_testlage">Test mode: Pro</string>
     
     <!-- PDF Export -->
@@ -90,7 +108,7 @@
     <string name="underlag_status_utgangen">Claim period expired</string>
     <string name="underlag_anteckning">Notes</string>
     <string name="underlag_skapad">Document created</string>
-    <string name="export_pdf">Export PDF</string>
+    <string name="export_pdf">Create claim document</string>
     <string name="export_dela">Share</string>
     <string name="export_pdf_sparad">PDF saved</string>
     <string name="export_pdf_misslyckades">Could not create PDF</string>
@@ -105,4 +123,9 @@
     <string name="sakerhetskopia_importerad">Imported %1$d purchases, skipped %2$d</string>
     <string name="sakerhetskopia_kunde_inte_lasas">Could not read the file</string>
     <string name="sakerhetskopia_nyare_version">The file is from a newer version of the app</string>
+
+    <string name="installningar_rubrik">Settings</string>
+    <string name="tillbaka">Back</string>
+    <string name="stang">Close</string>
+    <string name="mer_meny">More options</string>
 </resources>

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,10 +40,12 @@ import se.tmconnect.garantivalvet.export.reklamationsPdfFilnamn
 import se.tmconnect.garantivalvet.export.skrivUnderlagTillPdf
 import se.tmconnect.garantivalvet.export.sakerhetskopiaFilnamn
 import se.tmconnect.garantivalvet.paminnelse.PaminnelseWorker
+import se.tmconnect.garantivalvet.pro.ProKallaSkapare
 import se.tmconnect.garantivalvet.regler.UnderlagEtiketter
 import se.tmconnect.garantivalvet.regler.byggUnderlag
-import se.tmconnect.garantivalvet.pro.ProKallaSkapare
+import se.tmconnect.garantivalvet.ui.ExportPdfMeddelande
 import se.tmconnect.garantivalvet.ui.GarantivalvetDebugInstallningar
+import se.tmconnect.garantivalvet.ui.InstallningarSkarm
 import se.tmconnect.garantivalvet.ui.KopDetaljSkarm
 import se.tmconnect.garantivalvet.ui.KopFormularSkarm
 import se.tmconnect.garantivalvet.ui.KopListaSkarm
@@ -215,6 +218,24 @@ class MainActivity : ComponentActivity() {
                 val sakerhetskopiaMeddelande by viewModel.sakerhetskopiaMeddelande.collectAsState()
                 val snackbarHostState = remember { SnackbarHostState() }
 
+                exportPdfMeddelande?.let { meddelande ->
+                    val text = when (meddelande) {
+                        ExportPdfMeddelande.Sparad -> stringResource(R.string.export_pdf_sparad)
+                        ExportPdfMeddelande.Misslyckades -> stringResource(R.string.export_pdf_misslyckades)
+                    }
+                    val delaLabel = stringResource(R.string.export_dela)
+                    LaunchedEffect(meddelande) {
+                        val result = snackbarHostState.showSnackbar(
+                            message = text,
+                            actionLabel = if (meddelande == ExportPdfMeddelande.Sparad) delaLabel else null,
+                        )
+                        if (result == SnackbarResult.ActionPerformed) {
+                            exportKop?.let { delaPdfForKop(it) }
+                        }
+                        viewModel.rensaExportMeddelande()
+                    }
+                }
+
                 sakerhetskopiaMeddelande?.let { meddelande ->
                     val text = when (meddelande) {
                         SakerhetskopiaMeddelande.Sparad ->
@@ -242,6 +263,7 @@ class MainActivity : ComponentActivity() {
                     KopSkarm.Lista -> {
                         KopListaSkarm(
                             kopLista = kopLista,
+                            kvittoUriFor = { kop -> viewModel.sparatKvittoUri(kop) },
                             onLaggTill = {
                                 if (viewModel.kanLaggaTillNy()) {
                                     viewModel.visaLaggTill()
@@ -250,18 +272,21 @@ class MainActivity : ComponentActivity() {
                                 }
                             },
                             onOppna = viewModel::visaDetalj,
+                            onOppnaInstallningar = viewModel::visaInstallningar,
+                        )
+                    }
+
+                    KopSkarm.Installningar -> {
+                        InstallningarSkarm(
                             paminnelserPa = paminnelserPa,
                             onPaminnelserAndras = { pa ->
                                 if (pa) {
-                                    // För Android 13+ behöver vi begära behörighet
                                     if (Build.VERSION.SDK_INT >= 33) {
                                         requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                                     } else {
-                                        // För äldre versioner går det direkt
                                         viewModel.sattPaminnelser(true)
                                     }
                                 } else {
-                                    // Avslå påminnelser direkt
                                     viewModel.sattPaminnelser(false)
                                     behorighetNekad = false
                                 }
@@ -269,20 +294,29 @@ class MainActivity : ComponentActivity() {
                             behorighetNekad = behorighetNekad,
                             arPro = arPro,
                             onVisaProDialog = viewModel::visaProDialog,
+                            onSparaSakerhetskopia = {
+                                if (arPro) {
+                                    createSakerhetskopiaContract.launch(
+                                        sakerhetskopiaFilnamn(LocalDate.now()),
+                                    )
+                                } else {
+                                    viewModel.visaProDialog()
+                                }
+                            },
+                            onHamtaSakerhetskopia = {
+                                if (arPro) {
+                                    openSakerhetskopiaContract.launch(
+                                        arrayOf("application/zip", "application/octet-stream"),
+                                    )
+                                } else {
+                                    viewModel.visaProDialog()
+                                }
+                            },
+                            onTillbaka = viewModel::visaLista,
                             debugInstallningar = {
                                 GarantivalvetDebugInstallningar(
                                     arPro = arPro,
                                     onTestlageProAndras = viewModel::sattDebugProTestlagePa,
-                                )
-                            },
-                            onSparaSakerhetskopia = {
-                                createSakerhetskopiaContract.launch(
-                                    sakerhetskopiaFilnamn(LocalDate.now()),
-                                )
-                            },
-                            onHamtaSakerhetskopia = {
-                                openSakerhetskopiaContract.launch(
-                                    arrayOf("application/zip", "application/octet-stream")
                                 )
                             },
                         )
@@ -303,81 +337,7 @@ class MainActivity : ComponentActivity() {
                                     exportKop = kop
                                     createPdfContract.launch(reklamationsPdfFilnamn(kop.vad, kop.kopdatum))
                                 },
-                                onDelaPdf = {
-                                    try {
-                                        val etiketter = UnderlagEtiketter(
-                                            vad = getString(R.string.underlag_vad),
-                                            varKopt = getString(R.string.underlag_var_kopt),
-                                            kopdatum = getString(R.string.underlag_kopdatum),
-                                            pris = getString(R.string.underlag_pris),
-                                            garantiManader = getString(R.string.underlag_garanti_manader),
-                                            garantiSlut = getString(R.string.underlag_garanti_slut),
-                                            reklamationSlut = getString(R.string.underlag_reklamation_slut),
-                                            presumtionSlut = getString(R.string.underlag_presumtion_slut),
-                                            reklamationStatus = getString(R.string.underlag_reklamation_status),
-                                            statusFelAntasFunnits = getString(R.string.underlag_status_fel_antas_funnits),
-                                            statusGaller = getString(R.string.underlag_status_galler),
-                                            statusUtgangen = getString(R.string.underlag_status_utgangen),
-                                            anteckning = getString(R.string.underlag_anteckning),
-                                            skapad = getString(R.string.underlag_skapad),
-                                        )
-
-                                        val dokumentRubrik = getString(R.string.underlag_rubrik)
-                                        val locale = resources.configuration.locales[0]
-
-                                        val underlag = byggUnderlag(
-                                            kop,
-                                            LocalDate.now(),
-                                            etiketter,
-                                            dokumentRubrik,
-                                            locale,
-                                        )
-
-                                        val kvittoBitmap = viewModel.sparatKvittoUri(kop)?.let { kvittoUri ->
-                                            try {
-                                                contentResolver.openInputStream(kvittoUri)?.use { stream ->
-                                                    android.graphics.BitmapFactory.decodeStream(stream)
-                                                }
-                                            } catch (_: Exception) {
-                                                null
-                                            }
-                                        }
-
-                                        val pdfFil = File(
-                                            cacheDir,
-                                            "export/${reklamationsPdfFilnamn(kop.vad, kop.kopdatum)}",
-                                        )
-                                        pdfFil.parentFile?.mkdirs()
-
-                                        FileOutputStream(pdfFil).use { stream ->
-                                            val resultat = skrivUnderlagTillPdf(underlag, stream, kvittoBitmap)
-                                            if (resultat is PdfExportResult.Ok) {
-                                                val fileUri = FileProvider.getUriForFile(
-                                                    this@MainActivity,
-                                                    KvittoLager.fileProviderAuthority(this@MainActivity),
-                                                    pdfFil,
-                                                )
-
-                                                val intent = Intent(Intent.ACTION_SEND).apply {
-                                                    type = "application/pdf"
-                                                    putExtra(Intent.EXTRA_STREAM, fileUri)
-                                                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                                }
-
-                                                startActivity(
-                                                    Intent.createChooser(
-                                                        intent,
-                                                        getString(R.string.export_dela),
-                                                    ),
-                                                )
-                                            }
-                                        }
-                                    } catch (_: Exception) {
-                                    }
-                                },
                                 onVisaProDialog = viewModel::visaProDialog,
-                                exportPdfMeddelande = exportPdfMeddelande,
-                                onExportMeddelandeVisat = viewModel::rensaExportMeddelande,
                             )
                         }
                     }
@@ -413,7 +373,7 @@ class MainActivity : ComponentActivity() {
                                     anteckning = anteckning,
                                 )
                             },
-                            onAvbryt = viewModel::visaLista,
+                            onStang = viewModel::visaLista,
                         )
                     }
 
@@ -463,7 +423,7 @@ class MainActivity : ComponentActivity() {
                                         ),
                                     )
                                 },
-                                onAvbryt = viewModel::visaLista,
+                                onStang = viewModel::visaLista,
                             )
                         }
                     }
@@ -489,6 +449,61 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         hanteraPaminnelseIntent(intent)
+    }
+
+    private fun delaPdfForKop(kop: Kop) {
+        try {
+            val etiketter = UnderlagEtiketter(
+                vad = getString(R.string.underlag_vad),
+                varKopt = getString(R.string.underlag_var_kopt),
+                kopdatum = getString(R.string.underlag_kopdatum),
+                pris = getString(R.string.underlag_pris),
+                garantiManader = getString(R.string.underlag_garanti_manader),
+                garantiSlut = getString(R.string.underlag_garanti_slut),
+                reklamationSlut = getString(R.string.underlag_reklamation_slut),
+                presumtionSlut = getString(R.string.underlag_presumtion_slut),
+                reklamationStatus = getString(R.string.underlag_reklamation_status),
+                statusFelAntasFunnits = getString(R.string.underlag_status_fel_antas_funnits),
+                statusGaller = getString(R.string.underlag_status_galler),
+                statusUtgangen = getString(R.string.underlag_status_utgangen),
+                anteckning = getString(R.string.underlag_anteckning),
+                skapad = getString(R.string.underlag_skapad),
+            )
+            val dokumentRubrik = getString(R.string.underlag_rubrik)
+            val locale = resources.configuration.locales[0]
+            val underlag = byggUnderlag(kop, LocalDate.now(), etiketter, dokumentRubrik, locale)
+            val kvittoBitmap = viewModel.sparatKvittoUri(kop)?.let { kvittoUri ->
+                try {
+                    contentResolver.openInputStream(kvittoUri)?.use { stream ->
+                        android.graphics.BitmapFactory.decodeStream(stream)
+                    }
+                } catch (_: Exception) {
+                    null
+                }
+            }
+            val pdfFil = File(
+                cacheDir,
+                "export/${reklamationsPdfFilnamn(kop.vad, kop.kopdatum)}",
+            )
+            pdfFil.parentFile?.mkdirs()
+            FileOutputStream(pdfFil).use { stream ->
+                val resultat = skrivUnderlagTillPdf(underlag, stream, kvittoBitmap)
+                if (resultat is PdfExportResult.Ok) {
+                    val fileUri = FileProvider.getUriForFile(
+                        this,
+                        KvittoLager.fileProviderAuthority(this),
+                        pdfFil,
+                    )
+                    val intent = Intent(Intent.ACTION_SEND).apply {
+                        type = "application/pdf"
+                        putExtra(Intent.EXTRA_STREAM, fileUri)
+                        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    }
+                    startActivity(Intent.createChooser(intent, getString(R.string.export_dela)))
+                }
+            }
+        } catch (_: Exception) {
+        }
     }
 
     private fun hanteraPaminnelseIntent(intent: Intent?) {

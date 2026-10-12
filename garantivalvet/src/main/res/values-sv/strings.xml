@@ -2,6 +2,10 @@
 <resources>
     <string name="app_name">Garantivalvet</string>
     <string name="tom_lista">Inga köp än. Lägg till ditt första kvitto för att hålla koll på garantier och reklamationsfrister.</string>
+    <string name="tom_lista_rubrik">Spara ditt första kvitto</string>
+    <string name="tom_lista_beskrivning">Appen håller koll på garantin och din reklamationsrätt i tre år, och påminner innan tiden går ut.</string>
+    <string name="tom_lista_knapp">Lägg till kvitto</string>
+    <string name="fab_nytt_kvitto">Nytt kvitto</string>
     <string name="lagg_till">Lägg till</string>
     <string name="lagg_till_titel">Lägg till köp</string>
     <string name="andra_titel">Ändra köp</string>
@@ -19,6 +23,11 @@
     <string name="status_utgangen">Utgången</string>
     <string name="status_reklamation_galler">Reklamationsrätt gäller</string>
     <string name="lista_garanti_slut">Garantin går ut %1$s</string>
+    <string name="lista_garanti_till">Garanti till %1$s</string>
+    <string name="lista_reklamation_till">Reklamationsrätt till %1$s</string>
+    <string name="lista_grupp_snart">Går ut snart</string>
+    <string name="lista_grupp_galler">Gäller</string>
+    <string name="lista_grupp_utgangna">Utgångna</string>
     
     <!-- Formulär -->
     <string name="falt_datum">Köpdatum</string>
@@ -38,6 +47,9 @@
     <!-- Kvittofunktioner -->
     <string name="kvitto_valj_bild">Välj bild</string>
     <string name="kvitto_ta_foto">Ta foto</string>
+    <string name="kvitto_fotografera">Fotografera</string>
+    <string name="kvitto_byt">Byt</string>
+    <string name="kvitto_saknas">Inget kvitto</string>
     <string name="kvitto_ta_bort">Ta bort kvitto</string>
     <string name="kvitto_fornhandsvisning">Förhandsvisning av kvitto</string>
     <string name="kvitto_har_kvitto">Har kvitto</string>
@@ -60,6 +72,8 @@
     <!-- Reklamationsrätt -->
     <string name="detalj_reklamation_till">Reklamationsrätt till %1$s</string>
     <string name="detalj_reklamation_rubrik">Reklamationsrätt</string>
+    <string name="detalj_reklamation_kort_rubrik">Din reklamationsrätt</string>
+    <string name="detalj_reklamation_las_mer">Läs mer</string>
     <string name="detalj_reklamation_forklaring">Du kan reklamera fel som visar sig inom tre år från köpet. Fel som visar sig inom två år antas ha funnits vid köpet. Räknas från köpdatum och gäller varor köpta av en näringsidkare.</string>
     <string name="detalj_reklamation_vagledning">Detta är vägledning och inte juridisk rådgivning.</string>
     <string name="detalj_reklamation_aldre_lag">Köp före 1 maj 2022 omfattas av äldre regler.</string>
@@ -72,6 +86,10 @@
     <string name="pro_kop_misslyckades">Köpet kunde inte genomföras. Försök igen.</string>
     <string name="pro_grans_nadd">Gränsen är nådd: 15 köp</string>
     <string name="pro_inte_nu">Inte nu</string>
+    <string name="pro_inte_aktiv">Inte köpt</string>
+    <string name="pro_app_rubrik">Garantivalvet Pro</string>
+    <string name="pro_mark">Pro</string>
+    <string name="pro_kvar_gratis">%1$d kvitton kvar i gratisversionen</string>
     <string name="debug_pro_testlage">Testläge: Pro</string>
     
     <!-- PDF Export -->
@@ -90,7 +108,7 @@
     <string name="underlag_status_utgangen">Reklamationsfristen gått ut</string>
     <string name="underlag_anteckning">Anteckning</string>
     <string name="underlag_skapad">Underlag skapat</string>
-    <string name="export_pdf">Exportera PDF</string>
+    <string name="export_pdf">Skapa reklamationsunderlag</string>
     <string name="export_dela">Dela</string>
     <string name="export_pdf_sparad">PDF sparad</string>
     <string name="export_pdf_misslyckades">PDF kunde inte skapas</string>
@@ -105,4 +123,9 @@
     <string name="sakerhetskopia_importerad">Importerade %1$d köp, hoppade över %2$d</string>
     <string name="sakerhetskopia_kunde_inte_lasas">Filen kunde inte läsas</string>
     <string name="sakerhetskopia_nyare_version">Filen kommer från en nyare version av appen</string>
+
+    <string name="installningar_rubrik">Inställningar</string>
+    <string name="tillbaka">Tillbaka</string>
+    <string name="stang">Stäng</string>
+    <string name="mer_meny">Fler alternativ</string>
 </resources>
