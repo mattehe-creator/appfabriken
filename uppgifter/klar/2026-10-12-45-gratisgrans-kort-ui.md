@@ -32,3 +32,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*ButikSkarmbilder*"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: underkänd 2026-10-12 av Cursor (PR #107). Ersatt av 2026-10-12-45-gratisgrans-kort-ui-f2.md
