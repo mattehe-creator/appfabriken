@@ -54,6 +54,7 @@ Gratis:
 - Lista sorterad efter närmaste frist, med status: garanti gäller, reklamationsrätt gäller, utgånget.
 - Påminnelse 30 dagar innan en garanti eller reklamationsfrist går ut (dagligt jobb, notis).
 - Visa kvittot i helskärm och dela bilden.
+- Läs av kvittot på enheten och föreslå butik, datum och pris i formuläret (tillagt 2026-10-12, uppdrag `2026-10-12-kvittoavlasning`).
 - Högst 15 köp.
 
 Pro (engångsköp, förslag 49 kr):
@@ -61,7 +62,7 @@ Pro (engångsköp, förslag 49 kr):
 - Reklamationsunderlag: PDF med kvittot och köpuppgifterna, färdig att mejla till butiken.
 - Säkerhetskopia till och från fil som användaren väljer.
 
-Inte i 1.0: molnsynk, OCR av kvitton, delning mellan användare, widgets.
+Inte i 1.0: molnsynk, delning mellan användare, widgets.
 
 ## Portföljordning
 
