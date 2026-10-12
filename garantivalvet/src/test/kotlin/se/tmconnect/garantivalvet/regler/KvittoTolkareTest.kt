@@ -127,4 +127,90 @@ class KvittoTolkareTest {
         assertEquals(idag, ny.kopdatum)
         assertTrue(!ny.butikFranKvitto && !ny.prisFranKvitto && !ny.datumFranKvitto)
     }
+
+    // Texten är återskapad efter tre riktiga kvitton som fotats på snedden (BESLUTSLOGG 2026-10-12),
+    // där ML Kit ger etiketter och belopp på skilda rader och i annan ordning än på papperet.
+
+    @Test
+    fun biltemaEtikettOchBeloppPaSkildaRader() {
+        val text = """
+            BIL TEMA SWEDEN AB/LANDSKRONA 160
+            Totalt (SEK):
+            Tillbaka:
+            2026-09-01 10:44
+            Datum: 01.09.2026
+            2 * 39,90
+            79,80
+            79,80
+            0,00
+            Öppet köp i 30 dagar mot uppvisande av kvitto
+        """.trimIndent()
+        val f = tolkaKvitto(text, idag)
+        assertEquals("BIL TEMA SWEDEN AB", f.butik)
+        assertEquals(LocalDate.of(2026, 9, 1), f.datum)
+        assertEquals(7_980L, f.prisOre)
+    }
+
+    @Test
+    fun fakturaDarTotaltAntalTjansterInteArPriset() {
+        val text = """
+            Faktura 127258
+            Borstahusen Campingresort
+            2026-09-03 10:13
+            Eftersäsong, 2026-08-29 - 2026-08-31
+            Totalt 12 tjänster
+            Totalt 2420,00 SEK
+            Varav moms 252,54 SEK
+            Mottaget Surfboard Payments 2420,00 SEK
+        """.trimIndent()
+        val f = tolkaKvitto(text, idag)
+        assertEquals("Borstahusen Campingresort", f.butik)
+        assertEquals(LocalDate.of(2026, 9, 3), f.datum)
+        assertEquals(242_000L, f.prisOre)
+    }
+
+    @Test
+    fun beloppSomUpprepasGesSomPrisNarNyckelordSaknasPaRaden() {
+        val text = """
+            Banh mi Viet Viet
+            01/09/2026 12:16:06
+            TOTAL
+            TERMINAL
+            218,00
+            Moms 12 % 23,36
+            Brutto 218,00
+            BELOP: 218,00 kr
+        """.trimIndent()
+        val f = tolkaKvitto(text, idag)
+        assertEquals("Banh mi Viet Viet", f.butik)
+        assertEquals(LocalDate.of(2026, 9, 1), f.datum)
+        assertEquals(21_800L, f.prisOre)
+    }
+
+    @Test
+    fun upprepatBeloppUtanNyckelord() {
+        assertEquals(7_980L, hittaPris(listOf("Kabel", "79,80", "Kort 79,80", "Moms 15,96")))
+    }
+
+    @Test
+    fun heltalUtanValutaArInteEttPris() {
+        assertNull(hittaPris(listOf("Totalt 12 tjänster")))
+        assertEquals(129_900L, hittaPris(listOf("Totalt 1299 kr")))
+    }
+
+    @Test
+    fun periodensSlutEllerStartArInteKopdatum() {
+        assertNull(hittaDatum("2026-08-29 - 2026-08-31", idag))
+    }
+
+    @Test
+    fun datumMedKlockslagVinnerOverDatumUtanOrdningsMarkering() {
+        assertEquals(LocalDate.of(2026, 9, 3), hittaDatum("2026-08-01\n2026-09-03 10:13", idag))
+    }
+
+    @Test
+    fun butikUtanAvdelningOchGatunummer() {
+        assertEquals("Biltema AB", hittaButik(listOf("Biltema AB/Landskrona 160")))
+        assertNull(hittaButik(listOf("Faktura 127258", "Fak tura 127258")))
+    }
 }
