@@ -34,6 +34,8 @@ data class UnderlagEtiketter(
     val oppetKop: String = "",
     val oppetKopSlut: String = "",
     val varutyp: String = "",
+    val farskvara: String = "",
+    val farskvaraText: String = "",
     /** Visningsnamn per [Varutyp.name]. */
     val varutyper: Map<String, String> = emptyMap(),
 )
@@ -76,30 +78,37 @@ fun byggUnderlag(
         }
     }
 
-    rader.add(UnderlagRad(etiketter.garantiManader, kop.garantiManader.toString()))
+    if (arFarskvara(kop)) {
+        // Färskvaror: ingen garanti eller treårig reklamationsfrist att visa (se arFarskvara).
+        if (etiketter.farskvara.isNotEmpty()) {
+            rader.add(UnderlagRad(etiketter.farskvara, etiketter.farskvaraText))
+        }
+    } else {
+        rader.add(UnderlagRad(etiketter.garantiManader, kop.garantiManader.toString()))
 
-    val garantiSlutDatum = garantiSlut(kop.kopdatum, kop.garantiManader)
-    rader.add(
-        UnderlagRad(etiketter.garantiSlut, formateraDatum(garantiSlutDatum, locale)),
-    )
-
-    val reklamationSlutDatum = reklamationSlut(kop.kopdatum)
-    if (reklamationSlutDatum != null) {
+        val garantiSlutDatum = garantiSlut(kop.kopdatum, kop.garantiManader)
         rader.add(
-            UnderlagRad(etiketter.reklamationSlut, formateraDatum(reklamationSlutDatum, locale)),
+            UnderlagRad(etiketter.garantiSlut, formateraDatum(garantiSlutDatum, locale)),
         )
-        presumtionSlut(kop.kopdatum)?.let { presumtionDatum ->
+
+        val reklamationSlutDatum = reklamationSlut(kop.kopdatum)
+        if (reklamationSlutDatum != null) {
             rader.add(
-                UnderlagRad(etiketter.presumtionSlut, formateraDatum(presumtionDatum, locale)),
+                UnderlagRad(etiketter.reklamationSlut, formateraDatum(reklamationSlutDatum, locale)),
+            )
+            presumtionSlut(kop.kopdatum)?.let { presumtionDatum ->
+                rader.add(
+                    UnderlagRad(etiketter.presumtionSlut, formateraDatum(presumtionDatum, locale)),
+                )
+            }
+            val status = reklamationStatus(kop.kopdatum, skapad)
+            rader.add(
+                UnderlagRad(
+                    etiketter.reklamationStatus,
+                    reklamationStatusText(status, etiketter),
+                ),
             )
         }
-        val status = reklamationStatus(kop.kopdatum, skapad)
-        rader.add(
-            UnderlagRad(
-                etiketter.reklamationStatus,
-                reklamationStatusText(status, etiketter),
-            ),
-        )
     }
 
     kop.anteckning?.takeIf { it.isNotBlank() }?.let { anteckning ->

@@ -39,7 +39,7 @@ import se.tmconnect.garantivalvet.regler.KopStatus
 import se.tmconnect.garantivalvet.regler.appfabrikStatusFran
 import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
 import se.tmconnect.garantivalvet.regler.formateraDatum
-import se.tmconnect.garantivalvet.regler.kopStatus
+import se.tmconnect.garantivalvet.regler.statusForKop
 import se.tmconnect.garantivalvet.regler.narmasteFrist
 import se.tmconnect.garantivalvet.regler.NarmasteFristTyp
 import se.tmconnect.garantivalvet.regler.visaMedVersal
@@ -55,7 +55,7 @@ fun KopListRad(
 ) {
     val locale = LocalConfiguration.current.locales[0]
     val idag = LocalDate.now()
-    val status = kopStatus(kop.kopdatum, kop.garantiManader, idag)
+    val status = statusForKop(kop, idag)
     val chipFarger = statusChipFarger(appfabrikStatusFran(status))
 
     Card(
@@ -123,6 +123,7 @@ fun KopListRad(
                 KopStatus.GARANTI_SNART -> stringResource(R.string.status_gar_ut_snart)
                 KopStatus.REKLAMATION_GALLER -> stringResource(R.string.status_reklamation_galler)
                 KopStatus.UTGANGEN -> stringResource(R.string.status_utgangen)
+                KopStatus.FARSKVARA -> stringResource(R.string.status_farskvara)
             }
             AssistChip(
                 onClick = onClick,

@@ -25,6 +25,7 @@ fun sorteraEfterNarmasteFrist(lista: List<Kop>, idag: LocalDate): List<Kop> {
     fun närmasteFrist(kop: Kop): LocalDate? = narmasteFrist(kop, idag)?.datum
     
     fun senastPasseradFrist(kop: Kop): LocalDate? {
+        if (arFarskvara(kop)) return kop.kopdatum
         val garantiSlutDatum = garantiSlut(kop)
         val reklamationSlutDatum = reklamationSlut(kop)
         

@@ -6,7 +6,9 @@ enum class KopStatus {
     GARANTI_GALLER,
     GARANTI_SNART,
     REKLAMATION_GALLER,
-    UTGANGEN
+    UTGANGEN,
+    /** Mat och dryck: reklamera direkt, ingen längre frist (se [arFarskvara]). */
+    FARSKVARA,
 }
 
 fun kopStatus(kopdatum: LocalDate, garantiManader: Int, idag: LocalDate): KopStatus {

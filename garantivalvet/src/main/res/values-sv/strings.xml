@@ -164,4 +164,16 @@
     <string name="underlag_oppet_kop">Öppet köp, dagar (butikens erbjudande)</string>
     <string name="underlag_oppet_kop_slut">Öppet köp till</string>
     <string name="underlag_varutyp">Typ av vara</string>
+    <string name="status_farskvara">Färskvara</string>
+    <string name="farskvara_huvud">Reklamera direkt</string>
+    <string name="farskvara_rubrik">Mat och dryck (färskvara)</string>
+    <string name="farskvara_text">Reklamera så fort du märker felet</string>
+    <string name="farskvara_forklaring">Mat och dryck är färskvaror. Tiden att reklamera är då betydligt kortare än tre år. Kontrollera varan direkt och kontakta butiken omedelbart. Därför visas ingen garanti eller treårig reklamationsfrist. Detta är vägledning och inte juridisk rådgivning.</string>
+    <string name="varutyp_mat_hjalp">Mat och dryck är färskvaror: reklamera direkt. Garanti och treårig reklamationsfrist visas därför inte.</string>
+    <string name="detalj_oppet_kop_mat">Mat och dryck omfattas inte alltid av öppet köp.</string>
+    <string name="detalj_oppet_kop_oanvand">Varan ska normalt vara oanvänd.</string>
+    <string name="detalj_reklamation_bevis">De första två åren är det säljaren som måste visa att felet inte fanns när du köpte varan. Därefter måste du visa att det fanns. Då kan en garanti vara bättre.</string>
+    <string name="detalj_reklamation_slitage">Normalt slitage räknas inte som fel. Felet ska ha funnits när du fick varan. För begagnade varor bedöms felet efter varans ålder, skick och pris.</string>
+    <string name="underlag_farskvara">Typ av vara</string>
+    <string name="underlag_farskvara_text">Färskvara (mat och dryck): tiden att reklamera är betydligt kortare än tre år.</string>
 </resources>

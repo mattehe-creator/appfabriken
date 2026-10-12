@@ -10,8 +10,10 @@ enum class ListaGrupp {
 }
 
 fun listaGrupp(kop: Kop, idag: LocalDate): ListaGrupp {
-    return when (kopStatus(kop.kopdatum, kop.garantiManader, idag)) {
+    return when (statusForKop(kop, idag)) {
         KopStatus.GARANTI_SNART -> ListaGrupp.GAR_UT_SNART
+        KopStatus.FARSKVARA ->
+            if (aktivtOppetKop(kop, idag) != null) ListaGrupp.GALLER else ListaGrupp.UTGANGNA
         KopStatus.GARANTI_GALLER,
         KopStatus.REKLAMATION_GALLER,
         -> ListaGrupp.GALLER

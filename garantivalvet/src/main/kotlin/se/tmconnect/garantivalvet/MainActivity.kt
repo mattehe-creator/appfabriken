@@ -481,6 +481,8 @@ class MainActivity : ComponentActivity() {
         oppetKop = getString(R.string.underlag_oppet_kop),
         oppetKopSlut = getString(R.string.underlag_oppet_kop_slut),
         varutyp = getString(R.string.underlag_varutyp),
+        farskvara = getString(R.string.underlag_farskvara),
+        farskvaraText = getString(R.string.underlag_farskvara_text),
         varutyper = Varutyp.entries.associate { it.name to getString(varutypText(it)) },
     )
 

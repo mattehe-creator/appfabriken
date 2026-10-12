@@ -164,4 +164,16 @@
     <string name="underlag_oppet_kop">Return period, days (shop’s offer)</string>
     <string name="underlag_oppet_kop_slut">Return period until</string>
     <string name="underlag_varutyp">Type of item</string>
+    <string name="status_farskvara">Fresh goods</string>
+    <string name="farskvara_huvud">Complain right away</string>
+    <string name="farskvara_rubrik">Food and drink (fresh goods)</string>
+    <string name="farskvara_text">Complain as soon as you notice the fault</string>
+    <string name="farskvara_forklaring">Food and drink are fresh goods. The time to complain is then considerably shorter than three years. Check the goods straight away and contact the shop immediately. That is why no warranty or three-year claim period is shown. This is guidance, not legal advice.</string>
+    <string name="varutyp_mat_hjalp">Food and drink are fresh goods: complain right away. No warranty or three-year claim period is shown.</string>
+    <string name="detalj_oppet_kop_mat">Food and drink are not always covered by a return period.</string>
+    <string name="detalj_oppet_kop_oanvand">The item should normally be unused.</string>
+    <string name="detalj_reklamation_bevis">For the first two years the seller must show that the fault did not exist when you bought the item. After that you must show that it did. A warranty can then be better.</string>
+    <string name="detalj_reklamation_slitage">Normal wear is not a fault. The fault must have existed when you received the item. For used goods the fault is judged by the item’s age, condition and price.</string>
+    <string name="underlag_farskvara">Type of item</string>
+    <string name="underlag_farskvara_text">Fresh goods (food and drink): the time to complain is considerably shorter than three years.</string>
 </resources>
