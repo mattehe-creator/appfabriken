@@ -3,7 +3,10 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.devtools.ksp")
+    id("io.github.takahirom.roborazzi")
 }
+
+val roborazziVersion = "1.36.0"
 
 android {
     namespace = "se.tmconnect.garantivalvet"
@@ -33,8 +36,15 @@ android {
 
     testOptions {
         unitTests.isIncludeAndroidResources = true
+        unitTests.all {
+            it.systemProperties["robolectric.pixelCopyRenderMode"] = "hardware"
+        }
     }
 
+}
+
+roborazzi {
+    outputDir.set(file("butik/skarmbilder"))
 }
 
 ksp {
@@ -65,6 +75,10 @@ dependencies {
     testImplementation("androidx.test:core:1.6.1")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     testImplementation("androidx.room:room-testing:$roomVersion")
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi:$roborazziVersion")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:$roborazziVersion")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-junit-rule:$roborazziVersion")
 
     implementation("androidx.work:work-runtime-ktx:2.10.1")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
