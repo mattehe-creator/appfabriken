@@ -31,3 +31,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: underkänd 2026-10-12 av Cursor (PR #106). Ersatt av 2026-10-12-44-detalj-las-mer-reklamation-f2.md
