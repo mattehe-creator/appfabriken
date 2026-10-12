@@ -89,7 +89,7 @@
     <!-- Pro -->
     <string name="pro">Pro</string>
     <string name="pro_las_upp">Unlock Pro</string>
-    <string name="pro_forklaring">The free version saves up to 15 purchases. Pro is a one-time purchase without subscription and unlocks unlimited purchases.</string>
+    <string name="pro_forklaring">Everything in the app is free, but the free version saves up to 15 purchases. Pro is a one-time purchase without subscription and removes the limit.</string>
     <string name="pro_du_har">You have Pro</string>
     <string name="pro_kop_misslyckades">The purchase could not be completed. Try again.</string>
     <string name="pro_grans_nadd">Limit reached: 15 purchases</string>

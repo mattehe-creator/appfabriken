@@ -51,7 +51,8 @@ Den lokala modellen är svagare än molnmodellerna och har kort kontext. Därfö
 
 ## 6. Produktregler
 
-- Gratisversionen är en hel, användbar app. Pro (engångsköp) låser upp obegränsat antal poster, export och liknande. Inga prenumerationer om inte appen har löpande kostnad.
+- Gratisversionen är en hel, användbar app med alla funktioner. Pro (engångsköp, 49 kr) tar bara bort gränsen på 15 poster. Export, säkerhetskopia, PDF och reklamationshjälp är alltid gratis, och användaren ska veta exakt vad som ingår. Inga prenumerationer.
+- Ingen reklam, inga konton, ingen molntjänst i appen och ingen analys. Användaren kan själv spara filer i valfri molntjänst via systemets filväljare.
 - Svenska och engelska från start. Strängar ligger i `strings.xml`, aldrig hårdkodade.
 - Användarens data lämnar aldrig telefonen utan att användaren själv exporterar den.
 - Tillgänglighet: kontrast minst 4,5:1 för brödtext, tryckytor minst 48 dp, innehållsbeskrivning på ikoner.

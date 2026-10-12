@@ -4,4 +4,4 @@ Consumer claims under the Swedish Consumer Purchase Act (Konsumentköplagen) are
 
 Warranty Vault works entirely offline. The app does not request the INTERNET permission. No account is required, no ads, and no analytics. All data stays on your phone until you choose to export it.
 
-Free for up to 15 purchases. Pro (one-time purchase) unlocks unlimited purchases, PDF receipts, and backup.
+Everything in the app is free, but the free version holds 15 purchases. Pro (one-time purchase, no subscription) removes the limit. Help with claims, claim documents and backup are always free.
