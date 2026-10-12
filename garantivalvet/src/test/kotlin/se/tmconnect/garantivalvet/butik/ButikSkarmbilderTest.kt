@@ -73,6 +73,8 @@ abstract class ButikSkarmbilderBas {
 
     protected abstract fun exempelFormular(): Kop
 
+    protected abstract fun exempelAnteckning(): String
+
     private fun captureSkarm(
         filnamn: String,
         helSkarm: Boolean = false,
@@ -194,7 +196,7 @@ abstract class ButikSkarmbilderBas {
                 initialVar = formularData.varKopt!!,
                 initialGarantiManader = formularData.garantiManader.toString(),
                 initialPris = "8990",
-                initialAnteckning = "Extended warranty registered.",
+                initialAnteckning = exempelAnteckning(),
                 initialKopdatum = formularData.kopdatum,
                 kvittoUri = null,
                 onValjBild = noOp,
@@ -263,31 +265,33 @@ class ButikSkarmbilderSvTest : ButikSkarmbilderBas() {
         return listOf(
             Kop(
                 id = 1,
+                vad = "Kaffebryggare",
+                varKopt = "Elektronikbutiken",
+                kopdatum = LocalDate.of(2025, 11, 1),
+                garantiManader = 12,
+            ),
+            Kop(
+                id = 2,
                 vad = "Diskmaskin",
                 varKopt = "Lokal vitvaruhandel",
                 kopdatum = LocalDate.of(2025, 3, 10),
                 garantiManader = 24,
             ),
             Kop(
-                id = 2,
-                vad = "Mobiltelefon",
-                varKopt = "Telefonbutiken i centrum",
-                kopdatum = LocalDate.of(2025, 8, 1),
-                garantiManader = 12,
-            ),
-            Kop(
                 id = 3,
-                vad = "Cykel",
-                varKopt = "Sport och fritid",
-                kopdatum = LocalDate.of(2024, 11, 20),
-                garantiManader = 36,
+                vad = "Dammsugare",
+                varKopt = "Hem och hus",
+                kopdatum = LocalDate.of(2022, 6, 1),
+                garantiManader = 12,
             ),
         )
     }
 
-    override fun exempelDetalj(): Kop = exempelLista()[0]
+    override fun exempelDetalj(): Kop = exempelLista()[1]
 
-    override fun exempelFormular(): Kop = exempelLista()[0]
+    override fun exempelFormular(): Kop = exempelLista()[1]
+
+    override fun exempelAnteckning(): String = "Extragaranti registrerad."
 }
 
 @Config(application = Application::class, sdk = [35])
@@ -302,31 +306,33 @@ class ButikSkarmbilderEnTest : ButikSkarmbilderBas() {
         return listOf(
             Kop(
                 id = 1,
+                vad = "Coffee maker",
+                varKopt = "Electronics store",
+                kopdatum = LocalDate.of(2025, 11, 1),
+                garantiManader = 12,
+            ),
+            Kop(
+                id = 2,
                 vad = "Dishwasher",
                 varKopt = "Local appliance store",
                 kopdatum = LocalDate.of(2025, 3, 10),
                 garantiManader = 24,
             ),
             Kop(
-                id = 2,
-                vad = "Mobile phone",
-                varKopt = "Phone shop downtown",
-                kopdatum = LocalDate.of(2025, 8, 1),
-                garantiManader = 12,
-            ),
-            Kop(
                 id = 3,
-                vad = "Bicycle",
-                varKopt = "Sports shop",
-                kopdatum = LocalDate.of(2024, 11, 20),
-                garantiManader = 36,
+                vad = "Vacuum cleaner",
+                varKopt = "Home store",
+                kopdatum = LocalDate.of(2022, 6, 1),
+                garantiManader = 12,
             ),
         )
     }
 
-    override fun exempelDetalj(): Kop = exempelLista()[0]
+    override fun exempelDetalj(): Kop = exempelLista()[1]
 
-    override fun exempelFormular(): Kop = exempelLista()[0]
+    override fun exempelFormular(): Kop = exempelLista()[1]
+
+    override fun exempelAnteckning(): String = "Extended warranty registered."
 }
 
 @RunWith(RobolectricTestRunner::class)
