@@ -63,6 +63,9 @@ import se.tmconnect.garantivalvet.regler.narmasteFrist
 import se.tmconnect.garantivalvet.regler.reklamationSlut
 import se.tmconnect.garantivalvet.regler.beraknaTidslinje
 import se.tmconnect.garantivalvet.regler.visaMedVersal
+import se.tmconnect.karna.tema.AppfabrikKortForm
+import se.tmconnect.karna.tema.StatusChipFarger
+import se.tmconnect.karna.tema.statusChipFarger
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
