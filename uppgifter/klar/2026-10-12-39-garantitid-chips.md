@@ -31,3 +31,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*GarantitidValTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: underkänd 2026-10-12 av Cursor (PR #101). Ersatt av 2026-10-12-39-garantitid-chips-f2.md
