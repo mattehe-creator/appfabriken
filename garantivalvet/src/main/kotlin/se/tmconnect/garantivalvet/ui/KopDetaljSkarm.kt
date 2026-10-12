@@ -60,7 +60,7 @@ import se.tmconnect.garantivalvet.regler.kopStatus
 import se.tmconnect.garantivalvet.regler.NarmasteFristTyp
 import se.tmconnect.garantivalvet.regler.narmasteFrist
 import se.tmconnect.garantivalvet.regler.reklamationSlut
-import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
+import se.tmconnect.garantivalvet.regler.beraknaTidslinje
 import se.tmconnect.garantivalvet.regler.visaMedVersal
 import se.tmconnect.karna.tema.AppfabrikKortForm
 import se.tmconnect.karna.tema.StatusChipFarger
@@ -86,6 +86,7 @@ fun KopDetaljSkarm(
     val idag = LocalDate.now()
     val status = kopStatus(kop.kopdatum, kop.garantiManader, idag)
     val chipFarger = statusChipFarger(appfabrikStatusFran(status))
+    val tidslinjeMarkorer = beraknaTidslinje(kop.kopdatum, kop.garantiManader, idag)
 
     if (visaBekraftaTaBort) {
         AlertDialog(
@@ -199,6 +200,7 @@ fun KopDetaljSkarm(
                 chipFarger = chipFarger,
                 locale = locale,
                 idag = idag,
+                tidslinjeMarkorer = tidslinjeMarkorer
             )
 
             kvittoUri?.let { uri ->
@@ -242,6 +244,7 @@ private fun StatusKort(
     chipFarger: StatusChipFarger,
     locale: java.util.Locale,
     idag: LocalDate,
+    tidslinjeMarkorer: TidslinjeMarkorer?
 ) {
     val narmaste = narmasteFrist(kop, idag)
     val huvudText = when {
@@ -293,6 +296,12 @@ private fun StatusKort(
                     ),
                 )
             }
+            
+            // Visa tidslinje om den finns
+            tidslinjeMarkorer?.let {
+                TidslinjeStapel(markorer = it)
+            }
+            
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
