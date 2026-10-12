@@ -54,6 +54,7 @@ import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.regler.KONSUMENTKOP_IKRAFT
 import se.tmconnect.garantivalvet.regler.KopStatus
+import se.tmconnect.garantivalvet.regler.TidslinjeMarkorer
 import se.tmconnect.garantivalvet.regler.appfabrikStatusFran
 import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.garantivalvet.regler.formateraPrisKr
@@ -88,8 +89,7 @@ fun KopDetaljSkarm(
     val idag = LocalDate.now()
     val status = kopStatus(kop.kopdatum, kop.garantiManader, idag)
     val chipFarger = statusChipFarger(appfabrikStatusFran(status))
-    // Ta bort referens till TidslinjeMarkerer
-    // val tidslinjeMarkorer = beraknaTidslinje(kop.kopdatum, kop.garantiManader, idag)
+    val tidslinjeMarkorer = beraknaTidslinje(kop.kopdatum, kop.garantiManader, idag)
 
     if (visaBekraftaTaBort) {
         AlertDialog(
@@ -203,8 +203,7 @@ fun KopDetaljSkarm(
                 chipFarger = chipFarger,
                 locale = locale,
                 idag = idag,
-                // Ta bort tidslinjeMarkorer parameter
-                // tidslinjeMarkorer = tidslinjeMarkorer
+                tidslinjeMarkorer = tidslinjeMarkorer,
             )
 
             kvittoUri?.let { uri ->
@@ -248,8 +247,7 @@ private fun StatusKort(
     chipFarger: StatusChipFarger,
     locale: java.util.Locale,
     idag: LocalDate,
-    // Ta bort tidslinjeMarkorer parameter
-    // tidslinjeMarkorer: TidslinjeMarkerer?
+    tidslinjeMarkorer: TidslinjeMarkorer?,
 ) {
     val narmaste = narmasteFrist(kop, idag)
     val huvudText = when {
@@ -302,12 +300,9 @@ private fun StatusKort(
                 )
             }
 
-            // Ta bort användning av tidslinjeMarkorer
-            /*
             tidslinjeMarkorer?.let {
                 TidslinjeStapel(markorer = it, contentDescription = huvudText)
             }
-            */
 
             Box(
                 modifier = Modifier
@@ -347,7 +342,6 @@ private fun DetaljRad(etikett: String, varde: String) {
 @Composable
 private fun KvittoBild(uri: Uri, onOppnaKvitto: () -> Unit) {
     val context = LocalContext.current
-    // Korrigera let-anropet för att ta bort typinferensproblem
     val bitmap = remember(uri) {
         try {
             val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
@@ -388,7 +382,7 @@ private fun KvittoBild(uri: Uri, onOppnaKvitto: () -> Unit) {
 private fun ReklamationsKort(kop: Kop, locale: java.util.Locale) {
     val reklamationSlutDatum = reklamationSlut(kop.kopdatum)
     var expanderad by remember { mutableStateOf(false) }
-    
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = AppfabrikKortForm,
@@ -399,7 +393,7 @@ private fun ReklamationsKort(kop: Kop, locale: java.util.Locale) {
                 text = stringResource(R.string.detalj_reklamation_kort_rubrik),
                 style = MaterialTheme.typography.titleMedium,
             )
-            
+
             if (reklamationSlutDatum != null) {
                 Text(
                     text = stringResource(
@@ -408,8 +402,7 @@ private fun ReklamationsKort(kop: Kop, locale: java.util.Locale) {
                     ),
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                
-                // Läs mer knapp
+
                 TextButton(
                     onClick = { expanderad = !expanderad },
                     modifier = Modifier.padding(top = 4.dp)
