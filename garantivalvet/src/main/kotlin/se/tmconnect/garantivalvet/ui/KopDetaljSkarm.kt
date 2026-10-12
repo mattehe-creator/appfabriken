@@ -54,6 +54,10 @@ import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.regler.KONSUMENTKOP_IKRAFT
 import se.tmconnect.garantivalvet.regler.KopStatus
+import se.tmconnect.garantivalvet.regler.Varutyp
+import se.tmconnect.garantivalvet.regler.garantiSlut
+import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
+import se.tmconnect.garantivalvet.regler.oppetKopSlut
 import se.tmconnect.garantivalvet.regler.TidslinjeMarkorer
 import se.tmconnect.garantivalvet.regler.appfabrikStatusFran
 import se.tmconnect.garantivalvet.regler.formateraDatum
@@ -228,6 +232,12 @@ fun KopDetaljSkarm(
                 etikett = stringResource(R.string.falt_garanti_manader),
                 varde = kop.garantiManader.toString(),
             )
+            Varutyp.franNamn(kop.varutyp)?.let { typ ->
+                DetaljRad(
+                    etikett = stringResource(R.string.underlag_varutyp),
+                    varde = stringResource(varutypText(typ)),
+                )
+            }
             kop.anteckning?.let {
                 DetaljRad(
                     etikett = stringResource(R.string.falt_anteckning),
@@ -235,6 +245,27 @@ fun KopDetaljSkarm(
                 )
             }
 
+            // Tre skilda delar: öppet köp (butikens erbjudande), garanti (frivillig) och reklamationsrätt (lag).
+            giltigaOppetKopDagar(kop.oppetKopDagar)?.let { dagar ->
+                val slut = oppetKopSlut(kop.kopdatum, dagar)
+                FristKort(
+                    rubrik = stringResource(R.string.detalj_oppet_kop_rubrik),
+                    datumText = stringResource(
+                        if (idag.isAfter(slut)) R.string.detalj_oppet_kop_gick_ut else R.string.detalj_oppet_kop_till,
+                        formateraDatum(slut, locale),
+                    ),
+                    forklaring = stringResource(R.string.detalj_oppet_kop_forklaring),
+                )
+            }
+            val garantiSlutDatum = garantiSlut(kop.kopdatum, kop.garantiManader)
+            FristKort(
+                rubrik = stringResource(R.string.detalj_garanti_rubrik),
+                datumText = stringResource(
+                    if (idag.isAfter(garantiSlutDatum)) R.string.detalj_garanti_gick_ut else R.string.detalj_garanti_till,
+                    formateraDatum(garantiSlutDatum, locale),
+                ),
+                forklaring = stringResource(R.string.detalj_garanti_forklaring),
+            )
             ReklamationsKort(kop = kop, locale = locale)
         }
     }
@@ -258,6 +289,10 @@ private fun StatusKort(
             )
             NarmasteFristTyp.REKLAMATION -> stringResource(
                 R.string.lista_reklamation_till,
+                formateraDatum(narmaste.datum, locale),
+            )
+            NarmasteFristTyp.OPPET_KOP -> stringResource(
+                R.string.lista_oppet_kop_till,
                 formateraDatum(narmaste.datum, locale),
             )
         }
@@ -379,6 +414,25 @@ private fun KvittoBild(uri: Uri, onOppnaKvitto: () -> Unit) {
 }
 
 @Composable
+private fun FristKort(rubrik: String, datumText: String, forklaring: String) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = AppfabrikKortForm,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+    ) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(text = rubrik, style = MaterialTheme.typography.titleMedium)
+            Text(text = datumText, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = forklaring,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
 private fun ReklamationsKort(kop: Kop, locale: java.util.Locale) {
     val reklamationSlutDatum = reklamationSlut(kop.kopdatum)
     var expanderad by remember { mutableStateOf(false) }
@@ -401,6 +455,11 @@ private fun ReklamationsKort(kop: Kop, locale: java.util.Locale) {
                         formateraDatum(reklamationSlutDatum, locale),
                     ),
                     style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = stringResource(R.string.detalj_reklamation_oavsett_garanti),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 TextButton(

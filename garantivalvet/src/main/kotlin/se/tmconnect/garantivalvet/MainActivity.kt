@@ -15,7 +15,10 @@ import androidx.lifecycle.lifecycleScope
 import se.tmconnect.garantivalvet.ocr.KvittoLasare
 import se.tmconnect.garantivalvet.ocr.MlKitKvittoLasare
 import se.tmconnect.garantivalvet.regler.KvittoForslag
+import se.tmconnect.garantivalvet.regler.Varutyp
+import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
 import se.tmconnect.garantivalvet.regler.tolkaKvitto
+import se.tmconnect.garantivalvet.ui.varutypText
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHost
@@ -133,22 +136,7 @@ class MainActivity : ComponentActivity() {
             exportKop?.let { kop ->
                 try {
                     // Bygg underlaget
-                    val etiketter = UnderlagEtiketter(
-                        vad = getString(R.string.underlag_vad),
-                        varKopt = getString(R.string.underlag_var_kopt),
-                        kopdatum = getString(R.string.underlag_kopdatum),
-                        pris = getString(R.string.underlag_pris),
-                        garantiManader = getString(R.string.underlag_garanti_manader),
-                        garantiSlut = getString(R.string.underlag_garanti_slut),
-                        reklamationSlut = getString(R.string.underlag_reklamation_slut),
-                        presumtionSlut = getString(R.string.underlag_presumtion_slut),
-                        reklamationStatus = getString(R.string.underlag_reklamation_status),
-                        statusFelAntasFunnits = getString(R.string.underlag_status_fel_antas_funnits),
-                        statusGaller = getString(R.string.underlag_status_galler),
-                        statusUtgangen = getString(R.string.underlag_status_utgangen),
-                        anteckning = getString(R.string.underlag_anteckning),
-                        skapad = getString(R.string.underlag_skapad)
-                    )
+                    val etiketter = underlagEtiketter()
                     
                     val dokumentRubrik = getString(R.string.underlag_rubrik)
                     val locale = resources.configuration.locales[0]
@@ -365,6 +353,8 @@ class MainActivity : ComponentActivity() {
                             initialPris = null,
                             initialAnteckning = null,
                             initialKopdatum = LocalDate.now(),
+                            initialOppetKop = null,
+                            initialVarutyp = null,
                             kvittoUri = tillfalligtKvitto ?: viewModel.kvittoUriForFormular(null),
                             onValjBild = {
                                 pickImageContract.launch(
@@ -378,7 +368,7 @@ class MainActivity : ComponentActivity() {
                             },
                             onTaBortKvitto = viewModel::markeraKvittoForBorttagning,
                             lasKvitto = lasKvitto,
-                            onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning ->
+                            onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning, oppetKopDagar, varutyp ->
                                 viewModel.sparaNyttKop(
                                     vad = vad,
                                     varKopt = varKopt,
@@ -386,6 +376,8 @@ class MainActivity : ComponentActivity() {
                                     garantiManader = garantiManader,
                                     prisOre = prisOre,
                                     anteckning = anteckning,
+                                    oppetKopDagar = oppetKopDagar,
+                                    varutyp = varutyp,
                                 )
                             },
                             onStang = viewModel::visaLista,
@@ -414,6 +406,8 @@ class MainActivity : ComponentActivity() {
                                 initialPris = kop.prisOre?.let { (it / 100.0).toString() },
                                 initialAnteckning = kop.anteckning,
                                 initialKopdatum = kop.kopdatum,
+                                initialOppetKop = kop.oppetKopDagar,
+                                initialVarutyp = kop.varutyp,
                                 kvittoUri = tillfalligtKvitto ?: viewModel.kvittoUriForFormular(kop),
                                 onValjBild = {
                                     pickImageContract.launch(
@@ -427,7 +421,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onTaBortKvitto = viewModel::markeraKvittoForBorttagning,
                                 lasKvitto = lasKvitto,
-                                onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning ->
+                                onSpara = { vad, varKopt, kopdatum, garantiManader, prisOre, anteckning, oppetKopDagar, varutyp ->
                                     viewModel.uppdateraKop(
                                         kop.copy(
                                             vad = vad.trim(),
@@ -436,6 +430,8 @@ class MainActivity : ComponentActivity() {
                                             garantiManader = garantiManader,
                                             prisOre = prisOre,
                                             anteckning = anteckning?.trim()?.takeIf { it.isNotEmpty() },
+                                            oppetKopDagar = giltigaOppetKopDagar(oppetKopDagar),
+                                            varutyp = Varutyp.franNamn(varutyp)?.name,
                                         ),
                                     )
                                 },
@@ -467,24 +463,30 @@ class MainActivity : ComponentActivity() {
         hanteraPaminnelseIntent(intent)
     }
 
+    private fun underlagEtiketter() = UnderlagEtiketter(
+        vad = getString(R.string.underlag_vad),
+        varKopt = getString(R.string.underlag_var_kopt),
+        kopdatum = getString(R.string.underlag_kopdatum),
+        pris = getString(R.string.underlag_pris),
+        garantiManader = getString(R.string.underlag_garanti_manader),
+        garantiSlut = getString(R.string.underlag_garanti_slut),
+        reklamationSlut = getString(R.string.underlag_reklamation_slut),
+        presumtionSlut = getString(R.string.underlag_presumtion_slut),
+        reklamationStatus = getString(R.string.underlag_reklamation_status),
+        statusFelAntasFunnits = getString(R.string.underlag_status_fel_antas_funnits),
+        statusGaller = getString(R.string.underlag_status_galler),
+        statusUtgangen = getString(R.string.underlag_status_utgangen),
+        anteckning = getString(R.string.underlag_anteckning),
+        skapad = getString(R.string.underlag_skapad),
+        oppetKop = getString(R.string.underlag_oppet_kop),
+        oppetKopSlut = getString(R.string.underlag_oppet_kop_slut),
+        varutyp = getString(R.string.underlag_varutyp),
+        varutyper = Varutyp.entries.associate { it.name to getString(varutypText(it)) },
+    )
+
     private fun delaPdfForKop(kop: Kop) {
         try {
-            val etiketter = UnderlagEtiketter(
-                vad = getString(R.string.underlag_vad),
-                varKopt = getString(R.string.underlag_var_kopt),
-                kopdatum = getString(R.string.underlag_kopdatum),
-                pris = getString(R.string.underlag_pris),
-                garantiManader = getString(R.string.underlag_garanti_manader),
-                garantiSlut = getString(R.string.underlag_garanti_slut),
-                reklamationSlut = getString(R.string.underlag_reklamation_slut),
-                presumtionSlut = getString(R.string.underlag_presumtion_slut),
-                reklamationStatus = getString(R.string.underlag_reklamation_status),
-                statusFelAntasFunnits = getString(R.string.underlag_status_fel_antas_funnits),
-                statusGaller = getString(R.string.underlag_status_galler),
-                statusUtgangen = getString(R.string.underlag_status_utgangen),
-                anteckning = getString(R.string.underlag_anteckning),
-                skapad = getString(R.string.underlag_skapad),
-            )
+            val etiketter = underlagEtiketter()
             val dokumentRubrik = getString(R.string.underlag_rubrik)
             val locale = resources.configuration.locales[0]
             val underlag = byggUnderlag(kop, LocalDate.now(), etiketter, dokumentRubrik, locale)

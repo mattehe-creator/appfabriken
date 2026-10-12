@@ -202,7 +202,7 @@ abstract class ButikSkarmbilderBas {
                 onValjBild = noOp,
                 onTaFoto = noOp,
                 onTaBortKvitto = noOp,
-                onSpara = { _, _, _, _, _, _ -> },
+                onSpara = { _, _, _, _, _, _, _, _ -> },
                 onStang = noOp,
             )
         }

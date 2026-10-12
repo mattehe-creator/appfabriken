@@ -105,6 +105,10 @@ fun KopListRad(
                             R.string.lista_reklamation_till,
                             formateraDatum(frist.datum, locale),
                         )
+                        NarmasteFristTyp.OPPET_KOP -> stringResource(
+                            R.string.lista_oppet_kop_till,
+                            formateraDatum(frist.datum, locale),
+                        )
                     }
                     Text(
                         text = fristText,

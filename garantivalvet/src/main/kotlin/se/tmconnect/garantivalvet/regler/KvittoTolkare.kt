@@ -8,8 +8,9 @@ data class KvittoForslag(
     val butik: String?,
     val datum: LocalDate?,
     val prisOre: Long?,
+    val oppetKopDagar: Int? = null,
 ) {
-    val arTomt: Boolean get() = butik == null && datum == null && prisOre == null
+    val arTomt: Boolean get() = butik == null && datum == null && prisOre == null && oppetKopDagar == null
 }
 
 private val ISO_DATUM = Regex("""(?<!\d)(\d{4})[-./](\d{1,2})[-./](\d{1,2})(?!\d)""")
@@ -43,6 +44,7 @@ fun tolkaKvitto(text: String, idag: LocalDate): KvittoForslag {
         butik = hittaButik(rader),
         datum = hittaDatum(text, idag),
         prisOre = hittaPris(rader),
+        oppetKopDagar = tolkaOppetKop(text),
     )
 }
 
@@ -193,16 +195,26 @@ data class Ifyllning(
     val butikFranKvitto: Boolean,
     val prisFranKvitto: Boolean,
     val datumFranKvitto: Boolean,
+    val oppetKopDagar: Int? = null,
+    val oppetKopFranKvitto: Boolean = false,
 )
 
 /**
  * Lägger bara in förslag i tomma fält: butik och pris om de är blanka, datum om det fortfarande är
  * standardvärdet (dagens datum). Det användaren redan skrivit eller valt ändras aldrig.
  */
-fun fyllTommaFalt(forslag: KvittoForslag, varKopt: String, prisText: String, kopdatum: LocalDate, idag: LocalDate): Ifyllning {
+fun fyllTommaFalt(
+    forslag: KvittoForslag,
+    varKopt: String,
+    prisText: String,
+    kopdatum: LocalDate,
+    idag: LocalDate,
+    oppetKopDagar: Int? = null,
+): Ifyllning {
     val butik = forslag.butik?.takeIf { varKopt.isBlank() }
     val pris = forslag.prisOre?.takeIf { prisText.isBlank() }
     val datum = forslag.datum?.takeIf { kopdatum == idag && it != kopdatum }
+    val oppetKop = forslag.oppetKopDagar?.takeIf { oppetKopDagar == null }
     return Ifyllning(
         varKopt = butik ?: varKopt,
         prisText = pris?.let { prisOreTillFaltText(it) } ?: prisText,
@@ -210,5 +222,7 @@ fun fyllTommaFalt(forslag: KvittoForslag, varKopt: String, prisText: String, kop
         butikFranKvitto = butik != null,
         prisFranKvitto = pris != null,
         datumFranKvitto = datum != null,
+        oppetKopDagar = oppetKop ?: oppetKopDagar,
+        oppetKopFranKvitto = oppetKop != null,
     )
 }

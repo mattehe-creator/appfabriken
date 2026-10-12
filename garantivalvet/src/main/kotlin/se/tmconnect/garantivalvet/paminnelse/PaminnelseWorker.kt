@@ -26,6 +26,8 @@ import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.garantivalvet.regler.fristNyckel
 import se.tmconnect.garantivalvet.regler.fristerSomSkaAviseras
 import se.tmconnect.garantivalvet.regler.garantiSlut
+import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
+import se.tmconnect.garantivalvet.regler.oppetKopSlut
 import se.tmconnect.garantivalvet.regler.reklamationSlut
 
 class PaminnelseWorker(
@@ -64,6 +66,8 @@ class PaminnelseWorker(
                 FristTyp.GARANTI -> R.string.paminnelse_notis_titel to R.string.paminnelse_notis_text
                 FristTyp.REKLAMATION -> R.string.paminnelse_notis_reklamation_titel to
                     R.string.paminnelse_notis_reklamation_text
+                FristTyp.OPPET_KOP -> R.string.paminnelse_notis_oppet_kop_titel to
+                    R.string.paminnelse_notis_oppet_kop_text
             }
             visaNotis(
                 notisId = frist.kopId.toInt(),
@@ -152,7 +156,10 @@ class PaminnelseWorker(
         val reklamation = reklamationSlut(kop.kopdatum)?.let { slut ->
             Frist(kopId = kop.id, typ = FristTyp.REKLAMATION, slutdatum = slut)
         }
-        return listOfNotNull(garanti, reklamation)
+        val oppetKop = giltigaOppetKopDagar(kop.oppetKopDagar)?.let { dagar ->
+            Frist(kopId = kop.id, typ = FristTyp.OPPET_KOP, slutdatum = oppetKopSlut(kop.kopdatum, dagar))
+        }
+        return listOfNotNull(oppetKop, garanti, reklamation)
     }
 
     companion object {
