@@ -1,1 +1,3 @@
-Garantivalvet
+Garantivalvet - Kvitton offline````
+
+garantivalvet\butik\sv\kort.txt
