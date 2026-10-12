@@ -225,22 +225,22 @@ fun KopFormularSkarm(
                 FilterChip(
                     selected = valtChipIndex == 0,
                     onClick = { valtChipIndex = 0 },
-                    label = { Text(text = stringResource(R.string.garanti_chip_12)) }
+                    label = { Text(text = "12 mån") } // Hårdkodad sträng
                 )
                 FilterChip(
                     selected = valtChipIndex == 1,
                     onClick = { valtChipIndex = 1 },
-                    label = { Text(text = stringResource(R.string.garanti_chip_24)) }
+                    label = { Text(text = "24 mån") } // Hårdkodad sträng
                 )
                 FilterChip(
                     selected = valtChipIndex == 2,
                     onClick = { valtChipIndex = 2 },
-                    label = { Text(text = stringResource(R.string.garanti_chip_36)) }
+                    label = { Text(text = "36 mån") } // Hårdkodad sträng
                 )
                 FilterChip(
                     selected = valtChipIndex == 3,
                     onClick = { valtChipIndex = 3 },
-                    label = { Text(text = stringResource(R.string.garanti_chip_annat)) }
+                    label = { Text(text = "Annat") } // Hårdkodad sträng
                 )
             }
 
@@ -248,7 +248,7 @@ fun KopFormularSkarm(
                 OutlinedTextField(
                     value = annatText,
                     onValueChange = { annatText = it },
-                    label = { Text(text = stringResource(R.string.garanti_annat_text)) },
+                    label = { Text(text = "Ange antal månader") }, // Hårdkodad sträng
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
                 )
