@@ -133,6 +133,11 @@ class KopViewModel(
         rensaKvittoFormularTillstand()
     }
 
+    fun visaInstallningar() {
+        _aktivSkarm.value = KopSkarm.Installningar
+        _proDialogSynlig.value = false
+    }
+
     fun visaLaggTill() {
         _aktivSkarm.value = KopSkarm.LaggTill
         _valtKop.value = null
