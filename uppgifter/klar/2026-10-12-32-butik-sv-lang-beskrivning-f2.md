@@ -42,3 +42,5 @@ gradle :garantivalvet:testDebugUnitTest --tests "*ButikTexterTest"
 - Ändra titel, kort beskrivning eller engelska filer.
 - Lägga till beroenden.
 - Ändra appkod eller manifest.
+
+utfall: godkänd 2026-10-12 (lade till ikraftträdande och internetbehörighet i lang.txt)

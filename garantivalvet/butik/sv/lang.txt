@@ -1,7 +1,7 @@
 Spara och hantera dina köp offline med Garantivalvet. Appen hjälper dig hålla koll på garantitider, spara kvitton och få påminnelser när garantin är snart slut.
 
-Reklamationsrätt enligt konsumentköplagen (2022:260) visas som information för köp i Sverige. Appen visar garantitid och information om reklamationsfrister, men ger ingen juridisk rådgivning. Informationen gäller endast för köp gjorda i Sverige.
+Reklamationsrätt enligt konsumentköplagen (2022:260) visas som information för köp i Sverige efter lagens ikraftträdande. Appen visar garantitid och information om reklamationsfrister, men ger ingen juridisk rådgivning. Informationen gäller endast för köp gjorda i Sverige.
 
-Garantivalvet fungerar helt offline. Inget konto krävs, ingen reklam och ingen analys. All data stannar på din telefon tills du väljer att exportera den.
+Garantivalvet fungerar helt offline. Appen begär ingen internetbehörighet. Inget konto krävs, ingen reklam och ingen analys. All data stannar på din telefon tills du väljer att exportera den.
 
 Gratis upp till 15 köp. Pro (engångsköp) låser upp obegränsat antal, PDF-underlag och säkerhetskopia.
