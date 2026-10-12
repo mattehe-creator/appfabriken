@@ -17,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Card
@@ -34,6 +35,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -72,7 +74,7 @@ fun KopFormularSkarm(
 ) {
     var vad by remember(initialVad) { mutableStateOf(initialVad) }
     var varKopt by remember(initialVar) { mutableStateOf(initialVar) }
-    var garantiManader by remember(initialGarantiManader) { mutableStateOf(initialGarantiManader) }
+    var garantiManaderText by remember(initialGarantiManader) { mutableStateOf(initialGarantiManader) }
     var prisText by remember(initialPris) { mutableStateOf(initialPris ?: "") }
     var anteckning by remember(initialAnteckning) { mutableStateOf(initialAnteckning ?: "") }
     var kopdatum by remember(initialKopdatum) { mutableStateOf(initialKopdatum) }
@@ -83,6 +85,8 @@ fun KopFormularSkarm(
     )
 
     var fel by remember { mutableStateOf<List<FormularFel>>(emptyList()) }
+    var valtChipIndex by remember(initialGarantiManader) { mutableIntStateOf(1) } // Standard är 24 månader
+    var annatText by remember { mutableStateOf("") }
 
     if (visarDatumvaljare) {
         DatePickerDialog(
@@ -111,9 +115,15 @@ fun KopFormularSkarm(
 
     fun spara() {
         val idag = LocalDate.now()
+        val garantiManader = when (valtChipIndex) {
+            in 0..2 -> GarantitidVal.CHIP_MANADER[valtChipIndex]
+            3 -> annatText.toIntOrNull() ?: -1
+            else -> -1
+        }
+        
         fel = valideraKopFormular(
             vad,
-            garantiManader.trim().toIntOrNull() ?: -1,
+            garantiManader,
             kopdatum,
             idag,
             prisText,
@@ -124,7 +134,7 @@ fun KopFormularSkarm(
                 vad,
                 varKopt.takeIf { it.isNotBlank() },
                 kopdatum,
-                garantiManader.trim().toInt(),
+                garantiManader,
                 prisOre,
                 anteckning.takeIf { it.isNotBlank() },
             )
@@ -205,14 +215,48 @@ fun KopFormularSkarm(
                 )
             }
 
-            OutlinedTextField(
-                value = garantiManader,
-                onValueChange = { garantiManader = it },
-                label = { Text(text = stringResource(R.string.falt_garanti_manader)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                isError = FormularFel.GARANTI_OGILTIG in fel,
-                modifier = Modifier.fillMaxWidth(),
+            // Garantitid med chips
+            Text(
+                text = stringResource(R.string.falt_garanti_manader),
+                style = MaterialTheme.typography.labelLarge,
             )
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilterChip(
+                    selected = valtChipIndex == 0,
+                    onClick = { valtChipIndex = 0 },
+                    label = { Text(text = stringResource(R.string.garanti_chip_12)) }
+                )
+                FilterChip(
+                    selected = valtChipIndex == 1,
+                    onClick = { valtChipIndex = 1 },
+                    label = { Text(text = stringResource(R.string.garanti_chip_24)) }
+                )
+                FilterChip(
+                    selected = valtChipIndex == 2,
+                    onClick = { valtChipIndex = 2 },
+                    label = { Text(text = stringResource(R.string.garanti_chip_36)) }
+                )
+                FilterChip(
+                    selected = valtChipIndex == 3,
+                    onClick = { valtChipIndex = 3 },
+                    label = { Text(text = stringResource(R.string.garanti_chip_annat)) }
+                )
+            }
+
+            if (valtChipIndex == 3) {
+                OutlinedTextField(
+                    value = annatText,
+                    onValueChange = { annatText = it },
+                    label = { Text(text = stringResource(R.string.garanti_annat_text)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+
             if (FormularFel.GARANTI_OGILTIG in fel) {
                 Text(
                     text = stringResource(R.string.fel_garanti),
@@ -239,84 +283,6 @@ fun KopFormularSkarm(
                 label = { Text(text = stringResource(R.string.falt_anteckning)) },
                 modifier = Modifier.fillMaxWidth(),
             )
-        }
-    }
-}
-
-@Composable
-private fun KvittoKort(
-    kvittoUri: Uri?,
-    onValjBild: () -> Unit,
-    onTaFoto: () -> Unit,
-    onTaBortKvitto: () -> Unit,
-) {
-    val context = LocalContext.current
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = AppfabrikKortForm,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            if (kvittoUri != null) {
-                val bitmap = remember(kvittoUri) {
-                    try {
-                        val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-                        context.contentResolver.openInputStream(kvittoUri)?.use {
-                            BitmapFactory.decodeStream(it, null, options)
-                        }
-                        val sampleSize = beraknaInSampleSize(options.outWidth, options.outHeight, maxSida = 480)
-                        context.contentResolver.openInputStream(kvittoUri)?.use { input ->
-                            BitmapFactory.decodeStream(
-                                input,
-                                null,
-                                BitmapFactory.Options().apply { inSampleSize = sampleSize },
-                            )
-                        }
-                    } catch (_: Exception) {
-                        null
-                    }
-                }
-                if (bitmap != null) {
-                    Image(
-                        bitmap = bitmap.asImageBitmap(),
-                        contentDescription = stringResource(R.string.kvitto_fornhandsvisning),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(160.dp),
-                        contentScale = ContentScale.Crop,
-                    )
-                }
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(onClick = onValjBild, modifier = Modifier.weight(1f)) {
-                        Text(text = stringResource(R.string.kvitto_byt))
-                    }
-                    OutlinedButton(onClick = onTaBortKvitto, modifier = Modifier.weight(1f)) {
-                        Text(text = stringResource(R.string.kvitto_ta_bort))
-                    }
-                }
-            } else {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(
-                        onClick = onTaFoto,
-                        modifier = Modifier
-                            .weight(1f)
-                            .heightIn(min = 48.dp),
-                    ) {
-                        Text(text = stringResource(R.string.kvitto_fotografera))
-                    }
-                    OutlinedButton(
-                        onClick = onValjBild,
-                        modifier = Modifier
-                            .weight(1f)
-                            .heightIn(min = 48.dp),
-                    ) {
-                        Text(text = stringResource(R.string.kvitto_valj_bild))
-                    }
-                }
-            }
         }
     }
 }
