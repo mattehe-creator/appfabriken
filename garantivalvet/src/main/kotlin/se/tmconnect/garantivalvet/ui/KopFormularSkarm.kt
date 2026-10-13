@@ -59,6 +59,7 @@ import se.tmconnect.garantivalvet.regler.GarantitidVal
 import se.tmconnect.garantivalvet.regler.ButikKontakt
 import se.tmconnect.garantivalvet.regler.KvittoForslag
 import se.tmconnect.garantivalvet.regler.Varutyp
+import se.tmconnect.garantivalvet.regler.gissaVarutyp
 import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
 import se.tmconnect.garantivalvet.regler.fyllTommaFalt
 import se.tmconnect.garantivalvet.regler.tolkaPrisTillOre
@@ -130,6 +131,7 @@ fun KopFormularSkarm(
         mutableStateOf(if (oppetKopIndexFor(initialOppetKop) == 3) initialOppetKop.toString() else "")
     }
     var varutyp by remember(initialVarutyp) { mutableStateOf(Varutyp.franNamn(initialVarutyp)) }
+    var varutypForslag by remember { mutableStateOf(false) }
 
     fun nuvarandeOppetKop(): Int? = when (oppetKopIndex) {
         0 -> null
@@ -279,6 +281,17 @@ fun KopFormularSkarm(
     }
 
     val locale = LocalConfiguration.current.locales[0]
+
+    // Föreslå varutyp när användaren skriver namnet
+    LaunchedEffect(vad) {
+        if (varutyp == null || varutypForslag) {
+            val nyVarutyp = gissaVarutyp(vad)
+            if (nyVarutyp != null) {
+                varutyp = nyVarutyp
+                varutypForslag = true
+            }
+        }
+    }
 
     Scaffold(
         modifier = modifier,
@@ -572,10 +585,20 @@ fun KopFormularSkarm(
                 Varutyp.entries.forEach { typ ->
                     FilterChip(
                         selected = varutyp == typ,
-                        onClick = { varutyp = if (varutyp == typ) null else typ },
+                        onClick = { 
+                            varutyp = if (varutyp == typ) null else typ
+                            varutypForslag = false
+                        },
                         label = { Text(text = stringResource(varutypText(typ))) },
                     )
                 }
+            }
+            if (varutypForslag && varutyp != null) {
+                Text(
+                    text = stringResource(R.string.varutyp_forslag),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
 
             OutlinedTextField(
