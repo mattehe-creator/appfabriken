@@ -57,7 +57,7 @@
     <string name="kvitto_saknas">No receipt</string>
     <string name="kvitto_ta_bort">Remove receipt</string>
     <string name="kvitto_laser">Reading receipt…</string>
-    <string name="kvitto_inget_hittades">Couldn\'t read anything useful from the receipt – please fill in the details yourself</string>
+    <string name="kvitto_inget_hittades">Couldn’t read anything useful from the receipt – please fill in the details yourself</string>
     <string name="kvitto_forslag">Suggested from the receipt – please check</string>
     <string name="kvitto_fornhandsvisning">Receipt preview</string>
     <string name="kvitto_har_kvitto">Has receipt</string>
@@ -141,7 +141,7 @@
     <string name="oppet_kop_chip_14">14 days</string>
     <string name="oppet_kop_chip_30">30 days</string>
     <string name="oppet_kop_chip_annat">Other</string>
-    <string name="oppet_kop_hjalp">A return period is the shop\'s voluntary offer and varies between shops and goods. Check the receipt.</string>
+    <string name="oppet_kop_hjalp">A return period is the shop’s voluntary offer and varies between shops and goods. Check the receipt.</string>
     <string name="garanti_hjalp">A warranty is voluntary (manufacturer or shop). Your right to claim faults by law applies regardless of any warranty.</string>
     <string name="falt_varutyp">What kind of item? (optional)</string>
     <string name="varutyp_elektronik">Electronics</string>
@@ -150,10 +150,10 @@
     <string name="varutyp_mat_dryck">Food and drink</string>
     <string name="varutyp_ovrigt">Other</string>
     <string name="lista_oppet_kop_till">Return period until %1$s</string>
-    <string name="detalj_oppet_kop_rubrik">Return period (shop\'s offer)</string>
+    <string name="detalj_oppet_kop_rubrik">Return period (shop’s offer)</string>
     <string name="detalj_oppet_kop_till">Return period until %1$s</string>
     <string name="detalj_oppet_kop_gick_ut">Return period ended %1$s</string>
-    <string name="detalj_oppet_kop_forklaring">A return period is the shop\'s voluntary offer, not a legal right. The terms are on the receipt or with the shop and vary between shops and goods.</string>
+    <string name="detalj_oppet_kop_forklaring">A return period is the shop’s voluntary offer, not a legal right. The terms are on the receipt or with the shop and vary between shops and goods.</string>
     <string name="detalj_garanti_rubrik">Warranty (voluntary)</string>
     <string name="detalj_garanti_till">Warranty until %1$s</string>
     <string name="detalj_garanti_gick_ut">Warranty ended %1$s</string>
@@ -161,7 +161,7 @@
     <string name="detalj_reklamation_oavsett_garanti">Your right to claim faults applies regardless of any warranty.</string>
     <string name="paminnelse_notis_oppet_kop_titel">Return period ending soon</string>
     <string name="paminnelse_notis_oppet_kop_text">The return period for %1$s ends %2$s</string>
-    <string name="underlag_oppet_kop">Return period, days (shop\'s offer)</string>
+    <string name="underlag_oppet_kop">Return period, days (shop’s offer)</string>
     <string name="underlag_oppet_kop_slut">Return period until</string>
     <string name="underlag_varutyp">Type of item</string>
     <string name="status_farskvara">Fresh goods</string>

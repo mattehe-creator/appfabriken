@@ -286,10 +286,8 @@ fun KopFormularSkarm(
     LaunchedEffect(vad) {
         if (varutyp == null || varutypForslag) {
             val nyVarutyp = gissaVarutyp(vad)
-            if (nyVarutyp != null) {
-                varutyp = nyVarutyp
-                varutypForslag = true
-            }
+            varutyp = nyVarutyp
+            varutypForslag = nyVarutyp != null
         }
     }
 
@@ -585,7 +583,7 @@ fun KopFormularSkarm(
                 Varutyp.entries.forEach { typ ->
                     FilterChip(
                         selected = varutyp == typ,
-                        onClick = { 
+                        onClick = {
                             varutyp = if (varutyp == typ) null else typ
                             varutypForslag = false
                         },
