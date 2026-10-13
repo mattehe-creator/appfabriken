@@ -2,6 +2,7 @@ package se.tmconnect.garantivalvet.regler
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import se.tmconnect.garantivalvet.data.Kop
 
 enum class FristTyp {
     GARANTI,
@@ -53,3 +54,36 @@ fun fristerSomSkaAviseras(
         val nedre = if (frist.typ == FristTyp.SVAR) -SVAR_PAMINNELSE_EFTER_DAGAR else 0
         dagarKvar in nedre..grans && fristNyckel(frist) !in redanAviserade
     }
+
+/** Påminnelser som hör till ett köp (samma logik som [se.tmconnect.garantivalvet.paminnelse.PaminnelseWorker]). */
+fun fristerFranKop(kop: Kop): List<Frist> {
+    val garanti = Frist(
+        kopId = kop.id,
+        typ = FristTyp.GARANTI,
+        slutdatum = garantiSlut(kop.kopdatum, kop.garantiManader),
+    )
+    val reklamation = reklamationSlut(kop.kopdatum)?.let { slut ->
+        Frist(kopId = kop.id, typ = FristTyp.REKLAMATION, slutdatum = slut)
+    }
+    val oppetKop = giltigaOppetKopDagar(kop.oppetKopDagar)?.let { dagar ->
+        Frist(kopId = kop.id, typ = FristTyp.OPPET_KOP, slutdatum = oppetKopSlut(kop.kopdatum, dagar))
+    }
+    val svarFrist = if (kop.reklamerad != null && kop.reklamationUtfall == null) {
+        Frist(kopId = kop.id, typ = FristTyp.SVAR, slutdatum = svarForvantasSenast(kop.reklamerad))
+    } else {
+        null
+    }
+    val reklamationsLogg = when (reklamationsLogg(kop)) {
+        ReklamationsLogg.REKLAMERAD ->
+            if (arnPaminnelseRelevant(kop)) {
+                Frist(kopId = kop.id, typ = FristTyp.ARN, slutdatum = arnAnmalanSenast(kop.reklamerad!!))
+            } else {
+                null
+            }
+        ReklamationsLogg.FEL_UPPTACKT ->
+            Frist(kopId = kop.id, typ = FristTyp.REKLAMERA_SENAST, slutdatum = reklamerasSenast(kop.felUpptackt!!))
+        ReklamationsLogg.INGEN -> null
+    }
+    if (arFarskvara(kop)) return listOfNotNull(oppetKop, reklamationsLogg, svarFrist)
+    return listOfNotNull(oppetKop, garanti, reklamation, reklamationsLogg, svarFrist)
+}

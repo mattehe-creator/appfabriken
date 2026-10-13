@@ -27,32 +27,11 @@ class SakerhetskopiaWorker(
     appContext: Context,
     params: WorkerParameters,
 ) : CoroutineWorker(appContext, params) {
-    override suspend fun doWork(): Result = korLas.withLock { gorKopian() }
-
-    private suspend fun gorKopian(): Result {
-        val installningar = InstallningarLager(applicationContext)
-        val mapp = installningar.autoBackupMapp.first() ?: return Result.success()
-        val tvinga = inputData.getBoolean(TVINGA, false)
-        val nu = System.currentTimeMillis()
-        val intervall = installningar.autoBackupIntervallDagar.first()
-        if (!tvinga && !arSakerhetskopiaDags(installningar.autoBackupSenaste.first(), nu, intervall)) {
-            return Result.success()
-        }
-        val ok = withContext(Dispatchers.IO) {
-            try {
-                val kop = GarantiDatabas.hamta(applicationContext).kopDao().alla()
-                val kvittoLager = KvittoLager(applicationContext)
-                kopiera(
-                    lagring = SafMapp(applicationContext, Uri.parse(mapp)),
-                    skrivZip = { ut -> Sakerhetskopia.skriv(ut, kop, kvittoLager) },
-                    idag = LocalDate.now(),
-                )
-            } catch (_: Exception) {
-                false
-            }
-        }
-        installningar.sattAutoBackupResultat(ok, nu)
-        return Result.success()
+    override suspend fun doWork(): androidx.work.ListenableWorker.Result = korLas.withLock {
+        korSakerhetskopiaJobb(
+            context = applicationContext,
+            tvinga = inputData.getBoolean(TVINGA, false),
+        )
     }
 
     companion object {
@@ -60,7 +39,44 @@ class SakerhetskopiaWorker(
 
         /** Det dagliga jobbet och "Kopiera nu" får aldrig skriva till mappen samtidigt. */
         private val korLas = Mutex()
+
+        /**
+         * Ersätter SAF-mappen i enhetstester (Robolectric). Sätts till `null` efter varje test.
+         */
+        @Volatile
+        var testMappLagring: MappLagring? = null
     }
+}
+
+/** Kör automatisk säkerhetskopia enligt sparade inställningar. */
+internal suspend fun korSakerhetskopiaJobb(
+    context: Context,
+    tvinga: Boolean,
+    nu: Long = System.currentTimeMillis(),
+    idag: LocalDate = LocalDate.now(),
+): androidx.work.ListenableWorker.Result {
+    val installningar = InstallningarLager(context)
+    val mapp = installningar.autoBackupMapp.first() ?: return androidx.work.ListenableWorker.Result.success()
+    if (!tvinga && !arSakerhetskopiaDags(installningar.autoBackupSenaste.first(), nu, installningar.autoBackupIntervallDagar.first())) {
+        return androidx.work.ListenableWorker.Result.success()
+    }
+    val ok = withContext(Dispatchers.IO) {
+        try {
+            val kop = GarantiDatabas.hamta(context).kopDao().alla()
+            val kvittoLager = KvittoLager(context)
+            val lagring = SakerhetskopiaWorker.testMappLagring
+                ?: SafMapp(context, Uri.parse(mapp))
+            kopiera(
+                lagring = lagring,
+                skrivZip = { ut -> Sakerhetskopia.skriv(ut, kop, kvittoLager) },
+                idag = idag,
+            )
+        } catch (_: Exception) {
+            false
+        }
+    }
+    installningar.sattAutoBackupResultat(ok, nu)
+    return androidx.work.ListenableWorker.Result.success()
 }
 
 object SakerhetskopiaPlanerare {

@@ -623,9 +623,7 @@ class KopViewModel(
     /**
      * Hämtar alla köp för export (till säkerhetskopia)
      */
-    suspend fun allaKopForExport(): List<Kop> {
-        return repository.alla.first()
-    }
+    suspend fun allaKopForExport(): List<Kop> = repository.allaKop()
 
     /**
      * Sparar säkerhetskopia till angiven URI

@@ -141,13 +141,20 @@ fun skrivHemforsakringTillPdf(
 
         dokument.finishPage(sida)
         dokument.writeTo(outputStream)
+        dokument.close()
         PdfExportResult.Ok
     } catch (e: Exception) {
+        try {
+            dokument.close()
+        } catch (_: Exception) {
+        }
         PdfExportResult.Fel(e.message ?: e.javaClass.simpleName)
     } catch (e: OutOfMemoryError) {
+        try {
+            dokument.close()
+        } catch (_: Exception) {
+        }
         PdfExportResult.Fel("Slut på minne")
-    } finally {
-        dokument.close()
     }
 }
 
