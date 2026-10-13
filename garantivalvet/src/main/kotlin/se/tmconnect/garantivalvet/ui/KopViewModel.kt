@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -68,6 +70,7 @@ class KopViewModel(
         viewModelScope.launch {
             proKalla.kontrollera()
         }
+        viewModelScope.launch(Dispatchers.IO) { kvittoLager.rensaCache() }
     }
 
     val arPro: StateFlow<Boolean> =
@@ -124,7 +127,19 @@ class KopViewModel(
     /** Användaren har valt en mapp: spara valet, schemalägg och gör en första kopia direkt. */
     fun valtAutoBackupMapp(uri: Uri, namn: String?) {
         viewModelScope.launch {
+            val tidigare = installningarLager.autoBackupMapp.first()
             installningarLager.sattAutoBackupMapp(uri.toString(), namn)
+            // Antalet beständiga mappbehörigheter är begränsat: släpp den gamla när användaren byter mapp.
+            if (tidigare != null && tidigare != uri.toString()) {
+                try {
+                    appContext.contentResolver.releasePersistableUriPermission(
+                        Uri.parse(tidigare),
+                        android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                            android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+                    )
+                } catch (_: Exception) {
+                }
+            }
             SakerhetskopiaPlanerare.synka(appContext, true)
             SakerhetskopiaPlanerare.korNu(appContext)
         }
@@ -296,34 +311,44 @@ class KopViewModel(
         }
     }
 
-    /** Lägger en bild på felet till det valda köpet (högst [MAX_FEL_BILDER]). */
-    fun laggTillFelBild(uri: Uri, onFel: () -> Unit = {}) {
-        val kop = _valtKop.value ?: return
-        if (!kanLaggaTillFelBild(kop.felBilder)) {
-            onFel()
-            return
-        }
+    private val felBildLas = Mutex()
+
+    /**
+     * Lägger en bild på felet till köpet [kopId] (högst [MAX_FEL_BILDER]). Raden läses om efter den långsamma
+     * bildbehandlingen, så att inget som ändrats under tiden skrivs över och gränsen gäller aktuella data.
+     */
+    fun laggTillFelBild(kopId: Long, uri: Uri, onFel: () -> Unit = {}) {
         viewModelScope.launch {
             val filnamn = withContext(Dispatchers.IO) { kvittoLager.sparaFelBild(uri) }
             if (filnamn == null) {
                 onFel()
                 return@launch
             }
-            val aktuell = _valtKop.value?.takeIf { it.id == kop.id } ?: kop
-            val ny = aktuell.copy(felBilder = skrivFelBilder(lasFelBilder(aktuell.felBilder) + filnamn))
-            repository.spara(ny)
-            _valtKop.value = ny
+            felBildLas.withLock {
+                val nu = repository.hamta(kopId)
+                if (nu == null || !kanLaggaTillFelBild(nu.felBilder)) {
+                    withContext(Dispatchers.IO) { kvittoLager.taBort(filnamn) }
+                    onFel()
+                    return@withLock
+                }
+                val ny = nu.copy(felBilder = skrivFelBilder(lasFelBilder(nu.felBilder) + filnamn))
+                repository.spara(ny)
+                if (_valtKop.value?.id == kopId) _valtKop.value = ny
+            }
         }
     }
 
     /** Tar bort en bild på felet från det valda köpet och raderar filen. */
     fun taBortFelBild(filnamn: String) {
-        val kop = _valtKop.value ?: return
+        val kopId = _valtKop.value?.id ?: return
         viewModelScope.launch {
-            val ny = kop.copy(felBilder = skrivFelBilder(lasFelBilder(kop.felBilder) - filnamn))
-            repository.spara(ny)
-            withContext(Dispatchers.IO) { kvittoLager.taBort(filnamn) }
-            _valtKop.value = ny
+            felBildLas.withLock {
+                val nu = repository.hamta(kopId) ?: return@withLock
+                val ny = nu.copy(felBilder = skrivFelBilder(lasFelBilder(nu.felBilder) - filnamn))
+                repository.spara(ny)
+                withContext(Dispatchers.IO) { kvittoLager.taBort(filnamn) }
+                if (_valtKop.value?.id == kopId) _valtKop.value = ny
+            }
         }
     }
 
@@ -604,18 +629,32 @@ class KopViewModel(
         }
     }
 
-    /** Sparar hemförsäkringsunderlaget som PDF (tabell med värde och summa, därefter kvittona) till [uri]. */
+    /**
+     * Sparar hemförsäkringsunderlaget som PDF (tabell med värde och summa, därefter kvittona) till [uri]. PDF:en
+     * byggs först i en temporärfil och kopieras bara till målet när den är klar, så att en halvfärdig fil aldrig
+     * hamnar hos användaren. Slut på minne ger ett felmeddelande i stället för en krasch.
+     */
     fun sparaHemforsakringPdf(uri: Uri, texter: HemforsakringTexter, locale: java.util.Locale) {
         viewModelScope.launch {
+            val tillfallig = java.io.File(appContext.cacheDir, "hemforsakring-${System.nanoTime()}.pdf")
             try {
                 val sammanstallning = byggHemforsakring(allaKopForExport())
-                val resultat = withContext(Dispatchers.IO) {
+                val ok = withContext(Dispatchers.IO) {
+                    val resultat = tillfallig.outputStream().use {
+                        skrivHemforsakringTillPdf(sammanstallning, texter, locale, kvittoLager, it)
+                    }
+                    if (resultat != PdfExportResult.Ok) return@withContext false
                     val ut = appContext.contentResolver.openOutputStream(uri) ?: throw java.io.IOException()
-                    ut.use { skrivHemforsakringTillPdf(sammanstallning, texter, locale, kvittoLager, it) }
+                    ut.use { mal -> tillfallig.inputStream().use { it.copyTo(mal) } }
+                    true
                 }
-                if (resultat == PdfExportResult.Ok) meddelaExportSparad() else meddelaExportMisslyckades()
+                if (ok) meddelaExportSparad() else meddelaExportMisslyckades()
             } catch (_: Exception) {
                 meddelaExportMisslyckades()
+            } catch (_: OutOfMemoryError) {
+                meddelaExportMisslyckades()
+            } finally {
+                tillfallig.delete()
             }
         }
     }

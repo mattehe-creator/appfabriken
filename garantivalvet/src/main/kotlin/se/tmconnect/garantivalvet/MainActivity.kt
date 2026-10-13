@@ -148,13 +148,19 @@ class MainActivity : ComponentActivity() {
     private val pickFelBildContract = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia(),
     ) { uri: Uri? ->
-        uri?.let { viewModel.laggTillFelBild(it) { visaFelBildFel() } }
+        val kopId = felKopId
+        if (uri != null && kopId != 0L) viewModel.laggTillFelBild(kopId, uri) { visaFelBildFel() }
     }
+
+    // Köpet och kamerafilen sparas i onSaveInstanceState: om telefonen stänger appen medan kameran är öppen
+    // ska fotot ändå hamna på rätt köp.
+    private var felKopId: Long = 0L
     private var felKameraUri: Uri? = null
     private val takeFelFotoContract = registerForActivityResult(
         ActivityResultContracts.TakePicture(),
     ) { success ->
-        felKameraUri?.takeIf { success }?.let { viewModel.laggTillFelBild(it) { visaFelBildFel() } }
+        val kopId = felKopId
+        felKameraUri?.takeIf { success && kopId != 0L }?.let { viewModel.laggTillFelBild(kopId, it) { visaFelBildFel() } }
     }
 
     private fun visaFelBildFel() {
@@ -316,8 +322,20 @@ class MainActivity : ComponentActivity() {
     private var behorighetNekad by mutableStateOf(false)
     private var exportKop: Kop? = null
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putLong(STATE_FEL_KOP_ID, felKopId)
+        felKameraUri?.let { outState.putString(STATE_FEL_KAMERA_URI, it.toString()) }
+        kameraUri?.let { outState.putString(STATE_KAMERA_URI, it.toString()) }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        savedInstanceState?.let { tillstand ->
+            felKopId = tillstand.getLong(STATE_FEL_KOP_ID, 0L)
+            felKameraUri = tillstand.getString(STATE_FEL_KAMERA_URI)?.let(Uri::parse)
+            kameraUri = tillstand.getString(STATE_KAMERA_URI)?.let(Uri::parse)
+        }
         hanteraPaminnelseIntent(intent)
         if (savedInstanceState == null) {
             hanteraDelatKvitto(intent)
@@ -502,12 +520,14 @@ class MainActivity : ComponentActivity() {
                                 felBilder = lasFelBilder(kop.felBilder).map { FelBildPost(it, viewModel.felBildUri(it)) },
                                 onDelaTillAi = { text -> delaTillAi(text) },
                                 onValjFelBild = {
+                                    felKopId = kop.id
                                     pickFelBildContract.launch(
                                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
                                     )
                                 },
                                 onTaFelFoto = {
                                     val uri = viewModel.skapaKameraKvittoUri()
+                                    felKopId = kop.id
                                     felKameraUri = uri
                                     takeFelFotoContract.launch(uri)
                                 },
@@ -869,6 +889,9 @@ class MainActivity : ComponentActivity() {
     }
 
     companion object {
+        private const val STATE_FEL_KOP_ID = "fel_kop_id"
+        private const val STATE_FEL_KAMERA_URI = "fel_kamera_uri"
+        private const val STATE_KAMERA_URI = "kamera_uri"
         /** Genvägen på appikonen: fota ett nytt kvitto. */
         const val ACTION_FOTA_KVITTO = "se.tmconnect.garantivalvet.action.FOTA_KVITTO"
     }

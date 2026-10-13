@@ -47,6 +47,22 @@ class AutoSakerhetskopiaTest {
     }
 
     @Test
+    fun ettDygnsjobbSomStartarNagraMinuterForTidigtHoppasInteOver() {
+        assertTrue(arSakerhetskopiaDags(0L, dagMs - TimeUnit.MINUTES.toMillis(5), 1))
+        assertTrue(arSakerhetskopiaDags(0L, 7 * dagMs - TimeUnit.MINUTES.toMillis(5), 7))
+        assertFalse(arSakerhetskopiaDags(0L, dagMs - TimeUnit.HOURS.toMillis(5), 1))
+    }
+
+    @Test
+    fun gallringenFoljerFilnamnetsDatumOavsettAndringstid() {
+        // Leverantören rapporterar ingen ändringstid (0): äldsta datum ska ändå gallras, aldrig den nya kopian.
+        val poster = (1..6).map { MappPost("id$it", "${AUTO_FILPREFIX}2026-10-0$it.zip", 0L) } +
+            MappPost("ny", "${AUTO_FILPREFIX}2026-10-13 (1).zip", 0L)
+        val bort = postAttRadera(poster).map { it.id }
+        assertEquals(listOf("id2", "id1"), bort)
+    }
+
+    @Test
     fun ettOgiltigtIntervallBehandlasSomEttDygn() {
         assertTrue(arSakerhetskopiaDags(0L, dagMs, 0))
     }
@@ -101,6 +117,16 @@ class AutoSakerhetskopiaTest {
         assertTrue("min-egen-fil.zip" in namn)
         assertTrue("garantivalvet-auto-2026-10-13.zip" in namn)
         assertFalse("${AUTO_FILPREFIX}2026-01-01.zip" in namn)
+    }
+
+    @Test
+    fun gammalKopiaFranSammaDagFinnsKvarNarNyaSkrivningenMisslyckas() {
+        val mapp = MinnesMapp()
+        kopiera(mapp, { it.write("forsta".toByteArray()) }, dag)
+        val ok = kopiera(mapp, { throw IOException("disken full") }, dag)
+        assertFalse(ok)
+        assertEquals(1, mapp.poster.size)
+        assertEquals("forsta", mapp.poster[0].second.toString())
     }
 
     @Test

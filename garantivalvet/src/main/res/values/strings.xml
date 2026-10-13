@@ -315,4 +315,5 @@
     <string name="utseende_system">Follow phone</string>
     <string name="utseende_ljust">Light</string>
     <string name="utseende_morkt">Dark</string>
+    <string name="ai_egen_text_foraldrad">The text is your own and no longer follows your choices (demand, fault description, date). Tap Reset to update it.</string>
 </resources>

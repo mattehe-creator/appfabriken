@@ -315,4 +315,5 @@
     <string name="utseende_system">Följ telefonen</string>
     <string name="utseende_ljust">Ljust</string>
     <string name="utseende_morkt">Mörkt</string>
+    <string name="ai_egen_text_foraldrad">Texten är din egen och följer inte längre dina val (krav, felbeskrivning, datum). Tryck Återställ för att uppdatera den.</string>
 </resources>

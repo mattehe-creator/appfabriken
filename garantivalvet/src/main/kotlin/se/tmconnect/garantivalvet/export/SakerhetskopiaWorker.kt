@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -14,6 +15,8 @@ import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import se.tmconnect.garantivalvet.data.GarantiDatabas
 import se.tmconnect.garantivalvet.data.InstallningarLager
@@ -24,7 +27,9 @@ class SakerhetskopiaWorker(
     appContext: Context,
     params: WorkerParameters,
 ) : CoroutineWorker(appContext, params) {
-    override suspend fun doWork(): Result {
+    override suspend fun doWork(): Result = korLas.withLock { gorKopian() }
+
+    private suspend fun gorKopian(): Result {
         val installningar = InstallningarLager(applicationContext)
         val mapp = installningar.autoBackupMapp.first() ?: return Result.success()
         val tvinga = inputData.getBoolean(TVINGA, false)
@@ -52,11 +57,15 @@ class SakerhetskopiaWorker(
 
     companion object {
         const val TVINGA = "tvinga"
+
+        /** Det dagliga jobbet och "Kopiera nu" får aldrig skriva till mappen samtidigt. */
+        private val korLas = Mutex()
     }
 }
 
 object SakerhetskopiaPlanerare {
     private const val UNIKT_NAMN = "sakerhetskopia_auto"
+    private const val UNIKT_NAMN_NU = "sakerhetskopia_nu"
 
     /** Slår på eller av det dagliga jobbet. Jobbet gör bara en kopia när intervallet gått. */
     fun synka(context: Context, pa: Boolean) {
@@ -66,6 +75,8 @@ object SakerhetskopiaPlanerare {
             return
         }
         val request = PeriodicWorkRequestBuilder<SakerhetskopiaWorker>(24, TimeUnit.HOURS)
+            // Första dygnsjobbet efter ett dygn; den första kopian görs direkt av korNu när mappen väljs.
+            .setInitialDelay(24, TimeUnit.HOURS)
             .setConstraints(
                 Constraints.Builder().setRequiresBatteryNotLow(true).setRequiresStorageNotLow(true).build(),
             )
@@ -75,7 +86,9 @@ object SakerhetskopiaPlanerare {
 
     /** Gör en kopia direkt, oavsett intervall. */
     fun korNu(context: Context) {
-        WorkManager.getInstance(context).enqueue(
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            UNIKT_NAMN_NU,
+            ExistingWorkPolicy.KEEP,
             OneTimeWorkRequestBuilder<SakerhetskopiaWorker>()
                 .setInputData(workDataOf(SakerhetskopiaWorker.TVINGA to true))
                 .build(),

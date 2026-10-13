@@ -24,7 +24,10 @@ class SafMapp(
         val resultat = mutableListOf<MappPost>()
         resolver.query(barn, kolumner, null, null, null)?.use { markor ->
             while (markor.moveToNext()) {
-                resultat += MappPost(markor.getString(0), markor.getString(1), markor.getLong(2))
+                // Vissa leverantörer saknar id eller namn: hoppa över posten i stället för att fela hela körningen.
+                val id = markor.getString(0) ?: continue
+                val namn = markor.getString(1) ?: continue
+                resultat += MappPost(id, namn, markor.getLong(2))
             }
         }
         return resultat

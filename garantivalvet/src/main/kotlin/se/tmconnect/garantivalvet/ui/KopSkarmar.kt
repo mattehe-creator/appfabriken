@@ -106,10 +106,13 @@ fun KopListaSkarm(
             var fraga by rememberSaveable { mutableStateOf("") }
             var valdGrupp by rememberSaveable { mutableStateOf<String?>(null) }
             var valdVarutyp by rememberSaveable { mutableStateOf<String?>(null) }
+            // En varutyp som inte längre finns i listan (köpet togs bort) får inte hålla kvar ett osynligt filter.
+            val tillgangligaTyper = kopLista.mapNotNull { Varutyp.franNamn(it.varutyp) }.toSet()
+            val aktivVarutyp = Varutyp.franNamn(valdVarutyp)?.takeIf { it in tillgangligaTyper }
             val filter = KopFilter(
                 fraga = fraga,
                 grupp = valdGrupp?.let { namn -> ListaGrupp.entries.firstOrNull { it.name == namn } },
-                varutyp = Varutyp.franNamn(valdVarutyp),
+                varutyp = aktivVarutyp,
             )
             val visaFilter = kopLista.size >= SOK_FRAN_ANTAL
             val synligLista = if (visaFilter) filtreraKop(kopLista, filter, idag) else kopLista
