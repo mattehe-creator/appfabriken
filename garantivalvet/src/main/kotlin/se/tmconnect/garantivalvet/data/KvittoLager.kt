@@ -34,17 +34,8 @@ class KvittoLager(
      */
     fun kopieraFranUri(kallaUri: Uri): String? {
         // Först läs storleken utan att ladda hela bilden
-        val options = BitmapFactory.Options().apply {
-            inJustDecodeBounds = true
-        }
-        
-        context.contentResolver.openInputStream(kallaUri)?.use { input ->
-            BitmapFactory.decodeStream(input, null, options)
-        } ?: return null
-        
-        val bredd = options.outWidth
-        val hojd = options.outHeight
-        
+        val (bredd, hojd) = lasStorlek(kallaUri) ?: return null
+
         // Beräkna inSampleSize baserat på storlek
         val sampleSize = beraknaInSampleSize(bredd, hojd)
 
@@ -120,16 +111,24 @@ class KvittoLager(
         return FileProvider.getUriForFile(context, fileProviderAuthority(context), fil)
     }
 
-    private fun normaliseraTillFil(kalla: Uri, extraGrader: Int, mal: File): Boolean {
+    /**
+     * Bildens mått utan att ladda den. `decodeStream` med `inJustDecodeBounds` returnerar alltid `null`, så
+     * måtten läses ur [BitmapFactory.Options] och aldrig ur returvärdet.
+     */
+    private fun lasStorlek(kalla: Uri): Pair<Int, Int>? {
         val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        context.contentResolver.openInputStream(kalla)?.use { BitmapFactory.decodeStream(it, null, options) }
-            ?: return false
-        if (options.outWidth <= 0 || options.outHeight <= 0) return false
+        val strom = context.contentResolver.openInputStream(kalla) ?: return null
+        strom.use { BitmapFactory.decodeStream(it, null, options) }
+        return if (options.outWidth > 0 && options.outHeight > 0) options.outWidth to options.outHeight else null
+    }
+
+    private fun normaliseraTillFil(kalla: Uri, extraGrader: Int, mal: File): Boolean {
+        val (bredd, hojd) = lasStorlek(kalla) ?: return false
         val bitmap = context.contentResolver.openInputStream(kalla)?.use { input ->
             BitmapFactory.decodeStream(
                 input,
                 null,
-                BitmapFactory.Options().apply { inSampleSize = beraknaInSampleSize(options.outWidth, options.outHeight) },
+                BitmapFactory.Options().apply { inSampleSize = beraknaInSampleSize(bredd, hojd) },
             )
         } ?: return false
         val grader = summeraRotation(exifGrader(kalla), extraGrader)

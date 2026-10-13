@@ -66,4 +66,28 @@ class KvittoLagerNormaliseraTest {
         val fil = File(context.cacheDir, "inte-en-bild.jpg").apply { writeText("det här är text") }
         assertNull(lager.normalisera(Uri.fromFile(fil)))
     }
+
+    @Test
+    fun ettKvittoSomSparasFinnsKvarOchKanLasas() {
+        val filnamn = lager.kopieraFranUri(skapaBild(200, 100))
+        assertNotNull("kopieraFranUri returnerade null: kvittot sparades inte", filnamn)
+        val fil = File(context.filesDir, "kvitton/$filnamn")
+        org.junit.Assert.assertTrue(fil.isFile)
+        assertEquals(200 to 100, mattPa(Uri.fromFile(fil)))
+        org.junit.Assert.assertNotNull(lager.lasRåBytes(filnamn!!))
+    }
+
+    @Test
+    fun enStorBildSkalasNedVidSparandet() {
+        val filnamn = lager.kopieraFranUri(skapaBild(4000, 2000))!!
+        val (b, h) = mattPa(Uri.fromFile(File(context.filesDir, "kvitton/$filnamn")))
+        assertEquals(2000, b)
+        assertEquals(1000, h)
+    }
+
+    @Test
+    fun enFilSomInteArEnBildSparasInte() {
+        val fil = File(context.cacheDir, "inte-en-bild2.jpg").apply { writeText("text") }
+        assertNull(lager.kopieraFranUri(Uri.fromFile(fil)))
+    }
 }
