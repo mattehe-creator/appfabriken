@@ -68,6 +68,7 @@ import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.regler.Krav
 import se.tmconnect.garantivalvet.regler.ReklamationsTexter
+import se.tmconnect.garantivalvet.regler.byggAiPrompt
 import se.tmconnect.garantivalvet.regler.byggReklamationsbrev
 import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.garantivalvet.regler.formateraPrisKr
@@ -80,6 +81,7 @@ fun ReklamationsSkarm(
     kop: Kop,
     kvittoFinns: Boolean,
     felBilder: List<FelBildPost> = emptyList(),
+    onDelaTillAi: (text: String) -> Unit = {},
     onValjFelBild: () -> Unit = {},
     onTaFelFoto: () -> Unit = {},
     onTaBortFelBild: (filnamn: String) -> Unit = {},
@@ -133,7 +135,25 @@ fun ReklamationsSkarm(
         locale = locale,
         idag = idag,
     )
+    var egenText by remember { mutableStateOf<String?>(null) }
+    var redigerar by remember { mutableStateOf(false) }
+    val brevText = egenText ?: brev.text
     val kanSkicka = beskrivning.isNotBlank()
+    val aiMallSkriv = stringResource(R.string.ai_mall_skriv)
+    val aiMallSvara = stringResource(R.string.ai_mall_svara)
+    fun aiPrompt(mall: String) = byggAiPrompt(
+        mall = mall,
+        vad = kop.vad,
+        butik = kop.varKopt,
+        kopdatum = kop.kopdatum,
+        prisOre = kop.prisOre,
+        felBeskrivning = beskrivning,
+        felUpptackt = upptackt,
+        krav = krav,
+        texter = texter,
+        locale = locale,
+        idag = idag,
+    )
 
     if (visarDatumvaljare) {
         DatePickerDialog(
@@ -194,7 +214,7 @@ fun ReklamationsSkarm(
                     Button(
                         onClick = {
                             onSparaFel(upptackt, beskrivning)
-                            onSkickaMejl(brev.amne, brev.text, bifogaUnderlag)
+                            onSkickaMejl(brev.amne, brevText, bifogaUnderlag)
                         },
                         enabled = kanSkicka,
                         modifier = Modifier
@@ -207,7 +227,7 @@ fun ReklamationsSkarm(
                         TextButton(
                             onClick = {
                                 onSparaFel(upptackt, beskrivning)
-                                clipboard.setText(AnnotatedString("${brev.amne}\n\n${brev.text}"))
+                                clipboard.setText(AnnotatedString("${brev.amne}\n\n$brevText"))
                                 kopierad = true
                             },
                             enabled = kanSkicka,
@@ -322,9 +342,57 @@ fun ReklamationsSkarm(
                             fontWeight = FontWeight.SemiBold,
                         )
                         HorizontalDivider()
-                        Text(text = brev.text, style = MaterialTheme.typography.bodyMedium)
+                        if (redigerar) {
+                            OutlinedTextField(
+                                value = brevText,
+                                onValueChange = {
+                                    egenText = it
+                                    kopierad = false
+                                },
+                                minLines = 8,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        } else {
+                            Text(text = brevText, style = MaterialTheme.typography.bodyMedium)
+                        }
                     }
                 }
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    TextButton(
+                        onClick = { redigerar = !redigerar },
+                        modifier = Modifier.heightIn(min = 48.dp),
+                    ) {
+                        Text(text = stringResource(if (redigerar) R.string.ai_klar_redigera else R.string.ai_redigera))
+                    }
+                    TextButton(
+                        onClick = {
+                            clipboard.getText()?.text?.takeIf { it.isNotBlank() }?.let {
+                                egenText = it
+                                kopierad = false
+                            }
+                        },
+                        modifier = Modifier.heightIn(min = 48.dp),
+                    ) {
+                        Text(text = stringResource(R.string.ai_klistra_in))
+                    }
+                    if (egenText != null) {
+                        TextButton(
+                            onClick = {
+                                egenText = null
+                                kopierad = false
+                            },
+                            modifier = Modifier.heightIn(min = 48.dp),
+                        ) {
+                            Text(text = stringResource(R.string.ai_aterstall))
+                        }
+                    }
+                }
+                AiHjalpKort(
+                    kanDela = kanSkicka,
+                    onSkriv = { onDelaTillAi(aiPrompt(aiMallSkriv)) },
+                    onSvara = { onDelaTillAi(aiPrompt(aiMallSvara)) },
+                    onKopieraSkriv = { clipboard.setText(AnnotatedString(aiPrompt(aiMallSkriv))) },
+                )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -428,6 +496,56 @@ private fun FelBilderRuta(
                     onClick = onValjFelBild,
                     modifier = Modifier.weight(1f).heightIn(min = 48.dp),
                 ) { Text(text = stringResource(R.string.reklamera_bild_galleri)) }
+            }
+        }
+    }
+}
+
+/** Frivillig hjälp av användarens egen AI-app: frågan delas via telefonens delningsmeny, appen skickar inget själv. */
+@Composable
+private fun AiHjalpKort(
+    kanDela: Boolean,
+    onSkriv: () -> Unit,
+    onSvara: () -> Unit,
+    onKopieraSkriv: () -> Unit,
+) {
+    var visaTips by remember { mutableStateOf(false) }
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = AppfabrikKortForm,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+    ) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                text = stringResource(R.string.ai_rubrik),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                text = stringResource(R.string.ai_beskrivning),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(
+                    onClick = onSkriv,
+                    enabled = kanDela,
+                    modifier = Modifier.weight(1f).heightIn(min = 48.dp),
+                ) { Text(text = stringResource(R.string.ai_skriv_knapp)) }
+                OutlinedButton(
+                    onClick = onSvara,
+                    enabled = kanDela,
+                    modifier = Modifier.weight(1f).heightIn(min = 48.dp),
+                ) { Text(text = stringResource(R.string.ai_svara_knapp)) }
+            }
+            TextButton(onClick = onKopieraSkriv, enabled = kanDela, modifier = Modifier.heightIn(min = 48.dp)) {
+                Text(text = stringResource(R.string.ai_kopiera_fraga))
+            }
+            TextButton(onClick = { visaTips = !visaTips }, modifier = Modifier.heightIn(min = 48.dp)) {
+                Text(text = stringResource(if (visaTips) R.string.ai_dolj_tips else R.string.ai_visa_tips))
+            }
+            if (visaTips) {
+                Text(text = stringResource(R.string.ai_tips), style = MaterialTheme.typography.bodySmall)
             }
         }
     }

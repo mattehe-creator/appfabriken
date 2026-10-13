@@ -4,4 +4,6 @@ Consumer claims under the Swedish Consumer Purchase Act (Konsumentköplagen) are
 
 Warranty Vault works entirely offline. The app does not request the INTERNET permission. No account is required, no ads, and no analytics. All data stays on your phone until you choose to export it.
 
+If you want help wording a complaint, you can share a ready-made question to your own AI app (such as Claude, ChatGPT or Gemini) through your phone's share menu. Warranty Vault sends nothing itself, and you see the text before you send it. No names, addresses or receipts are included.
+
 Everything in the app is free, but the free version holds 15 purchases. Pro (one-time purchase, no subscription) removes the limit. Help with claims, claim documents and backup are always free.

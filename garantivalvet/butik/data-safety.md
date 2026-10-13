@@ -51,6 +51,8 @@ Följande lagras **på enheten** för appens funktion. Det ska **inte** markeras
 
 **Motivering:** Room (`kop`-tabell), filer via `KvittoLager`, DataStore för inställningar och Pro-flagga.
 
+**AI-hjälp (delning):** I Reklamera kan användaren dela en färdig fråga (köpets fakta: vara, butik, datum, pris, felbeskrivning, krav) via Android-delningsmenyn (`ACTION_SEND`, text) till en AI-app som användaren själv väljer. Appen har ingen nätverkskod och skickar ingenting själv; det är användarens val och sker i den andra appen. Namn, adress och kvitto ingår aldrig. Rör inte svaren i avsnitt 1.
+
 ---
 
 ## 5. Behörigheter

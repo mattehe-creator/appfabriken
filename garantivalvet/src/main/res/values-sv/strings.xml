@@ -295,4 +295,20 @@
     <string name="hem_summa">Summa</string>
     <string name="hem_saknar_pris">Vissa köp saknar pris och ingår inte i summan.</string>
     <string name="hem_kvitton_rubrik">Kvitto</string>
+    <string name="ai_rubrik">Vill du ha hjälp av en AI?</string>
+    <string name="ai_beskrivning">Valfritt. Du väljer själv vilken AI-app du har. Garantivalvet skickar inget: frågan delas via telefonens delningsmeny och visas i AI-appen innan du skickar den. Inga namn, adresser eller kvitton följer med.</string>
+    <string name="ai_skriv_knapp">Skriv med AI</string>
+    <string name="ai_svara_knapp">Svara på butikens besked</string>
+    <string name="ai_kopiera_fraga">Kopiera frågan i stället</string>
+    <string name="ai_visa_tips">Tips: så får du bra hjälp</string>
+    <string name="ai_dolj_tips">Dölj tipsen</string>
+    <string name="ai_tips">• Var konkret: datum, vad som är fel och vad du vill ha.\n• Be om en kort och saklig ton. Hot och långa utläggningar hjälper inte.\n• Skriv inte personnummer, adress eller kortnummer till en AI.\n• AI kan ha fel om lagen. Kontrollera det viktiga hos Konsumentverket eller Hallå konsument.\n• Läs alltid igenom svaret. Klistra sedan in det här med \"Klistra in\" och skicka från mejlappen.\n• Säger butiken nej: be AI:n hjälpa dig svara, och fråga om Allmänna reklamationsnämnden (ARN).</string>
+    <string name="ai_dela_titel">Dela frågan till din AI-app</string>
+    <string name="ai_ingen_app">Hittade ingen app att dela till.</string>
+    <string name="ai_redigera">Redigera texten</string>
+    <string name="ai_klar_redigera">Klar</string>
+    <string name="ai_klistra_in">Klistra in</string>
+    <string name="ai_aterstall">Återställ</string>
+    <string name="ai_mall_skriv">Hjälp mig skriva ett reklamationsmejl till ett företag i Sverige. Skriv sakligt, vänligt och kort på svenska.\n\nFakta om köpet:\n%1$s\n\nRegler som gäller (konsumentköplagen 2022:260): reklamationsrätten är tre år. Ett fel som visar sig inom två år antas ha funnits när jag fick varan. Jag ska reklamera inom skälig tid efter att jag upptäckte felet, och två månader är alltid i tid. Jag kan i första hand kräva att felet åtgärdas genom reparation eller ny vara, därefter prisavdrag eller hävning av köpet.\n\nSkriv mejlet så att det framgår att jag reklamerar och vad jag kräver. Hitta inte på uppgifter som jag inte har gett dig. Ta inte med någon personlig information om mig. Säg till om du är osäker på något i lagen, så att jag kan kontrollera det hos Konsumentverket.</string>
+    <string name="ai_mall_svara">Jag har reklamerat en vara hos ett företag i Sverige och fått ett svar. Förklara först kort vad svaret betyder och vilka rättigheter jag har. Föreslå sedan ett sakligt, vänligt och kort svar på svenska.\n\nFakta om köpet:\n%1$s\n\nRegler som gäller (konsumentköplagen 2022:260): reklamationsrätten är tre år. Ett fel som visar sig inom två år antas ha funnits när jag fick varan. Jag ska reklamera inom skälig tid efter att jag upptäckte felet, och två månader är alltid i tid. Jag kan i första hand kräva att felet åtgärdas genom reparation eller ny vara, därefter prisavdrag eller hävning av köpet. Nekar företaget kan jag vända mig till Allmänna reklamationsnämnden (ARN) inom ett år efter att jag första gången reklamerade, och få allmän vägledning av Hallå konsument.\n\nFöretagets svar:\n[Klistra in företagets svar här]\n\nHitta inte på uppgifter som jag inte har gett dig. Ta inte med personlig information om mig. Säg till om du är osäker på något i lagen, så att jag kan kontrollera det hos Konsumentverket.</string>
 </resources>

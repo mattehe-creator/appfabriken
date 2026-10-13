@@ -479,6 +479,7 @@ class MainActivity : ComponentActivity() {
                                 kop = kop,
                                 kvittoFinns = kop.kvittoFil != null,
                                 felBilder = lasFelBilder(kop.felBilder).map { FelBildPost(it, viewModel.felBildUri(it)) },
+                                onDelaTillAi = { text -> delaTillAi(text) },
                                 onValjFelBild = {
                                     pickFelBildContract.launch(
                                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
@@ -692,6 +693,19 @@ class MainActivity : ComponentActivity() {
             startActivity(Intent.createChooser(intent, getString(R.string.reklamera_skicka_mejl)))
         } catch (_: android.content.ActivityNotFoundException) {
             android.widget.Toast.makeText(this, R.string.reklamera_inget_mejl, android.widget.Toast.LENGTH_LONG).show()
+        }
+    }
+
+    /** Delar frågan till den AI-app användaren själv väljer i delningsmenyn. Appen skickar ingenting själv. */
+    private fun delaTillAi(text: String) {
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, text)
+        }
+        try {
+            startActivity(Intent.createChooser(intent, getString(R.string.ai_dela_titel)))
+        } catch (_: android.content.ActivityNotFoundException) {
+            android.widget.Toast.makeText(this, R.string.ai_ingen_app, android.widget.Toast.LENGTH_LONG).show()
         }
     }
 

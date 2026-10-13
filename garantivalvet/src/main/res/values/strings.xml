@@ -295,4 +295,20 @@
     <string name="hem_summa">Total</string>
     <string name="hem_saknar_pris">Some purchases have no price and are not included in the total.</string>
     <string name="hem_kvitton_rubrik">Receipt</string>
+    <string name="ai_rubrik">Want help from an AI?</string>
+    <string name="ai_beskrivning">Optional. You choose which AI app to use. Warranty Vault sends nothing: the question is shared through your phone\'s share menu and shown in the AI app before you send it. No names, addresses or receipts are included.</string>
+    <string name="ai_skriv_knapp">Write with AI</string>
+    <string name="ai_svara_knapp">Reply to the store</string>
+    <string name="ai_kopiera_fraga">Copy the question instead</string>
+    <string name="ai_visa_tips">Tips: how to get good help</string>
+    <string name="ai_dolj_tips">Hide tips</string>
+    <string name="ai_tips">• Be specific: dates, what is wrong and what you want.\n• Ask for a short, factual tone. Threats and long essays do not help.\n• Do not give an AI your personal ID number, address or card number.\n• AI can be wrong about the law. Check the important parts with the Swedish Consumer Agency or Hallå konsument.\n• Always read the answer. Then paste it here with \"Paste\" and send it from your mail app.\n• If the store says no: ask the AI to help you reply, and ask about the National Board for Consumer Disputes (ARN).</string>
+    <string name="ai_dela_titel">Share the question to your AI app</string>
+    <string name="ai_ingen_app">No app found to share to.</string>
+    <string name="ai_redigera">Edit the text</string>
+    <string name="ai_klar_redigera">Done</string>
+    <string name="ai_klistra_in">Paste</string>
+    <string name="ai_aterstall">Reset</string>
+    <string name="ai_mall_skriv">Help me write a complaint email to a company in Sweden. Write it factually, politely and briefly in English.\n\nFacts about the purchase:\n%1$s\n\nRules that apply (the Swedish Consumer Sales Act, 2022:260): the right to complain lasts three years. A fault that appears within two years is presumed to have existed when I received the item. I must complain within a reasonable time after discovering the fault, and two months is always in time. I can first demand that the fault is fixed by repair or replacement, then a price reduction or cancellation of the purchase.\n\nWrite the email so it is clear that I am making a complaint and what I demand. Do not invent details I have not given you. Do not include any personal information about me. Tell me if you are unsure about anything in the law so I can check it with the Swedish Consumer Agency.</string>
+    <string name="ai_mall_svara">I have made a complaint about an item to a company in Sweden and received a reply. First explain briefly what the reply means and what rights I have. Then suggest a factual, polite and short reply in English.\n\nFacts about the purchase:\n%1$s\n\nRules that apply (the Swedish Consumer Sales Act, 2022:260): the right to complain lasts three years. A fault that appears within two years is presumed to have existed when I received the item. I must complain within a reasonable time after discovering the fault, and two months is always in time. I can first demand that the fault is fixed by repair or replacement, then a price reduction or cancellation of the purchase. If the company refuses, I can turn to the National Board for Consumer Disputes (ARN) within one year of first complaining, and get general guidance from Hallå konsument.\n\nThe company\'s reply:\n[Paste the company\'s reply here]\n\nDo not invent details I have not given you. Do not include personal information about me. Tell me if you are unsure about anything in the law so I can check it with the Swedish Consumer Agency.</string>
 </resources>
