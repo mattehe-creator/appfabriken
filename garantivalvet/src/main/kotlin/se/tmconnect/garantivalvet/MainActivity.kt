@@ -45,6 +45,7 @@ import se.tmconnect.garantivalvet.data.InstallningarLager
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
 import se.tmconnect.garantivalvet.data.Kop
+import se.tmconnect.garantivalvet.export.HemforsakringTexter
 import se.tmconnect.garantivalvet.export.PdfExportResult
 import se.tmconnect.garantivalvet.export.felBildBilagaFilnamn
 import se.tmconnect.garantivalvet.export.kvittoBilagaFilnamn
@@ -67,6 +68,7 @@ import se.tmconnect.garantivalvet.ui.KopViewModelFactory
 import se.tmconnect.garantivalvet.ui.ProDialog
 import se.tmconnect.garantivalvet.ui.FelBildPost
 import se.tmconnect.garantivalvet.ui.ReklamationsSkarm
+import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.garantivalvet.regler.lasFelBilder
 import se.tmconnect.garantivalvet.ui.SakerhetskopiaMeddelande
 import se.tmconnect.garantivalvet.ui.KvittoHelskarm
@@ -224,6 +226,45 @@ class MainActivity : ComponentActivity() {
     ) { uri: Uri? ->
         if (uri != null) {
             viewModel.sparaSakerhetskopia(uri)
+        }
+    }
+
+    // Hemförsäkringsunderlag: PDF och CSV till valfri plats via systemets filväljare
+    private val createHemPdfContract = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/pdf"),
+    ) { uri: Uri? ->
+        if (uri != null) {
+            viewModel.sparaHemforsakringPdf(
+                uri,
+                HemforsakringTexter(
+                    rubrik = getString(R.string.hem_pdf_rubrik),
+                    ingress = getString(R.string.hem_pdf_ingress, formateraDatum(LocalDate.now(), resources.configuration.locales[0])),
+                    vara = getString(R.string.hem_kol_vara),
+                    butik = getString(R.string.hem_kol_butik),
+                    datum = getString(R.string.hem_kol_datum),
+                    pris = getString(R.string.hem_kol_pris),
+                    summa = getString(R.string.hem_summa),
+                    saknarPris = getString(R.string.hem_saknar_pris),
+                    kvittonRubrik = getString(R.string.hem_kvitton_rubrik),
+                ),
+                resources.configuration.locales[0],
+            )
+        }
+    }
+    private val createHemCsvContract = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("text/csv"),
+    ) { uri: Uri? ->
+        if (uri != null) {
+            viewModel.sparaHemforsakringCsv(
+                uri,
+                listOf(
+                    getString(R.string.hem_kol_vara),
+                    getString(R.string.hem_kol_butik),
+                    getString(R.string.hem_kol_datum),
+                    getString(R.string.hem_kol_pris_csv),
+                ),
+                getString(R.string.hem_summa),
+            )
         }
     }
 
@@ -396,6 +437,8 @@ class MainActivity : ComponentActivity() {
                             onByttMapp = { valjMappContract.launch(null) },
                             onAutoBackupIntervall = viewModel::sattAutoBackupIntervall,
                             onKorNuAutoBackup = viewModel::korNuAutoBackup,
+                            onHemforsakringPdf = { createHemPdfContract.launch("hemforsakring-${LocalDate.now()}.pdf") },
+                            onHemforsakringCsv = { createHemCsvContract.launch("hemforsakring-${LocalDate.now()}.csv") },
                             debugInstallningar = {
                                 GarantivalvetDebugInstallningar(
                                     arPro = arPro,

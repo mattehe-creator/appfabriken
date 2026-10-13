@@ -281,4 +281,18 @@
     <string name="reklamera_bild_beskrivning">Bild på felet</string>
     <string name="reklamera_bild_ta_bort">Ta bort bilden</string>
     <string name="reklamera_bild_fel">Bilden kunde inte läggas till.</string>
+    <string name="hem_rubrik">Underlag till hemförsäkringen</string>
+    <string name="hem_beskrivning">Lista över alla dina köp med värde och summa, dyrast först. PDF:en har dessutom varje kvitto på egen sida. Sparas där du väljer, till exempel i din egen molntjänst. Gratis och utan gräns.</string>
+    <string name="hem_pdf">Spara som PDF</string>
+    <string name="hem_csv">Spara som CSV</string>
+    <string name="hem_pdf_rubrik">Underlag till hemförsäkring</string>
+    <string name="hem_pdf_ingress">Mina köp med värde enligt kvitto. Sammanställt %1$s i Garantivalvet.</string>
+    <string name="hem_kol_vara">Vara</string>
+    <string name="hem_kol_butik">Butik</string>
+    <string name="hem_kol_datum">Köpdatum</string>
+    <string name="hem_kol_pris">Pris</string>
+    <string name="hem_kol_pris_csv">Pris (kr)</string>
+    <string name="hem_summa">Summa</string>
+    <string name="hem_saknar_pris">Vissa köp saknar pris och ingår inte i summan.</string>
+    <string name="hem_kvitton_rubrik">Kvitto</string>
 </resources>

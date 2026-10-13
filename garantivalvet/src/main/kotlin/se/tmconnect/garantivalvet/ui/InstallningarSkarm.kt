@@ -54,6 +54,8 @@ fun InstallningarSkarm(
     onByttMapp: () -> Unit = {},
     onAutoBackupIntervall: (Int) -> Unit = {},
     onKorNuAutoBackup: () -> Unit = {},
+    onHemforsakringPdf: () -> Unit = {},
+    onHemforsakringCsv: () -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier,
@@ -186,6 +188,41 @@ fun InstallningarSkarm(
                 onIntervall = onAutoBackupIntervall,
                 onKorNu = onKorNuAutoBackup,
             )
+
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = stringResource(R.string.hem_rubrik),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = stringResource(R.string.hem_beskrivning),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Button(
+                        onClick = onHemforsakringPdf,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp),
+                    ) {
+                        Text(text = stringResource(R.string.hem_pdf))
+                    }
+                    Button(
+                        onClick = onHemforsakringCsv,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp),
+                    ) {
+                        Text(text = stringResource(R.string.hem_csv))
+                    }
+                }
+            }
 
             debugInstallningar()
         }
