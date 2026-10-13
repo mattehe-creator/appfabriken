@@ -239,4 +239,6 @@
     <string name="underlag_butik_epost">Shop email</string>
     <string name="underlag_butik_telefon">Shop phone</string>
     <string name="underlag_butik_orgnr">Shop organisation number</string>
+    <string name="kvitto_valj_pdf">Choose PDF or file</string>
+    <string name="rotera_fel">Could not rotate the image. Try choosing the image again.</string>
 </resources>

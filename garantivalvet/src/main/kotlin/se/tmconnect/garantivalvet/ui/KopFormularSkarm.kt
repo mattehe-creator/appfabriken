@@ -82,6 +82,7 @@ fun KopFormularSkarm(
     initialKontakt: ButikKontakt = ButikKontakt(),
     lasInitialtKvitto: Boolean = false,
     onRotera: (medurs: Boolean) -> Unit = {},
+    onValjFil: () -> Unit = {},
     kvittoUri: Uri?,
     onValjBild: () -> Unit,
     onTaFoto: () -> Unit,
@@ -315,6 +316,7 @@ fun KopFormularSkarm(
                 onTaBortKvitto = onTaBortKvitto,
                 onRotera = onRotera,
                 onLasIgen = { lasIgen++ },
+                onValjFil = onValjFil,
             )
             if (laserKvitto) {
                 Text(
@@ -617,6 +619,7 @@ private fun KvittoKort(
     onTaBortKvitto: () -> Unit,
     onRotera: (medurs: Boolean) -> Unit,
     onLasIgen: () -> Unit,
+    onValjFil: () -> Unit,
 ) {
     val context = LocalContext.current
     Card(
@@ -653,8 +656,8 @@ private fun KvittoKort(
                         contentDescription = stringResource(R.string.kvitto_fornhandsvisning),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(160.dp),
-                        contentScale = ContentScale.Crop,
+                            .height(240.dp),
+                        contentScale = ContentScale.Fit,
                     )
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -709,6 +712,14 @@ private fun KvittoKort(
                     ) {
                         Text(text = stringResource(R.string.kvitto_valj_bild))
                     }
+                }
+                TextButton(
+                    onClick = onValjFil,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 48.dp),
+                ) {
+                    Text(text = stringResource(R.string.kvitto_valj_pdf))
                 }
             }
         }

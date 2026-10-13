@@ -109,6 +109,21 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Filväljare för PDF eller bild (när kvittot redan finns som fil), utan behörighet
+    private val openDocumentContract = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        uri?.let {
+            viewModel.valjFil(it, contentResolver.getType(it)) {
+                android.widget.Toast.makeText(this, R.string.dela_in_fel, android.widget.Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun visaRoteraFel() {
+        android.widget.Toast.makeText(this, R.string.rotera_fel, android.widget.Toast.LENGTH_LONG).show()
+    }
+
     // Resultatkontrakt för kamera
     private var kameraUri: Uri? = null
     private val takePictureContract = registerForActivityResult(
@@ -376,7 +391,8 @@ class MainActivity : ComponentActivity() {
                             initialOppetKop = null,
                             initialVarutyp = null,
                             lasInitialtKvitto = delatKvitto,
-                            onRotera = viewModel::roteraKvitto,
+                            onRotera = { medurs -> viewModel.roteraKvitto(medurs) { visaRoteraFel() } },
+                            onValjFil = { openDocumentContract.launch(arrayOf("application/pdf", "image/*")) },
                             kvittoUri = tillfalligtKvitto ?: viewModel.kvittoUriForFormular(null),
                             onValjBild = {
                                 pickImageContract.launch(
@@ -432,7 +448,8 @@ class MainActivity : ComponentActivity() {
                                 initialOppetKop = kop.oppetKopDagar,
                                 initialVarutyp = kop.varutyp,
                                 initialKontakt = ButikKontakt(kop.butikEpost, kop.butikTelefon, kop.butikOrgnr),
-                                onRotera = viewModel::roteraKvitto,
+                                onRotera = { medurs -> viewModel.roteraKvitto(medurs) { visaRoteraFel() } },
+                                onValjFil = { openDocumentContract.launch(arrayOf("application/pdf", "image/*")) },
                                 kvittoUri = tillfalligtKvitto ?: viewModel.kvittoUriForFormular(kop),
                                 onValjBild = {
                                     pickImageContract.launch(

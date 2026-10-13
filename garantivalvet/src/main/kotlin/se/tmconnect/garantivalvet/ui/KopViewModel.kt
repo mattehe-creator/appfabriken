@@ -257,12 +257,33 @@ class KopViewModel(
     }
 
     /** Roterar kvittot i formuläret 90 grader (medurs eller moturs) och läser av det igen. */
-    fun roteraKvitto(medurs: Boolean) {
-        val kalla = _tillfalligtKvittoUri.value ?: _valtKop.value?.let { kvittoUriForFormular(it) } ?: return
+    fun roteraKvitto(medurs: Boolean, onFel: () -> Unit = {}) {
+        val kalla = _tillfalligtKvittoUri.value ?: _valtKop.value?.let { kvittoUriForFormular(it) }
+        if (kalla == null) {
+            onFel()
+            return
+        }
         viewModelScope.launch {
             val roterad = withContext(Dispatchers.IO) { kvittoLager.normalisera(kalla, if (medurs) 90 else 270) }
             if (roterad != null) {
                 sattTillfalligtKvitto(roterad)
+            } else {
+                onFel()
+            }
+        }
+    }
+
+    /**
+     * Fil vald med filväljaren i formuläret (PDF eller bild). En PDF blir en bild av första sidan. Ändrar inte
+     * skärm, så det fungerar både för nytt köp och när ett köp ändras.
+     */
+    fun valjFil(uri: Uri, mime: String?, onFel: () -> Unit) {
+        viewModelScope.launch {
+            val bild = withContext(Dispatchers.IO) { kvittoLager.tagEmotDelatKvitto(uri, mime) }
+            if (bild == null) {
+                onFel()
+            } else {
+                sattTillfalligtKvitto(bild)
             }
         }
     }
