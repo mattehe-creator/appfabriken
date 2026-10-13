@@ -45,6 +45,7 @@ import se.tmconnect.garantivalvet.ui.KopDetaljSkarm
 import se.tmconnect.garantivalvet.ui.KopFormularSkarm
 import se.tmconnect.garantivalvet.ui.KopListaSkarm
 import se.tmconnect.garantivalvet.ui.ProDialog
+import se.tmconnect.garantivalvet.ui.ReklamationsSkarm
 import se.tmconnect.karna.tema.AppfabrikFarger
 import se.tmconnect.karna.tema.AppfabrikTema
 
@@ -204,6 +205,27 @@ abstract class ButikSkarmbilderBas {
                 onTaBortKvitto = noOp,
                 onSpara = { _, _, _, _, _, _, _, _, _ -> },
                 onStang = noOp,
+            )
+        }
+    }
+
+    @Test
+    fun reklamera() {
+        val beskrivning = when (sprakKatalog()) {
+            "sv" -> "Diskmaskinen läcker vatten från luckan."
+            else -> "The dishwasher leaks water from the door."
+        }
+        captureSkarm("06-reklamera.png") {
+            ReklamationsSkarm(
+                kop = exempelDetalj().copy(
+                    felBeskrivning = beskrivning,
+                    felUpptackt = LocalDate.of(2026, 10, 1),
+                ),
+                kvittoFinns = true,
+                onSkickaMejl = { _, _, _ -> },
+                onSparaFel = { _, _ -> },
+                onHarReklamerat = { _, _ -> },
+                onTillbaka = noOp,
             )
         }
     }

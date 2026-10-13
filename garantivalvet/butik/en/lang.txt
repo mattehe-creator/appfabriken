@@ -1,9 +1,17 @@
-Store and manage your purchases offline with Warranty Vault. The app helps you track warranty periods, save receipts, and get reminders when a warranty is about to expire.
+Save receipts and keep track of warranty periods, your statutory right to complain and return windows. Warranty Vault photographs and reads your receipt on your phone, reminds you in time and helps you make a complaint when something breaks.
 
-Consumer claims under the Swedish Consumer Purchase Act (Konsumentköplagen) are shown as information for purchases in Sweden. The app displays warranty periods and information about claim time limits, but does not provide legal advice. The information applies only to purchases made in Sweden.
+What you can do:
+• Photograph the receipt or share it in from email, gallery or PDF. The app reads store, date and price and suggests the details. You check and change them.
+• See what applies to your item: the store's return window, the warranty and your statutory right to complain, shown as three separate things. Food and drink are treated as fresh goods.
+• Get reminders before deadlines run out.
+• Make a complaint with the app: describe the fault, add photos of it and choose what you demand. The app writes a ready-made email to the store with the receipt and photos attached. You can record the date you complained.
+• If you want help wording it, you can share a ready-made question to your own AI app (such as Claude, ChatGPT or Gemini) through your phone's share menu. Warranty Vault sends nothing itself, and you see the text before you send it. No names, addresses or receipts are included.
+• Search and filter your purchases.
+• Create a PDF document per purchase, or a list of all your purchases with value and receipts as documentation for your home insurance (PDF or CSV).
+• Back up whenever you like, or let the app do it automatically to a folder you choose yourself, for example in your own cloud service.
 
-Warranty Vault works entirely offline. The app does not request the INTERNET permission. No account is required, no ads, and no analytics. All data stays on your phone until you choose to export it.
+Warranty Vault works entirely offline. The app does not request the INTERNET permission. No account is required, no ads, and no analytics. All data stays on your phone until you choose to export or share it.
 
-If you want help wording a complaint, you can share a ready-made question to your own AI app (such as Claude, ChatGPT or Gemini) through your phone's share menu. Warranty Vault sends nothing itself, and you see the text before you send it. No names, addresses or receipts are included.
+Consumer claims under the Swedish Consumer Purchase Act (2022:260) are shown as information for purchases in Sweden. The app gives guidance but not legal advice.
 
-Everything in the app is free, but the free version holds 15 purchases. Pro (one-time purchase, no subscription) removes the limit. Help with claims, claim documents and backup are always free.
+Everything in the app is free, but the free version holds 15 purchases. Pro (one-time purchase, no subscription) removes the limit. Help with claims, PDF documents, the home insurance list and backup are always free.
