@@ -202,7 +202,7 @@
     <string name="logg_reklamerad">Reklamerat %1$s.</string>
     <string name="logg_arn">Kommer ni inte överens kan du anmäla till Allmänna reklamationsnämnden (ARN) senast %1$s, ett år efter din första reklamation.</string>
     <string name="logg_markera_reklamerad">Jag har reklamerat</string>
-    <string name="logg_angra">Ångra "jag har reklamerat"</string>
+    <string name="logg_angra">Ångra ”jag har reklamerat”</string>
     <string name="logg_fel_prefix">Fel: %1$s</string>
     <string name="paminnelse_notis_reklamera_titel">Dags att reklamera</string>
     <string name="paminnelse_notis_reklamera_text">Du har upptäckt ett fel på %1$s. Reklamera senast %2$s.</string>
