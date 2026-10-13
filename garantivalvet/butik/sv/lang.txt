@@ -1,9 +1,17 @@
-Spara och hantera dina köp offline med Garantivalvet. Appen hjälper dig hålla koll på garantitider, spara kvitton och få påminnelser när garantin är snart slut.
+Spara kvitton och håll koll på garantitider, reklamationsrätt och öppet köp. Garantivalvet fotar och läser av kvittot på telefonen, påminner dig i tid och hjälper dig att reklamera när något går sönder.
 
-Reklamationsrätt enligt konsumentköplagen (2022:260) visas som information för köp i Sverige efter lagens ikraftträdande. Appen visar garantitid och information om reklamationsfrister, men ger ingen juridisk rådgivning. Informationen gäller endast för köp gjorda i Sverige.
+Det här kan du göra:
+• Fota kvittot eller dela in det från mejl, galleri eller PDF. Appen läser av butik, datum och pris och föreslår uppgifterna. Du kontrollerar och ändrar.
+• Se vad som gäller för just din vara: butikens öppna köp, garantin och din lagstadgade reklamationsrätt som tre skilda delar. Mat och dryck behandlas som färskvaror.
+• Få påminnelser innan frister går ut.
+• Reklamera med hjälp av appen: beskriv felet, lägg till bilder på det och välj vad du kräver. Appen skriver ett färdigt mejl till butiken med kvittot och bilderna bifogade. Du kan spara datumet då du reklamerade.
+• Vill du ha hjälp att formulera dig kan du dela en färdig fråga till din egen AI-app (till exempel Claude, ChatGPT eller Gemini) via telefonens delningsmeny. Garantivalvet skickar ingenting själv, och du ser texten innan du skickar den. Inga namn, adresser eller kvitton följer med.
+• Sök och filtrera dina köp.
+• Skapa ett PDF-underlag per köp, eller en lista över alla dina köp med värde och kvitton som underlag till hemförsäkringen (PDF eller CSV).
+• Säkerhetskopiera när du vill, eller låt appen göra det automatiskt till en mapp du själv väljer, till exempel hos din egen molntjänst.
 
-Garantivalvet fungerar helt offline. Appen begär ingen internetbehörighet. Inget konto krävs, ingen reklam och ingen analys. All data stannar på din telefon tills du väljer att exportera den.
+Garantivalvet fungerar helt offline. Appen begär ingen internetbehörighet. Inget konto krävs, ingen reklam och ingen analys. All data stannar på din telefon tills du själv väljer att exportera eller dela den.
 
-Vill du ha hjälp att formulera en reklamation kan du dela en färdig fråga till din egen AI-app (till exempel Claude, ChatGPT eller Gemini) via telefonens delningsmeny. Garantivalvet skickar ingenting själv, och du ser texten innan du skickar den. Inga namn, adresser eller kvitton följer med.
+Reklamationsrätt enligt konsumentköplagen (2022:260) visas som information för köp i Sverige. Appen ger vägledning men ingen juridisk rådgivning.
 
-Allt i appen är gratis, men gratisversionen rymmer 15 köp. Pro (engångsköp, ingen prenumeration) tar bort gränsen. Reklamationshjälp, PDF-underlag och säkerhetskopia är alltid gratis.
+Allt i appen är gratis, men gratisversionen rymmer 15 köp. Pro (engångsköp, ingen prenumeration) tar bort gränsen. Reklamationshjälp, PDF-underlag, hemförsäkringsunderlag och säkerhetskopia är alltid gratis.

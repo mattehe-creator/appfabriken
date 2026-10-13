@@ -15,7 +15,7 @@ Teckengränser och URL-förbud kontrolleras av `ButikTexterTest`.
 
 | Fil / mapp | Storlek | Innehåll |
 |------------|---------|----------|
-| `skarmbilder/sv/` | 1080 × 1920 (porträtt) | Lista, detalj med reklamationsinfo, formulär, Pro-dialog |
+| `skarmbilder/sv/` | 1080 × 1920 (porträtt) | Lista, detalj med reklamationsinfo, formulär, Pro-dialog, inställningar, Reklamera |
 | `skarmbilder/en/` | 1080 × 1920 | Samma skärmar på engelska |
 | `funktionsgrafik-sv.png` | 1024 × 500 | Appnamn och kort rad på svenska (från strängresurser) |
 | `funktionsgrafik-en.png` | 1024 × 500 | Appnamn och kort rad på engelska |
@@ -23,11 +23,17 @@ Teckengränser och URL-förbud kontrolleras av `ButikTexterTest`.
 
 Alla skärmbilder använder påhittade köp (t.ex. diskmaskin, mobiltelefon, cykel).
 
+## Integritetspolicy
+
+`integritetspolicy-sv.md` och `integritetspolicy-en.md`. Play kräver en publik länk; Mattias lägger texten på en sida och anger länken i Play Console (se FRAGOR.md).
+
 ## Data safety
 
 Se `data-safety.md` för svar och motivering till Play Console-formuläret.
 
 ## Återskapa skärmbilder och grafik
+
+Enklast: kör workflowet **Skärmbilder** i GitHub Actions på önskad gren; det genererar och checkar in bilderna. Eller lokalt:
 
 Kör från repots rot (kräver Android SDK enligt CI):
 
