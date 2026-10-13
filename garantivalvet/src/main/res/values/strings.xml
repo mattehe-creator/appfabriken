@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Warranty Vault</string>
-    <string name="tom_lista">No purchases yet. Add your first receipt to keep track of warranties and return deadlines.</string>
     <string name="tom_lista_rubrik">Save your first receipt</string>
     <string name="tom_lista_beskrivning">The app tracks your warranty and three-year right to claim faults, and reminds you before time runs out.</string>
     <string name="tom_lista_knapp">Add receipt</string>
     <string name="fab_nytt_kvitto">New receipt</string>
-    <string name="lagg_till">Add</string>
     <string name="lagg_till_titel">Add purchase</string>
     <string name="andra_titel">Edit purchase</string>
     <string name="falt_vad">What did you buy?</string>
@@ -27,7 +25,6 @@
     <string name="status_gar_ut_snart">Warranty ending soon</string>
     <string name="status_utgangen">Expired</string>
     <string name="status_reklamation_galler">Consumer claim period active</string>
-    <string name="lista_garanti_slut">Warranty ends %1$s</string>
     <string name="lista_garanti_till">Warranty until %1$s</string>
     <string name="lista_reklamation_till">Right to claim until %1$s</string>
     <string name="lista_grupp_snart">Ending soon</string>
@@ -51,7 +48,6 @@
     
     <!-- Kvittofunktioner -->
     <string name="kvitto_valj_bild">Choose image</string>
-    <string name="kvitto_ta_foto">Take photo</string>
     <string name="kvitto_fotografera">Take photo</string>
     <string name="kvitto_byt">Replace</string>
     <string name="kvitto_saknas">No receipt</string>
@@ -60,7 +56,6 @@
     <string name="kvitto_inget_hittades">Couldn’t read anything useful from the receipt – please fill in the details yourself</string>
     <string name="kvitto_forslag">Suggested from the receipt – please check</string>
     <string name="kvitto_fornhandsvisning">Receipt preview</string>
-    <string name="kvitto_har_kvitto">Has receipt</string>
     <string name="kvitto_oppna">Open receipt</string>
     <string name="kvitto_dela">Share</string>
     <string name="kvitto_stang">Close</string>
@@ -79,7 +74,6 @@
     
     <!-- Reklamationsrätt -->
     <string name="detalj_reklamation_till">Right to claim until %1$s</string>
-    <string name="detalj_reklamation_rubrik">Right to claim faults</string>
     <string name="detalj_reklamation_kort_rubrik">Right to claim faults (law)</string>
     <string name="detalj_reklamation_las_mer">Read more</string>
     <string name="detalj_reklamation_forklaring">You can claim faults that appear within three years of purchase. Faults that appear within two years are presumed to have existed at purchase. Counted from the purchase date and applies to goods bought from a business.</string>
@@ -91,14 +85,11 @@
     <string name="pro_las_upp">Unlock Pro</string>
     <string name="pro_forklaring">Everything in the app is free, but the free version saves up to 15 purchases. Pro is a one-time purchase without subscription and removes the limit.</string>
     <string name="pro_du_har">You have Pro</string>
-    <string name="pro_kop_misslyckades">The purchase could not be completed. Try again.</string>
     <string name="pro_grans_nadd">Limit reached: 15 purchases</string>
     <string name="pro_inte_nu">Not now</string>
     <string name="pro_inte_aktiv">Not purchased</string>
     <string name="pro_app_rubrik">Warranty Vault Pro</string>
-    <string name="pro_mark">Pro</string>
     <string name="pro_kvar_gratis">%1$d receipts left in the free version</string>
-    <string name="debug_pro_testlage">Test mode: Pro</string>
     
     <!-- PDF Export -->
     <string name="underlag_rubrik">Claim document</string>
@@ -183,12 +174,9 @@
     <string name="reklamera_titel">Make a claim</string>
     <string name="reklamera_fel_etikett">What is the fault?</string>
     <string name="reklamera_upptackt_etikett">Fault discovered</string>
-    <string name="reklamera_krav_rubrik">What do you want the company to do?</string>
     <string name="reklamera_krav_avhjalp">Fix the fault</string>
     <string name="reklamera_krav_prisavdrag">Price reduction</string>
     <string name="reklamera_krav_hava">Cancel the purchase</string>
-    <string name="reklamera_krav_hjalp">Usually start by asking for the fault to be fixed (repair or a new item). A price reduction or cancelling the purchase may apply if that is not possible.</string>
-    <string name="reklamera_meddelande_rubrik">Your message</string>
     <string name="reklamera_skicka_mejl">Send email</string>
     <string name="reklamera_kopiera">Copy text</string>
     <string name="reklamera_kopierad">Text copied</string>

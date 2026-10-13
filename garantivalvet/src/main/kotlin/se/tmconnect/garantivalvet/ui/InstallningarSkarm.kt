@@ -5,17 +5,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.ui.semantics.Role
 import androidx.compose.material3.RadioButton
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.OutlinedButton
@@ -30,6 +32,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -70,7 +75,7 @@ fun InstallningarSkarm(
             TopAppBar(
                 title = { Text(text = stringResource(R.string.installningar_rubrik)) },
                 navigationIcon = {
-                    IconButton(onClick = onTillbaka) {
+                    IconButton(onClick = onTillbaka, modifier = Modifier.tryckyta48()) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.tillbaka),
@@ -111,7 +116,7 @@ fun InstallningarSkarm(
                     )
                 }
                 if (!arPro) {
-                    TextButton(onClick = onVisaProDialog) {
+                    TextButton(onClick = onVisaProDialog, modifier = Modifier.tryckyta48()) {
                         Text(text = stringResource(R.string.pro_las_upp))
                     }
                 }
@@ -138,6 +143,7 @@ fun InstallningarSkarm(
                 Switch(
                     checked = paminnelserPa,
                     onCheckedChange = onPaminnelserAndras,
+                    modifier = Modifier.tryckyta48(),
                 )
             }
             if (behorighetNekad) {
@@ -162,15 +168,20 @@ fun InstallningarSkarm(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .heightIn(min = 48.dp)
-                                .selectable(
-                                    selected = temaLage == lage,
-                                    onClick = { onTemaLage(lage) },
-                                    role = Role.RadioButton,
-                                ),
+                                .height(48.dp)
+                                .semantics(mergeDescendants = true) {
+                                    selected = temaLage == lage
+                                }
+                                .clickable(role = Role.RadioButton) { onTemaLage(lage) },
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            RadioButton(selected = temaLage == lage, onClick = null)
+                            RadioButton(
+                                selected = temaLage == lage,
+                                onClick = null,
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clearAndSetSemantics { },
+                            )
                             Text(
                                 text = stringResource(namn),
                                 style = MaterialTheme.typography.bodyLarge,
@@ -293,7 +304,11 @@ private fun AutoBackupAvsnitt(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(text = stringResource(R.string.auto_pa), style = MaterialTheme.typography.bodyMedium)
-            Switch(checked = tillstand.pa, onCheckedChange = onPa)
+            Switch(
+                checked = tillstand.pa,
+                onCheckedChange = onPa,
+                modifier = Modifier.tryckyta48(),
+            )
         }
         if (tillstand.pa) {
             Text(
@@ -313,6 +328,7 @@ private fun AutoBackupAvsnitt(
                         selected = tillstand.intervallDagar == dagar,
                         onClick = { onIntervall(dagar) },
                         label = { Text(text = stringResource(textRes)) },
+                        modifier = Modifier.tryckyta48(),
                     )
                 }
             }

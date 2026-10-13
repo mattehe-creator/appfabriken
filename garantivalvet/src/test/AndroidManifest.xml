@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity
+            android:name="androidx.activity.ComponentActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Garantivalvet" />
+        <activity
+            android:name="se.tmconnect.garantivalvet.butik.ButikRoboActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Garantivalvet" />
+    </application>
+</manifest>

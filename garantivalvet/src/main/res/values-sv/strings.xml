@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Garantivalvet</string>
-    <string name="tom_lista">Inga köp än. Lägg till ditt första kvitto för att hålla koll på garantier och reklamationsfrister.</string>
     <string name="tom_lista_rubrik">Spara ditt första kvitto</string>
     <string name="tom_lista_beskrivning">Appen håller koll på garantin och din reklamationsrätt i tre år, och påminner innan tiden går ut.</string>
     <string name="tom_lista_knapp">Lägg till kvitto</string>
     <string name="fab_nytt_kvitto">Nytt kvitto</string>
-    <string name="lagg_till">Lägg till</string>
     <string name="lagg_till_titel">Lägg till köp</string>
     <string name="andra_titel">Ändra köp</string>
     <string name="falt_vad">Vad köpte du?</string>
@@ -27,7 +25,6 @@
     <string name="status_gar_ut_snart">Garantin löper snart ut</string>
     <string name="status_utgangen">Utgången</string>
     <string name="status_reklamation_galler">Reklamationsrätt gäller</string>
-    <string name="lista_garanti_slut">Garantin går ut %1$s</string>
     <string name="lista_garanti_till">Garanti till %1$s</string>
     <string name="lista_reklamation_till">Reklamationsrätt till %1$s</string>
     <string name="lista_grupp_snart">Går ut snart</string>
@@ -51,7 +48,6 @@
     
     <!-- Kvittofunktioner -->
     <string name="kvitto_valj_bild">Välj bild</string>
-    <string name="kvitto_ta_foto">Ta foto</string>
     <string name="kvitto_fotografera">Fotografera</string>
     <string name="kvitto_byt">Byt</string>
     <string name="kvitto_saknas">Inget kvitto</string>
@@ -60,7 +56,6 @@
     <string name="kvitto_inget_hittades">Hittade inget användbart på kvittot – fyll i uppgifterna själv</string>
     <string name="kvitto_forslag">Förslag från kvittot – kontrollera</string>
     <string name="kvitto_fornhandsvisning">Förhandsvisning av kvitto</string>
-    <string name="kvitto_har_kvitto">Har kvitto</string>
     <string name="kvitto_oppna">Öppna kvitto</string>
     <string name="kvitto_dela">Dela</string>
     <string name="kvitto_stang">Stäng</string>
@@ -79,7 +74,6 @@
     
     <!-- Reklamationsrätt -->
     <string name="detalj_reklamation_till">Reklamationsrätt till %1$s</string>
-    <string name="detalj_reklamation_rubrik">Reklamationsrätt</string>
     <string name="detalj_reklamation_kort_rubrik">Reklamationsrätt (lag)</string>
     <string name="detalj_reklamation_las_mer">Läs mer</string>
     <string name="detalj_reklamation_forklaring">Du kan reklamera fel som visar sig inom tre år från köpet. Fel som visar sig inom två år antas ha funnits vid köpet. Räknas från köpdatum och gäller varor köpta av en näringsidkare.</string>
@@ -91,14 +85,11 @@
     <string name="pro_las_upp">Lås upp Pro</string>
     <string name="pro_forklaring">Allt i appen är gratis, men gratisversionen sparar upp till 15 köp. Pro är ett engångsköp utan prenumeration och tar bort gränsen.</string>
     <string name="pro_du_har">Du har Pro</string>
-    <string name="pro_kop_misslyckades">Köpet kunde inte genomföras. Försök igen.</string>
     <string name="pro_grans_nadd">Gränsen är nådd: 15 köp</string>
     <string name="pro_inte_nu">Inte nu</string>
     <string name="pro_inte_aktiv">Inte köpt</string>
     <string name="pro_app_rubrik">Garantivalvet Pro</string>
-    <string name="pro_mark">Pro</string>
     <string name="pro_kvar_gratis">%1$d kvitton kvar i gratisversionen</string>
-    <string name="debug_pro_testlage">Testläge: Pro</string>
     
     <!-- PDF Export -->
     <string name="underlag_rubrik">Reklamationsunderlag</string>
@@ -183,12 +174,9 @@
     <string name="reklamera_titel">Reklamera</string>
     <string name="reklamera_fel_etikett">Vad är felet?</string>
     <string name="reklamera_upptackt_etikett">Felet upptäcktes</string>
-    <string name="reklamera_krav_rubrik">Vad vill du att företaget gör?</string>
     <string name="reklamera_krav_avhjalp">Åtgärda felet</string>
     <string name="reklamera_krav_prisavdrag">Prisavdrag</string>
     <string name="reklamera_krav_hava">Häva köpet</string>
-    <string name="reklamera_krav_hjalp">Börja oftast med att kräva att felet åtgärdas (reparation eller ny vara). Prisavdrag eller hävning kan bli aktuellt om det inte går.</string>
-    <string name="reklamera_meddelande_rubrik">Ditt meddelande</string>
     <string name="reklamera_skicka_mejl">Skicka mejl</string>
     <string name="reklamera_kopiera">Kopiera text</string>
     <string name="reklamera_kopierad">Texten är kopierad</string>

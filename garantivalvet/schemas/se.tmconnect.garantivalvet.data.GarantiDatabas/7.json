@@ -1,0 +1,130 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 7,
+    "identityHash": "f6486573b441811c6a164ad9d22afd8c",
+    "entities": [
+      {
+        "tableName": "kop",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `vad` TEXT NOT NULL, `var_kopt` TEXT, `kopdatum` INTEGER NOT NULL, `garanti_manader` INTEGER NOT NULL, `pris_ore` INTEGER, `anteckning` TEXT, `kvitto_fil` TEXT, `skapad` INTEGER NOT NULL, `oppet_kop_dagar` INTEGER, `varutyp` TEXT, `fel_upptackt` INTEGER, `fel_beskrivning` TEXT, `reklamerad` INTEGER, `butik_epost` TEXT, `butik_telefon` TEXT, `butik_orgnr` TEXT, `fel_bilder` TEXT, `reklamation_utfall` TEXT, `reklamation_utfall_datum` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vad",
+            "columnName": "vad",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "varKopt",
+            "columnName": "var_kopt",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "kopdatum",
+            "columnName": "kopdatum",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "garantiManader",
+            "columnName": "garanti_manader",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prisOre",
+            "columnName": "pris_ore",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "anteckning",
+            "columnName": "anteckning",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "kvittoFil",
+            "columnName": "kvitto_fil",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "skapad",
+            "columnName": "skapad",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "oppetKopDagar",
+            "columnName": "oppet_kop_dagar",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "varutyp",
+            "columnName": "varutyp",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "felUpptackt",
+            "columnName": "fel_upptackt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "felBeskrivning",
+            "columnName": "fel_beskrivning",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "reklamerad",
+            "columnName": "reklamerad",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "butikEpost",
+            "columnName": "butik_epost",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "butikTelefon",
+            "columnName": "butik_telefon",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "butikOrgnr",
+            "columnName": "butik_orgnr",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "felBilder",
+            "columnName": "fel_bilder",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "reklamationUtfall",
+            "columnName": "reklamation_utfall",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "reklamationUtfallDatum",
+            "columnName": "reklamation_utfall_datum",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f6486573b441811c6a164ad9d22afd8c')"
+    ]
+  }
+}
