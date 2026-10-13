@@ -11,6 +11,7 @@ import java.io.FileOutputStream
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -24,6 +25,14 @@ import org.robolectric.annotation.GraphicsMode
 class KvittoLagerNormaliseraTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
     private val lager = KvittoLager(context)
+
+    /** FileProvider cachar sökvägarna per authority i en static; varje Robolectric-test får en ny datamapp. */
+    @Before
+    fun nollstallFileProviderCache() {
+        val falt = androidx.core.content.FileProvider::class.java.getDeclaredField("sCache")
+        falt.isAccessible = true
+        (falt.get(null) as MutableMap<*, *>).clear()
+    }
 
     private fun skapaBild(bredd: Int, hojd: Int): Uri {
         val bitmap = Bitmap.createBitmap(bredd, hojd, Bitmap.Config.ARGB_8888)
