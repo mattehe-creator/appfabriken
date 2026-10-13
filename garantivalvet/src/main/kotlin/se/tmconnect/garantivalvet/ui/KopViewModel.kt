@@ -27,6 +27,7 @@ import se.tmconnect.garantivalvet.export.skrivHemforsakringTillPdf
 import se.tmconnect.garantivalvet.regler.MAX_FEL_BILDER
 import se.tmconnect.garantivalvet.regler.byggHemforsakring
 import se.tmconnect.garantivalvet.regler.hemforsakringCsv
+import se.tmconnect.garantivalvet.regler.TemaLage
 import se.tmconnect.garantivalvet.regler.Varutyp
 import se.tmconnect.garantivalvet.regler.kanLaggaTillFelBild
 import se.tmconnect.garantivalvet.regler.lasFelBilder
@@ -91,6 +92,18 @@ class KopViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = false,
         )
+
+    /** Användarens val av utseende (följ telefonen, ljust eller mörkt). */
+    val temaLage: StateFlow<TemaLage> =
+        installningarLager.temaLage.map { TemaLage.franNamn(it) }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = TemaLage.SYSTEM,
+        )
+
+    fun sattTemaLage(lage: TemaLage) {
+        viewModelScope.launch { installningarLager.sattTemaLage(lage.name) }
+    }
 
     /** Automatisk säkerhetskopia till en mapp användaren valt (av som standard). */
     val autoBackup: StateFlow<AutoBackupTillstand> =

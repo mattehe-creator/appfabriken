@@ -7,7 +7,10 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.DisposableEffect
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -325,7 +328,23 @@ class MainActivity : ComponentActivity() {
         viewModel.synkaAutoBackupJobb()
         enableEdgeToEdge()
         setContent {
-            AppfabrikTema {
+            val temaLage by viewModel.temaLage.collectAsState()
+            val morkt = temaLage.arMorkt(isSystemInDarkTheme())
+            // Systemfälten (statusfält och navigeringsfält) följer appens utseende, inte bara telefonens.
+            DisposableEffect(morkt) {
+                enableEdgeToEdge(
+                    statusBarStyle = SystemBarStyle.auto(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT,
+                    ) { morkt },
+                    navigationBarStyle = SystemBarStyle.auto(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT,
+                    ) { morkt },
+                )
+                onDispose {}
+            }
+            AppfabrikTema(morkt = morkt) {
                 val kopLista by viewModel.kopLista.collectAsState()
                 // Måste läsas här: annars ritas formuläret inte om när ett kvitto fotas eller väljs.
                 val tillfalligtKvitto by viewModel.tillfalligtKvittoUri.collectAsState()
@@ -437,6 +456,8 @@ class MainActivity : ComponentActivity() {
                             onByttMapp = { valjMappContract.launch(null) },
                             onAutoBackupIntervall = viewModel::sattAutoBackupIntervall,
                             onKorNuAutoBackup = viewModel::korNuAutoBackup,
+                            temaLage = temaLage,
+                            onTemaLage = viewModel::sattTemaLage,
                             onHemforsakringPdf = { createHemPdfContract.launch("hemforsakring-${LocalDate.now()}.pdf") },
                             onHemforsakringCsv = { createHemCsvContract.launch("hemforsakring-${LocalDate.now()}.csv") },
                             debugInstallningar = {

@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import se.tmconnect.garantivalvet.R
+import se.tmconnect.garantivalvet.regler.TemaLage
 import se.tmconnect.garantivalvet.export.AUTO_INTERVALL_DAGLIGEN
 import se.tmconnect.garantivalvet.export.AUTO_INTERVALL_MANADSVIS
 import se.tmconnect.garantivalvet.export.AUTO_INTERVALL_VECKOVIS
@@ -56,6 +57,8 @@ fun InstallningarSkarm(
     onKorNuAutoBackup: () -> Unit = {},
     onHemforsakringPdf: () -> Unit = {},
     onHemforsakringCsv: () -> Unit = {},
+    temaLage: TemaLage = TemaLage.SYSTEM,
+    onTemaLage: (TemaLage) -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier,
@@ -139,6 +142,27 @@ fun InstallningarSkarm(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error,
                 )
+            }
+
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = stringResource(R.string.utseende_rubrik),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf(
+                        TemaLage.SYSTEM to R.string.utseende_system,
+                        TemaLage.LJUST to R.string.utseende_ljust,
+                        TemaLage.MORKT to R.string.utseende_morkt,
+                    ).forEach { (lage, namn) ->
+                        FilterChip(
+                            selected = temaLage == lage,
+                            onClick = { onTemaLage(lage) },
+                            label = { Text(text = stringResource(namn)) },
+                            modifier = Modifier.heightIn(min = 48.dp),
+                        )
+                    }
+                }
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

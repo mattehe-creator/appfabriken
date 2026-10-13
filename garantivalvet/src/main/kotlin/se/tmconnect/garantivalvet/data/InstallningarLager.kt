@@ -32,6 +32,14 @@ class InstallningarLager(
         }
     }
 
+    /** Namnet på [se.tmconnect.garantivalvet.regler.TemaLage], eller `null` (följ telefonen). */
+    val temaLage: Flow<String?> =
+        context.installningarDataStore.data.map { prefs -> prefs[TEMA_LAGE] }
+
+    suspend fun sattTemaLage(namn: String) {
+        context.installningarDataStore.edit { prefs -> prefs[TEMA_LAGE] = namn }
+    }
+
     suspend fun hamtaAviseradeFrister(): Set<String> =
         context.installningarDataStore.data.first()[AVISERADE_FRISTER] ?: emptySet()
 
@@ -105,6 +113,7 @@ class InstallningarLager(
     }
 
     companion object {
+        private val TEMA_LAGE = stringPreferencesKey("tema_lage")
         private val PAMINNELSER_PA = booleanPreferencesKey("paminnelser_pa")
         private val AVISERADE_FRISTER = stringSetPreferencesKey("aviserade_frister")
         private val DEBUG_PRO_TESTLAGE = booleanPreferencesKey("debug_pro_testlage")
