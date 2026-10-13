@@ -316,4 +316,19 @@
     <string name="utseende_ljust">Light</string>
     <string name="utseende_morkt">Dark</string>
     <string name="ai_egen_text_foraldrad">The text is your own and no longer follows your choices (demand, fault description, date). Tap Reset to update it.</string>
+    <string name="upp_vantar">Waiting for the store\'s reply (day %1$d).</string>
+    <string name="upp_borde_ha_svarat">It has been %1$d days since you made your complaint. Has the store replied?</string>
+    <string name="upp_lost">Resolved %1$s. Well done!</string>
+    <string name="upp_avslag">The store said no (%1$s).</string>
+    <string name="upp_arn_anmald">Reported to ARN (%1$s).</string>
+    <string name="upp_borde_hjalp">Contact the store again and refer to your first complaint. If you need help wording it, the app can write a reminder email.</string>
+    <string name="upp_avslag_hjalp">A no is not the end. You can explain why you are entitled, using your right to complain, and you can turn to ARN (the National Board for Consumer Disputes), which is free. Hallå konsument gives general guidance.</string>
+    <string name="upp_svara_knapp">Reply to the store or get help</string>
+    <string name="upp_hur_gick_det">How did it go?</string>
+    <string name="upp_knapp_lost">It was resolved</string>
+    <string name="upp_knapp_avslag">The store said no</string>
+    <string name="upp_knapp_arn">I reported it to ARN</string>
+    <string name="upp_oppna_igen">Reopen the case</string>
+    <string name="paminnelse_notis_svar_titel">Has the store replied?</string>
+    <string name="paminnelse_notis_svar_text">It has been two weeks since you made a complaint about %1$s. Have you had a reply? If not, you can get in touch again.</string>
 </resources>

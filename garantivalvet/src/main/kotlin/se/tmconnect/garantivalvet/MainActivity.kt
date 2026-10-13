@@ -505,6 +505,7 @@ class MainActivity : ComponentActivity() {
                                 onVisaProDialog = viewModel::visaProDialog,
                                 onReklamera = { viewModel.visaReklamera(kop.id) },
                                 onMarkeraReklamerad = viewModel::markeraReklamerad,
+                                onReklamationsUtfall = { utfall -> viewModel.sattReklamationsUtfall(utfall) },
                                 onMejlaButik = { epost -> mejlaButik(epost) },
                                 onRingButik = { telefon -> ringButik(telefon) },
                             )

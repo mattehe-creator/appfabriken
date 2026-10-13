@@ -68,7 +68,7 @@ class GarantiDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, GarantiDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
             .allowMainThreadQueries()
             .build()
 
@@ -130,7 +130,7 @@ class GarantiDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, GarantiDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+            .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
             .allowMainThreadQueries()
             .build()
 
@@ -200,7 +200,7 @@ class GarantiDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, GarantiDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+            .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
             .allowMainThreadQueries()
             .build()
 
@@ -277,7 +277,7 @@ class GarantiDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, GarantiDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_4_5, MIGRATION_5_6)
+            .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
             .allowMainThreadQueries()
             .build()
 
@@ -354,7 +354,7 @@ class GarantiDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, GarantiDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_5_6)
+            .addMigrations(MIGRATION_5_6, MIGRATION_6_7)
             .allowMainThreadQueries()
             .build()
 
@@ -365,6 +365,84 @@ class GarantiDatabasMigrationTest {
 
         databas.kopDao().uppdatera(kop.copy(felBilder = "a.jpg,b.jpg"))
         assertEquals("a.jpg,b.jpg", databas.kopDao().hamta(1)!!.felBilder)
+
+        databas.close()
+        context.deleteDatabase(TEST_DB)
+    }
+
+    @Test
+    fun migration6Till7BevararRaderMedNullUtfall() = runTest {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        context.deleteDatabase(TEST_DB)
+
+        val config = SupportSQLiteOpenHelper.Configuration.builder(context)
+            .name(TEST_DB)
+            .callback(
+                object : SupportSQLiteOpenHelper.Callback(6) {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        db.execSQL(
+                            """
+                            CREATE TABLE IF NOT EXISTS kop (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                vad TEXT NOT NULL,
+                                var_kopt TEXT,
+                                kopdatum INTEGER NOT NULL,
+                                garanti_manader INTEGER NOT NULL,
+                                pris_ore INTEGER,
+                                anteckning TEXT,
+                                kvitto_fil TEXT,
+                                skapad INTEGER NOT NULL,
+                                oppet_kop_dagar INTEGER,
+                                varutyp TEXT,
+                                fel_upptackt INTEGER,
+                                fel_beskrivning TEXT,
+                                reklamerad INTEGER,
+                                butik_epost TEXT,
+                                butik_telefon TEXT,
+                                butik_orgnr TEXT,
+                                fel_bilder TEXT
+                            )
+                            """.trimIndent(),
+                        )
+                    }
+
+                    override fun onUpgrade(
+                        db: SupportSQLiteDatabase,
+                        oldVersion: Int,
+                        newVersion: Int,
+                    ) = Unit
+                },
+            )
+            .build()
+        val openHelper = FrameworkSQLiteOpenHelperFactory().create(config)
+        val kopdatum = LocalDate.of(2024, 6, 15).toEpochDay()
+        val reklamerad = LocalDate.of(2026, 9, 1).toEpochDay()
+        openHelper.writableDatabase.apply {
+            execSQL(
+                """
+                INSERT INTO kop (id, vad, var_kopt, kopdatum, garanti_manader, pris_ore, anteckning, kvitto_fil, skapad, oppet_kop_dagar, varutyp, fel_upptackt, fel_beskrivning, reklamerad, butik_epost, butik_telefon, butik_orgnr, fel_bilder)
+                VALUES (1, 'Kaffebryggare', 'Elgiganten', $kopdatum, 24, 129950, NULL, NULL, 1700000000000, NULL, NULL, NULL, 'Läcker', $reklamerad, NULL, NULL, NULL, 'a.jpg')
+                """.trimIndent(),
+            )
+            close()
+        }
+        openHelper.close()
+
+        val databas = Room.databaseBuilder(context, GarantiDatabas::class.java, TEST_DB)
+            .addMigrations(MIGRATION_6_7)
+            .allowMainThreadQueries()
+            .build()
+
+        val kop = databas.kopDao().hamta(1)!!
+        assertEquals(LocalDate.of(2026, 9, 1), kop.reklamerad)
+        assertEquals("a.jpg", kop.felBilder)
+        assertNull(kop.reklamationUtfall)
+        assertNull(kop.reklamationUtfallDatum)
+
+        databas.kopDao().uppdatera(kop.copy(reklamationUtfall = "AVSLAG", reklamationUtfallDatum = LocalDate.of(2026, 9, 20)))
+        val uppdaterad = databas.kopDao().hamta(1)!!
+        assertEquals("AVSLAG", uppdaterad.reklamationUtfall)
+        assertEquals(LocalDate.of(2026, 9, 20), uppdaterad.reklamationUtfallDatum)
 
         databas.close()
         context.deleteDatabase(TEST_DB)

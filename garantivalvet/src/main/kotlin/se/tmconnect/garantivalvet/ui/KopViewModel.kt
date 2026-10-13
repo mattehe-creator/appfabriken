@@ -29,6 +29,7 @@ import se.tmconnect.garantivalvet.export.skrivHemforsakringTillPdf
 import se.tmconnect.garantivalvet.regler.MAX_FEL_BILDER
 import se.tmconnect.garantivalvet.regler.byggHemforsakring
 import se.tmconnect.garantivalvet.regler.hemforsakringCsv
+import se.tmconnect.garantivalvet.regler.ReklamationsUtfall
 import se.tmconnect.garantivalvet.regler.TemaLage
 import se.tmconnect.garantivalvet.regler.Varutyp
 import se.tmconnect.garantivalvet.regler.kanLaggaTillFelBild
@@ -301,11 +302,15 @@ class KopViewModel(
         }
     }
 
-    /** Sätter eller tar bort datumet då användaren reklamerade (detaljvyns logg). */
+    /** Sätter eller tar bort datumet då användaren reklamerade (detaljvyns logg). Utfallet följer med: ingen reklamation, inget utfall. */
     fun markeraReklamerad(datum: LocalDate?) {
         val kop = _valtKop.value ?: return
         viewModelScope.launch {
-            val ny = kop.copy(reklamerad = datum)
+            val ny = if (datum == null) {
+                kop.copy(reklamerad = null, reklamationUtfall = null, reklamationUtfallDatum = null)
+            } else {
+                kop.copy(reklamerad = datum)
+            }
             repository.spara(ny)
             _valtKop.value = ny
         }
@@ -354,6 +359,20 @@ class KopViewModel(
 
     /** FileProvider-URI för en sparad bild på felet. */
     fun felBildUri(filnamn: String): Uri? = kvittoLager.innehallUriForFilnamn(filnamn)
+
+    /** Anger hur reklamationen slutade (löst, avslag, anmält till ARN), eller `null` för att öppna ärendet igen. */
+    fun sattReklamationsUtfall(utfall: ReklamationsUtfall?, datum: LocalDate = LocalDate.now()) {
+        val kop = _valtKop.value ?: return
+        viewModelScope.launch {
+            val ny = kop.copy(
+                reklamationUtfall = utfall?.name,
+                reklamationUtfallDatum = if (utfall == null) null else datum,
+            )
+            repository.spara(ny)
+            _valtKop.value = ny
+            // Ärendets status styr påminnelserna (svar, ARN): schemat räknas om vid nästa körning.
+        }
+    }
 
     /** Öppnar helskärmsvy för köpets kvitto. */
     fun visaKvittoHelskarm(kopId: Long) {

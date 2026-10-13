@@ -316,4 +316,19 @@
     <string name="utseende_ljust">Ljust</string>
     <string name="utseende_morkt">Mörkt</string>
     <string name="ai_egen_text_foraldrad">Texten är din egen och följer inte längre dina val (krav, felbeskrivning, datum). Tryck Återställ för att uppdatera den.</string>
+    <string name="upp_vantar">Väntar på butikens svar (dag %1$d).</string>
+    <string name="upp_borde_ha_svarat">Det har gått %1$d dagar sedan du reklamerade. Har butiken svarat?</string>
+    <string name="upp_lost">Löst %1$s. Bra jobbat!</string>
+    <string name="upp_avslag">Butiken sa nej (%1$s).</string>
+    <string name="upp_arn_anmald">Anmält till ARN (%1$s).</string>
+    <string name="upp_borde_hjalp">Hör av dig till butiken igen och hänvisa till din första reklamation. Behöver du hjälp att formulera dig kan appen skriva ett påminnelsemejl.</string>
+    <string name="upp_avslag_hjalp">Ett nej är inte slutet. Du kan förklara varför du har rätt, med reklamationsrätten, och du kan vända dig till ARN, som är gratis. Allmän vägledning ger Hallå konsument.</string>
+    <string name="upp_svara_knapp">Svara butiken eller få hjälp</string>
+    <string name="upp_hur_gick_det">Hur gick det?</string>
+    <string name="upp_knapp_lost">Det blev löst</string>
+    <string name="upp_knapp_avslag">Butiken sa nej</string>
+    <string name="upp_knapp_arn">Jag har anmält till ARN</string>
+    <string name="upp_oppna_igen">Öppna ärendet igen</string>
+    <string name="paminnelse_notis_svar_titel">Har butiken svarat?</string>
+    <string name="paminnelse_notis_svar_text">Det har gått två veckor sedan du reklamerade %1$s. Har du fått svar? Annars kan du höra av dig igen.</string>
 </resources>
