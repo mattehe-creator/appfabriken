@@ -27,7 +27,7 @@ fun gissaVarutyp(vad: String): Varutyp? {
         ),
         Varutyp.KLADER_SKOR to listOf(
             "jacka", "jeans", "byxor", "byxa", "skor", "sko", "kängor", "stövlar", "tröja", "klänning", 
-            "kjol", "strumpor", "mossa", "handskar", "skjorta", "kavaj", "kappa", "jacket", "shoes", 
+            "kjol", "strumpor", "mössa", "handskar", "skjorta", "kavaj", "kappa", "jacket", "shoes", 
             "boots", "trousers", "sweater", "dress", "coat"
         ),
         Varutyp.HEM_BYGG to listOf(

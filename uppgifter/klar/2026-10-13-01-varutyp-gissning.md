@@ -64,3 +64,5 @@ gradle testDebugUnitTest
 - Lägga till beroenden.
 - Ändra databasschemat.
 - Lägga till fler nyckelord än de som står ovan.
+
+utfall: godkänd 2026-10-13 (mössa i nyckelordslistan)
