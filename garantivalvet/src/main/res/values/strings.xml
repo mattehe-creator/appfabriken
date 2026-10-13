@@ -202,7 +202,7 @@
     <string name="logg_reklamerad">Claim made %1$s.</string>
     <string name="logg_arn">If you cannot agree, you can file a case with the National Board for Consumer Disputes (ARN) by %1$s, one year after your first claim.</string>
     <string name="logg_markera_reklamerad">I have made the claim</string>
-    <string name="logg_angra">Undo</string>
+    <string name="logg_angra">Undo "I have made a complaint"</string>
     <string name="logg_fel_prefix">Fault: %1$s</string>
     <string name="paminnelse_notis_reklamera_titel">Time to make your claim</string>
     <string name="paminnelse_notis_reklamera_text">You found a fault on %1$s. Claim by %2$s.</string>
@@ -321,7 +321,7 @@
     <string name="upp_lost">Resolved %1$s. Well done!</string>
     <string name="upp_avslag">The store said no (%1$s).</string>
     <string name="upp_arn_anmald">Reported to ARN (%1$s).</string>
-    <string name="upp_borde_hjalp">Contact the store again and refer to your first complaint. If you need help wording it, the app can write a reminder email.</string>
+    <string name="upp_borde_hjalp">Contact the store again and refer to your first complaint. If you need help wording it, you will find it under Complain.</string>
     <string name="upp_avslag_hjalp">A no is not the end. You can explain why you are entitled, using your right to complain, and you can turn to ARN (the National Board for Consumer Disputes), which is free. Hallå konsument gives general guidance.</string>
     <string name="upp_svara_knapp">Reply to the store or get help</string>
     <string name="upp_hur_gick_det">How did it go?</string>

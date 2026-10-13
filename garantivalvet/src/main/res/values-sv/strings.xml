@@ -202,7 +202,7 @@
     <string name="logg_reklamerad">Reklamerat %1$s.</string>
     <string name="logg_arn">Kommer ni inte överens kan du anmäla till Allmänna reklamationsnämnden (ARN) senast %1$s, ett år efter din första reklamation.</string>
     <string name="logg_markera_reklamerad">Jag har reklamerat</string>
-    <string name="logg_angra">Ångra</string>
+    <string name="logg_angra">Ångra "jag har reklamerat"</string>
     <string name="logg_fel_prefix">Fel: %1$s</string>
     <string name="paminnelse_notis_reklamera_titel">Dags att reklamera</string>
     <string name="paminnelse_notis_reklamera_text">Du har upptäckt ett fel på %1$s. Reklamera senast %2$s.</string>
@@ -321,7 +321,7 @@
     <string name="upp_lost">Löst %1$s. Bra jobbat!</string>
     <string name="upp_avslag">Butiken sa nej (%1$s).</string>
     <string name="upp_arn_anmald">Anmält till ARN (%1$s).</string>
-    <string name="upp_borde_hjalp">Hör av dig till butiken igen och hänvisa till din första reklamation. Behöver du hjälp att formulera dig kan appen skriva ett påminnelsemejl.</string>
+    <string name="upp_borde_hjalp">Hör av dig till butiken igen och hänvisa till din första reklamation. Behöver du hjälp att formulera dig finns den under Reklamera.</string>
     <string name="upp_avslag_hjalp">Ett nej är inte slutet. Du kan förklara varför du har rätt, med reklamationsrätten, och du kan vända dig till ARN, som är gratis. Allmän vägledning ger Hallå konsument.</string>
     <string name="upp_svara_knapp">Svara butiken eller få hjälp</string>
     <string name="upp_hur_gick_det">Hur gick det?</string>
