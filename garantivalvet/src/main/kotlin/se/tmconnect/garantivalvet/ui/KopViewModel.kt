@@ -21,7 +21,12 @@ import kotlinx.coroutines.withContext
 import se.tmconnect.garantivalvet.data.InstallningarLager
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.regler.ButikKontakt
+import se.tmconnect.garantivalvet.export.HemforsakringTexter
+import se.tmconnect.garantivalvet.export.PdfExportResult
+import se.tmconnect.garantivalvet.export.skrivHemforsakringTillPdf
 import se.tmconnect.garantivalvet.regler.MAX_FEL_BILDER
+import se.tmconnect.garantivalvet.regler.byggHemforsakring
+import se.tmconnect.garantivalvet.regler.hemforsakringCsv
 import se.tmconnect.garantivalvet.regler.Varutyp
 import se.tmconnect.garantivalvet.regler.kanLaggaTillFelBild
 import se.tmconnect.garantivalvet.regler.lasFelBilder
@@ -582,6 +587,41 @@ class KopViewModel(
                 _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.Sparad
             } catch (_: Exception) {
                 _sakerhetskopiaMeddelande.value = SakerhetskopiaMeddelande.KundeInteLasas
+            }
+        }
+    }
+
+    /** Sparar hemförsäkringsunderlaget som PDF (tabell med värde och summa, därefter kvittona) till [uri]. */
+    fun sparaHemforsakringPdf(uri: Uri, texter: HemforsakringTexter, locale: java.util.Locale) {
+        viewModelScope.launch {
+            try {
+                val sammanstallning = byggHemforsakring(allaKopForExport())
+                val resultat = withContext(Dispatchers.IO) {
+                    val ut = appContext.contentResolver.openOutputStream(uri) ?: throw java.io.IOException()
+                    ut.use { skrivHemforsakringTillPdf(sammanstallning, texter, locale, kvittoLager, it) }
+                }
+                if (resultat == PdfExportResult.Ok) meddelaExportSparad() else meddelaExportMisslyckades()
+            } catch (_: Exception) {
+                meddelaExportMisslyckades()
+            }
+        }
+    }
+
+    /** Sparar hemförsäkringsunderlaget som CSV (UTF-8 med BOM, så att svenska Excel visar å, ä, ö rätt). */
+    fun sparaHemforsakringCsv(uri: Uri, rubriker: List<String>, summaRubrik: String) {
+        viewModelScope.launch {
+            try {
+                val csv = hemforsakringCsv(byggHemforsakring(allaKopForExport()), rubriker, summaRubrik)
+                withContext(Dispatchers.IO) {
+                    val ut = appContext.contentResolver.openOutputStream(uri) ?: throw java.io.IOException()
+                    ut.use {
+                        it.write(byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte()))
+                        it.write(csv.toByteArray(Charsets.UTF_8))
+                    }
+                }
+                meddelaExportSparad()
+            } catch (_: Exception) {
+                meddelaExportMisslyckades()
             }
         }
     }

@@ -281,4 +281,18 @@
     <string name="reklamera_bild_beskrivning">Photo of the fault</string>
     <string name="reklamera_bild_ta_bort">Remove photo</string>
     <string name="reklamera_bild_fel">The photo could not be added.</string>
+    <string name="hem_rubrik">Home insurance list</string>
+    <string name="hem_beskrivning">A list of all your purchases with value and total, most expensive first. The PDF also has each receipt on its own page. Saved where you choose, for example in your own cloud service. Free and with no limit.</string>
+    <string name="hem_pdf">Save as PDF</string>
+    <string name="hem_csv">Save as CSV</string>
+    <string name="hem_pdf_rubrik">Home insurance list</string>
+    <string name="hem_pdf_ingress">My purchases with value according to receipt. Compiled %1$s in Warranty Vault.</string>
+    <string name="hem_kol_vara">Item</string>
+    <string name="hem_kol_butik">Store</string>
+    <string name="hem_kol_datum">Purchase date</string>
+    <string name="hem_kol_pris">Price</string>
+    <string name="hem_kol_pris_csv">Price (SEK)</string>
+    <string name="hem_summa">Total</string>
+    <string name="hem_saknar_pris">Some purchases have no price and are not included in the total.</string>
+    <string name="hem_kvitton_rubrik">Receipt</string>
 </resources>
