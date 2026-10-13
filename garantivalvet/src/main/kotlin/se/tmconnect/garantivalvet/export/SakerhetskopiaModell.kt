@@ -4,6 +4,8 @@ import se.tmconnect.garantivalvet.data.Kop
 import java.time.LocalDate
 import se.tmconnect.garantivalvet.regler.Varutyp
 import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
+import se.tmconnect.garantivalvet.regler.lasFelBilder
+import se.tmconnect.garantivalvet.regler.skrivFelBilder
 
 const val SAKERHETSKOPIA_VERSION = 1
 const val SAKERHETSKOPIA_KOP_JSON = "kop.json"
@@ -27,6 +29,7 @@ data class SakerhetskopiaKop(
     val butikEpost: String? = null,
     val butikTelefon: String? = null,
     val butikOrgnr: String? = null,
+    val felBilder: List<String> = emptyList(),
 )
 
 data class SakerhetskopiaInnehall(
@@ -57,9 +60,14 @@ fun kopTillSakerhetskopia(kop: Kop): SakerhetskopiaKop =
         butikEpost = kop.butikEpost,
         butikTelefon = kop.butikTelefon,
         butikOrgnr = kop.butikOrgnr,
+        felBilder = lasFelBilder(kop.felBilder),
     )
 
-fun sakerhetskopiaKopTillKop(export: SakerhetskopiaKop, kvittoFil: String? = export.kvittoFil): Kop =
+fun sakerhetskopiaKopTillKop(
+    export: SakerhetskopiaKop,
+    kvittoFil: String? = export.kvittoFil,
+    felBilder: List<String> = export.felBilder,
+): Kop =
     Kop(
         vad = export.vad.trim(),
         varKopt = export.varKopt?.trim()?.takeIf { it.isNotEmpty() },
@@ -76,6 +84,7 @@ fun sakerhetskopiaKopTillKop(export: SakerhetskopiaKop, kvittoFil: String? = exp
         butikEpost = export.butikEpost?.trim()?.takeIf { it.isNotEmpty() },
         butikTelefon = export.butikTelefon?.trim()?.takeIf { it.isNotEmpty() },
         butikOrgnr = export.butikOrgnr?.trim()?.takeIf { it.isNotEmpty() },
+        felBilder = skrivFelBilder(felBilder),
     )
 
 /** Dubblett om de fem fälten matchar ett befintligt köp (enligt BESLUTSLOGG). */

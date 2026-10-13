@@ -46,6 +46,7 @@ import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.export.PdfExportResult
+import se.tmconnect.garantivalvet.export.felBildBilagaFilnamn
 import se.tmconnect.garantivalvet.export.kvittoBilagaFilnamn
 import se.tmconnect.garantivalvet.export.reklamationsPdfFilnamn
 import se.tmconnect.garantivalvet.export.skrivUnderlagTillPdf
@@ -64,7 +65,9 @@ import se.tmconnect.garantivalvet.ui.KopSkarm
 import se.tmconnect.garantivalvet.ui.KopViewModel
 import se.tmconnect.garantivalvet.ui.KopViewModelFactory
 import se.tmconnect.garantivalvet.ui.ProDialog
+import se.tmconnect.garantivalvet.ui.FelBildPost
 import se.tmconnect.garantivalvet.ui.ReklamationsSkarm
+import se.tmconnect.garantivalvet.regler.lasFelBilder
 import se.tmconnect.garantivalvet.ui.SakerhetskopiaMeddelande
 import se.tmconnect.garantivalvet.ui.KvittoHelskarm
 import se.tmconnect.karna.pro.ProKalla
@@ -134,6 +137,23 @@ class MainActivity : ComponentActivity() {
         if (success && kameraUri != null) {
             viewModel.valjBild(kameraUri!!)
         }
+    }
+
+    // Bilder på felet (Reklamera): galleri och kamera, sparas på köpet
+    private val pickFelBildContract = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia(),
+    ) { uri: Uri? ->
+        uri?.let { viewModel.laggTillFelBild(it) { visaFelBildFel() } }
+    }
+    private var felKameraUri: Uri? = null
+    private val takeFelFotoContract = registerForActivityResult(
+        ActivityResultContracts.TakePicture(),
+    ) { success ->
+        felKameraUri?.takeIf { success }?.let { viewModel.laggTillFelBild(it) { visaFelBildFel() } }
+    }
+
+    private fun visaFelBildFel() {
+        android.widget.Toast.makeText(this, R.string.reklamera_bild_fel, android.widget.Toast.LENGTH_LONG).show()
     }
 
     // Resultatkontrakt för notisbehörighet
@@ -415,6 +435,18 @@ class MainActivity : ComponentActivity() {
                             ReklamationsSkarm(
                                 kop = kop,
                                 kvittoFinns = kop.kvittoFil != null,
+                                felBilder = lasFelBilder(kop.felBilder).map { FelBildPost(it, viewModel.felBildUri(it)) },
+                                onValjFelBild = {
+                                    pickFelBildContract.launch(
+                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                                    )
+                                },
+                                onTaFelFoto = {
+                                    val uri = viewModel.skapaKameraKvittoUri()
+                                    felKameraUri = uri
+                                    takeFelFotoContract.launch(uri)
+                                },
+                                onTaBortFelBild = viewModel::taBortFelBild,
                                 onSkickaMejl = { amne, text, bifogaUnderlag ->
                                     skickaReklamationsMejl(kop, amne, text, bifogaUnderlag)
                                 },
@@ -591,6 +623,9 @@ class MainActivity : ComponentActivity() {
     private fun skickaReklamationsMejl(kop: Kop, amne: String, text: String, bifogaUnderlag: Boolean) {
         val bilagor = listOfNotNull(
             kop.kvittoFil?.let { KvittoLager(this).kopieraTillExport(it, kvittoBilagaFilnamn(kop.vad, kop.kopdatum)) },
+        ) + lasFelBilder(kop.felBilder).mapIndexedNotNull { index, filnamn ->
+            KvittoLager(this).kopieraTillExport(filnamn, felBildBilagaFilnamn(kop.vad, index + 1))
+        } + listOfNotNull(
             if (bifogaUnderlag) skapaUnderlagsPdfUri(kop) else null,
         )
         val intent = Intent(if (bilagor.size > 1) Intent.ACTION_SEND_MULTIPLE else Intent.ACTION_SEND).apply {

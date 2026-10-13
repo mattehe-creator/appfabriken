@@ -21,7 +21,11 @@ import kotlinx.coroutines.withContext
 import se.tmconnect.garantivalvet.data.InstallningarLager
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.regler.ButikKontakt
+import se.tmconnect.garantivalvet.regler.MAX_FEL_BILDER
 import se.tmconnect.garantivalvet.regler.Varutyp
+import se.tmconnect.garantivalvet.regler.kanLaggaTillFelBild
+import se.tmconnect.garantivalvet.regler.lasFelBilder
+import se.tmconnect.garantivalvet.regler.skrivFelBilder
 import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
@@ -273,6 +277,40 @@ class KopViewModel(
             _valtKop.value = ny
         }
     }
+
+    /** Lägger en bild på felet till det valda köpet (högst [MAX_FEL_BILDER]). */
+    fun laggTillFelBild(uri: Uri, onFel: () -> Unit = {}) {
+        val kop = _valtKop.value ?: return
+        if (!kanLaggaTillFelBild(kop.felBilder)) {
+            onFel()
+            return
+        }
+        viewModelScope.launch {
+            val filnamn = withContext(Dispatchers.IO) { kvittoLager.sparaFelBild(uri) }
+            if (filnamn == null) {
+                onFel()
+                return@launch
+            }
+            val aktuell = _valtKop.value?.takeIf { it.id == kop.id } ?: kop
+            val ny = aktuell.copy(felBilder = skrivFelBilder(lasFelBilder(aktuell.felBilder) + filnamn))
+            repository.spara(ny)
+            _valtKop.value = ny
+        }
+    }
+
+    /** Tar bort en bild på felet från det valda köpet och raderar filen. */
+    fun taBortFelBild(filnamn: String) {
+        val kop = _valtKop.value ?: return
+        viewModelScope.launch {
+            val ny = kop.copy(felBilder = skrivFelBilder(lasFelBilder(kop.felBilder) - filnamn))
+            repository.spara(ny)
+            withContext(Dispatchers.IO) { kvittoLager.taBort(filnamn) }
+            _valtKop.value = ny
+        }
+    }
+
+    /** FileProvider-URI för en sparad bild på felet. */
+    fun felBildUri(filnamn: String): Uri? = kvittoLager.innehallUriForFilnamn(filnamn)
 
     /** Öppnar helskärmsvy för köpets kvitto. */
     fun visaKvittoHelskarm(kopId: Long) {

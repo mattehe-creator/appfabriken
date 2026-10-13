@@ -206,4 +206,33 @@ class SakerhetskopiaJsonTest {
         val las = lasSakerhetskopiaJson(skrivSakerhetskopiaJson(innehall)) as SakerhetskopiaJsonLasResult.Ok
         assertEquals(innehall, las.innehall)
     }
+
+    @Test
+    fun felBilderGarRundtur() {
+        val innehall =
+            SakerhetskopiaInnehall(
+                version = 1,
+                skapad = "2026-10-11T10:00:00Z",
+                kop =
+                    listOf(
+                        SakerhetskopiaKop(
+                            vad = "Tvättmaskin",
+                            kopdatum = LocalDate.of(2024, 3, 1),
+                            garantiManader = 24,
+                            felBilder = listOf("a.jpg", "b.jpg"),
+                        ),
+                    ),
+            )
+        val json = skrivSakerhetskopiaJson(innehall)
+        assertTrue(json.contains("\"felBilder\":[\"a.jpg\",\"b.jpg\"]"))
+        val las = lasSakerhetskopiaJson(json) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals(listOf("a.jpg", "b.jpg"), las.innehall.kop.single().felBilder)
+    }
+
+    @Test
+    fun gammalFilUtanFelBilderLasesMedTomLista() {
+        val json = """{"version":1,"skapad":"x","kop":[{"vad":"A","kopdatum":"2024-03-01","garantiManader":24}]}"""
+        val las = lasSakerhetskopiaJson(json) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals(emptyList<String>(), las.innehall.kop.single().felBilder)
+    }
 }

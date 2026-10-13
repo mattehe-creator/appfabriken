@@ -31,3 +31,9 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
         db.execSQL("ALTER TABLE kop ADD COLUMN butik_orgnr TEXT")
     }
 }
+
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE kop ADD COLUMN fel_bilder TEXT")
+    }
+}
