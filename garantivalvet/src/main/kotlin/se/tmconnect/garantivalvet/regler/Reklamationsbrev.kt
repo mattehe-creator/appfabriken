@@ -19,15 +19,18 @@ data class ReklamationsTexter(
     val hej: String,
     val intro: String,
     val vara: String,
+    val butik: String,
     val kopdatum: String,
     val pris: String,
     val kvittoBifogas: String,
     val fel: String,
     val upptacktes: String,
+    val reklamationsdatum: String,
     val kravMall: String,
     val kravAvhjalp: String,
     val kravPrisavdrag: String,
     val kravHava: String,
+    val bekrafta: String,
     val avslut: String,
     val halsning: String,
 )
@@ -39,6 +42,7 @@ data class Reklamationsbrev(
 
 fun byggReklamationsbrev(
     vad: String,
+    butik: String?,
     kopdatum: LocalDate,
     prisOre: Long?,
     kvittoFinns: Boolean,
@@ -47,6 +51,7 @@ fun byggReklamationsbrev(
     krav: Krav,
     texter: ReklamationsTexter,
     locale: Locale,
+    idag: LocalDate = LocalDate.now(),
 ): Reklamationsbrev {
     val datum = formateraDatum(kopdatum, locale)
     val kravText = when (krav) {
@@ -60,17 +65,22 @@ fun byggReklamationsbrev(
         add(texter.intro)
         add("")
         add("${texter.vara}: ${vad.trim()}")
+        butik?.trim()?.takeIf { it.isNotEmpty() }?.let { add("${texter.butik}: $it") }
         add("${texter.kopdatum}: $datum")
         prisOre?.let { add("${texter.pris}: ${formateraPrisKr(it, locale)}") }
         if (kvittoFinns) add(texter.kvittoBifogas)
         add("")
         add("${texter.fel}: ${felBeskrivning.trim()}")
         add("${texter.upptacktes}: ${formateraDatum(felUpptackt, locale)}")
+        add("${texter.reklamationsdatum}: ${formateraDatum(idag, locale)}")
         add("")
         add(texter.kravMall.replace("%1\$s", kravText))
         add("")
+        add(texter.bekrafta)
         add(texter.avslut)
+        add("")
         add(texter.halsning)
+        add("")
     }
     return Reklamationsbrev(
         amne = texter.amneMall.replace("%1\$s", vad.trim()).replace("%2\$s", datum),

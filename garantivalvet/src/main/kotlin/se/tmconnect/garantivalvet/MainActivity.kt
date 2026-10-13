@@ -45,6 +45,7 @@ import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.export.PdfExportResult
+import se.tmconnect.garantivalvet.export.kvittoBilagaFilnamn
 import se.tmconnect.garantivalvet.export.reklamationsPdfFilnamn
 import se.tmconnect.garantivalvet.export.skrivUnderlagTillPdf
 import se.tmconnect.garantivalvet.export.sakerhetskopiaFilnamn
@@ -369,7 +370,9 @@ class MainActivity : ComponentActivity() {
                             ReklamationsSkarm(
                                 kop = kop,
                                 kvittoFinns = kop.kvittoFil != null,
-                                onSkickaMejl = { amne, text -> skickaReklamationsMejl(kop, amne, text) },
+                                onSkickaMejl = { amne, text, bifogaUnderlag ->
+                                    skickaReklamationsMejl(kop, amne, text, bifogaUnderlag)
+                                },
                                 onSparaFel = viewModel::sparaFel,
                                 onHarReklamerat = { upptackt, beskrivning ->
                                     viewModel.harReklamerat(upptackt, beskrivning)
@@ -535,17 +538,29 @@ class MainActivity : ComponentActivity() {
         varutyper = Varutyp.entries.associate { it.name to getString(varutypText(it)) },
     )
 
-    /** Öppnar mejlappen med färdigt meddelande och kvittot bifogat. Ingen behörighet eller nätverk i appen. */
-    private fun skickaReklamationsMejl(kop: Kop, amne: String, text: String) {
-        val kvittoUri = viewModel.sparatKvittoUri(kop)
-        val intent = Intent(Intent.ACTION_SEND).apply {
+    /**
+     * Öppnar mejlappen med färdigt meddelande. Kvittot bifogas under ett läsbart namn, och på begäran även
+     * reklamationsunderlaget som PDF. Ingen behörighet eller nätverk i appen.
+     */
+    private fun skickaReklamationsMejl(kop: Kop, amne: String, text: String, bifogaUnderlag: Boolean) {
+        val bilagor = listOfNotNull(
+            kop.kvittoFil?.let { KvittoLager(this).kopieraTillExport(it, kvittoBilagaFilnamn(kop.vad, kop.kopdatum)) },
+            if (bifogaUnderlag) skapaUnderlagsPdfUri(kop) else null,
+        )
+        val intent = Intent(if (bilagor.size > 1) Intent.ACTION_SEND_MULTIPLE else Intent.ACTION_SEND).apply {
             type = "message/rfc822"
             kop.butikEpost?.takeIf { it.isNotBlank() }?.let { putExtra(Intent.EXTRA_EMAIL, arrayOf(it)) }
             putExtra(Intent.EXTRA_SUBJECT, amne)
             putExtra(Intent.EXTRA_TEXT, text)
-            if (kvittoUri != null) {
-                putExtra(Intent.EXTRA_STREAM, kvittoUri)
-                clipData = android.content.ClipData.newRawUri("", kvittoUri)
+            if (bilagor.size == 1) {
+                putExtra(Intent.EXTRA_STREAM, bilagor.first())
+            } else if (bilagor.size > 1) {
+                putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(bilagor))
+            }
+            if (bilagor.isNotEmpty()) {
+                clipData = android.content.ClipData.newRawUri("", bilagor.first()).also { klipp ->
+                    bilagor.drop(1).forEach { klipp.addItem(android.content.ClipData.Item(it)) }
+                }
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
         }
@@ -555,6 +570,35 @@ class MainActivity : ComponentActivity() {
             android.widget.Toast.makeText(this, R.string.reklamera_inget_mejl, android.widget.Toast.LENGTH_LONG).show()
         }
     }
+
+    /** Bygger reklamationsunderlaget som PDF i cache och returnerar FileProvider-URI, eller `null` om det misslyckas. */
+    private fun skapaUnderlagsPdfUri(kop: Kop): Uri? =
+        try {
+            val underlag = byggUnderlag(
+                kop,
+                LocalDate.now(),
+                underlagEtiketter(),
+                getString(R.string.underlag_rubrik),
+                resources.configuration.locales[0],
+            )
+            val kvittoBitmap = viewModel.sparatKvittoUri(kop)?.let { kvittoUri ->
+                try {
+                    contentResolver.openInputStream(kvittoUri)?.use { android.graphics.BitmapFactory.decodeStream(it) }
+                } catch (_: Exception) {
+                    null
+                }
+            }
+            val pdfFil = File(cacheDir, "export/${reklamationsPdfFilnamn(kop.vad, kop.kopdatum)}")
+            pdfFil.parentFile?.mkdirs()
+            val klar = FileOutputStream(pdfFil).use { skrivUnderlagTillPdf(underlag, it, kvittoBitmap) }
+            if (klar is PdfExportResult.Ok) {
+                FileProvider.getUriForFile(this, KvittoLager.fileProviderAuthority(this), pdfFil)
+            } else {
+                null
+            }
+        } catch (_: Exception) {
+            null
+        }
 
     private fun mejlaButik(epost: String) {
         try {

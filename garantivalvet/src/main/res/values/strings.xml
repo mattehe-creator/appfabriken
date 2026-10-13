@@ -210,7 +210,7 @@
     <string name="paminnelse_notis_arn_text">Do you disagree with the company about %1$s? You can file with ARN by %2$s.</string>
     <string name="brev_amne">Claim: %1$s (bought %2$s)</string>
     <string name="brev_hej">Hello,</string>
-    <string name="brev_intro">I am making a claim for an item I bought from you, under the Swedish Consumer Sales Act.</string>
+    <string name="brev_intro">I am making a claim for the following item under the Swedish Consumer Sales Act.</string>
     <string name="brev_vara">Item</string>
     <string name="brev_kopdatum">Purchase date</string>
     <string name="brev_pris">Price</string>
@@ -241,4 +241,18 @@
     <string name="underlag_butik_orgnr">Shop organisation number</string>
     <string name="kvitto_valj_pdf">Choose PDF or file</string>
     <string name="rotera_fel">Could not rotate the image. Try choosing the image again.</string>
+    <string name="brev_butik">Bought from</string>
+    <string name="brev_reklamationsdatum">Claim sent</string>
+    <string name="brev_bekrafta">Please confirm that you have received the claim and let me know how you wish to proceed.</string>
+    <string name="reklamera_steg_1">1. Describe the fault</string>
+    <string name="reklamera_steg_2">2. What do you want the company to do?</string>
+    <string name="reklamera_steg_3">3. Review and send</string>
+    <string name="reklamera_krav_avhjalp_forklaring">Repair or a new item, at no cost to you. This is usually the first step.</string>
+    <string name="reklamera_krav_prisavdrag_forklaring">You keep the item and get part of the price back.</string>
+    <string name="reklamera_krav_hava_forklaring">You return the item and get your money back. May apply when the fault is serious or cannot be fixed.</string>
+    <string name="reklamera_kvitto_bifogas">The receipt is attached to the email</string>
+    <string name="reklamera_inget_kvitto">No receipt saved for this purchase</string>
+    <string name="reklamera_bifoga_underlag">Attach claim document (PDF)</string>
+    <string name="reklamera_bifoga_underlag_hjalp">A summary of the purchase and the receipt in one document.</string>
+    <string name="reklamera_beskriv_fel_forst">Describe the fault to be able to send.</string>
 </resources>

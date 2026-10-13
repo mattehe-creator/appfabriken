@@ -28,4 +28,11 @@ class PdfFilnamnTest {
             reklamationsPdfFilnamn("  ", LocalDate.of(2025, 6, 1)),
         )
     }
+
+    @Test
+    fun kvittobilagansNamnArLasbartOchSakert() {
+        assertEquals("kvitto-Laptop-2024-03-15.jpg", kvittoBilagaFilnamn("Laptop", LocalDate.of(2024, 3, 15)))
+        assertEquals("kvitto-TV-55-2024-01-01.jpg", kvittoBilagaFilnamn("TV/55\"", LocalDate.of(2024, 1, 1)))
+        assertEquals("kvitto-kop-2025-06-01.jpg", kvittoBilagaFilnamn("  ", LocalDate.of(2025, 6, 1)))
+    }
 }

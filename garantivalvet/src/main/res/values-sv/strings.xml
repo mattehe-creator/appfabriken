@@ -210,7 +210,7 @@
     <string name="paminnelse_notis_arn_text">Är du inte överens med företaget om %1$s? Du kan anmäla till ARN senast %2$s.</string>
     <string name="brev_amne">Reklamation: %1$s (köpt %2$s)</string>
     <string name="brev_hej">Hej,</string>
-    <string name="brev_intro">Jag reklamerar en vara som jag har köpt hos er, enligt konsumentköplagen.</string>
+    <string name="brev_intro">Jag reklamerar följande vara enligt konsumentköplagen.</string>
     <string name="brev_vara">Vara</string>
     <string name="brev_kopdatum">Köpdatum</string>
     <string name="brev_pris">Pris</string>
@@ -241,4 +241,18 @@
     <string name="underlag_butik_orgnr">Butikens organisationsnummer</string>
     <string name="kvitto_valj_pdf">Välj PDF eller fil</string>
     <string name="rotera_fel">Kunde inte rotera bilden. Prova att välja bilden igen.</string>
+    <string name="brev_butik">Köpt hos</string>
+    <string name="brev_reklamationsdatum">Reklamationen skickas</string>
+    <string name="brev_bekrafta">Vänligen bekräfta att ni har tagit emot reklamationen och meddela hur ni vill gå vidare.</string>
+    <string name="reklamera_steg_1">1. Beskriv felet</string>
+    <string name="reklamera_steg_2">2. Vad vill du att företaget gör?</string>
+    <string name="reklamera_steg_3">3. Granska och skicka</string>
+    <string name="reklamera_krav_avhjalp_forklaring">Reparation eller en ny vara, utan kostnad för dig. Det här är oftast första steget.</string>
+    <string name="reklamera_krav_prisavdrag_forklaring">Du behåller varan och får en del av priset tillbaka.</string>
+    <string name="reklamera_krav_hava_forklaring">Du lämnar tillbaka varan och får pengarna tillbaka. Kan gälla när felet är allvarligt eller inte kan åtgärdas.</string>
+    <string name="reklamera_kvitto_bifogas">Kvittot bifogas mejlet</string>
+    <string name="reklamera_inget_kvitto">Inget kvitto sparat för köpet</string>
+    <string name="reklamera_bifoga_underlag">Bifoga reklamationsunderlag (PDF)</string>
+    <string name="reklamera_bifoga_underlag_hjalp">Sammanfattning av köpet och kvittot i ett dokument.</string>
+    <string name="reklamera_beskriv_fel_forst">Beskriv felet för att kunna skicka.</string>
 </resources>
