@@ -13,6 +13,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,9 +26,15 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import se.tmconnect.garantivalvet.R
+import se.tmconnect.garantivalvet.export.AUTO_INTERVALL_DAGLIGEN
+import se.tmconnect.garantivalvet.export.AUTO_INTERVALL_MANADSVIS
+import se.tmconnect.garantivalvet.export.AUTO_INTERVALL_VECKOVIS
+import se.tmconnect.garantivalvet.export.AutoBackupTillstand
+import se.tmconnect.garantivalvet.regler.formateraDatum
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +49,11 @@ fun InstallningarSkarm(
     onTillbaka: () -> Unit,
     debugInstallningar: @Composable () -> Unit = {},
     modifier: Modifier = Modifier,
+    autoBackup: AutoBackupTillstand = AutoBackupTillstand(),
+    onAutoBackupPa: (Boolean) -> Unit = {},
+    onByttMapp: () -> Unit = {},
+    onAutoBackupIntervall: (Int) -> Unit = {},
+    onKorNuAutoBackup: () -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier,
@@ -166,7 +179,94 @@ fun InstallningarSkarm(
                 }
             }
 
+            AutoBackupAvsnitt(
+                tillstand = autoBackup,
+                onPa = onAutoBackupPa,
+                onByttMapp = onByttMapp,
+                onIntervall = onAutoBackupIntervall,
+                onKorNu = onKorNuAutoBackup,
+            )
+
             debugInstallningar()
+        }
+    }
+}
+
+@Composable
+private fun AutoBackupAvsnitt(
+    tillstand: AutoBackupTillstand,
+    onPa: (Boolean) -> Unit,
+    onByttMapp: () -> Unit,
+    onIntervall: (Int) -> Unit,
+    onKorNu: () -> Unit,
+) {
+    val locale = LocalConfiguration.current.locales[0]
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(text = stringResource(R.string.auto_rubrik), style = MaterialTheme.typography.titleMedium)
+        Text(
+            text = stringResource(R.string.auto_beskrivning),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(text = stringResource(R.string.auto_pa), style = MaterialTheme.typography.bodyMedium)
+            Switch(checked = tillstand.pa, onCheckedChange = onPa)
+        }
+        if (tillstand.pa) {
+            Text(
+                text = stringResource(
+                    R.string.auto_mapp,
+                    tillstand.mappNamn ?: stringResource(R.string.auto_mapp_okand),
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                listOf(
+                    AUTO_INTERVALL_DAGLIGEN to R.string.auto_dagligen,
+                    AUTO_INTERVALL_VECKOVIS to R.string.auto_veckovis,
+                    AUTO_INTERVALL_MANADSVIS to R.string.auto_manadsvis,
+                ).forEach { (dagar, textRes) ->
+                    FilterChip(
+                        selected = tillstand.intervallDagar == dagar,
+                        onClick = { onIntervall(dagar) },
+                        label = { Text(text = stringResource(textRes)) },
+                    )
+                }
+            }
+            Text(
+                text = tillstand.senaste?.let {
+                    stringResource(
+                        R.string.auto_senaste,
+                        formateraDatum(
+                            java.time.Instant.ofEpochMilli(it).atZone(java.time.ZoneId.systemDefault()).toLocalDate(),
+                            locale,
+                        ),
+                    )
+                } ?: stringResource(R.string.auto_ingen_an),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            if (tillstand.fel) {
+                Text(
+                    text = stringResource(R.string.auto_fel),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                OutlinedButton(onClick = onByttMapp, modifier = Modifier.weight(1f).heightIn(min = 48.dp)) {
+                    Text(text = stringResource(R.string.auto_byt_mapp))
+                }
+                OutlinedButton(onClick = onKorNu, modifier = Modifier.weight(1f).heightIn(min = 48.dp)) {
+                    Text(text = stringResource(R.string.auto_kor_nu))
+                }
+            }
         }
     }
 }
