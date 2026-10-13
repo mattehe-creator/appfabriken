@@ -12,6 +12,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import se.tmconnect.garantivalvet.ocr.KvittoLasare
 import se.tmconnect.garantivalvet.ocr.MlKitKvittoLasare
 import se.tmconnect.garantivalvet.regler.ButikKontakt
@@ -223,7 +224,9 @@ class MainActivity : ComponentActivity() {
         hanteraPaminnelseIntent(intent)
         if (savedInstanceState == null) {
             hanteraDelatKvitto(intent)
+            hanteraGenvag(intent)
         }
+        registreraGenvag()
         viewModel.synkaPaminnelseJobb()
         enableEdgeToEdge()
         setContent {
@@ -510,6 +513,7 @@ class MainActivity : ComponentActivity() {
         setIntent(intent)
         hanteraPaminnelseIntent(intent)
         hanteraDelatKvitto(intent)
+        hanteraGenvag(intent)
     }
 
     private fun underlagEtiketter() = UnderlagEtiketter(
@@ -657,6 +661,35 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** Genväg på appikonen (tryck länge): öppnar kameran direkt för ett nytt kvitto. Ingen behörighet behövs. */
+    private fun registreraGenvag() {
+        try {
+            val genvag = androidx.core.content.pm.ShortcutInfoCompat.Builder(this, "fota_kvitto")
+                .setShortLabel(getString(R.string.genvag_fota_kort))
+                .setLongLabel(getString(R.string.genvag_fota_lang))
+                .setIcon(androidx.core.graphics.drawable.IconCompat.createWithResource(this, R.drawable.ic_kvitto))
+                .setIntent(Intent(this, MainActivity::class.java).setAction(ACTION_FOTA_KVITTO))
+                .build()
+            androidx.core.content.pm.ShortcutManagerCompat.setDynamicShortcuts(this, listOf(genvag))
+        } catch (_: Exception) {
+        }
+    }
+
+    private fun hanteraGenvag(intent: Intent?) {
+        if (intent?.action != ACTION_FOTA_KVITTO) return
+        intent.action = null
+        lifecycleScope.launch {
+            if (viewModel.kanLaggaTillNu()) {
+                viewModel.visaLaggTill()
+                val uri = viewModel.skapaKameraKvittoUri()
+                kameraUri = uri
+                takePictureContract.launch(uri)
+            } else {
+                viewModel.visaProDialog()
+            }
+        }
+    }
+
     /** Tar emot ett kvitto (bild eller PDF) som delats från en annan app, till exempel mejl eller galleri. */
     private fun hanteraDelatKvitto(intent: Intent?) {
         if (intent?.action != Intent.ACTION_SEND || !arDelbartKvitto(intent.type)) return
@@ -678,5 +711,10 @@ class MainActivity : ComponentActivity() {
             viewModel.visaDetalj(kopId)
             intent.removeExtra(PaminnelseWorker.EXTRA_KOP_ID)
         }
+    }
+
+    companion object {
+        /** Genvägen på appikonen: fota ett nytt kvitto. */
+        const val ACTION_FOTA_KVITTO = "se.tmconnect.garantivalvet.action.FOTA_KVITTO"
     }
 }

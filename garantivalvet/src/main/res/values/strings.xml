@@ -255,4 +255,10 @@
     <string name="reklamera_bifoga_underlag">Attach claim document (PDF)</string>
     <string name="reklamera_bifoga_underlag_hjalp">A summary of the purchase and the receipt in one document.</string>
     <string name="reklamera_beskriv_fel_forst">Describe the fault to be able to send.</string>
+    <string name="sok_hint">Search your purchases</string>
+    <string name="filter_alla">All</string>
+    <string name="filter_inga_traffar">No purchases match the search.</string>
+    <string name="filter_rensa">Clear search and filters</string>
+    <string name="genvag_fota_kort">Photo receipt</string>
+    <string name="genvag_fota_lang">Photograph a new receipt</string>
 </resources>

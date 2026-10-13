@@ -255,4 +255,10 @@
     <string name="reklamera_bifoga_underlag">Bifoga reklamationsunderlag (PDF)</string>
     <string name="reklamera_bifoga_underlag_hjalp">Sammanfattning av köpet och kvittot i ett dokument.</string>
     <string name="reklamera_beskriv_fel_forst">Beskriv felet för att kunna skicka.</string>
+    <string name="sok_hint">Sök bland dina köp</string>
+    <string name="filter_alla">Alla</string>
+    <string name="filter_inga_traffar">Inga köp matchar sökningen.</string>
+    <string name="filter_rensa">Rensa sökning och filter</string>
+    <string name="genvag_fota_kort">Fota kvitto</string>
+    <string name="genvag_fota_lang">Fota ett nytt kvitto</string>
 </resources>

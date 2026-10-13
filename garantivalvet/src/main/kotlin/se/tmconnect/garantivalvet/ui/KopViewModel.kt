@@ -300,7 +300,7 @@ class KopViewModel(
      */
     fun tagEmotDelatKvitto(uri: Uri, mime: String?, onFel: () -> Unit) {
         viewModelScope.launch {
-            if (!kanLaggaTill(repository.antal(), arPro.value)) {
+            if (!kanLaggaTillNu()) {
                 visaLista()
                 visaProDialog()
                 return@launch
@@ -411,6 +411,12 @@ class KopViewModel(
             visaLista()
         }
     }
+
+    /**
+     * Om användaren får lägga till ett köp nu, läst direkt ur databasen och Pro-källan. Fungerar även precis efter
+     * appstart, innan listan har lästs in (genväg och delning).
+     */
+    suspend fun kanLaggaTillNu(): Boolean = kanLaggaTill(repository.antal(), proKalla.arPro.value)
 
     /** Kontrollerar om användaren får lägga till ett nytt köp. */
     fun kanLaggaTillNy(): Boolean {
