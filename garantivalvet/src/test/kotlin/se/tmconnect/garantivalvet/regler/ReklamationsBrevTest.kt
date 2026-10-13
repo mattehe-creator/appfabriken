@@ -14,15 +14,18 @@ class ReklamationsBrevTest {
         hej = "Hej,",
         intro = "Jag reklamerar en vara som jag har köpt hos er, enligt konsumentköplagen.",
         vara = "Vara",
+        butik = "Köpt hos",
         kopdatum = "Köpdatum",
         pris = "Pris",
         kvittoBifogas = "Kvittot är bifogat.",
         fel = "Fel",
         upptacktes = "Felet upptäcktes",
+        reklamationsdatum = "Reklamationen skickas",
         kravMall = "Jag begär att ni %1\$s.",
         kravAvhjalp = "åtgärdar felet utan kostnad för mig, genom reparation eller en ny vara",
         kravPrisavdrag = "ger mig ett prisavdrag",
         kravHava = "hävar köpet och betalar tillbaka pengarna",
+        bekrafta = "Vänligen bekräfta att ni har tagit emot reklamationen och meddela hur ni vill gå vidare.",
         avslut = "Jag ser fram emot ert svar.",
         halsning = "Med vänliga hälsningar",
     )
@@ -30,6 +33,7 @@ class ReklamationsBrevTest {
     private fun brev(krav: Krav, pris: Long? = 129_900L, kvitto: Boolean = true) =
         byggReklamationsbrev(
             vad = "Kaffebryggare",
+            butik = "Elgiganten",
             kopdatum = LocalDate.of(2026, 9, 1),
             prisOre = pris,
             kvittoFinns = kvitto,
@@ -38,6 +42,7 @@ class ReklamationsBrevTest {
             krav = krav,
             texter = texter,
             locale = sv,
+            idag = LocalDate.of(2026, 10, 3),
         )
 
     @Test
@@ -55,7 +60,12 @@ class ReklamationsBrevTest {
         assertTrue(rader.contains("Kvittot är bifogat."))
         assertTrue(rader.contains("Fel: Den läcker vatten"))
         assertTrue(rader.contains("Felet upptäcktes: ${formateraDatum(LocalDate.of(2026, 10, 1), sv)}"))
-        assertEquals("Med vänliga hälsningar", rader.last())
+        assertTrue(rader.contains("Köpt hos: Elgiganten"))
+        assertTrue(rader.contains("Reklamationen skickas: ${formateraDatum(LocalDate.of(2026, 10, 3), sv)}"))
+        assertTrue(rader.contains("Vänligen bekräfta att ni har tagit emot reklamationen och meddela hur ni vill gå vidare."))
+        // Slutar med hälsning och en tom rad där användaren skriver sitt namn i mejlappen.
+        assertEquals("Med vänliga hälsningar", rader[rader.size - 2])
+        assertEquals("", rader.last())
     }
 
     @Test
@@ -63,6 +73,24 @@ class ReklamationsBrevTest {
         assertTrue(brev(Krav.AVHJALP).text.contains("Jag begär att ni åtgärdar felet utan kostnad för mig, genom reparation eller en ny vara."))
         assertTrue(brev(Krav.PRISAVDRAG).text.contains("Jag begär att ni ger mig ett prisavdrag."))
         assertTrue(brev(Krav.HAVA).text.contains("Jag begär att ni hävar köpet och betalar tillbaka pengarna."))
+    }
+
+    @Test
+    fun butikUtelamnasNarDenSaknas() {
+        val utan = byggReklamationsbrev(
+            vad = "Kaffebryggare",
+            butik = "  ",
+            kopdatum = LocalDate.of(2026, 9, 1),
+            prisOre = null,
+            kvittoFinns = false,
+            felBeskrivning = "Läcker",
+            felUpptackt = LocalDate.of(2026, 10, 1),
+            krav = Krav.AVHJALP,
+            texter = texter,
+            locale = sv,
+            idag = LocalDate.of(2026, 10, 3),
+        ).text
+        assertFalse(utan.contains("Köpt hos"))
     }
 
     @Test

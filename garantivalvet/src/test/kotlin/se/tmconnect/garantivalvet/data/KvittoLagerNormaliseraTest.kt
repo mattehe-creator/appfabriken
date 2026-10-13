@@ -99,4 +99,18 @@ class KvittoLagerNormaliseraTest {
         val fil = File(context.cacheDir, "inte-en-bild2.jpg").apply { writeText("text") }
         assertNull(lager.kopieraFranUri(Uri.fromFile(fil)))
     }
+
+    @Test
+    fun kvittoKopierasTillExportMedLasbartNamn() {
+        val filnamn = lager.kopieraFranUri(skapaBild(200, 100))!!
+        val uri = lager.kopieraTillExport(filnamn, "kvitto-Kaffebryggare-2026-09-01.jpg")
+        assertNotNull(uri)
+        org.junit.Assert.assertTrue(File(context.cacheDir, "export/kvitto-Kaffebryggare-2026-09-01.jpg").isFile)
+        assertEquals("kvitto-Kaffebryggare-2026-09-01.jpg", uri!!.lastPathSegment)
+    }
+
+    @Test
+    fun saknatKvittoGerIngenExport() {
+        assertNull(lager.kopieraTillExport("finns-inte.jpg", "x.jpg"))
+    }
 }

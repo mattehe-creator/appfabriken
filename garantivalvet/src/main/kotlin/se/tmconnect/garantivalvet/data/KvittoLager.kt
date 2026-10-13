@@ -202,6 +202,21 @@ class KvittoLager(
         return FileProvider.getUriForFile(context, fileProviderAuthority(context), fil)
     }
 
+    /**
+     * Kopierar ett sparat kvitto till exportmappen under ett läsbart namn (till exempel för mejlbilagan) och
+     * returnerar FileProvider-URI, eller `null` om kvittot saknas.
+     */
+    fun kopieraTillExport(filnamn: String, malNamn: String): Uri? {
+        val kalla = File(kvittonKatalog, filnamn)
+        if (!kalla.isFile) {
+            return null
+        }
+        val katalog = File(context.cacheDir, EXPORT_CACHE_MAPP).also { it.mkdirs() }
+        val mal = File(katalog, malNamn)
+        kalla.copyTo(mal, overwrite = true)
+        return FileProvider.getUriForFile(context, fileProviderAuthority(context), mal)
+    }
+
     /** Rå bytes för export till säkerhetskopia. */
     fun lasRåBytes(filnamn: String): ByteArray? {
         val fil = File(kvittonKatalog, filnamn)
@@ -231,6 +246,7 @@ class KvittoLager(
     companion object {
         private const val KVITTON_MAPP = "kvitton"
         private const val KAMERA_CACHE_MAPP = "kamera"
+        private const val EXPORT_CACHE_MAPP = "export"
         private const val JPEG_KVALITET = 85
 
         /** Authority för FileProvider i manifestet. */
