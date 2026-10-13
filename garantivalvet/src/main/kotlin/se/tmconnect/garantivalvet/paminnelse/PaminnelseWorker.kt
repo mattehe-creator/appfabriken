@@ -117,9 +117,6 @@ class PaminnelseWorker(
     }
 
     private fun skapaKanalOmBehovs() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return
-        }
         val kanal = NotificationChannel(
             KANAL_ID,
             applicationContext.getString(R.string.paminnelse_kanal_namn),
@@ -136,6 +133,9 @@ class PaminnelseWorker(
         text: String,
         kopId: Long?,
     ) {
+        if (!harNotisBehorighet()) {
+            return
+        }
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             if (kopId != null) {
@@ -155,6 +155,14 @@ class PaminnelseWorker(
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(
+                applicationContext,
+                android.Manifest.permission.POST_NOTIFICATIONS,
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
         NotificationManagerCompat.from(applicationContext).notify(notisId, notis)
     }
 

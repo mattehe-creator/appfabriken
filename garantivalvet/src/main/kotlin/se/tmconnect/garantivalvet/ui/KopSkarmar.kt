@@ -70,7 +70,7 @@ fun KopListaSkarm(
             TopAppBar(
                 title = { Text(text = stringResource(R.string.app_name)) },
                 actions = {
-                    IconButton(onClick = onOppnaInstallningar) {
+                    IconButton(onClick = onOppnaInstallningar, modifier = Modifier.tryckyta48()) {
                         Icon(
                             imageVector = Icons.Filled.Settings,
                             contentDescription = stringResource(R.string.installningar_rubrik),
@@ -87,7 +87,7 @@ fun KopListaSkarm(
                 icon = {
                     Icon(
                         imageVector = Icons.Filled.Add,
-                        contentDescription = null,
+                        contentDescription = null, // Dekorativ: FAB-texten beskriver åtgärden.
                     )
                 },
                 text = { Text(text = stringResource(R.string.fab_nytt_kvitto)) },
@@ -235,10 +235,15 @@ private fun SokOchFilter(
             value = fraga,
             onValueChange = onFraga,
             label = { Text(text = stringResource(R.string.sok_hint)) },
-            leadingIcon = { Icon(imageVector = Icons.Filled.Search, contentDescription = null) },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = null, // Dekorativ: sökfältet har etikett.
+                )
+            },
             trailingIcon = {
                 if (fraga.isNotEmpty()) {
-                    IconButton(onClick = { onFraga("") }) {
+                    IconButton(onClick = { onFraga("") }, modifier = Modifier.tryckyta48()) {
                         Icon(
                             imageVector = Icons.Filled.Close,
                             contentDescription = stringResource(R.string.filter_rensa),
@@ -254,6 +259,7 @@ private fun SokOchFilter(
                 selected = valdGrupp == null,
                 onClick = { onGrupp(null) },
                 label = { Text(text = stringResource(R.string.filter_alla)) },
+                modifier = Modifier.tryckyta48(),
             )
             listOf(
                 ListaGrupp.GAR_UT_SNART to R.string.lista_grupp_snart,
@@ -264,6 +270,7 @@ private fun SokOchFilter(
                     selected = valdGrupp == grupp,
                     onClick = { onGrupp(if (valdGrupp == grupp) null else grupp) },
                     label = { Text(text = stringResource(textRes)) },
+                    modifier = Modifier.tryckyta48(),
                 )
             }
         }
@@ -274,6 +281,7 @@ private fun SokOchFilter(
                         selected = valdVarutyp == typ,
                         onClick = { onVarutyp(if (valdVarutyp == typ) null else typ) },
                         label = { Text(text = stringResource(varutypText(typ))) },
+                        modifier = Modifier.tryckyta48(),
                     )
                 }
             }
@@ -293,7 +301,7 @@ private fun TomListaInnehall(
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_kvitto),
-            contentDescription = null,
+            contentDescription = null, // Dekorativ: rubrik och brödtext beskriver tom lista.
             modifier = Modifier.padding(bottom = 16.dp),
             tint = MaterialTheme.colorScheme.primary,
         )

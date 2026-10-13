@@ -200,7 +200,7 @@ fun ReklamationsSkarm(
             TopAppBar(
                 title = { Text(text = stringResource(R.string.reklamera_titel)) },
                 navigationIcon = {
-                    IconButton(onClick = onTillbaka) {
+                    IconButton(onClick = onTillbaka, modifier = Modifier.tryckyta48()) {
                         Icon(
                             imageVector = Icons.Filled.Close,
                             contentDescription = stringResource(R.string.stang),
@@ -295,7 +295,7 @@ fun ReklamationsSkarm(
                     label = { Text(text = stringResource(R.string.reklamera_upptackt_etikett)) },
                     readOnly = true,
                     trailingIcon = {
-                        IconButton(onClick = { visarDatumvaljare = true }) {
+                        IconButton(onClick = { visarDatumvaljare = true }, modifier = Modifier.tryckyta48()) {
                             Icon(
                                 imageVector = Icons.Filled.DateRange,
                                 contentDescription = stringResource(R.string.reklamera_valj_datum),
@@ -431,7 +431,11 @@ fun ReklamationsSkarm(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    Switch(checked = bifogaUnderlag, onCheckedChange = { bifogaUnderlag = it })
+                    Switch(
+                        checked = bifogaUnderlag,
+                        onCheckedChange = { bifogaUnderlag = it },
+                        modifier = Modifier.tryckyta48(),
+                    )
                 }
             }
 
@@ -655,7 +659,7 @@ private fun InfoRuta(text: String) {
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
         Icon(
             imageVector = Icons.Filled.Info,
-            contentDescription = null,
+            contentDescription = null, // Dekorativ: infotexten bredvid läses upp.
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text(

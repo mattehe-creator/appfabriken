@@ -140,7 +140,7 @@ fun KopDetaljSkarm(
             TopAppBar(
                 title = { Text(text = visaMedVersal(kop.vad)) },
                 navigationIcon = {
-                    IconButton(onClick = onTillbaka) {
+                    IconButton(onClick = onTillbaka, modifier = Modifier.tryckyta48()) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.tillbaka),
@@ -148,7 +148,7 @@ fun KopDetaljSkarm(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { visaMeny = true }) {
+                    IconButton(onClick = { visaMeny = true }, modifier = Modifier.tryckyta48()) {
                         Icon(
                             imageVector = Icons.Filled.MoreVert,
                             contentDescription = stringResource(R.string.mer_meny),
@@ -183,7 +183,7 @@ fun KopDetaljSkarm(
                     onClick = onReklamera,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(min = 48.dp),
+                        .tryckyta48(),
                 ) {
                     Text(text = stringResource(R.string.reklamera_knapp))
                 }
@@ -191,8 +191,8 @@ fun KopDetaljSkarm(
                     onClick = onExportPdf,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(min = 48.dp)
-                        .padding(top = 8.dp),
+                        .padding(top = 8.dp)
+                        .tryckyta48(),
                 ) {
                     Text(text = stringResource(R.string.export_pdf))
                 }
@@ -357,11 +357,13 @@ private fun StatusKort(
                 )
                 AssistChip(
                     onClick = {},
+                    enabled = false,
                     label = { Text(statusText) },
                     colors = AssistChipDefaults.assistChipColors(
                         containerColor = chipFarger.container,
                         labelColor = chipFarger.content,
                     ),
+                    modifier = Modifier.tryckyta48(),
                 )
             }
 
@@ -480,7 +482,10 @@ private fun ReklamationsLoggKort(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    TextButton(onClick = { onMarkeraReklamerad(LocalDate.now()) }) {
+                    TextButton(
+                        onClick = { onMarkeraReklamerad(LocalDate.now()) },
+                        modifier = Modifier.tryckyta48(),
+                    ) {
                         Text(text = stringResource(R.string.logg_markera_reklamerad))
                     }
                 }
@@ -575,11 +580,15 @@ private fun ButikKontaktKort(kop: Kop, onMejla: (String) -> Unit, onRing: (Strin
             Text(text = stringResource(R.string.detalj_butik_kontakt), style = MaterialTheme.typography.titleMedium)
             epost?.let {
                 DetaljRad(etikett = stringResource(R.string.falt_butik_epost), varde = it)
-                TextButton(onClick = { onMejla(it) }) { Text(text = stringResource(R.string.mejla_butiken)) }
+                TextButton(onClick = { onMejla(it) }, modifier = Modifier.tryckyta48()) {
+                    Text(text = stringResource(R.string.mejla_butiken))
+                }
             }
             telefon?.let {
                 DetaljRad(etikett = stringResource(R.string.falt_butik_telefon), varde = it)
-                TextButton(onClick = { onRing(it) }) { Text(text = stringResource(R.string.ring_butiken)) }
+                TextButton(onClick = { onRing(it) }, modifier = Modifier.tryckyta48()) {
+                    Text(text = stringResource(R.string.ring_butiken))
+                }
             }
             orgnr?.let { DetaljRad(etikett = stringResource(R.string.falt_butik_orgnr), varde = it) }
         }
@@ -637,7 +646,9 @@ private fun ReklamationsKort(kop: Kop, locale: java.util.Locale) {
 
                 TextButton(
                     onClick = { expanderad = !expanderad },
-                    modifier = Modifier.padding(top = 4.dp)
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .tryckyta48(),
                 ) {
                     Text(text = stringResource(R.string.detalj_reklamation_las_mer))
                 }

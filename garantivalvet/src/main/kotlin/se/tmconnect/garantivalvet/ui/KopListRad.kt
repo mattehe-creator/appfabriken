@@ -126,19 +126,21 @@ fun KopListRad(
             }
             AssistChip(
                 onClick = onClick,
-                label = { 
+                label = {
                     Text(
-                        text = statusText, 
+                        text = statusText,
                         style = MaterialTheme.typography.labelSmall,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    ) 
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 },
                 colors = AssistChipDefaults.assistChipColors(
                     containerColor = chipFarger.container,
                     labelColor = chipFarger.content,
                 ),
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .tryckyta48(),
             )
             }
         }

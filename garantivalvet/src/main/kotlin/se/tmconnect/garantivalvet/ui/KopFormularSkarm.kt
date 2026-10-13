@@ -286,7 +286,7 @@ fun KopFormularSkarm(
             TopAppBar(
                 title = { Text(text = titel) },
                 navigationIcon = {
-                    IconButton(onClick = onStang) {
+                    IconButton(onClick = onStang, modifier = Modifier.tryckyta48()) {
                         Icon(
                             imageVector = Icons.Filled.Close,
                             contentDescription = stringResource(R.string.stang),
@@ -294,7 +294,7 @@ fun KopFormularSkarm(
                     }
                 },
                 actions = {
-                    TextButton(onClick = { spara() }) {
+                    TextButton(onClick = { spara() }, modifier = Modifier.tryckyta48()) {
                         Text(text = stringResource(R.string.spara))
                     }
                 },
@@ -353,6 +353,7 @@ fun KopFormularSkarm(
                             selected = false,
                             onClick = { vad = namn },
                             label = { Text(text = namn) },
+                            modifier = Modifier.tryckyta48(),
                         )
                     }
                 }
@@ -379,7 +380,7 @@ fun KopFormularSkarm(
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            TextButton(onClick = { visarKontakt = !visarKontakt }) {
+            TextButton(onClick = { visarKontakt = !visarKontakt }, modifier = Modifier.tryckyta48()) {
                 Text(text = stringResource(R.string.falt_butik_kontakt))
             }
             if (visarKontakt) {
@@ -432,7 +433,7 @@ fun KopFormularSkarm(
                 },
                 readOnly = true,
                 trailingIcon = {
-                    IconButton(onClick = { visarDatumvaljare = true }) {
+                    IconButton(onClick = { visarDatumvaljare = true }, modifier = Modifier.tryckyta48()) {
                         Icon(
                             imageVector = Icons.Filled.DateRange,
                             contentDescription = stringResource(R.string.falt_datum)
@@ -474,6 +475,7 @@ fun KopFormularSkarm(
                                 ),
                             )
                         },
+                        modifier = Modifier.tryckyta48(),
                     )
                 }
                 FilterChip(
@@ -483,6 +485,7 @@ fun KopFormularSkarm(
                         annatText = ""
                     },
                     label = { Text(text = stringResource(R.string.garanti_chip_annat)) },
+                    modifier = Modifier.tryckyta48(),
                 )
             }
             if (valdChipIndex == 3) {
@@ -529,6 +532,7 @@ fun KopFormularSkarm(
                             forslagOppetKop = false
                         },
                         label = { Text(text = stringResource(textRes)) },
+                        modifier = Modifier.tryckyta48(),
                     )
                 }
             }
@@ -574,6 +578,7 @@ fun KopFormularSkarm(
                         selected = varutyp == typ,
                         onClick = { varutyp = if (varutyp == typ) null else typ },
                         label = { Text(text = stringResource(varutypText(typ))) },
+                        modifier = Modifier.tryckyta48(),
                     )
                 }
             }
