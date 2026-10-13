@@ -695,11 +695,12 @@ private fun KvittoKort(
                     Text(text = stringResource(R.string.kvitto_las_igen))
                 }
             } else {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                // Under varandra: bredvid varandra bröts orden mitt i vid stor text.
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Button(
                         onClick = onTaFoto,
                         modifier = Modifier
-                            .weight(1f)
+                            .fillMaxWidth()
                             .heightIn(min = 48.dp),
                     ) {
                         Text(text = stringResource(R.string.kvitto_fotografera))
@@ -707,7 +708,7 @@ private fun KvittoKort(
                     OutlinedButton(
                         onClick = onValjBild,
                         modifier = Modifier
-                            .weight(1f)
+                            .fillMaxWidth()
                             .heightIn(min = 48.dp),
                     ) {
                         Text(text = stringResource(R.string.kvitto_valj_bild))

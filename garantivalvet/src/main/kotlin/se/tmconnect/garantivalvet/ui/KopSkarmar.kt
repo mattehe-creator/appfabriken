@@ -132,7 +132,8 @@ fun KopListaSkarm(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                contentPadding = PaddingValues(16.dp),
+                // Extra luft nederst så att knappen "Nytt kvitto" inte täcker sista raden.
+                contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 96.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 // Lägg till varningskortet om det behövs

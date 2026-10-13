@@ -12,6 +12,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.ui.semantics.Role
+import androidx.compose.material3.RadioButton
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.OutlinedButton
@@ -149,18 +153,30 @@ fun InstallningarSkarm(
                     text = stringResource(R.string.utseende_rubrik),
                     style = MaterialTheme.typography.titleMedium,
                 )
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(modifier = Modifier.selectableGroup()) {
                     listOf(
                         TemaLage.SYSTEM to R.string.utseende_system,
                         TemaLage.LJUST to R.string.utseende_ljust,
                         TemaLage.MORKT to R.string.utseende_morkt,
                     ).forEach { (lage, namn) ->
-                        FilterChip(
-                            selected = temaLage == lage,
-                            onClick = { onTemaLage(lage) },
-                            label = { Text(text = stringResource(namn)) },
-                            modifier = Modifier.heightIn(min = 48.dp),
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 48.dp)
+                                .selectable(
+                                    selected = temaLage == lage,
+                                    onClick = { onTemaLage(lage) },
+                                    role = Role.RadioButton,
+                                ),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(selected = temaLage == lage, onClick = null)
+                            Text(
+                                text = stringResource(namn),
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(start = 12.dp),
+                            )
+                        }
                     }
                 }
             }
