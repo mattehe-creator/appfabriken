@@ -110,6 +110,8 @@ class KvittoLager(
             normaliseraTillFil(kalla, extraGrader, fil)
         } catch (_: Exception) {
             false
+        } catch (_: OutOfMemoryError) {
+            false
         }
         if (!klar) {
             fil.delete()

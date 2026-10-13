@@ -239,4 +239,6 @@
     <string name="underlag_butik_epost">Butikens e-post</string>
     <string name="underlag_butik_telefon">Butikens telefon</string>
     <string name="underlag_butik_orgnr">Butikens organisationsnummer</string>
+    <string name="kvitto_valj_pdf">Välj PDF eller fil</string>
+    <string name="rotera_fel">Kunde inte rotera bilden. Prova att välja bilden igen.</string>
 </resources>
