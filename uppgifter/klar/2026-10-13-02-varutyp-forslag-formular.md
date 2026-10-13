@@ -44,3 +44,5 @@ gradle testDebugUnitTest
 - Lägga till beroenden.
 - Ändra databasschemat.
 - Ändra `onSpara` eller andra funktioners signaturer.
+
+utfall: godkänd 2026-10-13 (återställde massändringar i values-sv/strings.xml; LaunchedEffect vid null-gissning)

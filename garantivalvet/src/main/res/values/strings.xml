@@ -319,4 +319,5 @@
     <string name="upp_oppna_igen">Reopen the case</string>
     <string name="paminnelse_notis_svar_titel">Has the store replied?</string>
     <string name="paminnelse_notis_svar_text">It has been two weeks since you made a complaint about %1$s. Have you had a reply? If not, you can get in touch again.</string>
+    <string name="varutyp_forslag">Suggested from the name – change it if it is wrong</string>
 </resources>
