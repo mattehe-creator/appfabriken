@@ -41,8 +41,8 @@ class GranskaUtseendeTest {
         Kop(id = 3, vad = "Dammsugare", varKopt = "Hem och hus", kopdatum = LocalDate.of(2022, 6, 1), garantiManader = 12),
     )
 
-    private fun fota(namn: String, morkt: Boolean, fontScale: Float, innehall: @Composable () -> Unit) {
-        RuntimeEnvironment.setQualifiers("sv-rSE-w360dp-h640dp-port-" + (if (morkt) "night" else "notnight") + "-xxhdpi")
+    private fun fota(namn: String, morkt: Boolean, fontScale: Float, hojd: Int = 640, innehall: @Composable () -> Unit) {
+        RuntimeEnvironment.setQualifiers("sv-rSE-w360dp-h${hojd}dp-port-" + (if (morkt) "night" else "notnight") + "-xxhdpi")
         RuntimeEnvironment.setFontScale(fontScale)
         val activity = Robolectric.buildActivity(ButikRoboActivity::class.java).setup().get()
         activity.setContent { AppfabrikTema(morkt = morkt) { innehall() } }
@@ -92,4 +92,24 @@ class GranskaUtseendeTest {
 
     @Test
     fun ljustLageStorText() = alla("ljus-stor", morkt = false, fontScale = 1.5f)
+
+    @Test
+    fun uppfoljning() {
+        val idag = LocalDate.now()
+        listOf(
+            "vantar" to lista[1].copy(felBeskrivning = "Läcker vatten.", felUpptackt = idag.minusDays(10), reklamerad = idag.minusDays(5)),
+            "borde-ha-svarat" to lista[1].copy(felBeskrivning = "Läcker vatten.", felUpptackt = idag.minusDays(30), reklamerad = idag.minusDays(20)),
+            "avslag" to lista[1].copy(
+                felBeskrivning = "Läcker vatten.", felUpptackt = idag.minusDays(40), reklamerad = idag.minusDays(30),
+                reklamationUtfall = "AVSLAG", reklamationUtfallDatum = idag.minusDays(3),
+            ),
+        ).forEach { (namn, kop) ->
+            fota("uppfoljning-$namn", morkt = true, fontScale = 1f, hojd = 1500) {
+                KopDetaljSkarm(
+                    kop = kop, kvittoUri = null, onOppnaKvitto = noOp, onAndra = noOp, onTaBort = noOp, onTillbaka = noOp,
+                    arPro = false, onExportPdf = noOp, onVisaProDialog = noOp,
+                )
+            }
+        }
+    }
 }
