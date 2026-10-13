@@ -42,7 +42,7 @@ class GranskaUtseendeTest {
     )
 
     private fun fota(namn: String, morkt: Boolean, fontScale: Float, innehall: @Composable () -> Unit) {
-        RuntimeEnvironment.setQualifiers("sv-rSE-w360dp-h640dp-port-xxhdpi" + if (morkt) "-night" else "-notnight")
+        RuntimeEnvironment.setQualifiers("sv-rSE-w360dp-h640dp-port-" + (if (morkt) "night" else "notnight") + "-xxhdpi")
         RuntimeEnvironment.setFontScale(fontScale)
         val activity = Robolectric.buildActivity(ButikRoboActivity::class.java).setup().get()
         activity.setContent { AppfabrikTema(morkt = morkt) { innehall() } }
