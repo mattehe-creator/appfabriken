@@ -6,6 +6,7 @@ import se.tmconnect.garantivalvet.export.SakerhetskopiaInnehall
 import se.tmconnect.garantivalvet.export.SakerhetskopiaKop
 import se.tmconnect.garantivalvet.export.arSakerhetskopiaKopLik
 import se.tmconnect.garantivalvet.export.sakerhetskopiaKopTillKop
+import se.tmconnect.garantivalvet.regler.lasFelBilder
 
 class KopRepository(
     private val dao: KopDao,
@@ -25,6 +26,7 @@ class KopRepository(
 
     suspend fun taBort(kop: Kop) {
         kvittoLager.taBort(kop.kvittoFil)
+        lasFelBilder(kop.felBilder).forEach { kvittoLager.taBort(it) }
         dao.taBort(kop)
     }
 
@@ -63,6 +65,10 @@ class KopRepository(
                     error("Saknat kvitto i säkerhetskopia: $filnamn")
                 }
             }
+            val saknade = export.felBilder.filter { it !in kvittoFiler }
+            if (saknade.isNotEmpty()) {
+                error("Saknad bild i säkerhetskopia: ${saknade.first()}")
+            }
             attLaggaTill.add(export)
             redan.add(
                 SakerhetskopiaKop(
@@ -81,7 +87,8 @@ class KopRepository(
                     export.kvittoFil?.let { filnamn ->
                         kvittoLager.sparaFranBytes(kvittoFiler[filnamn]!!, filnamn)
                     }
-                sakerhetskopiaKopTillKop(export, nyttKvitto)
+                val nyaFelBilder = export.felBilder.map { kvittoLager.sparaFranBytes(kvittoFiler[it]!!, it) }
+                sakerhetskopiaKopTillKop(export, nyttKvitto, nyaFelBilder)
             }
         if (kopAttInfoga.isNotEmpty()) {
             dao.importeraKop(kopAttInfoga)

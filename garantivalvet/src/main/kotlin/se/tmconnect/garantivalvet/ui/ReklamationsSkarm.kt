@@ -1,6 +1,22 @@
 package se.tmconnect.garantivalvet.ui
 
+import android.graphics.BitmapFactory
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import se.tmconnect.garantivalvet.regler.MAX_FEL_BILDER
+import se.tmconnect.garantivalvet.regler.beraknaInSampleSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -63,6 +79,10 @@ import se.tmconnect.karna.tema.AppfabrikKortForm
 fun ReklamationsSkarm(
     kop: Kop,
     kvittoFinns: Boolean,
+    felBilder: List<FelBildPost> = emptyList(),
+    onValjFelBild: () -> Unit = {},
+    onTaFelFoto: () -> Unit = {},
+    onTaBortFelBild: (filnamn: String) -> Unit = {},
     onSkickaMejl: (amne: String, text: String, bifogaUnderlag: Boolean) -> Unit,
     onSparaFel: (felUpptackt: LocalDate, beskrivning: String) -> Unit,
     onHarReklamerat: (felUpptackt: LocalDate, beskrivning: String) -> Unit,
@@ -251,6 +271,12 @@ fun ReklamationsSkarm(
                     },
                     modifier = Modifier.fillMaxWidth(),
                 )
+                FelBilderRuta(
+                    felBilder = felBilder,
+                    onValjFelBild = onValjFelBild,
+                    onTaFelFoto = onTaFelFoto,
+                    onTaBortFelBild = onTaBortFelBild,
+                )
             }
 
             Steg(rubrik = stringResource(R.string.reklamera_steg_2)) {
@@ -322,6 +348,87 @@ fun ReklamationsSkarm(
             }
 
             InfoRuta(text = stringResource(R.string.reklamera_info))
+        }
+    }
+}
+
+/** En sparad bild på felet: filnamnet i lagret och URI:n som visas. */
+data class FelBildPost(val filnamn: String, val uri: Uri?)
+
+@Composable
+private fun FelBilderRuta(
+    felBilder: List<FelBildPost>,
+    onValjFelBild: () -> Unit,
+    onTaFelFoto: () -> Unit,
+    onTaBortFelBild: (String) -> Unit,
+) {
+    val context = LocalContext.current
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(text = stringResource(R.string.reklamera_bilder_rubrik), style = MaterialTheme.typography.titleSmall)
+        Text(
+            text = stringResource(R.string.reklamera_bilder_hjalp),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        if (felBilder.isNotEmpty()) {
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                felBilder.forEach { post ->
+                    val bitmap = remember(post.uri) {
+                        val uri = post.uri ?: return@remember null
+                        try {
+                            val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                            context.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, options) }
+                            val sample = beraknaInSampleSize(options.outWidth, options.outHeight, maxSida = 320)
+                            context.contentResolver.openInputStream(uri)?.use {
+                                BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample })
+                            }
+                        } catch (_: Exception) {
+                            null
+                        }
+                    }
+                    Box(modifier = Modifier.size(104.dp)) {
+                        if (bitmap != null) {
+                            Image(
+                                bitmap = bitmap.asImageBitmap(),
+                                contentDescription = stringResource(R.string.reklamera_bild_beskrivning),
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(top = 4.dp, end = 4.dp)
+                                    .clip(RoundedCornerShape(12.dp)),
+                            )
+                        }
+                        IconButton(
+                            onClick = { onTaBortFelBild(post.filnamn) },
+                            modifier = Modifier.align(Alignment.TopEnd).size(48.dp),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = stringResource(R.string.reklamera_bild_ta_bort),
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier
+                                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f), CircleShape)
+                                    .padding(4.dp),
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        if (felBilder.size < MAX_FEL_BILDER) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(
+                    onClick = onTaFelFoto,
+                    modifier = Modifier.weight(1f).heightIn(min = 48.dp),
+                ) { Text(text = stringResource(R.string.reklamera_bild_foto)) }
+                OutlinedButton(
+                    onClick = onValjFelBild,
+                    modifier = Modifier.weight(1f).heightIn(min = 48.dp),
+                ) { Text(text = stringResource(R.string.reklamera_bild_galleri)) }
+            }
         }
     }
 }

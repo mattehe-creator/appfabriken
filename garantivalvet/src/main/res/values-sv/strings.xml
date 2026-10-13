@@ -274,4 +274,11 @@
     <string name="auto_fel">Det gick inte att spara i mappen. Välj mappen igen.</string>
     <string name="auto_byt_mapp">Byt mapp</string>
     <string name="auto_kor_nu">Kopiera nu</string>
+    <string name="reklamera_bilder_rubrik">Bilder på felet</string>
+    <string name="reklamera_bilder_hjalp">Valfritt. Bilderna bifogas mejlet tillsammans med kvittot. Högst 5.</string>
+    <string name="reklamera_bild_foto">Ta foto</string>
+    <string name="reklamera_bild_galleri">Välj från galleriet</string>
+    <string name="reklamera_bild_beskrivning">Bild på felet</string>
+    <string name="reklamera_bild_ta_bort">Ta bort bilden</string>
+    <string name="reklamera_bild_fel">Bilden kunde inte läggas till.</string>
 </resources>

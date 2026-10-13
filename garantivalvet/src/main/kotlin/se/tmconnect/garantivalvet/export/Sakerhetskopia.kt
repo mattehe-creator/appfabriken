@@ -37,7 +37,13 @@ object Sakerhetskopia {
         
         // Först läs kvittobytes för varje köp och avgör om de ska inkluderas
         val kopMedKvitto = kop.map { originalKop ->
-            val exportKop = kopTillSakerhetskopia(originalKop)
+            val exportKop0 = kopTillSakerhetskopia(originalKop)
+            val exportKop = exportKop0.copy(
+                felBilder = exportKop0.felBilder.filter { filnamn ->
+                    val bytes = kvittoLager.lasRåBytes(filnamn)
+                    bytes != null && bytes.size <= SAKERHETSKOPIA_MAX_FIL_BYTES
+                },
+            )
             if (exportKop.kvittoFil != null) {
                 val bytes = kvittoLager.lasRåBytes(exportKop.kvittoFil)
                 if (bytes == null || bytes.size > SAKERHETSKOPIA_MAX_FIL_BYTES) {
@@ -63,15 +69,16 @@ object Sakerhetskopia {
             zip.write(json.toByteArray(Charsets.UTF_8))
             zip.closeEntry()
             for (k in kopMedKvitto) {
-                val filnamn = k.kvittoFil ?: continue
-                val bytes = kvittoLager.lasRåBytes(filnamn) ?: continue
-                if (bytes.size > SAKERHETSKOPIA_MAX_FIL_BYTES) {
-                    continue
+                for (filnamn in listOfNotNull(k.kvittoFil) + k.felBilder) {
+                    val bytes = kvittoLager.lasRåBytes(filnamn) ?: continue
+                    if (bytes.size > SAKERHETSKOPIA_MAX_FIL_BYTES) {
+                        continue
+                    }
+                    val postNamn = SAKERHETSKOPIA_KVITTON_MAPP + filnamn
+                    zip.putNextEntry(ZipEntry(postNamn))
+                    zip.write(bytes)
+                    zip.closeEntry()
                 }
-                val postNamn = SAKERHETSKOPIA_KVITTON_MAPP + filnamn
-                zip.putNextEntry(ZipEntry(postNamn))
-                zip.write(bytes)
-                zip.closeEntry()
             }
         }
     }

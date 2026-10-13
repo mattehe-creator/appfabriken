@@ -62,6 +62,9 @@ private fun skrivKopObjekt(kop: SakerhetskopiaKop): String =
         kop.butikEpost?.let { laggTillFalt("butikEpost", jsonStrang(it)) }
         kop.butikTelefon?.let { laggTillFalt("butikTelefon", jsonStrang(it)) }
         kop.butikOrgnr?.let { laggTillFalt("butikOrgnr", jsonStrang(it)) }
+        if (kop.felBilder.isNotEmpty()) {
+            laggTillFalt("felBilder", kop.felBilder.joinToString(",", "[", "]") { jsonStrang(it) })
+        }
         append('}')
     }
 
@@ -165,6 +168,7 @@ private fun lasKopObjekt(falt: Map<String, Any?>): SakerhetskopiaKop? {
         butikEpost = falt["butikEpost"] as? String,
         butikTelefon = falt["butikTelefon"] as? String,
         butikOrgnr = falt["butikOrgnr"] as? String,
+        felBilder = (falt["felBilder"] as? List<*>)?.filterIsInstance<String>().orEmpty(),
     )
 }
 

@@ -70,6 +70,15 @@ class KvittoLager(
     }
 
     /**
+     * Sparar en bild på felet (galleri eller kamera): görs upprätt, skalas ned och läggs bland de sparade filerna.
+     * Returnerar filnamnet, eller `null` om bilden inte gick att läsa.
+     */
+    fun sparaFelBild(kalla: Uri): String? {
+        val upprat = normalisera(kalla) ?: kalla
+        return kopieraFranUri(upprat)
+    }
+
+    /**
      * Tar emot ett kvitto som delats till appen (bild eller PDF) och lägger det som JPEG i cache,
      * så att det inte beror på avsändarens tillfälliga läsrättighet. PDF:ens första sida renderas till en bild.
      * Returnerar FileProvider-URI, eller `null` om filen inte gick att läsa.

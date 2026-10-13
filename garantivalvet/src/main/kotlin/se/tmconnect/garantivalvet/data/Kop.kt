@@ -40,4 +40,7 @@ data class Kop(
     val butikTelefon: String? = null,
     @ColumnInfo(name = "butik_orgnr")
     val butikOrgnr: String? = null,
+    /** Filnamn (kommaseparerade) på bilder av felet, se [se.tmconnect.garantivalvet.regler.lasFelBilder]. */
+    @ColumnInfo(name = "fel_bilder")
+    val felBilder: String? = null,
 )
