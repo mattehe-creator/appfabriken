@@ -106,10 +106,13 @@ fun KopListaSkarm(
             var fraga by rememberSaveable { mutableStateOf("") }
             var valdGrupp by rememberSaveable { mutableStateOf<String?>(null) }
             var valdVarutyp by rememberSaveable { mutableStateOf<String?>(null) }
+            // En varutyp som inte längre finns i listan (köpet togs bort) får inte hålla kvar ett osynligt filter.
+            val tillgangligaTyper = kopLista.mapNotNull { Varutyp.franNamn(it.varutyp) }.toSet()
+            val aktivVarutyp = Varutyp.franNamn(valdVarutyp)?.takeIf { it in tillgangligaTyper }
             val filter = KopFilter(
                 fraga = fraga,
                 grupp = valdGrupp?.let { namn -> ListaGrupp.entries.firstOrNull { it.name == namn } },
-                varutyp = Varutyp.franNamn(valdVarutyp),
+                varutyp = aktivVarutyp,
             )
             val visaFilter = kopLista.size >= SOK_FRAN_ANTAL
             val synligLista = if (visaFilter) filtreraKop(kopLista, filter, idag) else kopLista
@@ -129,7 +132,8 @@ fun KopListaSkarm(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                contentPadding = PaddingValues(16.dp),
+                // Extra luft nederst så att knappen "Nytt kvitto" inte täcker sista raden.
+                contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 96.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 // Lägg till varningskortet om det behövs

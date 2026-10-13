@@ -28,6 +28,8 @@ import se.tmconnect.garantivalvet.regler.fristerSomSkaAviseras
 import se.tmconnect.garantivalvet.regler.ReklamationsLogg
 import se.tmconnect.garantivalvet.regler.arFarskvara
 import se.tmconnect.garantivalvet.regler.arnAnmalanSenast
+import se.tmconnect.garantivalvet.regler.arnPaminnelseRelevant
+import se.tmconnect.garantivalvet.regler.svarForvantasSenast
 import se.tmconnect.garantivalvet.regler.reklamationsLogg
 import se.tmconnect.garantivalvet.regler.reklamerasSenast
 import se.tmconnect.garantivalvet.regler.garantiSlut
@@ -76,6 +78,7 @@ class PaminnelseWorker(
                 FristTyp.REKLAMERA_SENAST -> R.string.paminnelse_notis_reklamera_titel to
                     R.string.paminnelse_notis_reklamera_text
                 FristTyp.ARN -> R.string.paminnelse_notis_arn_titel to R.string.paminnelse_notis_arn_text
+                FristTyp.SVAR -> R.string.paminnelse_notis_svar_titel to R.string.paminnelse_notis_svar_text
             }
             visaNotis(
                 notisId = frist.kopId.toInt(),
@@ -167,16 +170,25 @@ class PaminnelseWorker(
         val oppetKop = giltigaOppetKopDagar(kop.oppetKopDagar)?.let { dagar ->
             Frist(kopId = kop.id, typ = FristTyp.OPPET_KOP, slutdatum = oppetKopSlut(kop.kopdatum, dagar))
         }
+        val svarFrist = if (kop.reklamerad != null && kop.reklamationUtfall == null) {
+            Frist(kopId = kop.id, typ = FristTyp.SVAR, slutdatum = svarForvantasSenast(kop.reklamerad))
+        } else {
+            null
+        }
         val reklamationsLogg = when (reklamationsLogg(kop)) {
             ReklamationsLogg.REKLAMERAD ->
-                Frist(kopId = kop.id, typ = FristTyp.ARN, slutdatum = arnAnmalanSenast(kop.reklamerad!!))
+                if (arnPaminnelseRelevant(kop)) {
+                    Frist(kopId = kop.id, typ = FristTyp.ARN, slutdatum = arnAnmalanSenast(kop.reklamerad!!))
+                } else {
+                    null
+                }
             ReklamationsLogg.FEL_UPPTACKT ->
                 Frist(kopId = kop.id, typ = FristTyp.REKLAMERA_SENAST, slutdatum = reklamerasSenast(kop.felUpptackt!!))
             ReklamationsLogg.INGEN -> null
         }
         // Färskvaror har ingen längre frist att påminna om (se arFarskvara).
-        if (arFarskvara(kop)) return listOfNotNull(oppetKop, reklamationsLogg)
-        return listOfNotNull(oppetKop, garanti, reklamation, reklamationsLogg)
+        if (arFarskvara(kop)) return listOfNotNull(oppetKop, reklamationsLogg, svarFrist)
+        return listOfNotNull(oppetKop, garanti, reklamation, reklamationsLogg, svarFrist)
     }
 
     companion object {

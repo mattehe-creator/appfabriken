@@ -2,6 +2,7 @@ package se.tmconnect.garantivalvet.export
 
 import se.tmconnect.garantivalvet.data.Kop
 import java.time.LocalDate
+import se.tmconnect.garantivalvet.regler.ReklamationsUtfall
 import se.tmconnect.garantivalvet.regler.Varutyp
 import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
 import se.tmconnect.garantivalvet.regler.lasFelBilder
@@ -30,6 +31,8 @@ data class SakerhetskopiaKop(
     val butikTelefon: String? = null,
     val butikOrgnr: String? = null,
     val felBilder: List<String> = emptyList(),
+    val reklamationUtfall: String? = null,
+    val reklamationUtfallDatum: LocalDate? = null,
 )
 
 data class SakerhetskopiaInnehall(
@@ -61,6 +64,8 @@ fun kopTillSakerhetskopia(kop: Kop): SakerhetskopiaKop =
         butikTelefon = kop.butikTelefon,
         butikOrgnr = kop.butikOrgnr,
         felBilder = lasFelBilder(kop.felBilder),
+        reklamationUtfall = kop.reklamationUtfall,
+        reklamationUtfallDatum = kop.reklamationUtfallDatum,
     )
 
 fun sakerhetskopiaKopTillKop(
@@ -85,6 +90,8 @@ fun sakerhetskopiaKopTillKop(
         butikTelefon = export.butikTelefon?.trim()?.takeIf { it.isNotEmpty() },
         butikOrgnr = export.butikOrgnr?.trim()?.takeIf { it.isNotEmpty() },
         felBilder = skrivFelBilder(felBilder),
+        reklamationUtfall = ReklamationsUtfall.franNamn(export.reklamationUtfall)?.name,
+        reklamationUtfallDatum = export.reklamationUtfallDatum.takeIf { ReklamationsUtfall.franNamn(export.reklamationUtfall) != null },
     )
 
 /** Dubblett om de fem fälten matchar ett befintligt köp (enligt BESLUTSLOGG). */

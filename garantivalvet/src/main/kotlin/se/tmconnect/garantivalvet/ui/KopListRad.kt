@@ -117,7 +117,6 @@ fun KopListRad(
                         modifier = Modifier.padding(top = 2.dp),
                     )
                 }
-            }
             val statusText = when (status) {
                 KopStatus.GARANTI_GALLER -> stringResource(R.string.status_galler)
                 KopStatus.GARANTI_SNART -> stringResource(R.string.status_gar_ut_snart)
@@ -139,8 +138,9 @@ fun KopListRad(
                     containerColor = chipFarger.container,
                     labelColor = chipFarger.content,
                 ),
-                modifier = Modifier.widthIn(max = 120.dp)
+                modifier = Modifier.padding(top = 4.dp)
             )
+            }
         }
     }
 }

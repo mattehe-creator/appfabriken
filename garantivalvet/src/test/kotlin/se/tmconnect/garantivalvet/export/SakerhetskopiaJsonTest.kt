@@ -235,4 +235,26 @@ class SakerhetskopiaJsonTest {
         val las = lasSakerhetskopiaJson(json) as SakerhetskopiaJsonLasResult.Ok
         assertEquals(emptyList<String>(), las.innehall.kop.single().felBilder)
     }
+
+    @Test
+    fun reklamationsUtfallGarRundtur() {
+        val innehall =
+            SakerhetskopiaInnehall(
+                version = 1,
+                skapad = "2026-10-11T10:00:00Z",
+                kop =
+                    listOf(
+                        SakerhetskopiaKop(
+                            vad = "Tvättmaskin",
+                            kopdatum = LocalDate.of(2024, 3, 1),
+                            garantiManader = 24,
+                            reklamerad = LocalDate.of(2026, 9, 1),
+                            reklamationUtfall = "AVSLAG",
+                            reklamationUtfallDatum = LocalDate.of(2026, 9, 20),
+                        ),
+                    ),
+            )
+        val las = lasSakerhetskopiaJson(skrivSakerhetskopiaJson(innehall)) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals(innehall, las.innehall)
+    }
 }

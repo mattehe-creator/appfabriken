@@ -52,6 +52,8 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -64,6 +66,8 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.regler.Krav
@@ -93,10 +97,11 @@ fun ReklamationsSkarm(
 ) {
     val locale = LocalConfiguration.current.locales[0]
     val idag = LocalDate.now()
-    var beskrivning by remember(kop.felBeskrivning) { mutableStateOf(kop.felBeskrivning.orEmpty()) }
-    var upptackt by remember(kop.felUpptackt) { mutableStateOf(kop.felUpptackt ?: idag) }
-    var krav by remember { mutableStateOf(Krav.AVHJALP) }
-    var bifogaUnderlag by remember { mutableStateOf(false) }
+    // rememberSaveable: texten, kravet och valen överlever att skärmen ritas om (rotation, kameran).
+    var beskrivning by rememberSaveable(kop.felBeskrivning) { mutableStateOf(kop.felBeskrivning.orEmpty()) }
+    var upptackt by rememberSaveable(kop.felUpptackt) { mutableStateOf(kop.felUpptackt ?: idag) }
+    var krav by rememberSaveable { mutableStateOf(Krav.AVHJALP) }
+    var bifogaUnderlag by rememberSaveable { mutableStateOf(false) }
     var visarDatumvaljare by remember { mutableStateOf(false) }
     var kopierad by remember { mutableStateOf(false) }
     val datumValjare = rememberDatePickerState(initialSelectedDateMillis = upptackt.toEpochDay() * 86_400_000)
@@ -135,8 +140,16 @@ fun ReklamationsSkarm(
         locale = locale,
         idag = idag,
     )
-    var egenText by remember { mutableStateOf<String?>(null) }
-    var redigerar by remember { mutableStateOf(false) }
+    var egenText by rememberSaveable { mutableStateOf<String?>(null) }
+    // Vilka val (krav, felbeskrivning, datum) den egna texten skrevs mot; ändras de efteråt varnar vi.
+    var egenTextNyckel by rememberSaveable { mutableStateOf<String?>(null) }
+    var redigerar by rememberSaveable { mutableStateOf(false) }
+    val nuvarandeNyckel = "$krav|$beskrivning|$upptackt"
+    fun sattEgenText(text: String?) {
+        egenText = text
+        egenTextNyckel = if (text == null) null else nuvarandeNyckel
+    }
+    val egenTextForaldrad = egenText != null && egenTextNyckel != nuvarandeNyckel
     val brevText = egenText ?: brev.text
     val kanSkicka = beskrivning.isNotBlank()
     val aiMallSkriv = stringResource(R.string.ai_mall_skriv)
@@ -346,7 +359,7 @@ fun ReklamationsSkarm(
                             OutlinedTextField(
                                 value = brevText,
                                 onValueChange = {
-                                    egenText = it
+                                    sattEgenText(it)
                                     kopierad = false
                                 },
                                 minLines = 8,
@@ -367,7 +380,7 @@ fun ReklamationsSkarm(
                     TextButton(
                         onClick = {
                             clipboard.getText()?.text?.takeIf { it.isNotBlank() }?.let {
-                                egenText = it
+                                sattEgenText(it)
                                 kopierad = false
                             }
                         },
@@ -378,7 +391,7 @@ fun ReklamationsSkarm(
                     if (egenText != null) {
                         TextButton(
                             onClick = {
-                                egenText = null
+                                sattEgenText(null)
                                 kopierad = false
                             },
                             modifier = Modifier.heightIn(min = 48.dp),
@@ -386,6 +399,13 @@ fun ReklamationsSkarm(
                             Text(text = stringResource(R.string.ai_aterstall))
                         }
                     }
+                }
+                if (egenTextForaldrad) {
+                    Text(
+                        text = stringResource(R.string.ai_egen_text_foraldrad),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
                 }
                 AiHjalpKort(
                     kanDela = kanSkicka,
@@ -444,23 +464,30 @@ private fun FelBilderRuta(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 felBilder.forEach { post ->
-                    val bitmap = remember(post.uri) {
-                        val uri = post.uri ?: return@remember null
-                        try {
-                            val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-                            context.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, options) }
-                            val sample = beraknaInSampleSize(options.outWidth, options.outHeight, maxSida = 320)
-                            context.contentResolver.openInputStream(uri)?.use {
-                                BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample })
-                            }
-                        } catch (_: Exception) {
+                    // Avkodas på IO-tråden, inte i kompositionen.
+                    val bitmap by produceState<android.graphics.Bitmap?>(null, post.uri) {
+                        val uri = post.uri
+                        value = if (uri == null) {
                             null
+                        } else {
+                            withContext(Dispatchers.IO) {
+                                try {
+                                    val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                                    context.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, options) }
+                                    val sample = beraknaInSampleSize(options.outWidth, options.outHeight, maxSida = 320)
+                                    context.contentResolver.openInputStream(uri)?.use {
+                                        BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample })
+                                    }
+                                } catch (_: Exception) {
+                                    null
+                                }
+                            }
                         }
                     }
                     Box(modifier = Modifier.size(104.dp)) {
-                        if (bitmap != null) {
+                        bitmap?.let { bild ->
                             Image(
-                                bitmap = bitmap.asImageBitmap(),
+                                bitmap = bild.asImageBitmap(),
                                 contentDescription = stringResource(R.string.reklamera_bild_beskrivning),
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier

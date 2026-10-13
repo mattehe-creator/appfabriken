@@ -144,6 +144,8 @@ fun skrivHemforsakringTillPdf(
         PdfExportResult.Ok
     } catch (e: Exception) {
         PdfExportResult.Fel(e.message ?: e.javaClass.simpleName)
+    } catch (e: OutOfMemoryError) {
+        PdfExportResult.Fel("Slut på minne")
     } finally {
         dokument.close()
     }
@@ -154,7 +156,7 @@ private fun laddaKvitto(kvittoLager: KvittoLager, filnamn: String): Bitmap? {
     return try {
         val grans = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeByteArray(bytes, 0, bytes.size, grans)
-        val sample = beraknaInSampleSize(grans.outWidth, grans.outHeight, maxSida = 1600)
+        val sample = beraknaInSampleSize(grans.outWidth, grans.outHeight, maxSida = 1000)
         BitmapFactory.decodeByteArray(bytes, 0, bytes.size, BitmapFactory.Options().apply { inSampleSize = sample })
     } catch (_: Exception) {
         null

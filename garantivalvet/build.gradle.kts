@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId = "se.tmconnect.garantivalvet"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -28,6 +28,20 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    buildTypes {
+        release {
+            // R8 krymper och förenklar koden; kartan (mapping.txt) hör till varje release i Play Console.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            // Play-nyckeln finns bara hos Mattias. Ett test-bygge av release kan ändå signeras med
+            // felsökningsnyckeln (-PsigneraMedDebug) så att det går att installera över felsökningsbygget.
+            if (project.hasProperty("signeraMedDebug")) {
+                signingConfig = signingConfigs.getByName("debug")
+            }
+        }
     }
 
     buildFeatures {

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Samma som AppfabrikFarger.LjusBakgrund; fönstret syns bara innan första bilden ritats. -->
+    <color name="fonster_bakgrund">#FAFAF7</color>
+</resources>

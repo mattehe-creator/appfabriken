@@ -49,9 +49,14 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import se.tmconnect.garantivalvet.R
+import se.tmconnect.garantivalvet.regler.uppfoljning
+import se.tmconnect.garantivalvet.regler.dagarSedanReklamation
+import se.tmconnect.garantivalvet.regler.Uppfoljning
+import se.tmconnect.garantivalvet.regler.ReklamationsUtfall
 import se.tmconnect.garantivalvet.data.Kop
 import se.tmconnect.garantivalvet.regler.KONSUMENTKOP_IKRAFT
 import se.tmconnect.garantivalvet.regler.KopStatus
@@ -94,6 +99,7 @@ fun KopDetaljSkarm(
     modifier: Modifier = Modifier,
     onReklamera: () -> Unit = {},
     onMarkeraReklamerad: (LocalDate?) -> Unit = {},
+    onReklamationsUtfall: (ReklamationsUtfall?) -> Unit = {},
     onMejlaButik: (String) -> Unit = {},
     onRingButik: (String) -> Unit = {},
 ) {
@@ -210,7 +216,13 @@ fun KopDetaljSkarm(
                 tidslinjeMarkorer = tidslinjeMarkorer,
             )
 
-            ReklamationsLoggKort(kop = kop, locale = locale, onMarkeraReklamerad = onMarkeraReklamerad)
+            ReklamationsLoggKort(
+                kop = kop,
+                locale = locale,
+                onMarkeraReklamerad = onMarkeraReklamerad,
+                onUtfall = onReklamationsUtfall,
+                onSvara = onReklamera,
+            )
             ButikKontaktKort(kop = kop, onMejla = onMejlaButik, onRing = onRingButik)
 
             kvittoUri?.let { uri ->
@@ -437,6 +449,8 @@ private fun ReklamationsLoggKort(
     kop: Kop,
     locale: java.util.Locale,
     onMarkeraReklamerad: (LocalDate?) -> Unit,
+    onUtfall: (ReklamationsUtfall?) -> Unit,
+    onSvara: () -> Unit,
 ) {
     val logg = reklamationsLogg(kop)
     if (logg == ReklamationsLogg.INGEN) return
@@ -476,12 +490,66 @@ private fun ReklamationsLoggKort(
                         text = stringResource(R.string.logg_reklamerad, formateraDatum(reklamerad, locale)),
                         style = MaterialTheme.typography.bodyMedium,
                     )
-                    Text(
-                        text = stringResource(R.string.logg_arn, formateraDatum(arnAnmalanSenast(reklamerad), locale)),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    TextButton(onClick = { onMarkeraReklamerad(null) }) {
+                    val idag = LocalDate.now()
+                    val upp = uppfoljning(kop, idag)
+                    val dagar = dagarSedanReklamation(reklamerad, idag)
+                    val utfallDatum = kop.reklamationUtfallDatum?.let { formateraDatum(it, locale) }.orEmpty()
+                    when (upp) {
+                        Uppfoljning.VANTAR_SVAR ->
+                            Text(
+                                text = stringResource(R.string.upp_vantar, dagar),
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        Uppfoljning.BORDE_HA_SVARAT ->
+                            Text(
+                                text = stringResource(R.string.upp_borde_ha_svarat, dagar),
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                        Uppfoljning.LOST ->
+                            Text(text = stringResource(R.string.upp_lost, utfallDatum), style = MaterialTheme.typography.bodyMedium)
+                        Uppfoljning.AVSLAG ->
+                            Text(text = stringResource(R.string.upp_avslag, utfallDatum), style = MaterialTheme.typography.bodyMedium)
+                        Uppfoljning.ARN_ANMALD ->
+                            Text(text = stringResource(R.string.upp_arn_anmald, utfallDatum), style = MaterialTheme.typography.bodyMedium)
+                        Uppfoljning.INGEN -> Unit
+                    }
+                    if (upp != Uppfoljning.LOST && upp != Uppfoljning.ARN_ANMALD) {
+                        Text(
+                            text = stringResource(R.string.logg_arn, formateraDatum(arnAnmalanSenast(reklamerad), locale)),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    if (upp == Uppfoljning.AVSLAG || upp == Uppfoljning.BORDE_HA_SVARAT) {
+                        Text(
+                            text = stringResource(
+                                if (upp == Uppfoljning.AVSLAG) R.string.upp_avslag_hjalp else R.string.upp_borde_hjalp,
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        TextButton(onClick = onSvara, modifier = Modifier.heightIn(min = 48.dp)) {
+                            Text(text = stringResource(R.string.upp_svara_knapp))
+                        }
+                    }
+                    if (kop.reklamationUtfall == null) {
+                        Text(text = stringResource(R.string.upp_hur_gick_det), style = MaterialTheme.typography.titleSmall)
+                        TextButton(onClick = { onUtfall(ReklamationsUtfall.LOST) }, modifier = Modifier.heightIn(min = 48.dp)) {
+                            Text(text = stringResource(R.string.upp_knapp_lost))
+                        }
+                        TextButton(onClick = { onUtfall(ReklamationsUtfall.AVSLAG) }, modifier = Modifier.heightIn(min = 48.dp)) {
+                            Text(text = stringResource(R.string.upp_knapp_avslag))
+                        }
+                        TextButton(onClick = { onUtfall(ReklamationsUtfall.ARN_ANMALD) }, modifier = Modifier.heightIn(min = 48.dp)) {
+                            Text(text = stringResource(R.string.upp_knapp_arn))
+                        }
+                    } else {
+                        TextButton(onClick = { onUtfall(null) }, modifier = Modifier.heightIn(min = 48.dp)) {
+                            Text(text = stringResource(R.string.upp_oppna_igen))
+                        }
+                    }
+                    TextButton(onClick = { onMarkeraReklamerad(null) }, modifier = Modifier.heightIn(min = 48.dp)) {
                         Text(text = stringResource(R.string.logg_angra))
                     }
                 }

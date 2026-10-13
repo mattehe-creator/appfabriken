@@ -43,4 +43,9 @@ data class Kop(
     /** Filnamn (kommaseparerade) på bilder av felet, se [se.tmconnect.garantivalvet.regler.lasFelBilder]. */
     @ColumnInfo(name = "fel_bilder")
     val felBilder: String? = null,
+    /** Namnet på en [se.tmconnect.garantivalvet.regler.ReklamationsUtfall], `null` så länge ärendet är öppet. */
+    @ColumnInfo(name = "reklamation_utfall")
+    val reklamationUtfall: String? = null,
+    @ColumnInfo(name = "reklamation_utfall_datum")
+    val reklamationUtfallDatum: LocalDate? = null,
 )

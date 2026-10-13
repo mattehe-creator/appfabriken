@@ -43,33 +43,46 @@ interface MappLagring {
 
 fun autoFilnamn(datum: LocalDate): String = "$AUTO_FILPREFIX$datum.zip"
 
-/** Dags för en ny kopia när ingen gjorts än, eller när det gått minst [intervallDagar] sedan senaste. */
+/** Marginal så att ett dygnsjobb som WorkManager startar några minuter för tidigt inte hoppar över en dag. */
+private val INTERVALL_MARGINAL_MS = TimeUnit.HOURS.toMillis(2)
+
+/**
+ * Dags för en ny kopia när ingen gjorts än, eller när det gått ungefär [intervallDagar] sedan senaste
+ * (två timmars marginal, eftersom WorkManager bara garanterar ungefär 24 timmar mellan körningar).
+ */
 fun arSakerhetskopiaDags(senaste: Long?, nu: Long, intervallDagar: Int): Boolean {
     if (senaste == null) return true
-    return nu - senaste >= TimeUnit.DAYS.toMillis(intervallDagar.toLong().coerceAtLeast(1))
+    return nu - senaste >= TimeUnit.DAYS.toMillis(intervallDagar.toLong().coerceAtLeast(1)) - INTERVALL_MARGINAL_MS
 }
+
+/** Datumdelen av filnamnet (ISO, sorterar kronologiskt). Leverantörens "(1)" och ändringstid spelar ingen roll här. */
+private fun datumNyckel(namn: String): String = namn.removePrefix(AUTO_FILPREFIX).take(10)
 
 /** Äldsta automatiska kopior utöver de [behall] senaste. Filer som användaren själv lagt i mappen rörs aldrig. */
 fun postAttRadera(poster: List<MappPost>, behall: Int = AUTO_BEHALL_ANTAL): List<MappPost> =
     poster
         .filter { it.namn.startsWith(AUTO_FILPREFIX) && it.namn.endsWith(".zip") }
-        .sortedByDescending { it.andrad }
+        // Filnamnets datum först: vissa leverantörer rapporterar ingen ändringstid, och då får den nya kopian aldrig gallras.
+        .sortedWith(compareByDescending<MappPost> { datumNyckel(it.namn) }.thenByDescending { it.andrad })
         .drop(behall.coerceAtLeast(1))
 
 /**
- * Skriver en ny kopia i [lagring] och gallrar gamla. En fil med samma namn från samma dag ersätts, annars lägger
- * mappens leverantör till "(1)". Misslyckas skrivningen tas den halvfärdiga filen bort. Returnerar `true` om det gick.
+ * Skriver en ny kopia i [lagring] och gallrar gamla. Den nya filen skrivs först; först när den lyckats tas en
+ * tidigare kopia från samma dag bort (mappens leverantör kan ha lagt till "(1)" i det nya namnet). Misslyckas
+ * skrivningen tas bara den halvfärdiga filen bort, och dagens äldre kopia finns kvar. Returnerar `true` om det gick.
  */
 fun kopiera(lagring: MappLagring, skrivZip: (OutputStream) -> Unit, idag: LocalDate): Boolean {
     val namn = autoFilnamn(idag)
-    lagring.lista().filter { it.namn == namn }.forEach { lagring.radera(it) }
+    val fore = lagring.lista()
+    val foreIdn = fore.map { it.id }.toSet()
     val ut = lagring.skapa(namn) ?: return false
     try {
         ut.use(skrivZip)
     } catch (_: Exception) {
-        lagring.lista().filter { it.namn == namn }.forEach { lagring.radera(it) }
+        lagring.lista().filter { it.id !in foreIdn }.forEach { lagring.radera(it) }
         return false
     }
+    fore.filter { it.namn == namn }.forEach { lagring.radera(it) }
     postAttRadera(lagring.lista()).forEach { lagring.radera(it) }
     return true
 }

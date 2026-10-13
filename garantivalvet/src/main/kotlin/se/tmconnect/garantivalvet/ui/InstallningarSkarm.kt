@@ -12,6 +12,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.ui.semantics.Role
+import androidx.compose.material3.RadioButton
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.OutlinedButton
@@ -30,6 +34,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import se.tmconnect.garantivalvet.R
+import se.tmconnect.garantivalvet.regler.TemaLage
 import se.tmconnect.garantivalvet.export.AUTO_INTERVALL_DAGLIGEN
 import se.tmconnect.garantivalvet.export.AUTO_INTERVALL_MANADSVIS
 import se.tmconnect.garantivalvet.export.AUTO_INTERVALL_VECKOVIS
@@ -56,6 +61,8 @@ fun InstallningarSkarm(
     onKorNuAutoBackup: () -> Unit = {},
     onHemforsakringPdf: () -> Unit = {},
     onHemforsakringCsv: () -> Unit = {},
+    temaLage: TemaLage = TemaLage.SYSTEM,
+    onTemaLage: (TemaLage) -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier,
@@ -139,6 +146,39 @@ fun InstallningarSkarm(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error,
                 )
+            }
+
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = stringResource(R.string.utseende_rubrik),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Column(modifier = Modifier.selectableGroup()) {
+                    listOf(
+                        TemaLage.SYSTEM to R.string.utseende_system,
+                        TemaLage.LJUST to R.string.utseende_ljust,
+                        TemaLage.MORKT to R.string.utseende_morkt,
+                    ).forEach { (lage, namn) ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 48.dp)
+                                .selectable(
+                                    selected = temaLage == lage,
+                                    onClick = { onTemaLage(lage) },
+                                    role = Role.RadioButton,
+                                ),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(selected = temaLage == lage, onClick = null)
+                            Text(
+                                text = stringResource(namn),
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(start = 12.dp),
+                            )
+                        }
+                    }
+                }
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

@@ -74,8 +74,43 @@ class KvittoLager(
      * Returnerar filnamnet, eller `null` om bilden inte gick att läsa.
      */
     fun sparaFelBild(kalla: Uri): String? {
-        val upprat = normalisera(kalla) ?: kalla
-        return kopieraFranUri(upprat)
+        // Skrivs direkt till kvittomappen (en kodning, ingen mellanfil i cache).
+        val filnamn = "${UUID.randomUUID()}.jpg"
+        val mal = File(kvittonKatalog, filnamn)
+        val klar = try {
+            normaliseraTillFil(kalla, 0, mal)
+        } catch (_: Exception) {
+            false
+        } catch (_: OutOfMemoryError) {
+            false
+        }
+        if (!klar) {
+            mal.delete()
+            return null
+        }
+        raderaEgenCacheFil(kalla)
+        return filnamn
+    }
+
+    /** Tar bort en kamerafil ur appens egen cache när den är sparad. Främmande URI:er (galleriet) rörs aldrig. */
+    private fun raderaEgenCacheFil(uri: Uri) {
+        if (uri.authority != fileProviderAuthority(context) || uri.pathSegments.firstOrNull() != "kamera") {
+            return
+        }
+        try {
+            context.contentResolver.delete(uri, null, null)
+        } catch (_: Exception) {
+        }
+    }
+
+    /** Rensar gamla filer i cache (kamerabilder och exporterade bilagor) som inte behövs längre. */
+    fun rensaCache(aldreAnMillis: Long = 24L * 60 * 60 * 1000) {
+        val gransen = System.currentTimeMillis() - aldreAnMillis
+        listOf(KAMERA_CACHE_MAPP, EXPORT_CACHE_MAPP).forEach { namn ->
+            File(context.cacheDir, namn).listFiles()?.forEach { fil ->
+                if (fil.isFile && fil.lastModified() < gransen) fil.delete()
+            }
+        }
     }
 
     /**
