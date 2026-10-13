@@ -207,6 +207,39 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Mapp för automatisk säkerhetskopia: systemets filväljare, ingen lagringsbehörighet
+    private val valjMappContract = registerForActivityResult(
+        ActivityResultContracts.OpenDocumentTree()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            try {
+                contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+                )
+            } catch (_: Exception) {
+            }
+            viewModel.valtAutoBackupMapp(uri, mappNamn(uri))
+        }
+    }
+
+    private fun mappNamn(trad: Uri): String? =
+        try {
+            val dokument = android.provider.DocumentsContract.buildDocumentUriUsingTree(
+                trad,
+                android.provider.DocumentsContract.getTreeDocumentId(trad),
+            )
+            contentResolver.query(
+                dokument,
+                arrayOf(android.provider.DocumentsContract.Document.COLUMN_DISPLAY_NAME),
+                null,
+                null,
+                null,
+            )?.use { markor -> if (markor.moveToFirst()) markor.getString(0) else null }
+        } catch (_: Exception) {
+            null
+        }
+
     // Resultatkontrakt för säkerhetskopia import
     private val openSakerhetskopiaContract = registerForActivityResult(
         ActivityResultContracts.OpenDocument()
@@ -228,6 +261,7 @@ class MainActivity : ComponentActivity() {
         }
         registreraGenvag()
         viewModel.synkaPaminnelseJobb()
+        viewModel.synkaAutoBackupJobb()
         enableEdgeToEdge()
         setContent {
             AppfabrikTema {
@@ -235,6 +269,7 @@ class MainActivity : ComponentActivity() {
                 // Måste läsas här: annars ritas formuläret inte om när ett kvitto fotas eller väljs.
                 val tillfalligtKvitto by viewModel.tillfalligtKvittoUri.collectAsState()
                 val delatKvitto by viewModel.delatKvitto.collectAsState()
+                val autoBackup by viewModel.autoBackup.collectAsState()
                 val aktivSkarm by viewModel.aktivSkarm.collectAsState()
                 val valtKop by viewModel.valtKop.collectAsState()
                 val paminnelserPa by viewModel.paminnelserPa.collectAsState()
@@ -334,6 +369,13 @@ class MainActivity : ComponentActivity() {
                                 )
                             },
                             onTillbaka = viewModel::visaLista,
+                            autoBackup = autoBackup,
+                            onAutoBackupPa = { pa ->
+                                if (pa) valjMappContract.launch(null) else viewModel.stangAvAutoBackup()
+                            },
+                            onByttMapp = { valjMappContract.launch(null) },
+                            onAutoBackupIntervall = viewModel::sattAutoBackupIntervall,
+                            onKorNuAutoBackup = viewModel::korNuAutoBackup,
                             debugInstallningar = {
                                 GarantivalvetDebugInstallningar(
                                     arPro = arPro,

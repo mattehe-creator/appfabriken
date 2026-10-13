@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -24,7 +25,9 @@ import se.tmconnect.garantivalvet.regler.Varutyp
 import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
 import se.tmconnect.garantivalvet.data.KopRepository
 import se.tmconnect.garantivalvet.data.KvittoLager
+import se.tmconnect.garantivalvet.export.AutoBackupTillstand
 import se.tmconnect.garantivalvet.export.Sakerhetskopia
+import se.tmconnect.garantivalvet.export.SakerhetskopiaPlanerare
 import se.tmconnect.garantivalvet.export.SakerhetskopiaLasResult
 import se.tmconnect.garantivalvet.paminnelse.PaminnelsePlanerare
 import se.tmconnect.garantivalvet.regler.kanLaggaTill
@@ -79,6 +82,64 @@ class KopViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = false,
         )
+
+    /** Automatisk säkerhetskopia till en mapp användaren valt (av som standard). */
+    val autoBackup: StateFlow<AutoBackupTillstand> =
+        combine(
+            installningarLager.autoBackupMapp,
+            installningarLager.autoBackupMappNamn,
+            installningarLager.autoBackupIntervallDagar,
+            installningarLager.autoBackupSenaste,
+            installningarLager.autoBackupFel,
+        ) { mapp, namn, intervall, senaste, fel ->
+            AutoBackupTillstand(pa = mapp != null, mappNamn = namn, intervallDagar = intervall, senaste = senaste, fel = fel)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = AutoBackupTillstand(),
+        )
+
+    /** Användaren har valt en mapp: spara valet, schemalägg och gör en första kopia direkt. */
+    fun valtAutoBackupMapp(uri: Uri, namn: String?) {
+        viewModelScope.launch {
+            installningarLager.sattAutoBackupMapp(uri.toString(), namn)
+            SakerhetskopiaPlanerare.synka(appContext, true)
+            SakerhetskopiaPlanerare.korNu(appContext)
+        }
+    }
+
+    fun stangAvAutoBackup() {
+        viewModelScope.launch {
+            val mapp = installningarLager.autoBackupMapp.first()
+            installningarLager.sattAutoBackupMapp(null, null)
+            SakerhetskopiaPlanerare.synka(appContext, false)
+            if (mapp != null) {
+                try {
+                    appContext.contentResolver.releasePersistableUriPermission(
+                        Uri.parse(mapp),
+                        android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                            android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+                    )
+                } catch (_: Exception) {
+                }
+            }
+        }
+    }
+
+    fun sattAutoBackupIntervall(dagar: Int) {
+        viewModelScope.launch { installningarLager.sattAutoBackupIntervall(dagar) }
+    }
+
+    fun korNuAutoBackup() {
+        SakerhetskopiaPlanerare.korNu(appContext)
+    }
+
+    /** Schemalägger det dagliga jobbet vid appstart om en mapp är vald. */
+    fun synkaAutoBackupJobb() {
+        viewModelScope.launch {
+            SakerhetskopiaPlanerare.synka(appContext, installningarLager.autoBackupMapp.first() != null)
+        }
+    }
 
     private val _aktivSkarm = MutableStateFlow<KopSkarm>(KopSkarm.Lista)
     val aktivSkarm: StateFlow<KopSkarm> = _aktivSkarm.asStateFlow()
