@@ -63,6 +63,8 @@ Följande lagras **på enheten** för appens funktion. Det ska **inte** markeras
 
 Kvittotexten läses av **på enheten** med ML Kit Text Recognition (medföljande modell, inget nätverk, `INTERNET` borttagen och låst av `IngenNatverkTest`). Bilden och den avlästa texten lämnar aldrig telefonen, och texten sparas inte; den fyller bara formulärfält som användaren kontrollerar. Inget deklareras som insamlat eller delat.
 
+Automatisk säkerhetskopia är **av som standard**. Slår användaren på den väljer hen en mapp med systemets filväljare (`ACTION_OPEN_DOCUMENT_TREE`); appen får då skriva i just den mappen och ingenting annat, utan någon lagringsbehörighet i manifestet. Appen skickar inget själv och har inget nätverk; ligger mappen hos användarens egen molntjänst är det den tjänstens app som synkar. Kopian är en ZIP med samma innehåll som den manuella säkerhetskopian och är inte krypterad. De 5 senaste automatiska kopiorna behålls.
+
 Kamera och lagring används via **systemintents** (fotoväljare/kamera) enligt projektregler, inte som breda lagringsbehörigheter i manifest.
 
 ---
