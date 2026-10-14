@@ -12,11 +12,11 @@ Steg för Mattias. Det som kräver dig enligt CLAUDE.md punkt 9: allt i Play Con
 ## 2. Bygg release
 
 1. GitHub, fliken Actions, workflowet **Release**, Run workflow på `main`.
-2. Workflowet kör testerna, bygger en krympt release, kontrollerar att APK:n inte begär `INTERNET` och lägger resultatet i releasen **release-test**:
-   - `garantivalvet-release-test-<sha>.apk` — installera och prova på telefonen. Den är signerad med felsökningsnyckeln så att den går att installera över felsökningsbygget. Köpet av Pro går inte att prova här, bara i ett testspår i Play.
+2. Workflowet kör testerna, bygger en krympt release och kontrollerar att APK:n inte begär `INTERNET`. Resultatet ligger som artefakt längst ner på körningens sida i Actions (sparas 30 dagar):
    - `garantivalvet-<sha>-osignerad.aab` — filen som går till Play.
    - `mapping-<sha>.txt` — ladda upp i Play Console (App-paketutforskaren, Avkoda) så blir kraschrapporter läsbara.
-3. **Prova release-test-APK:n noga innan du går vidare** (kamera, avläsning, rotera, delning, säkerhetskopia, PDF, påminnelser, AI-delning). Koden är krympt, så fel som inte syns i felsökningsbygget kan dyka upp här.
+   - `garantivalvet-release-test-<sha>.apk` — den krympta koden som APK, signerad med felsökningsnyckeln så att den går att installera över felsökningsbygget. Köpet av Pro går inte att prova här, bara i ett testspår i Play.
+3. **Prova den krympta APK:n noga innan du går vidare** (och bara en APK åt gången: avinstallera inte, installera över) (kamera, avläsning, rotera, delning, säkerhetskopia, PDF, påminnelser, AI-delning). Koden är krympt, så fel som inte syns i felsökningsbygget kan dyka upp här.
 
 ## 3. Signera AAB:n
 
