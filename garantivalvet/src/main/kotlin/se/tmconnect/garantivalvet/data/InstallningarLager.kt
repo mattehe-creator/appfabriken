@@ -40,6 +40,14 @@ class InstallningarLager(
         context.installningarDataStore.edit { prefs -> prefs[TEMA_LAGE] = namn }
     }
 
+    /** Om välkomstskärmen redan visats (eller behövdes inte, för en som redan har köp). */
+    val valkommenVisad: Flow<Boolean> =
+        context.installningarDataStore.data.map { prefs -> prefs[VALKOMMEN_VISAD] ?: false }
+
+    suspend fun sattValkommenVisad() {
+        context.installningarDataStore.edit { prefs -> prefs[VALKOMMEN_VISAD] = true }
+    }
+
     suspend fun hamtaAviseradeFrister(): Set<String> =
         context.installningarDataStore.data.first()[AVISERADE_FRISTER] ?: emptySet()
 
@@ -118,6 +126,7 @@ class InstallningarLager(
     }
 
     companion object {
+        private val VALKOMMEN_VISAD = booleanPreferencesKey("valkommen_visad")
         private val TEMA_LAGE = stringPreferencesKey("tema_lage")
         private val PAMINNELSER_PA = booleanPreferencesKey("paminnelser_pa")
         private val AVISERADE_FRISTER = stringSetPreferencesKey("aviserade_frister")

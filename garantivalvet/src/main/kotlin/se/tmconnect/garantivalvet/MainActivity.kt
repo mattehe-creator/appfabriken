@@ -73,6 +73,7 @@ import se.tmconnect.garantivalvet.ui.KopViewModelFactory
 import se.tmconnect.garantivalvet.ui.ProDialog
 import se.tmconnect.garantivalvet.ui.FelBildPost
 import se.tmconnect.garantivalvet.ui.ReklamationsSkarm
+import se.tmconnect.garantivalvet.ui.ValkommenSkarm
 import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.garantivalvet.regler.lasFelBilder
 import se.tmconnect.garantivalvet.ui.SakerhetskopiaMeddelande
@@ -354,6 +355,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val temaLage by viewModel.temaLage.collectAsState()
+            val visaValkommen by viewModel.visaValkommen.collectAsState()
             val morkt = temaLage.arMorkt(isSystemInDarkTheme())
             // Systemfälten (statusfält och navigeringsfält) följer appens utseende, inte bara telefonens.
             DisposableEffect(morkt) {
@@ -426,7 +428,15 @@ class MainActivity : ComponentActivity() {
 
                 Box(modifier = Modifier.fillMaxSize()) {
                 when (aktivSkarm) {
-                    KopSkarm.Lista -> {
+                    KopSkarm.Lista -> if (visaValkommen) {
+                        ValkommenSkarm(
+                            onFotaForstaKvittot = {
+                                viewModel.avslutaValkommen()
+                                viewModel.visaLaggTill()
+                            },
+                            onTittaRunt = viewModel::avslutaValkommen,
+                        )
+                    } else {
                         KopListaSkarm(
                             kopLista = kopLista,
                             kvittoUriFor = { kop -> viewModel.sparatKvittoUri(kop) },

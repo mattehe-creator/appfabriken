@@ -67,11 +67,32 @@ class KopViewModel(
     private val proKalla: ProKalla,
     private val idag: LocalDate = LocalDate.now(),
 ) : ViewModel() {
+    private val _visaValkommen = MutableStateFlow(false)
+
+    /** Sant tills användaren gått förbi välkomstskärmen första gången. */
+    val visaValkommen: StateFlow<Boolean> = _visaValkommen
+
     init {
         viewModelScope.launch {
             proKalla.kontrollera()
         }
         viewModelScope.launch(Dispatchers.IO) { kvittoLager.rensaCache() }
+        viewModelScope.launch {
+            // Välkomstskärmen är till för den som öppnar appen första gången. Den som redan har köp (uppdaterar
+            // från en äldre version) ska aldrig se den.
+            if (!installningarLager.valkommenVisad.first()) {
+                if (repository.antal() > 0) {
+                    installningarLager.sattValkommenVisad()
+                } else {
+                    _visaValkommen.value = true
+                }
+            }
+        }
+    }
+
+    fun avslutaValkommen() {
+        _visaValkommen.value = false
+        viewModelScope.launch { installningarLager.sattValkommenVisad() }
     }
 
     val arPro: StateFlow<Boolean> =

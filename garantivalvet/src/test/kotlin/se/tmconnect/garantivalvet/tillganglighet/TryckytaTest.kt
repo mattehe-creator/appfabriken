@@ -201,4 +201,11 @@ class TryckytaTest {
             )
         }
     }
+
+    @Test
+    fun valkommenSkarm() {
+        allaLagen {
+            se.tmconnect.garantivalvet.ui.ValkommenSkarm(onFotaForstaKvittot = noOp, onTittaRunt = noOp)
+        }
+    }
 }

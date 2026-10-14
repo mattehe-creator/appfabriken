@@ -46,6 +46,7 @@ import se.tmconnect.garantivalvet.ui.KopFormularSkarm
 import se.tmconnect.garantivalvet.ui.KopListaSkarm
 import se.tmconnect.garantivalvet.ui.ProDialog
 import se.tmconnect.garantivalvet.ui.ReklamationsSkarm
+import se.tmconnect.garantivalvet.ui.ValkommenSkarm
 import se.tmconnect.karna.tema.AppfabrikFarger
 import se.tmconnect.karna.tema.AppfabrikTema
 
@@ -227,6 +228,13 @@ abstract class ButikSkarmbilderBas {
                 onHarReklamerat = { _, _ -> },
                 onTillbaka = noOp,
             )
+        }
+    }
+
+    @Test
+    fun valkommen() {
+        captureSkarm("07-valkommen.png") {
+            ValkommenSkarm(onFotaForstaKvittot = noOp, onTittaRunt = noOp)
         }
     }
 
