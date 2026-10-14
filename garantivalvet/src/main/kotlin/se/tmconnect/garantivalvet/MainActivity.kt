@@ -16,7 +16,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import se.tmconnect.garantivalvet.ocr.KvittoAvlasningFel
 import se.tmconnect.garantivalvet.ocr.KvittoLasare
+import se.tmconnect.garantivalvet.ocr.LasResultat
 import se.tmconnect.garantivalvet.ocr.MlKitKvittoLasare
 import se.tmconnect.garantivalvet.regler.ButikKontakt
 import se.tmconnect.garantivalvet.regler.KvittoForslag
@@ -86,7 +88,12 @@ class MainActivity : ComponentActivity() {
     private val kvittoLasare: KvittoLasare by lazy { MlKitKvittoLasare(applicationContext) }
 
     private val lasKvitto: suspend (Uri) -> KvittoForslag? = { uri ->
-        kvittoLasare.lasText(uri)?.let { tolkaKvitto(it, LocalDate.now()) }?.takeUnless { it.arTomt }
+        when (val resultat = kvittoLasare.las(uri)) {
+            is LasResultat.Text -> tolkaKvitto(resultat.text, LocalDate.now()).takeUnless { it.arTomt }
+            LasResultat.IngenText -> null
+            // Formuläret fångar felet och visar orsaken, i stället för att det bara "inte händer något".
+            is LasResultat.Fel -> throw KvittoAvlasningFel(resultat.orsak)
+        }
     }
 
     private val proKalla: ProKalla by lazy {
