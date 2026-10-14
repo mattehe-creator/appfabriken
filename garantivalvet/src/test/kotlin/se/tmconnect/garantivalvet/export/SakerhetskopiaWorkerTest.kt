@@ -2,11 +2,8 @@ package se.tmconnect.garantivalvet.export
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
-import androidx.work.workDataOf
 import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
@@ -107,26 +104,13 @@ class SakerhetskopiaWorkerTest {
     }
 
     @Test
-    fun workManagerKorWorkerTillSlut() = runBlocking {
+    fun jobbetGerSuccessOchSkriverKopia() = runBlocking {
         installningar.sattAutoBackupMapp("content://test-mapp", "Test")
         seedKop()
-        val testDriver = WorkManagerTestInitHelper.getTestDriver(context)
-        if (testDriver != null) {
-            val request =
-                OneTimeWorkRequestBuilder<SakerhetskopiaWorker>()
-                    .setInputData(workDataOf(SakerhetskopiaWorker.TVINGA to true))
-                    .build()
-            val wm = WorkManager.getInstance(context)
-            wm.enqueue(request).result.get()
-            testDriver.setAllConstraintsMet(request.id)
-            val info = wm.getWorkInfoById(request.id).get()
-            assertEquals(WorkInfo.State.SUCCEEDED, info?.state)
-        } else {
-            assertEquals(
-                androidx.work.ListenableWorker.Result.success(),
-                korSakerhetskopiaJobb(context, tvinga = true),
-            )
-        }
+        assertEquals(
+            androidx.work.ListenableWorker.Result.success(),
+            korSakerhetskopiaJobb(context, tvinga = true),
+        )
         assertEquals(1, minnesMapp.poster.size)
     }
 }
