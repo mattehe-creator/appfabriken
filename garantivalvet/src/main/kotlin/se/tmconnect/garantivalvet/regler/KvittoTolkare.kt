@@ -37,7 +37,7 @@ private val PRIS_PRIORITET = listOf(
 private val PRIS_UTESLUT = Regex("""moms|mva|vat|tax|subtotal|delsumma|varav|rabatt|växel|vaxel|change|tillbaka|netto""")
 
 private val BUTIK_UTESLUT = Regex(
-    """^(kvitto|kassakvitto|receipt|faktura|fak\s?tura|kopia|order|org|tel|telefon|moms|datum|date|summa|total|totalt|välkommen|tack|www|http|kund|kassa|kassör)\b""",
+    """^(kvitto|kassakvitto|receipt|faktura|fak\s?tura|kopia|order|org|tel|telefon|moms|datum|date|summa|total|totalt|välkommen|tack|www|http|kund|kassa|kassör)\b|f[öo]rpackning|anv[äa]nda|varor\b|returer|[öo]ppet\s+k[öo]p""",
 )
 
 private const val MAX_AR_TILLBAKA = 10L
@@ -169,7 +169,59 @@ internal fun tolkaBeloppTillOre(text: String): Long? {
     return total.takeIf { it > 0 }
 }
 
-internal fun hittaButik(rader: List<String>): String? =
+private fun kantRegex(monster: String) = Regex("(?<![a-zåäö0-9])(?:$monster)(?![a-zåäö0-9])")
+
+/** Vanliga butikskedjor. Mönstren tål typiska avläsningsfel ("[AEA" för IKEA, "BIL TEMA" för Biltema). */
+private val KANDA_BUTIKER: List<Pair<Regex, String>> = listOf(
+    "ikea|[i1l|!\\[]\\s?k\\s?e\\s?a|[\\[|!]a[eo]a|ikfa" to "IKEA",
+    "bil\\s?tema" to "Biltema",
+    "clas\\s+ohlson" to "Clas Ohlson",
+    "elgiganten" to "Elgiganten",
+    "media\\s?markt" to "MediaMarkt",
+    "netonnet" to "NetOnNet",
+    "webhallen" to "Webhallen",
+    "kjell\\s?(?:&|och|o\\.?)?\\s?company" to "Kjell & Company",
+    "dustin" to "Dustin",
+    "komplett" to "Komplett",
+    "jula" to "Jula",
+    "byggmax" to "Byggmax",
+    "rusta" to "Rusta",
+    "hornbach" to "Hornbach",
+    "granngården" to "Granngården",
+    "lindex" to "Lindex",
+    "kappahl" to "KappAhl",
+    "h\\s?&\\s?m" to "H&M",
+    "stadium" to "Stadium",
+    "intersport" to "Intersport",
+    "xxl" to "XXL",
+    "apotea" to "Apotea",
+    "willys" to "Willys",
+    "hemköp" to "Hemköp",
+    "coop" to "Coop",
+    "lidl" to "Lidl",
+    "ica\\s+(?:maxi|kvantum|supermarket|nära)" to "ICA",
+    "systembolaget" to "Systembolaget",
+    "jysk" to "JYSK",
+    "ellos" to "Ellos",
+    "zalando" to "Zalando",
+).map { (monster, namn) -> kantRegex(monster) to namn }
+
+internal fun hittaKandButik(text: String): String? {
+    val lag = text.lowercase()
+    return KANDA_BUTIKER
+        .mapNotNull { (regex, namn) -> regex.find(lag)?.let { it.range.first to namn } }
+        .minByOrNull { it.first }
+        ?.second
+}
+
+/** Radens namn behålls när det redan är en känd kedja; annars vinner en känd kedja någonstans på kvittot över en gissad rad. */
+internal fun hittaButik(rader: List<String>): String? {
+    val rad = hittaButikRad(rader)
+    if (rad != null && hittaKandButik(rad) != null) return rad
+    return hittaKandButik(rader.joinToString("\n")) ?: rad
+}
+
+private fun hittaButikRad(rader: List<String>): String? =
     rader.asSequence()
         .filter { rad ->
             val lag = rad.lowercase()
@@ -185,7 +237,7 @@ internal fun hittaButik(rader: List<String>): String? =
 
 /** "BIL TEMA SWEDEN AB/LANDSKRONA 160" -> "BIL TEMA SWEDEN AB": avdelning och gatunummer hör inte till namnet. */
 private fun rensaButik(rad: String): String =
-    rad.substringBefore('/').trim().trimEnd { it.isDigit() || it.isWhitespace() || it == ',' }.trim()
+    rad.substringBefore('/').trim().trimStart { !it.isLetterOrDigit() }.trimEnd { it.isDigit() || it.isWhitespace() || it == ',' }.trim()
 
 /** Text för prisfältet i formuläret: `1299` eller `349,90` (kronor). */
 fun prisOreTillFaltText(ore: Long): String {
