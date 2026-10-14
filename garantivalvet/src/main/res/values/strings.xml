@@ -326,4 +326,15 @@
     <string name="tidslinje_idag">Today</string>
     <string name="tidslinje_garanti">Warranty ends</string>
     <string name="tidslinje_tva_ar">After 2 years you must show the fault existed at purchase</string>
+    <string name="valkommen_rubrik">Welcome to Warranty Vault</string>
+    <string name="valkommen_ingress">Receipts, warranties and complaints in one place. Everything stays on your phone.</string>
+    <string name="valkommen_steg1_rubrik">Photograph the receipt</string>
+    <string name="valkommen_steg1_text">The app reads the store, date and price right on your phone. You check and change them.</string>
+    <string name="valkommen_steg2_rubrik">We keep track for you</string>
+    <string name="valkommen_steg2_text">You can get a reminder before the warranty or your right to complain runs out. Turn it on in Settings.</string>
+    <string name="valkommen_steg3_rubrik">Something broke?</string>
+    <string name="valkommen_steg3_text">The app helps you write the complaint to the store, with the receipt and photos of the fault.</string>
+    <string name="valkommen_integritet">No account, no ads and no cloud. Free for up to 15 purchases.</string>
+    <string name="valkommen_fota">Photograph my first receipt</string>
+    <string name="valkommen_titta">Look around first</string>
 </resources>
