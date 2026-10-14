@@ -320,4 +320,10 @@
     <string name="paminnelse_notis_svar_titel">Har butiken svarat?</string>
     <string name="paminnelse_notis_svar_text">Det har gått två veckor sedan du reklamerade %1$s. Har du fått svar? Annars kan du höra av dig igen.</string>
     <string name="varutyp_forslag">Förslag utifrån namnet – ändra om det inte stämmer</string>
+    <string name="kvitto_avlasning_fel">Avläsningen av kvittot misslyckades (%1$s). Fyll i uppgifterna själv.</string>
+    <string name="tidslinje_kopt">Köpt</string>
+    <string name="tidslinje_tre_ar">3 år (reklamationsrätten slutar)</string>
+    <string name="tidslinje_idag">Idag</string>
+    <string name="tidslinje_garanti">Garantin slutar</string>
+    <string name="tidslinje_tva_ar">Efter 2 år måste du själv visa att felet fanns vid köpet</string>
 </resources>

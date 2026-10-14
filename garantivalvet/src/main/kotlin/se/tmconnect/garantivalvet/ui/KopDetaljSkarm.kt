@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -369,18 +370,47 @@ private fun StatusKort(
 
             tidslinjeMarkorer?.let {
                 TidslinjeStapel(markorer = it, contentDescription = huvudText)
+                TidslinjeForklaring()
             }
+        }
+    }
+}
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(4.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.outlineVariant,
-                        shape = RoundedCornerShape(2.dp),
-                    ),
+/** Teckenförklaring till tidslinjen: vad de tre markeringarna och stapelns ändar betyder. */
+@Composable
+private fun TidslinjeForklaring() {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(
+                text = stringResource(R.string.tidslinje_kopt),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = stringResource(R.string.tidslinje_tre_ar),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        TidslinjeForklaringRad(MaterialTheme.colorScheme.error, stringResource(R.string.tidslinje_idag))
+        TidslinjeForklaringRad(MaterialTheme.colorScheme.primary, stringResource(R.string.tidslinje_garanti))
+        TidslinjeForklaringRad(MaterialTheme.colorScheme.tertiary, stringResource(R.string.tidslinje_tva_ar))
+    }
+}
+
+@Composable
+private fun TidslinjeForklaringRad(farg: androidx.compose.ui.graphics.Color, text: String) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Box(
+            modifier = Modifier
+                .size(width = 4.dp, height = 14.dp)
+                .background(color = farg, shape = RoundedCornerShape(2.dp)),
+        )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

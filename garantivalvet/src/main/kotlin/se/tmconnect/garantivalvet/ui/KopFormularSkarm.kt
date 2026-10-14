@@ -54,6 +54,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import se.tmconnect.garantivalvet.R
+import se.tmconnect.garantivalvet.ocr.KvittoAvlasningFel
 import se.tmconnect.garantivalvet.regler.FormularFel
 import se.tmconnect.garantivalvet.regler.GarantitidVal
 import se.tmconnect.garantivalvet.regler.ButikKontakt
@@ -141,6 +142,7 @@ fun KopFormularSkarm(
     }
     var laserKvitto by remember { mutableStateOf(false) }
     var ingetHittades by remember { mutableStateOf(false) }
+    var avlasningFel by remember { mutableStateOf<String?>(null) }
     var lasIgen by remember { mutableIntStateOf(0) }
     var forslagVaror by remember { mutableStateOf<List<String>>(emptyList()) }
 
@@ -150,6 +152,7 @@ fun KopFormularSkarm(
         if (kvittoUri == null || (kvittoUri == startUri && lasIgen == 0)) return@LaunchedEffect
         laserKvitto = true
         ingetHittades = false
+        avlasningFel = null
         try {
             val forslag = lasKvitto(kvittoUri)
             ingetHittades = forslag == null
@@ -196,6 +199,8 @@ fun KopFormularSkarm(
                     forslagOppetKop = true
                 }
             }
+        } catch (e: KvittoAvlasningFel) {
+            avlasningFel = e.orsak
         } finally {
             laserKvitto = false
         }
@@ -335,6 +340,12 @@ fun KopFormularSkarm(
                     style = MaterialTheme.typography.labelLarge,
                 )
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            } else if (avlasningFel != null) {
+                Text(
+                    text = stringResource(R.string.kvitto_avlasning_fel, avlasningFel.orEmpty()),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                )
             } else if (ingetHittades) {
                 Text(
                     text = stringResource(R.string.kvitto_inget_hittades),
