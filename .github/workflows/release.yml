@@ -2,10 +2,10 @@
 # Körs för hand (Actions > Release > Run workflow). Ändras bara av Claude (CLAUDE.md punkt 11).
 #
 # Ger två saker:
-#  1. Ett test-APK (signerat med felsökningsnyckeln) som läggs i releasen "release-test", så att Mattias kan
-#     installera och prova exakt den krympta koden på telefonen innan något skickas till Play.
-#  2. En osignerad AAB och mapping.txt som artefakt. Play-nyckeln finns bara hos Mattias och i Play App Signing
-#     och ligger aldrig här: Mattias signerar AAB:n själv (se garantivalvet/butik/PUBLICERA.md).
+#  1. En osignerad AAB, mapping.txt och ett test-APK (felsökningsnyckel) som artefakt under körningen (Actions,
+#     sparas 30 dagar). Test-APK:n är ingen release: den vanliga APK:n för test är alltid senaste-main.
+#     Play-nyckeln finns bara hos Mattias och i Play App Signing och ligger aldrig här: Mattias signerar AAB:n
+#     själv (se garantivalvet/butik/PUBLICERA.md).
 name: Release
 
 on:
@@ -77,17 +77,10 @@ jobs:
           path: ut/*
           retention-days: 30
 
-      - name: Release release-test
+      # Ingen separat GitHub-release: Mattias ska bara ha en APK att installera (senaste-main). En gammal release-test
+      # från tidigare körningar tas bort.
+      - name: Ta bort gamla release-test
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          noter="Release-bygge (R8) av ${GITHUB_SHA::7}, byggd $(TZ=Europe/Stockholm date '+%Y-%m-%d %H:%M'). Test-APK signerad med felsökningsnyckeln; AAB:n är osignerad."
-          if ! gh release view release-test >/dev/null 2>&1; then
-            gh release create release-test --prerelease --title "Release-test" --notes "$noter" --target "$GITHUB_SHA"
-          else
-            gh release edit release-test --notes "$noter"
-          fi
-          for gammal in $(gh release view release-test --json assets --jq '.assets[].name'); do
-            gh release delete-asset release-test "$gammal" --yes
-          done
-          gh release upload release-test ut/*.apk ut/*.aab ut/mapping-*.txt --clobber
+          gh release delete release-test --cleanup-tag --yes 2>/dev/null || echo "Ingen release-test att ta bort."
