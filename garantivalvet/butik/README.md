@@ -23,6 +23,10 @@ Teckengränser och URL-förbud kontrolleras av `ButikTexterTest`.
 
 Alla skärmbilder använder påhittade köp (t.ex. diskmaskin, mobiltelefon, cykel).
 
+## Publicering
+
+`PUBLICERA.md` (bygge och uppladdning) och `PLAY-CONSOLE.md` (svar att klistra in i Play Console, steg för steg).
+
 ## Integritetspolicy
 
 `integritetspolicy-sv.md` och `integritetspolicy-en.md`. Play kräver en publik länk; Mattias lägger texten på en sida och anger länken i Play Console (se FRAGOR.md).
