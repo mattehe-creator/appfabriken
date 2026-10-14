@@ -20,22 +20,11 @@ import se.tmconnect.garantivalvet.R
 import se.tmconnect.garantivalvet.data.GarantiDatabas
 import se.tmconnect.garantivalvet.data.InstallningarLager
 import se.tmconnect.garantivalvet.data.Kop
-import se.tmconnect.garantivalvet.regler.Frist
 import se.tmconnect.garantivalvet.regler.FristTyp
 import se.tmconnect.garantivalvet.regler.formateraDatum
 import se.tmconnect.garantivalvet.regler.fristNyckel
+import se.tmconnect.garantivalvet.regler.fristerFranKop
 import se.tmconnect.garantivalvet.regler.fristerSomSkaAviseras
-import se.tmconnect.garantivalvet.regler.ReklamationsLogg
-import se.tmconnect.garantivalvet.regler.arFarskvara
-import se.tmconnect.garantivalvet.regler.arnAnmalanSenast
-import se.tmconnect.garantivalvet.regler.arnPaminnelseRelevant
-import se.tmconnect.garantivalvet.regler.svarForvantasSenast
-import se.tmconnect.garantivalvet.regler.reklamationsLogg
-import se.tmconnect.garantivalvet.regler.reklamerasSenast
-import se.tmconnect.garantivalvet.regler.garantiSlut
-import se.tmconnect.garantivalvet.regler.giltigaOppetKopDagar
-import se.tmconnect.garantivalvet.regler.oppetKopSlut
-import se.tmconnect.garantivalvet.regler.reklamationSlut
 
 class PaminnelseWorker(
     appContext: Context,
@@ -164,39 +153,6 @@ class PaminnelseWorker(
             return
         }
         NotificationManagerCompat.from(applicationContext).notify(notisId, notis)
-    }
-
-    private fun fristerFranKop(kop: Kop): List<Frist> {
-        val garanti = Frist(
-            kopId = kop.id,
-            typ = FristTyp.GARANTI,
-            slutdatum = garantiSlut(kop.kopdatum, kop.garantiManader),
-        )
-        val reklamation = reklamationSlut(kop.kopdatum)?.let { slut ->
-            Frist(kopId = kop.id, typ = FristTyp.REKLAMATION, slutdatum = slut)
-        }
-        val oppetKop = giltigaOppetKopDagar(kop.oppetKopDagar)?.let { dagar ->
-            Frist(kopId = kop.id, typ = FristTyp.OPPET_KOP, slutdatum = oppetKopSlut(kop.kopdatum, dagar))
-        }
-        val svarFrist = if (kop.reklamerad != null && kop.reklamationUtfall == null) {
-            Frist(kopId = kop.id, typ = FristTyp.SVAR, slutdatum = svarForvantasSenast(kop.reklamerad))
-        } else {
-            null
-        }
-        val reklamationsLogg = when (reklamationsLogg(kop)) {
-            ReklamationsLogg.REKLAMERAD ->
-                if (arnPaminnelseRelevant(kop)) {
-                    Frist(kopId = kop.id, typ = FristTyp.ARN, slutdatum = arnAnmalanSenast(kop.reklamerad!!))
-                } else {
-                    null
-                }
-            ReklamationsLogg.FEL_UPPTACKT ->
-                Frist(kopId = kop.id, typ = FristTyp.REKLAMERA_SENAST, slutdatum = reklamerasSenast(kop.felUpptackt!!))
-            ReklamationsLogg.INGEN -> null
-        }
-        // Färskvaror har ingen längre frist att påminna om (se arFarskvara).
-        if (arFarskvara(kop)) return listOfNotNull(oppetKop, reklamationsLogg, svarFrist)
-        return listOfNotNull(oppetKop, garanti, reklamation, reklamationsLogg, svarFrist)
     }
 
     companion object {

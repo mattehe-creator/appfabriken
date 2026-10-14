@@ -79,9 +79,14 @@ class InstallningarLager(
                 prefs.remove(AUTO_FEL)
             } else {
                 prefs[AUTO_MAPP] = uri
-                if (namn != null) prefs[AUTO_MAPP_NAMN] = namn else prefs.remove(AUTO_MAPP_NAMN)
-                prefs.remove(AUTO_FEL)
+                if (namn != null) {
+                    prefs[AUTO_MAPP_NAMN] = namn
+                } else {
+                    prefs.remove(AUTO_MAPP_NAMN)
+                }
+                prefs[AUTO_FEL] = false
             }
+            Unit
         }
     }
 

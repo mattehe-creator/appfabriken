@@ -23,8 +23,12 @@ class PdfUnderlagSkrivareTest {
 
     @Test
     fun skrivningGerResultatUtanKrasch() {
-        val result = skrivUnderlagTillPdf(enkeltUnderlag, ByteArrayOutputStream())
+        val ut = ByteArrayOutputStream()
+        val result = skrivUnderlagTillPdf(enkeltUnderlag, ut)
         assertTrue(result is PdfExportResult.Ok || result is PdfExportResult.Fel)
+        if (result is PdfExportResult.Ok) {
+            assertTrue(String(ut.toByteArray(), 0, 4) == "%PDF")
+        }
     }
 
     @Test
