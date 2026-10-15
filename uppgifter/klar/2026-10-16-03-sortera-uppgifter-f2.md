@@ -43,3 +43,5 @@ gradle :husloggen:testDebugUnitTest --tests "*UppgiftSorteringTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-16 (inget)
