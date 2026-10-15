@@ -1,0 +1,167 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "a1983dcb2cc965b276573bea54f5e517",
+    "entities": [
+      {
+        "tableName": "uppgift",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `namn` TEXT NOT NULL, `intervall_manader` INTEGER NOT NULL, `start_datum` INTEGER NOT NULL, `senast_gjord` INTEGER, `paminnelse` INTEGER NOT NULL, `anteckning` TEXT, `skapad` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "namn",
+            "columnName": "namn",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "intervallManader",
+            "columnName": "intervall_manader",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startDatum",
+            "columnName": "start_datum",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "senastGjord",
+            "columnName": "senast_gjord",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "paminnelse",
+            "columnName": "paminnelse",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "anteckning",
+            "columnName": "anteckning",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "skapad",
+            "columnName": "skapad",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "post",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `datum` INTEGER NOT NULL, `vad` TEXT NOT NULL, `typ` TEXT NOT NULL, `belopp_ore` INTEGER, `utforare` TEXT, `anteckning` TEXT, `kvitto_fil` TEXT, `bilder` TEXT, `uppgift_id` INTEGER, `skapad` INTEGER NOT NULL, FOREIGN KEY(`uppgift_id`) REFERENCES `uppgift`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "datum",
+            "columnName": "datum",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vad",
+            "columnName": "vad",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "typ",
+            "columnName": "typ",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "beloppOre",
+            "columnName": "belopp_ore",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "utforare",
+            "columnName": "utforare",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "anteckning",
+            "columnName": "anteckning",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "kvittoFil",
+            "columnName": "kvitto_fil",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "bilder",
+            "columnName": "bilder",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "uppgiftId",
+            "columnName": "uppgift_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "skapad",
+            "columnName": "skapad",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_post_uppgift_id",
+            "unique": false,
+            "columnNames": [
+              "uppgift_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_post_uppgift_id` ON `${TABLE_NAME}` (`uppgift_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "uppgift",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "uppgift_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a1983dcb2cc965b276573bea54f5e517')"
+    ]
+  }
+}
