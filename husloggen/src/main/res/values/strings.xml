@@ -8,4 +8,10 @@
     <string name="installningar_rubrik">Settings</string>
     <string name="tillbaka">Back</string>
     <string name="installningar_version">Version %1$s</string>
+    <string name="post_typ_underhall">Maintenance</string>
+    <string name="post_typ_reparation">Repair</string>
+    <string name="post_typ_ombyggnad">New build, extension or conversion</string>
+    <string name="status_forsenad">Overdue</string>
+    <string name="status_snart">Due soon</string>
+    <string name="status_senare">Later</string>
 </resources>
