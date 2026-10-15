@@ -8,4 +8,10 @@
     <string name="installningar_rubrik">Inställningar</string>
     <string name="tillbaka">Tillbaka</string>
     <string name="installningar_version">Version %1$s</string>
+    <string name="post_typ_underhall">Underhåll</string>
+    <string name="post_typ_reparation">Reparation</string>
+    <string name="post_typ_ombyggnad">Ny-, till- eller ombyggnad</string>
+    <string name="status_forsenad">Försenad</string>
+    <string name="status_snart">Snart</string>
+    <string name="status_senare">Senare</string>
 </resources>
