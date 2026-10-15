@@ -118,5 +118,6 @@ Kod skrivs i första hand av den lokala modellen. Cursor skriver bara det som ä
 - `karna/` — Android-biblioteket `:karna` (gemensamt tema, tillgänglighet och senare Pro/export).
 - `garantivalvet/` — appmodulen `:garantivalvet` (Garantivalvet / Warranty Vault).
 - `garantivalvet/schemas/` — exporterade Room-scheman per databasversion (genereras av KSP).
+- `husloggen/` — appmodulen `:husloggen` (app 2, arbetsnamn Husloggen), regler i `husloggen/APP.md`.
 - `garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/data/` — Room-entitet, DAO, databas och repository för köp.
 - `garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/ui/` — Compose-skärmar, navigeringstillstånd och ViewModel för köp.

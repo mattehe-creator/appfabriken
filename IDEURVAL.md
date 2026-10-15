@@ -64,10 +64,53 @@ Pro (engångsköp, förslag 49 kr):
 
 Inte i 1.0: molnsynk, delning mellan användare, widgets.
 
+## Omprövning 2026-10-16: app 2
+
+Mattias beslutade 2026-10-15 att app 2 ska påbörjas medan Garantivalvet väntar på Google. Claude prövade om ordningen ovan fortfarande gäller.
+
+Vad som har ändrats sedan 2026-10-08:
+- Garantivalvet växte från sex punkter till ett trettiotal, och det tunga gjordes av Claude och Cursor, inte av den lokala modellen. Bygg-kriteriet väger därför tyngre i praktiken, och app 2 får ett snävt 1.0.
+- Delarna som kan återanvändas finns nu, men i `:garantivalvet` (kvittofoto och avläsning, påminnelser, PDF, säkerhetskopia, mörkt läge, välkomstskärm). `:karna` har bara tema och Pro.
+- Garantivalvet har ingen marknadsdata än. Valet bygger fortfarande på bedömningar.
+- B: el och fjärrvärme läses av på distans i Sverige, och nätbolagens appar visar förbrukningen. Behovet av att läsa av själv är litet.
+- C: bilens och laddboxens appar visar redan kWh och kostnad.
+- G: den som säljer sin bostad får dra av förbättringsutgifter vid vinstberäkningen (inkomstskattelagen 45 kap. 11–12 §§ för fastighet; minst 5 000 kr per år; förbättrande reparationer och underhåll bara de senaste fem åren före försäljningen). En logg med kvitton har alltså ett konkret pengavärde, på samma sätt som reklamationsrätten i A. Dokumenterat underhåll är också ett underlag för köparen. På engelska finns många nya underhållsappar 2026; på svenska använder villaägare Excel, kalendern eller Todoist (byggahus.se).
+
+| # | Idé | Bygg | Konk. | Betal | Upptäck | Återanv. | Risk | Summa (2026-10-08) |
+|---|---|---|---|---|---|---|---|---|
+| G | **Husloggen** — husets underhåll med påminnelser, och logg med kvitton som underlag vid försäljning | 4 | 4 | 4 | 3 | 5 | 5 | **41** (37) |
+| C | Laddloggen | 4 | 2 | 3 | 3 | 3 | 5 | 33 (35) |
+| F | Flextid | 4 | 3 | 3 | 2 | 3 | 4 | 33 (33) |
+| B | Mätarställning | 5 | 2 | 1 | 2 | 4 | 5 | 32 (37) |
+
+## Val app 2: G, Husloggen (arbetsnamn)
+
+**Varför:**
+- Störst återanvändning: kvittofoto med avläsning, påminnelser, PDF, säkerhetskopia och Pro finns redan och har provats på telefon.
+- Konkret pengavärde i Sverige (förbättringsutgifter) och en tydlig säljrad: dokumentera nu, betala mindre skatt och sälj lättare sen.
+- Samma köpare som A (den som har ordning på kvitton och sina pengar), så apparna kan hänvisa till varandra.
+- Inget nätverk, ingen plats, inga känsliga behörigheter.
+
+**Svagheter att känna till:**
+- Betalviljan hänger på historiken, vars värde ofta ligger år fram i tiden. Påminnelser ensamma säljer inte.
+- Den verkliga konkurrenten är kalendern. Att lägga in en uppgift måste gå snabbare än där: färdiga förslag och "markera som gjord" med ett tryck.
+- Skattereglerna kontrolleras mot Skatteverket och lagtexten innan uppdraget för sammanställningen skrivs, och visas som information, inte rådgivning.
+
+## Omfång för Husloggen 1.0
+
+Gratis:
+- Återkommande uppgifter: namn, intervall i månader, nästa datum, markera som gjord med ett tryck. Färdiga förslag att välja (filter, takrännor, brandvarnare, golvbrunnar, värmepump m.fl.) med intervall som går att ändra; sotning, brandskyddskontroll och service anges "enligt kommunen" eller "enligt tillverkaren", inte som lagkrav.
+- Logg över utfört arbete och utgifter: datum, vad, typ (underhåll, reparation, ny-, till- eller ombyggnad), belopp, utförare, anteckning, kvittofoto med avläsning, bilder.
+- Påminnelse före nästa datum.
+- Sammanställning per år och typ; i Sverige underlag för förbättringsutgifter vid försäljning. PDF "Husets historik", CSV och säkerhetskopia.
+- Högst 15 poster i loggen. Uppgifter och påminnelser är obegränsade.
+
+Pro (engångsköp, 49 kr): obegränsad logg.
+
+Inte i 1.0: flera bostäder, mätarställningar, dokument (manualer, ritningar), plan för framtida kostnader, delning, widgets.
+
 ## Portföljordning
 
-1. A Garantivalvet
-2. G Husets underhållslogg (samma skelett, återkommande påminnelser)
-3. B Mätarställning (samma skelett, grafer)
-
-Ordningen omprövas efter 90 dagar med A i produktion.
+1. A Garantivalvet (funktionsfryst, väntar på Google Play)
+2. G Husloggen (påbörjad 2026-10-16)
+3. Väljs när A har varit ute i 90 dagar. B som egen app faller bort; mätarställningar kan bli en funktion i G.
