@@ -1,7 +1,6 @@
 package se.tmconnect.husloggen.regler
 
 import se.tmconnect.husloggen.data.Post
-import java.time.LocalDate
 
 data class ArGrupp(
     val ar: Int,
