@@ -226,4 +226,34 @@ class KvittoTolkareTest {
         assertEquals(ButikKontakt("x@y.se", "1", "2"), full.kontakt)
         assertTrue(!full.kontaktFranKvitto)
     }
+
+    @Test
+    fun garantiManaderFranTreArsGarantiPaKvitto() {
+        val f = tolkaKvitto(
+            "Elgiganten\n2026-08-01\nSumma att betala 1 299,00\n3 års garanti",
+            LocalDate.of(2026, 10, 14),
+        )
+        assertEquals(36, f.garantiManader)
+    }
+
+    @Test
+    fun garantiManaderSaknasNarIngenGarantiITexten() {
+        val f = tolkaKvitto(
+            "Kjell & Company\n01.08.2026\nTotal 349.90 SEK",
+            LocalDate.of(2026, 10, 14),
+        )
+        assertNull(f.garantiManader)
+    }
+
+    @Test
+    fun garantiManaderGorAttForslagInteArTomt() {
+        assertTrue(
+            !tolkaKvitto("Garanti 24 mån", LocalDate.of(2026, 10, 14)).arTomt,
+        )
+    }
+
+    @Test
+    fun tomtKvittoArTomtAvenMedGarantifalt() {
+        assertTrue(tolkaKvitto("", LocalDate.of(2026, 10, 14)).arTomt)
+    }
 }
