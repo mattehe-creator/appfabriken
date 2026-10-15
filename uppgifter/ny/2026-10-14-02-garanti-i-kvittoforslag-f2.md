@@ -1,15 +1,18 @@
 # Uppgift: garantitiden som en del av kvittoförslaget
 
 uppdrag: ingen (Mattias önskemål 2026-10-14)
-försök: 1
+försök: 2
 beror-på: 2026-10-14-01-garantitolkare.md
+
+## Vad som saknades
+Grenen innehöll ingen kod. `KvittoTolkare.kt` och `KvittoTolkareTest.kt` ändrades inte. Uppgiften nedan ska genomföras i de två filerna.
 
 ## Ändra bara dessa filer
 - garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/regler/KvittoTolkare.kt
 - garantivalvet/src/test/kotlin/se/tmconnect/garantivalvet/regler/KvittoTolkareTest.kt
 
 ## Läs som förebild (ändra inte)
-- garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/regler/GarantiTolkare.kt (funktionen `tolkaGarantiManader(text: String): Int?`, finns efter föregående uppgift)
+- garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/regler/GarantiTolkare.kt (funktionen `tolkaGarantiManader(text: String): Int?`)
 
 ## Uppgift
 I `KvittoTolkare.kt`:
@@ -18,11 +21,13 @@ I `KvittoTolkare.kt`:
 3. I `tolkaKvitto(text, idag)` sätts `garantiManader = tolkaGarantiManader(text)`.
 4. Inget annat ändras (inte `fyllTommaFalt`, inte `Ifyllning`).
 
-I `KvittoTolkareTest.kt` läggs testfall till, de befintliga ändras inte:
+I `KvittoTolkareTest.kt` läggs **nya** `@Test`-funktioner till längst ned i klassen (ändra inte befintliga tester):
 - `tolkaKvitto("Elgiganten\n2026-08-01\nSumma att betala 1 299,00\n3 års garanti", LocalDate.of(2026, 10, 14)).garantiManader` är 36.
 - `tolkaKvitto("Kjell & Company\n01.08.2026\nTotal 349.90 SEK", LocalDate.of(2026, 10, 14)).garantiManader` är `null`.
 - `tolkaKvitto("Garanti 24 mån", LocalDate.of(2026, 10, 14)).arTomt` är `false` (garantitiden räknas som ett fynd).
 - `tolkaKvitto("", LocalDate.of(2026, 10, 14)).arTomt` är `true`.
+
+Använd JUnit 4: `org.junit.Test`, `org.junit.Assert.assertEquals` / `assertTrue` / `assertNull`. Inte `kotlin.test`.
 
 ## Test som ska gå igenom
 gradle :garantivalvet:testDebugUnitTest --tests "*KvittoTolkareTest"
@@ -32,3 +37,4 @@ gradle testDebugUnitTest
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+- Committa enbart uppgiftsflytt utan kod — då startar granskning men uppgiften är inte gjord.

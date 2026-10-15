@@ -2,7 +2,7 @@
 
 uppdrag: ingen (Mattias önskemål 2026-10-14)
 försök: 1
-beror-på: 2026-10-14-02-garanti-i-kvittoforslag.md
+beror-på: 2026-10-14-02-garanti-i-kvittoforslag-f2.md
 
 ## Ändra bara dessa filer
 - garantivalvet/src/main/kotlin/se/tmconnect/garantivalvet/ui/KopFormularSkarm.kt
