@@ -1,8 +1,8 @@
 package se.tmconnect.garantivalvet.regler
 
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
-import java.time.LocalDate
-import kotlin.test.assertEquals
 
 class GarantiTolkareTest {
     
@@ -18,13 +18,13 @@ class GarantiTolkareTest {
         assertEquals(36, tolkaGarantiManader("Köp 24 månader räntefritt, 3 års garanti"))
         assertEquals(36, tolkaGarantiManader("Elgiganten\n2026-08-01\nSumma 1 299,00\n3 års garanti"))
         assertEquals(6, tolkaGarantiManader("6 månaders garanti"))
-        assertEquals(null, tolkaGarantiManader("Garanti 30 dagar"))
-        assertEquals(null, tolkaGarantiManader("3 års reklamationsrätt"))
-        assertEquals(null, tolkaGarantiManader("Ingen garanti"))
-        assertEquals(null, tolkaGarantiManader("Garanti: 0 månader"))
-        assertEquals(null, tolkaGarantiManader("Garanti 200 år"))
-        assertEquals(null, tolkaGarantiManader("Garanti\n3 år"))
-        assertEquals(null, tolkaGarantiManader("24 månader"))
-        assertEquals(null, tolkaGarantiManader(""))
+        assertNull(tolkaGarantiManader("Garanti 30 dagar"))
+        assertNull(tolkaGarantiManader("3 års reklamationsrätt"))
+        assertNull(tolkaGarantiManader("Ingen garanti"))
+        assertNull(tolkaGarantiManader("Garanti: 0 månader"))
+        assertNull(tolkaGarantiManader("Garanti 200 år"))
+        assertNull(tolkaGarantiManader("Garanti\n3 år"))
+        assertNull(tolkaGarantiManader("24 månader"))
+        assertNull(tolkaGarantiManader(""))
     }
 }

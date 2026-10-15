@@ -1,6 +1,12 @@
 package se.tmconnect.garantivalvet.regler
 
-import java.util.regex.Pattern
+private val GARANTI_ANTAL_ENHET = Regex(
+    """(\d+|ett|en|två|tre|fyra|fem|sex|sju|åtta|nio|tio)\s*(?:\.\s*)?""" +
+        """(år|års|ar|year|years|yr|yrs|månad|månader|månaders|manader|mån|month|months)""" +
+        """(?:\.(?![\p{L}]))?(?![\p{L}])""",
+    RegexOption.IGNORE_CASE,
+)
+private val GARANTI_ORD = Regex("""garanti|warranty""")
 
 /**
  * Tolkar garantitiden i månader ur kvittotexten.
@@ -27,14 +33,17 @@ fun tolkaGarantiManader(text: String): Int? {
     
     // Filtera rader som innehåller garanti eller warranty men inte reklamationsrätt, ingen garanti, utan garanti eller garanti ingår ej
     val relevantaRader = rader.filter { rad ->
-        val innehallerGaranti = Pattern.compile(".*garanti.*|.*warranty.*").matcher(rad).matches()
-        val innehallerUteslut = Pattern.compile(".*reklamationsrätt.*|.*ingen garanti.*|.*utan garanti.*|.*garanti ingår ej.*").matcher(rad).matches()
+        val innehallerGaranti = "garanti" in rad || "warranty" in rad
+        val innehallerUteslut = listOf(
+            "reklamationsrätt",
+            "ingen garanti",
+            "utan garanti",
+            "garanti ingår ej",
+        ).any { it in rad }
         innehallerGaranti && !innehallerUteslut
     }
     
     if (relevantaRader.isEmpty()) return null
-    
-    val enhetsMönster = Regex("""(\d+|ett|en|två|tre|fyra|fem|sex|sju|åtta|nio|tio)\s*(?:\.\s*)?(\w+)""")
     
     // Mappning av ord till siffror
     val ordTillSiffra = mapOf(
@@ -55,32 +64,25 @@ fun tolkaGarantiManader(text: String): Int? {
     
     for (rad in relevantaRader) {
         // Hitta positionen för garanti eller warranty i raden
-        val garantiMatch = Regex("garanti|warranty").find(rad)
+        val garantiMatch = GARANTI_ORD.find(rad)
         if (garantiMatch == null) continue
         
         val garantiPosition = garantiMatch.range.first
         
         // Hitta alla möjliga enheter i raden
-        enhetsMönster.findAll(rad).forEach { match ->
-            val antalText = match.groupValues[1]
-            val enhet = match.groupValues[2]
-            
-            // Konvertera antal till siffra
-            val antal = if (ordTillSiffra.containsKey(antalText)) {
-                ordTillSiffra[antalText]!!
-            } else {
-                antalText.toIntOrNull() ?: continue
-            }
-            
-            // Beräkna månader
+        GARANTI_ANTAL_ENHET.findAll(rad).forEach { match ->
+            val antalText = match.groupValues[1].lowercase()
+            val enhet = match.groupValues[2].lowercase()
+
+            val antal = ordTillSiffra[antalText] ?: antalText.toIntOrNull() ?: return@forEach
+
             val månader = when {
                 enhet in månaderEnheter -> antal
                 enhet in årEnheter -> antal * 12
-                else -> continue // Ogiltig enhet
+                else -> return@forEach
             }
-            
-            // Kontrollera att månader är giltigt (mellan 1 och 120)
-            if (månader < 1 || månader > 120) continue
+
+            if (månader !in 1..120) return@forEach
             
             // Beräkna avstånd till garanti eller warranty
             val matchPosition = match.range.first

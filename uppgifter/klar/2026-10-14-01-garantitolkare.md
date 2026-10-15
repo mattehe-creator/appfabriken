@@ -60,3 +60,5 @@ gradle testDebugUnitTest
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-15 (JUnit-import, regex för svenska enheter, return@forEach)
