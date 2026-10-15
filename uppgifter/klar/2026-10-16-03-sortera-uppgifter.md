@@ -37,3 +37,5 @@ gradle :husloggen:testDebugUnitTest --tests "*UppgiftSorteringTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: underkänd 2026-10-15 av Cursor (PR #161). Ersatt av 2026-10-16-03-sortera-uppgifter-f2.md
