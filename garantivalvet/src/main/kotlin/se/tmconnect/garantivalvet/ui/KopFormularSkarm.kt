@@ -114,6 +114,8 @@ fun KopFormularSkarm(
     var forslagDatum by remember { mutableStateOf(false) }
     var forslagPris by remember { mutableStateOf(false) }
     var forslagOppetKop by remember { mutableStateOf(false) }
+    var forslagGaranti by remember { mutableStateOf(false) }
+    var garantiAndrad by remember { mutableStateOf(false) }
     var epost by remember(initialKontakt) { mutableStateOf(initialKontakt.epost.orEmpty()) }
     var telefon by remember(initialKontakt) { mutableStateOf(initialKontakt.telefon.orEmpty()) }
     var orgnr by remember(initialKontakt) { mutableStateOf(initialKontakt.orgnr.orEmpty()) }
@@ -197,6 +199,20 @@ fun KopFormularSkarm(
                     oppetKopIndex = oppetKopIndexFor(ny.oppetKopDagar)
                     oppetKopAnnat = if (oppetKopIndex == 3) ny.oppetKopDagar.toString() else ""
                     forslagOppetKop = true
+                }
+                
+                // Hantera garantitidsförslag från kvittot
+                if (forslag.garantiManader != null && !garantiAndrad) {
+                    val garanti = forslag.garantiManader
+                    val chipManader = GarantitidVal.CHIP_MANADER
+                    if (garanti in chipManader) {
+                        valdChipIndex = chipManader.indexOf(garanti)
+                        annatText = ""
+                    } else {
+                        valdChipIndex = 3
+                        annatText = garanti.toString()
+                    }
+                    forslagGaranti = true
                 }
             }
         } catch (e: KvittoAvlasningFel) {
@@ -485,6 +501,8 @@ fun KopFormularSkarm(
                         onClick = {
                             valdChipIndex = index
                             annatText = ""
+                            garantiAndrad = true
+                            forslagGaranti = false
                         },
                         label = {
                             Text(
@@ -505,6 +523,8 @@ fun KopFormularSkarm(
                     onClick = {
                         valdChipIndex = 3
                         annatText = ""
+                        garantiAndrad = true
+                        forslagGaranti = false
                     },
                     label = { Text(text = stringResource(R.string.garanti_chip_annat)) },
                     modifier = Modifier.tryckyta48(),
@@ -513,10 +533,21 @@ fun KopFormularSkarm(
             if (valdChipIndex == 3) {
                 OutlinedTextField(
                     value = annatText,
-                    onValueChange = { annatText = it },
+                    onValueChange = { 
+                        annatText = it
+                        garantiAndrad = true
+                        forslagGaranti = false
+                    },
                     label = { Text(text = stringResource(R.string.falt_garanti_manader)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            if (forslagGaranti) {
+                Text(
+                    text = stringResource(R.string.kvitto_forslag),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             if (FormularFel.GARANTI_OGILTIG in fel) {
