@@ -42,3 +42,5 @@ gradle testDebugUnitTest
 - Lägga till beroenden.
 - Ändra databasschemat.
 - Ändra `onSpara` eller andra funktioners signaturer.
+
+utfall: godkänd 2026-10-15 (flytt av valdChipIndex/annatText före LaunchedEffect)
