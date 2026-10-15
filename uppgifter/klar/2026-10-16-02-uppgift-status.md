@@ -41,3 +41,5 @@ gradle :husloggen:testDebugUnitTest --tests "*UppgiftStatusTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: underkänd 2026-10-15 av Cursor (PR #160). Ersatt av 2026-10-16-02-uppgift-status-f2.md
