@@ -45,3 +45,5 @@ gradle :husloggen:testDebugUnitTest --tests "*UppgiftStatusTest"
 - Lägga till beroenden.
 - Ändra databasschemat.
 - Använda `kotlin.test`.
+
+utfall: godkänd 2026-10-15 (inget)
