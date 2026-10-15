@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">House Log</string>
+    <string name="flik_att_gora">To do</string>
+    <string name="flik_logg">Log</string>
+    <string name="tom_uppgifter">No tasks yet. Recurring maintenance will show here.</string>
+    <string name="tom_logg">No log entries yet. Work and expenses will show here.</string>
+    <string name="installningar_rubrik">Settings</string>
+    <string name="tillbaka">Back</string>
+    <string name="installningar_version">Version %1$s</string>
+</resources>

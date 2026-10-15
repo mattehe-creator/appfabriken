@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Husloggen</string>
+    <string name="flik_att_gora">Att göra</string>
+    <string name="flik_logg">Logg</string>
+    <string name="tom_uppgifter">Inga uppgifter än. Här visas återkommande underhåll.</string>
+    <string name="tom_logg">Ingen logg än. Här visas utfört arbete och utgifter.</string>
+    <string name="installningar_rubrik">Inställningar</string>
+    <string name="tillbaka">Tillbaka</string>
+    <string name="installningar_version">Version %1$s</string>
+</resources>
