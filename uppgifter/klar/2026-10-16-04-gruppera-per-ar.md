@@ -47,3 +47,5 @@ gradle :husloggen:testDebugUnitTest --tests "*LoggGruppTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-15 (oanvänd import borttagen)
