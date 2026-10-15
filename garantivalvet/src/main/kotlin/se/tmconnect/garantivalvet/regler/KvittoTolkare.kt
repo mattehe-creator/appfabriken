@@ -12,10 +12,11 @@ data class KvittoForslag(
     /** Förslag på vad som köpts, ur kvittorader med belopp. */
     val varor: List<String> = emptyList(),
     val kontakt: ButikKontakt = ButikKontakt(),
+    val garantiManader: Int? = null,
 ) {
     val arTomt: Boolean
         get() = butik == null && datum == null && prisOre == null && oppetKopDagar == null && varor.isEmpty() &&
-            kontakt.arTom
+            kontakt.arTom && garantiManader == null
 }
 
 private val ISO_DATUM = Regex("""(?<!\d)(\d{4})[-./](\d{1,2})[-./](\d{1,2})(?!\d)""")
@@ -52,6 +53,7 @@ fun tolkaKvitto(text: String, idag: LocalDate): KvittoForslag {
         oppetKopDagar = tolkaOppetKop(text),
         varor = hittaVarorader(text),
         kontakt = hittaButikKontakt(text),
+        garantiManader = tolkaGarantiManader(text),
     )
 }
 

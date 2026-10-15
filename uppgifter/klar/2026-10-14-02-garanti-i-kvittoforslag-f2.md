@@ -38,3 +38,5 @@ gradle testDebugUnitTest
 - Lägga till beroenden.
 - Ändra databasschemat.
 - Committa enbart uppgiftsflytt utan kod — då startar granskning men uppgiften är inte gjord.
+
+utfall: godkänd 2026-10-15 (hela implementationen; försök 2 saknade kod)
