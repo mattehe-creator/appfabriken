@@ -148,6 +148,25 @@ fun KopFormularSkarm(
     var lasIgen by remember { mutableIntStateOf(0) }
     var forslagVaror by remember { mutableStateOf<List<String>>(emptyList()) }
 
+    val chipManader = GarantitidVal.CHIP_MANADER
+    var valdChipIndex by remember(initialGarantiManader) {
+        mutableIntStateOf(
+            when (val parsed = initialGarantiManader.trim().toIntOrNull()) {
+                in chipManader -> chipManader.indexOf(parsed)
+                null -> chipManader.indexOf(GarantitidVal.FORVALD_MANADER)
+                else -> 3
+            },
+        )
+    }
+    var annatText by remember(initialGarantiManader) {
+        mutableStateOf(
+            when (val parsed = initialGarantiManader.trim().toIntOrNull()) {
+                in chipManader -> ""
+                else -> initialGarantiManader.trim()
+            },
+        )
+    }
+
     // Läs av kvittot när användaren fotar eller byter det. Ett redan sparat kvitto läses inte om.
     val startUri = remember { if (lasInitialtKvitto) null else kvittoUri }
     LaunchedEffect(kvittoUri, lasIgen) {
@@ -204,7 +223,6 @@ fun KopFormularSkarm(
                 // Hantera garantitidsförslag från kvittot
                 if (forslag.garantiManader != null && !garantiAndrad) {
                     val garanti = forslag.garantiManader
-                    val chipManader = GarantitidVal.CHIP_MANADER
                     if (garanti in chipManader) {
                         valdChipIndex = chipManader.indexOf(garanti)
                         annatText = ""
@@ -229,25 +247,6 @@ fun KopFormularSkarm(
     LaunchedEffect(kopdatum) { datumValjare.selectedDateMillis = kopdatum.toEpochDay() * 86_400_000 }
 
     var fel by remember { mutableStateOf<List<FormularFel>>(emptyList()) }
-
-    val chipManader = GarantitidVal.CHIP_MANADER
-    var valdChipIndex by remember(initialGarantiManader) {
-        mutableIntStateOf(
-            when (val parsed = initialGarantiManader.trim().toIntOrNull()) {
-                in chipManader -> chipManader.indexOf(parsed)
-                null -> chipManader.indexOf(GarantitidVal.FORVALD_MANADER)
-                else -> 3
-            },
-        )
-    }
-    var annatText by remember(initialGarantiManader) {
-        mutableStateOf(
-            when (val parsed = initialGarantiManader.trim().toIntOrNull()) {
-                in chipManader -> ""
-                else -> initialGarantiManader.trim()
-            },
-        )
-    }
 
     if (visarDatumvaljare) {
         DatePickerDialog(
