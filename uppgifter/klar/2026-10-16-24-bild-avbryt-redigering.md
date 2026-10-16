@@ -28,3 +28,5 @@ gradle :husloggen:testDebugUnitTest --tests "*HusViewModelBilderTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-16 (HusViewModelBilderTest.kt — lokal modell lämnade bara kommentarer, inga tester)
