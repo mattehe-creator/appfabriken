@@ -4,8 +4,22 @@ import android.net.Uri
 import java.time.LocalDate
 import kotlinx.coroutines.flow.Flow
 import se.tmconnect.husloggen.regler.formateraBilder
+import se.tmconnect.husloggen.regler.kanLaggaTillPost
 import se.tmconnect.husloggen.regler.tolkaBilder
 import se.tmconnect.karna.bild.BildLager
+
+sealed class SparaPostResult {
+    data class Sparad(val id: Long) : SparaPostResult()
+
+    data object GransNadd : SparaPostResult()
+}
+
+sealed class MarkeraGjordResult {
+    data object MedPost : MarkeraGjordResult()
+
+    /** Uppgiften uppdaterades men ingen loggpost sparades (gräns utan Pro). */
+    data object UtanPostGransNadd : MarkeraGjordResult()
+}
 
 class HusRepository(
     private val dao: HusDao,
@@ -28,8 +42,12 @@ class HusRepository(
 
     suspend fun taBortUppgift(uppgift: Uppgift) = dao.taBortUppgift(uppgift)
 
-    suspend fun markeraSomGjord(uppgift: Uppgift, idag: LocalDate) {
+    suspend fun markeraSomGjord(uppgift: Uppgift, idag: LocalDate, arPro: Boolean): MarkeraGjordResult {
         val uppdaterad = uppgift.copy(senastGjord = idag)
+        if (!kanLaggaTillPost(dao.antalPoster(), arPro)) {
+            dao.uppdateraUppgift(uppdaterad)
+            return MarkeraGjordResult.UtanPostGransNadd
+        }
         val post = Post(
             datum = idag,
             vad = uppgift.namn,
@@ -37,6 +55,7 @@ class HusRepository(
             uppgiftId = uppgift.id,
         )
         dao.markeraSomGjord(uppdaterad, post)
+        return MarkeraGjordResult.MedPost
     }
 
     suspend fun hamtaPost(id: Long): Post? = dao.hamtaPost(id)
@@ -68,13 +87,16 @@ class HusRepository(
         bildLager.taBort(filnamn)
     }
 
-    suspend fun sparaPost(post: Post): Long =
+    suspend fun sparaPost(post: Post, arPro: Boolean): SparaPostResult {
         if (post.id == 0L) {
-            dao.infogaPost(post)
-        } else {
-            dao.uppdateraPost(post)
-            post.id
+            if (!kanLaggaTillPost(dao.antalPoster(), arPro)) {
+                return SparaPostResult.GransNadd
+            }
+            return SparaPostResult.Sparad(dao.infogaPost(post))
         }
+        dao.uppdateraPost(post)
+        return SparaPostResult.Sparad(post.id)
+    }
 
     suspend fun uppdateraPost(post: Post) = dao.uppdateraPost(post)
 

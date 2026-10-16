@@ -32,9 +32,11 @@ import se.tmconnect.husloggen.data.HusDatabas
 import se.tmconnect.husloggen.data.HusRepository
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.PostTyp
+import se.tmconnect.husloggen.data.SparaPostResult
 import se.tmconnect.husloggen.data.skapaHusBildLager
 import se.tmconnect.husloggen.paminnelse.HusPaminnelseKalla
 import se.tmconnect.karna.paminnelse.PaminnelseInstallningarLager
+import se.tmconnect.karna.pro.FakeProKalla
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -60,7 +62,7 @@ class HusViewModelBilderTest {
             context,
             HusPaminnelseKalla.DATASTORE_NAMN + "_test_bilder",
         )
-        viewModel = HusViewModel(repository, paminnelseInstallningar, context, idag)
+        viewModel = HusViewModel(repository, paminnelseInstallningar, context, FakeProKalla(), idag)
     }
 
     @After
@@ -96,13 +98,14 @@ class HusViewModelBilderTest {
     @Test
     fun redigeraLaggTillBildOchAvbrytBehallerBadaFilerna() = runBlocking {
         val postId =
-            repository.sparaPost(
+            (repository.sparaPost(
                 Post(
                     datum = idag,
                     vad = "Befintlig",
                     typ = PostTyp.UNDERHALL,
                 ),
-            )
+                arPro = false,
+            ) as SparaPostResult.Sparad).id
         val uri1 = skapaTestBildUri()
         assertTrue(repository.laggTillBild(postId, uri1))
         val befintlig = repository.lasBilder(repository.hamtaPost(postId)!!).single()

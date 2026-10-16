@@ -1,5 +1,6 @@
 package se.tmconnect.husloggen.ui
 
+import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -19,6 +20,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import se.tmconnect.husloggen.data.HusRepository
+import se.tmconnect.husloggen.data.MarkeraGjordResult
+import se.tmconnect.husloggen.data.SparaPostResult
+import se.tmconnect.husloggen.regler.kanLaggaTillPost
+import se.tmconnect.karna.pro.ProKalla
 import se.tmconnect.husloggen.regler.formateraBilder
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.PostTyp
@@ -61,14 +66,27 @@ data class PostFormularTillstand(
 
 sealed class HusUiMeddelande {
     data object UppgiftMarkeradGjord : HusUiMeddelande()
+
+    data object UppgiftMarkeradGjordPostEjSparad : HusUiMeddelande()
 }
 
 class HusViewModel(
     private val repository: HusRepository,
     private val paminnelseInstallningar: PaminnelseInstallningarLager,
     private val appContext: Context,
+    private val proKalla: ProKalla,
     private val idag: LocalDate = LocalDate.now(),
 ) : ViewModel() {
+    val arPro: StateFlow<Boolean> = proKalla.arPro
+
+    private val _proDialogSynlig = MutableStateFlow(false)
+    val proDialogSynlig: StateFlow<Boolean> = _proDialogSynlig.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            proKalla.kontrollera()
+        }
+    }
     val uppgifter: StateFlow<List<Uppgift>> = repository.uppgifter
         .map { sorteraUppgifter(it, idag) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -192,8 +210,14 @@ class HusViewModel(
     fun markeraSomGjord(uppgiftId: Long) {
         viewModelScope.launch {
             val uppgift = repository.hamtaUppgift(uppgiftId) ?: return@launch
-            repository.markeraSomGjord(uppgift, idag)
-            _meddelanden.emit(HusUiMeddelande.UppgiftMarkeradGjord)
+            when (
+                repository.markeraSomGjord(uppgift, idag, proKalla.arPro.value)
+            ) {
+                MarkeraGjordResult.MedPost ->
+                    _meddelanden.emit(HusUiMeddelande.UppgiftMarkeradGjord)
+                MarkeraGjordResult.UtanPostGransNadd ->
+                    _meddelanden.emit(HusUiMeddelande.UppgiftMarkeradGjordPostEjSparad)
+            }
         }
     }
 
@@ -222,6 +246,24 @@ class HusViewModel(
                 HusPaminnelseKalla.UNIKT_JOBB_NAMN,
             )
         }
+    }
+
+    fun kanLaggaTillNyPost(): Boolean =
+        kanLaggaTillPost(poster.value.size, proKalla.arPro.value)
+
+    suspend fun kanLaggaTillPostNu(): Boolean =
+        kanLaggaTillPost(repository.antalPoster(), proKalla.arPro.value)
+
+    fun visaProDialog() {
+        _proDialogSynlig.value = true
+    }
+
+    fun stangProDialog() {
+        _proDialogSynlig.value = false
+    }
+
+    fun kopPro(activity: Activity) {
+        proKalla.kop(activity)
     }
 
     fun visaNyPost() {
@@ -324,9 +366,13 @@ class HusViewModel(
                 bilder = formateraBilder(nyaBilder),
                 skapad = befintlig?.skapad ?: System.currentTimeMillis(),
             )
-            repository.sparaPost(post)
-            bilderTillagdaISession = emptySet()
-            _postFormular.value = null
+            when (repository.sparaPost(post, proKalla.arPro.value)) {
+                SparaPostResult.GransNadd -> return@launch
+                is SparaPostResult.Sparad -> {
+                    bilderTillagdaISession = emptySet()
+                    _postFormular.value = null
+                }
+            }
         }
         return true
     }
@@ -427,11 +473,12 @@ class HusViewModelFactory(
     private val repository: HusRepository,
     private val paminnelseInstallningar: PaminnelseInstallningarLager,
     private val appContext: Context,
+    private val proKalla: ProKalla,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(HusViewModel::class.java)) {
-            return HusViewModel(repository, paminnelseInstallningar, appContext) as T
+            return HusViewModel(repository, paminnelseInstallningar, appContext, proKalla) as T
         }
         throw IllegalArgumentException("Okänd ViewModel: ${modelClass.name}")
     }
