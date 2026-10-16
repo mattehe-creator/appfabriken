@@ -18,6 +18,9 @@ param(
     [switch]$IngenPush
 )
 
+# Max tid för Aider (inklusive --test-cmd). Vid tidsgräns avslutas processen och skriptet kör egna tester.
+$AiderTimeoutMin = 60
+
 $ErrorActionPreference = "Stop"
 $loggMapp = Join-Path $env:LOCALAPPDATA "appfabriken\logg"
 New-Item -ItemType Directory -Force -Path $loggMapp | Out-Null
@@ -100,6 +103,85 @@ function Filer([string[]]$rader) {
     return $ut
 }
 
+function Add-AiderLogLine([string]$rad) {
+    foreach ($f in 1..3) {
+        try {
+            Add-Content -Encoding UTF8 -Path $script:aiderLogg -Value $rad -ErrorAction Stop
+            return
+        } catch {
+            Start-Sleep -Milliseconds 100
+        }
+    }
+}
+
+function VarmaGradle {
+    $gradlew = Join-Path $Repo "gradlew.bat"
+    if (-not (Test-Path $gradlew)) { Avbryt "gradlew.bat saknas i $Repo" }
+    Write-Host "Värmer upp Gradle (startar daemon om ingen lever)..." -ForegroundColor DarkGray
+    $ErrorActionPreference = "Continue"
+    & $gradlew help *> $null
+    $kod = $LASTEXITCODE
+    $status = (& $gradlew --status 2>&1 | Out-String)
+    $ErrorActionPreference = "Stop"
+    if ($kod -ne 0) { Avbryt "gradlew help gav felkod $kod" }
+    if ($status -notmatch '(?m)^\s*PID\s' -and $status -notmatch 'IDLE|BUSY') {
+        Avbryt "Ingen Gradle-daemon efter uppvärmning. gradlew --status:`n$status"
+    }
+}
+
+function KorAider([string]$aiderExe, [string[]]$argument, [int]$timeoutMin) {
+    $streamLog = Join-Path $loggMapp "aider-stream-$stampel.log"
+    $errLog = Join-Path $loggMapp "aider-err-$stampel.log"
+    "" | Set-Content -Encoding UTF8 $streamLog
+    if (Test-Path $errLog) { Remove-Item -Force $errLog }
+
+    $proc = Start-Process -FilePath $aiderExe -ArgumentList $argument -PassThru -NoNewWindow `
+        -RedirectStandardOutput $streamLog -RedirectStandardError $errLog
+    $deadline = (Get-Date).AddMinutes($timeoutMin)
+    $timedOut = $false
+    $visadeRader = 0
+
+    function Visa-NyaAiderRader {
+        param([string]$fil, [ref]$antal)
+        if (-not (Test-Path $fil)) { return }
+        $rader = @(Get-Content -LiteralPath $fil -Encoding UTF8 -ErrorAction SilentlyContinue)
+        for ($i = $antal.Value; $i -lt $rader.Count; $i++) {
+            Write-Host $rader[$i]
+            Add-AiderLogLine $rader[$i]
+        }
+        $antal.Value = $rader.Count
+    }
+
+    while (-not $proc.HasExited) {
+        if ((Get-Date) -gt $deadline) {
+            $timedOut = $true
+            $msg = "Aider avbröts efter tidsgränsen ($timeoutMin min)."
+            Write-Host $msg -ForegroundColor Yellow
+            Add-AiderLogLine $msg
+            $ErrorActionPreference = "Continue"
+            & taskkill /T /F /PID $proc.Id 2>&1 | Out-Null
+            $ErrorActionPreference = "Stop"
+            break
+        }
+        Visa-NyaAiderRader $streamLog ([ref]$visadeRader)
+        Start-Sleep -Milliseconds 400
+    }
+
+    Visa-NyaAiderRader $streamLog ([ref]$visadeRader)
+    if ((Test-Path $errLog) -and (Get-Item $errLog).Length -gt 0) {
+        Get-Content -Encoding UTF8 $errLog | ForEach-Object {
+            Write-Host $_ -ForegroundColor DarkYellow
+            Add-AiderLogLine $_
+        }
+    }
+
+    if (-not $timedOut) {
+        $proc.WaitForExit() | Out-Null
+        return $proc.ExitCode
+    }
+    return 124
+}
+
 # --- Förkontroller ---
 $aider = Join-Path $env:USERPROFILE ".local\bin\aider.exe"
 if (-not (Test-Path $aider)) { Avbryt "Aider saknas: $aider" }
@@ -124,15 +206,12 @@ if (-not (Test-Path $localProps)) {
 }
 
 # --- Utgå från senaste main ---
-# En körning som Windows stoppade mitt i (datorn användes igen) lämnar en opushad lokal/-gren
-# med halvfärdiga ändringar. Den kastas, och uppgiften körs om från början nästa gång.
+# En avbruten körning kan lämna en opushad lokal/-gren (t.ex. Aider hann committa). Grenen behålls;
+# vid nästa start av samma uppgift sparas den som rescue/ innan en ny lokal/-gren skapas.
 $aktuell = (git rev-parse --abbrev-ref HEAD).Trim()
 if ($aktuell -like "lokal/*" -and -not (git ls-remote --heads origin $aktuell)) {
-    Write-Host "Avbruten körning på $aktuell kastas." -ForegroundColor Yellow
-    KorGit @("reset", "--hard")
-    KorGit @("clean", "-fd")
+    Write-Host "Avbruten körning på $aktuell; grenen behålls lokalt (rescue vid nästa försök)." -ForegroundColor Yellow
     KorGit @("checkout", "main")
-    KorGit @("branch", "-D", $aktuell)
 }
 # Övriga ändringar (till exempel byggfiler som inte är ignorerade, eller en uppdaterad fil i verktyg/)
 # läggs undan i git stash i stället för att körningen stannar. De går att hämta med "git stash list".
@@ -197,6 +276,8 @@ $testCmd = ($testRad.Trim() -replace '^gradle\s', 'call gradlew.bat ')
 $testFil = Join-Path $loggMapp "test-$stampel.cmd"
 "@echo off`r`ncd /d `"$Repo`"`r`n$testCmd`r`n" | Set-Content -Encoding ASCII $testFil
 
+VarmaGradle
+
 # --- Gren och flytt till pagar ---
 SkapaUppgiftsgren $gren $namn
 $iPagar = "uppgifter/pagar/$($uppgift.Name)"
@@ -237,10 +318,7 @@ $env:PYTHONUTF8 = "1"
 $env:PYTHONIOENCODING = "utf-8"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
-$ErrorActionPreference = "Continue"
-& $aider @aiderArg 2>&1 | ForEach-Object { $rad = "$_"; Write-Host $rad; Add-Content -Encoding UTF8 -Path $aiderLogg -Value $rad }
-$aiderKod = $LASTEXITCODE
-$ErrorActionPreference = "Stop"
+$aiderKod = KorAider $aider $aiderArg $AiderTimeoutMin
 $minuter = [math]::Round(((Get-Date) - $start).TotalMinutes, 1)
 
 # --- Egen kontroll efteråt ---
