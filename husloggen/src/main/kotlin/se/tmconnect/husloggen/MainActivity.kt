@@ -46,6 +46,7 @@ import se.tmconnect.husloggen.ui.PostFormularSkarm
 import se.tmconnect.husloggen.ui.ProDialog
 import se.tmconnect.husloggen.ui.UppgiftFormularSkarm
 import se.tmconnect.karna.tema.AppfabrikTema
+import se.tmconnect.husloggen.export.sakerhetskopiaFilnamn
 
 class MainActivity : ComponentActivity() {
     private var skaOppnaAttGora = false
@@ -137,6 +138,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Resultatkontrakt för säkerhetskopia
+    private val createSakerhetskopiaContract = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/zip")
+    ) { uri: Uri? ->
+        if (uri != null) {
+            viewModel.sparaSakerhetskopia(uri)
+        }
+    }
+
     private var behorighetNekad by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -166,11 +176,13 @@ class MainActivity : ComponentActivity() {
                 val paminnelserPa by viewModel.paminnelserPa.collectAsState()
                 val arPro by viewModel.arPro.collectAsState()
                 val proDialogSynlig by viewModel.proDialogSynlig.collectAsState()
-                val snackbarHostState = remember { SnackbarHostState() }
                 val autoBackup by viewModel.autoBackup.collectAsState()
                 val markeradGjordText = stringResource(R.string.uppgift_markerad_gjord)
                 val uppgiftGjordPostEjSparadText = stringResource(R.string.uppgift_gjord_post_ej_sparad)
+                val sakerhetskopiaSparadText = stringResource(R.string.sakerhetskopia_sparad)
+                val sakerhetskopiaKundeInteLasasText = stringResource(R.string.sakerhetskopia_kunde_inte_lasas)
                 val idag = LocalDate.now()
+                val snackbarHostState = remember { SnackbarHostState() }
 
                 LaunchedEffect(viewModel) {
                     viewModel.meddelanden.collect { meddelande ->
@@ -180,6 +192,12 @@ class MainActivity : ComponentActivity() {
                             }
                             HusUiMeddelande.UppgiftMarkeradGjordPostEjSparad -> {
                                 snackbarHostState.showSnackbar(uppgiftGjordPostEjSparadText)
+                            }
+                            HusUiMeddelande.SakerhetskopiaSparad -> {
+                                snackbarHostState.showSnackbar(sakerhetskopiaSparadText)
+                            }
+                            HusUiMeddelande.SakerhetskopiaKundeInteLasas -> {
+                                snackbarHostState.showSnackbar(sakerhetskopiaKundeInteLasasText)
                             }
                         }
                     }
@@ -281,7 +299,11 @@ class MainActivity : ComponentActivity() {
                                 onByttAutoBackupMapp = { valjMappContract.launch(null) },
                                 onAutoBackupIntervall = viewModel::sattAutoBackupIntervall,
                                 onKorNuAutoBackup = viewModel::korNuAutoBackup,
-                                onSparaSakerhetskopia = {},
+                                onSparaSakerhetskopia = {
+                                    createSakerhetskopiaContract.launch(
+                                        sakerhetskopiaFilnamn(LocalDate.now()),
+                                    )
+                                },
                                 onHamtaSakerhetskopia = {},
                             )
                         }

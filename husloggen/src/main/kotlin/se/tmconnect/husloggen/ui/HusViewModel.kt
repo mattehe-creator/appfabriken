@@ -25,6 +25,7 @@ import se.tmconnect.husloggen.data.HusRepository
 import se.tmconnect.husloggen.data.InstallningarLager
 import se.tmconnect.husloggen.data.MarkeraGjordResult
 import se.tmconnect.husloggen.data.SparaPostResult
+import se.tmconnect.husloggen.export.Sakerhetskopia
 import se.tmconnect.husloggen.export.SakerhetskopiaPlanerare
 import se.tmconnect.husloggen.regler.kanLaggaTillPost
 import se.tmconnect.karna.pro.ProKalla
@@ -44,6 +45,7 @@ import se.tmconnect.husloggen.paminnelse.HusPaminnelseKalla
 import se.tmconnect.husloggen.paminnelse.PaminnelseWorker
 import se.tmconnect.karna.paminnelse.PaminnelseInstallningarLager
 import se.tmconnect.karna.paminnelse.PaminnelsePlanerare
+import se.tmconnect.husloggen.data.skapaHusBildLager
 
 data class UppgiftFormularTillstand(
     val redigerarId: Long = 0L,
@@ -72,6 +74,10 @@ sealed class HusUiMeddelande {
     data object UppgiftMarkeradGjord : HusUiMeddelande()
 
     data object UppgiftMarkeradGjordPostEjSparad : HusUiMeddelande()
+    
+    data object SakerhetskopiaSparad : HusUiMeddelande()
+    
+    data object SakerhetskopiaKundeInteLasas : HusUiMeddelande()
 }
 
 class HusViewModel(
@@ -523,6 +529,29 @@ class HusViewModel(
             (nu - skaBehalla).forEach { repository.taBortBildfil(it) }
         }
         bilderTillagdaISession = emptySet()
+    }
+    
+    /**
+     * Sparar säkerhetskopia till angiven URI
+     */
+    fun sparaSakerhetskopia(uri: Uri) {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    val uppgifter = repository.allaUppgifter()
+                    val poster = repository.allaPoster()
+                    val bildLager = skapaHusBildLager(appContext)
+                    val outputStream = appContext.contentResolver.openOutputStream(uri)
+                        ?: throw java.io.IOException()
+                    outputStream.use {
+                        Sakerhetskopia.skriv(it, uppgifter, poster, bildLager)
+                    }
+                }
+                _meddelanden.emit(HusUiMeddelande.SakerhetskopiaSparad)
+            } catch (_: Exception) {
+                _meddelanden.emit(HusUiMeddelande.SakerhetskopiaKundeInteLasas)
+            }
+        }
     }
 }
 
