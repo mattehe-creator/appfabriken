@@ -6,14 +6,18 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.map
 import se.tmconnect.husloggen.data.HusRepository
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.Uppgift
+import se.tmconnect.husloggen.regler.sorteraUppgifter
+import java.time.LocalDate
 
 class HusViewModel(
     repository: HusRepository,
 ) : ViewModel() {
     val uppgifter: StateFlow<List<Uppgift>> = repository.uppgifter
+        .map { sorteraUppgifter(it, LocalDate.now()) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val poster: StateFlow<List<Post>> = repository.poster
