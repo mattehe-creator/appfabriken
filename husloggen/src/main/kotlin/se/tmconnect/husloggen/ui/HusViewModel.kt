@@ -1,5 +1,6 @@
 package se.tmconnect.husloggen.ui
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -29,6 +30,11 @@ import se.tmconnect.husloggen.regler.sorteraUppgifter
 import se.tmconnect.husloggen.regler.tolkaBeloppTillOre
 import se.tmconnect.husloggen.regler.valideraPost
 import se.tmconnect.husloggen.regler.valideraUppgift
+import se.tmconnect.husloggen.paminnelse.HusPaminnelseKalla
+import se.tmconnect.husloggen.paminnelse.PaminnelseWorker
+import se.tmconnect.karna.paminnelse.PaminnelseInstallningarLager
+import se.tmconnect.karna.paminnelse.PaminnelsePlanerare
+import kotlinx.coroutines.flow.first
 
 data class UppgiftFormularTillstand(
     val redigerarId: Long = 0L,
@@ -59,6 +65,8 @@ sealed class HusUiMeddelande {
 
 class HusViewModel(
     private val repository: HusRepository,
+    private val paminnelseInstallningar: PaminnelseInstallningarLager,
+    private val appContext: Context,
     private val idag: LocalDate = LocalDate.now(),
 ) : ViewModel() {
     val uppgifter: StateFlow<List<Uppgift>> = repository.uppgifter
@@ -67,6 +75,10 @@ class HusViewModel(
 
     val poster: StateFlow<List<Post>> = repository.poster
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /** Om globala dagliga påminnelser för uppgifter är på. */
+    val paminnelserPa: StateFlow<Boolean> = paminnelseInstallningar.paminnelserPa
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     private val _formular = MutableStateFlow<UppgiftFormularTillstand?>(null)
     val formular: StateFlow<UppgiftFormularTillstand?> = _formular.asStateFlow()
@@ -182,6 +194,33 @@ class HusViewModel(
             val uppgift = repository.hamtaUppgift(uppgiftId) ?: return@launch
             repository.markeraSomGjord(uppgift, idag)
             _meddelanden.emit(HusUiMeddelande.UppgiftMarkeradGjord)
+        }
+    }
+
+    /**
+     * Slår på eller av dagliga påminnelser och synkar WorkManager-jobbet.
+     * Notisbehörighet ska vara hanterad i UI innan [pa] sätts till true.
+     */
+    fun sattPaminnelser(pa: Boolean) {
+        viewModelScope.launch {
+            paminnelseInstallningar.sattPaminnelserPa(pa)
+            PaminnelsePlanerare.synka<PaminnelseWorker>(
+                appContext,
+                pa,
+                HusPaminnelseKalla.UNIKT_JOBB_NAMN,
+            )
+        }
+    }
+
+    /** Schemalägger påminnelsejobb vid appstart om inställningen är på. */
+    fun synkaPaminnelseJobb() {
+        viewModelScope.launch {
+            val pa = paminnelseInstallningar.paminnelserPa.first()
+            PaminnelsePlanerare.synka<PaminnelseWorker>(
+                appContext,
+                pa,
+                HusPaminnelseKalla.UNIKT_JOBB_NAMN,
+            )
         }
     }
 
@@ -386,11 +425,13 @@ class HusViewModel(
 
 class HusViewModelFactory(
     private val repository: HusRepository,
+    private val paminnelseInstallningar: PaminnelseInstallningarLager,
+    private val appContext: Context,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(HusViewModel::class.java)) {
-            return HusViewModel(repository) as T
+            return HusViewModel(repository, paminnelseInstallningar, appContext) as T
         }
         throw IllegalArgumentException("Okänd ViewModel: ${modelClass.name}")
     }

@@ -33,6 +33,8 @@ import se.tmconnect.husloggen.data.HusRepository
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.PostTyp
 import se.tmconnect.husloggen.data.skapaHusBildLager
+import se.tmconnect.husloggen.paminnelse.HusPaminnelseKalla
+import se.tmconnect.karna.paminnelse.PaminnelseInstallningarLager
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -54,7 +56,11 @@ class HusViewModelBilderTest {
                 .allowMainThreadQueries()
                 .build()
         repository = HusRepository(databas.husDao(), skapaHusBildLager(context))
-        viewModel = HusViewModel(repository, idag)
+        val paminnelseInstallningar = PaminnelseInstallningarLager(
+            context,
+            HusPaminnelseKalla.DATASTORE_NAMN + "_test_bilder",
+        )
+        viewModel = HusViewModel(repository, paminnelseInstallningar, context, idag)
     }
 
     @After

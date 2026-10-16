@@ -81,4 +81,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     testImplementation("androidx.room:room-testing:$roomVersion")
     testImplementation("androidx.compose.ui:ui-test-junit4")
+    testImplementation("androidx.work:work-testing:2.10.1")
+
+    implementation("androidx.work:work-runtime-ktx:2.10.1")
 }
