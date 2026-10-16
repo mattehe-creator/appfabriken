@@ -98,9 +98,7 @@ class MainActivity : ComponentActivity() {
                                 onUppgiftAndras = viewModel::uppdateraPostUppgift,
                                 onAnteckningAndras = viewModel::uppdateraPostAnteckning,
                                 onBildValj = {
-                                    pickImageContract.launch(
-                                        ActivityResultContracts.PickVisualMedia.ImageOnly
-                                    )
+                                    pickImageContract.launch(null)
                                 },
                                 onTaFoto = {
                                     takePictureContract.launch(viewModel.skapaKameraFotoUri())
