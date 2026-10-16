@@ -32,3 +32,5 @@ gradle :husloggen:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra repository eller lagret.
 - Lägga till beroenden.
 - Nya manifestbehörigheter (FileProvider finns redan).
+
+utfall: underkänd 2026-10-16 av Cursor (PR #190). Ersatt av 2026-10-16-22-bild-detalj-helskarm-f2.md
