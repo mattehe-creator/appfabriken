@@ -17,6 +17,8 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -27,6 +29,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,6 +69,7 @@ fun HusStartSkarm(
     onPaminnelserAndras: (Boolean) -> Unit = {},
     behorighetNekad: Boolean = false,
     arPro: Boolean = false,
+    onVisaProDialog: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var valdFlik by rememberSaveable { mutableIntStateOf(HusFlik.ATT_GORA.ordinal) }
@@ -155,6 +159,8 @@ fun HusStartSkarm(
                 contentPadding = innerPadding,
                 onNyPost = onNyPost,
                 onOppnaPost = onOppnaPost,
+                arPro = arPro,
+                onVisaProDialog = onVisaProDialog,
             )
         }
     }
@@ -260,6 +266,8 @@ private fun LoggFlik(
     contentPadding: PaddingValues,
     onNyPost: () -> Unit,
     onOppnaPost: (Long) -> Unit,
+    arPro: Boolean = false,
+    onVisaProDialog: () -> Unit = {},
 ) {
     if (poster.isEmpty()) {
         TomFlikText(
@@ -268,6 +276,32 @@ private fun LoggFlik(
             onNyPost = onNyPost,
         )
         return
+    }
+
+    // Visa Pro-rad om det behövs
+    if (!arPro) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(contentPadding)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.pro_du_har),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                TextButton(
+                    onClick = onVisaProDialog,
+                    modifier = Modifier.heightIn(min = 48.dp)
+                ) {
+                    Text(text = stringResource(R.string.pro_las_upp))
+                }
+            }
+        }
     }
 
     val grupperadePoster = grupperaPerAr(poster)

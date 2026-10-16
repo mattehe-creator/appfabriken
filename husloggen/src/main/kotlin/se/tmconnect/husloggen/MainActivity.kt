@@ -315,6 +315,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 behorighetNekad = behorighetNekad,
                                 arPro = arPro,
+                                onVisaProDialog = viewModel::visaProDialog,
                             )
                         }
                     }
