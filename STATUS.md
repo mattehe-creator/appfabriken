@@ -23,10 +23,10 @@ Funktionsfryst 2026-10-16 (BESLUTSLOGG.md). Inget nytt byggs förrän appen är 
 
 Val och omfång i IDEURVAL.md (omprövning 2026-10-16), regler i `husloggen/APP.md`. Ett uppdrag i taget; nästa skrivs när förra uppdragets del A är mergad.
 
-1. `2026-10-16-husloggen-grund`: modul, databas version 1, flikarna Att göra och Logg. Skickat 2026-10-16.
-2. Uppgifter: formulär, intervall och nästa datum, färdiga förslag, markera som gjord med ett tryck (skapar en post).
-3. Loggen: formulär för utfört arbete och utgifter, lista per år, detaljvy, ändra och ta bort.
-4. Kvittofoto, bilder och avläsning. Cursor lyfter bildlagring och avläsning till `:karna`.
+1. `2026-10-16-husloggen-grund`: modul, databas version 1, flikarna Att göra och Logg. Klart 2026-10-16.
+2. Uppgifter: formulär, intervall och nästa datum, färdiga förslag, markera som gjord med ett tryck (skapar en post). Klart 2026-10-16.
+3. Loggen: formulär för utfört arbete och utgifter, lista per år, detaljvy, ändra och ta bort. Klart 2026-10-16.
+4. Kvittofoto och bilder på poster (flera bilder, `BildLager` i `:karna`). `2026-10-16-husloggen-bilder`, skickat 2026-10-16. Avläsning (OCR) är inte med; tas i eget uppdrag om den behövs.
 5. Påminnelser före nästa datum. Cursor lyfter påminnelsemönstret till `:karna`.
 6. Gratisgräns (15 poster) och Pro.
 7. Sammanställning per år och typ, underlag för förbättringsutgifter vid försäljning, PDF "Husets historik" och CSV. Kontrollera reglerna hos Skatteverket och i inkomstskattelagen innan uppdraget skrivs.
