@@ -17,8 +17,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -260,6 +258,32 @@ private fun AttGoraPaminnelseReglage(
 }
 
 @Composable
+private fun LoggProRad(
+    arPro: Boolean,
+    onVisaProDialog: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (arPro) {
+        Text(
+            text = stringResource(R.string.pro_du_har),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+        )
+    } else {
+        TextButton(
+            onClick = onVisaProDialog,
+            modifier = modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp),
+        ) {
+            Text(text = stringResource(R.string.pro_las_upp))
+        }
+    }
+}
+
+@Composable
 private fun LoggFlik(
     poster: List<Post>,
     locale: Locale,
@@ -270,38 +294,24 @@ private fun LoggFlik(
     onVisaProDialog: () -> Unit = {},
 ) {
     if (poster.isEmpty()) {
-        TomFlikText(
-            text = stringResource(R.string.tom_logg),
-            contentPadding = contentPadding,
-            onNyPost = onNyPost,
-        )
-        return
-    }
-
-    // Visa Pro-rad om det behövs
-    if (!arPro) {
-        Card(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(contentPadding)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .fillMaxSize()
+                .padding(contentPadding),
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.pro_du_har),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                TextButton(
-                    onClick = onVisaProDialog,
-                    modifier = Modifier.heightIn(min = 48.dp)
-                ) {
-                    Text(text = stringResource(R.string.pro_las_upp))
-                }
-            }
+            LoggProRad(
+                arPro = arPro,
+                onVisaProDialog = onVisaProDialog,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            )
+            TomFlikText(
+                text = stringResource(R.string.tom_logg),
+                contentPadding = PaddingValues(0.dp),
+                onNyPost = onNyPost,
+                modifier = Modifier.weight(1f),
+            )
         }
+        return
     }
 
     val grupperadePoster = grupperaPerAr(poster)
@@ -312,6 +322,12 @@ private fun LoggFlik(
             .padding(contentPadding),
         contentPadding = PaddingValues(16.dp),
     ) {
+        item(key = "pro-rad") {
+            LoggProRad(
+                arPro = arPro,
+                onVisaProDialog = onVisaProDialog,
+            )
+        }
         grupperadePoster.forEach { arGrupp ->
             item {
                 val harBelopp = arGrupp.poster.any { it.beloppOre != null }
