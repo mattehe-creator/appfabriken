@@ -29,3 +29,5 @@ gradle :husloggen:testDebugUnitTest --tests "*BildTolkningTest"
 - Ändra andra filer än testfilen.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-16 (inget)
