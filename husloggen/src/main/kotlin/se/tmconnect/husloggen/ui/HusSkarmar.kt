@@ -27,6 +27,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,6 +67,7 @@ fun HusStartSkarm(
     onPaminnelserAndras: (Boolean) -> Unit = {},
     behorighetNekad: Boolean = false,
     arPro: Boolean = false,
+    onVisaProDialog: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var valdFlik by rememberSaveable { mutableIntStateOf(HusFlik.ATT_GORA.ordinal) }
@@ -155,6 +157,8 @@ fun HusStartSkarm(
                 contentPadding = innerPadding,
                 onNyPost = onNyPost,
                 onOppnaPost = onOppnaPost,
+                arPro = arPro,
+                onVisaProDialog = onVisaProDialog,
             )
         }
     }
@@ -254,19 +258,59 @@ private fun AttGoraPaminnelseReglage(
 }
 
 @Composable
+private fun LoggProRad(
+    arPro: Boolean,
+    onVisaProDialog: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (arPro) {
+        Text(
+            text = stringResource(R.string.pro_du_har),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+        )
+    } else {
+        TextButton(
+            onClick = onVisaProDialog,
+            modifier = modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp),
+        ) {
+            Text(text = stringResource(R.string.pro_las_upp))
+        }
+    }
+}
+
+@Composable
 private fun LoggFlik(
     poster: List<Post>,
     locale: Locale,
     contentPadding: PaddingValues,
     onNyPost: () -> Unit,
     onOppnaPost: (Long) -> Unit,
+    arPro: Boolean = false,
+    onVisaProDialog: () -> Unit = {},
 ) {
     if (poster.isEmpty()) {
-        TomFlikText(
-            text = stringResource(R.string.tom_logg),
-            contentPadding = contentPadding,
-            onNyPost = onNyPost,
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(contentPadding),
+        ) {
+            LoggProRad(
+                arPro = arPro,
+                onVisaProDialog = onVisaProDialog,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            )
+            TomFlikText(
+                text = stringResource(R.string.tom_logg),
+                contentPadding = PaddingValues(0.dp),
+                onNyPost = onNyPost,
+                modifier = Modifier.weight(1f),
+            )
+        }
         return
     }
 
@@ -278,6 +322,12 @@ private fun LoggFlik(
             .padding(contentPadding),
         contentPadding = PaddingValues(16.dp),
     ) {
+        item(key = "pro-rad") {
+            LoggProRad(
+                arPro = arPro,
+                onVisaProDialog = onVisaProDialog,
+            )
+        }
         grupperadePoster.forEach { arGrupp ->
             item {
                 val harBelopp = arGrupp.poster.any { it.beloppOre != null }
