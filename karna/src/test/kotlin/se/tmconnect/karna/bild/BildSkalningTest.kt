@@ -1,7 +1,7 @@
 package se.tmconnect.karna.bild
 
+import org.junit.Assert.assertEquals
 import org.junit.Test
-import kotlin.test.assertEquals
 
 class BildSkalningTest {
 
