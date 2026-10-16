@@ -6,16 +6,21 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -23,6 +28,8 @@ import java.time.LocalDate
 import se.tmconnect.husloggen.R
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.Uppgift
+import se.tmconnect.husloggen.regler.IntervallEnhet
+import se.tmconnect.husloggen.regler.intervallEtikett
 import se.tmconnect.husloggen.regler.nastaDatum
 import se.tmconnect.husloggen.regler.UppgiftStatus
 import se.tmconnect.husloggen.regler.uppgiftStatus
@@ -42,15 +49,20 @@ private fun appfabrikStatusFran(status: UppgiftStatus): AppfabrikStatus =
 fun UppgiftListRad(
     uppgift: Uppgift,
     onClick: () -> Unit,
+    onMarkeraGjord: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val locale = LocalConfiguration.current.locales[0]
     val idag = LocalDate.now()
     val nasta = nastaDatum(uppgift.senastGjord, uppgift.startDatum, uppgift.intervallManader)
     val status = uppgiftStatus(nasta, idag)
-    
     val chipFarger = statusChipFarger(appfabrikStatusFran(status))
-    
+    val (enhet, antal) = intervallEtikett(uppgift.intervallManader)
+    val intervallText = when (enhet) {
+        IntervallEnhet.AR -> pluralStringResource(R.plurals.intervall_ar, antal, antal)
+        IntervallEnhet.MANAD -> pluralStringResource(R.plurals.intervall_manader, antal, antal)
+    }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -69,7 +81,7 @@ fun UppgiftListRad(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 12.dp),
+                    .padding(end = 8.dp),
             ) {
                 Text(
                     text = uppgift.namn,
@@ -81,8 +93,24 @@ fun UppgiftListRad(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 2.dp),
                 )
+                Text(
+                    text = intervallText,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 2.dp),
+                )
             }
-            
+
+            IconButton(
+                onClick = onMarkeraGjord,
+                modifier = Modifier.tryckyta48(),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Check,
+                    contentDescription = stringResource(R.string.markera_gjord),
+                )
+            }
+
             AssistChip(
                 onClick = onClick,
                 label = {
@@ -123,7 +151,7 @@ fun PostListRad(
             append(belopp)
         }
     }
-    
+
     Text(
         text = radText,
         style = MaterialTheme.typography.bodyLarge,
