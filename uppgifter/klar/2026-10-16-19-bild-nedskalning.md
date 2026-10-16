@@ -30,3 +30,5 @@ gradle :karna:testDebugUnitTest --tests "*BildSkalningTest"
 - Ändra andra filer än testfilen.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-16 (bytte kotlin.test till org.junit.Assert.assertEquals)
