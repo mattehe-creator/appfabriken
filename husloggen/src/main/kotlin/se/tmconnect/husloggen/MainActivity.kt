@@ -42,6 +42,7 @@ import se.tmconnect.husloggen.ui.HusViewModelFactory
 import se.tmconnect.husloggen.ui.InstallningarSkarm
 import se.tmconnect.husloggen.ui.PostDetaljSkarm
 import se.tmconnect.husloggen.ui.PostFormularSkarm
+import se.tmconnect.husloggen.ui.ProDialog
 import se.tmconnect.husloggen.ui.UppgiftFormularSkarm
 import se.tmconnect.karna.tema.AppfabrikTema
 
@@ -127,6 +128,7 @@ class MainActivity : ComponentActivity() {
                 val postFormular by viewModel.postFormular.collectAsState()
                 val postDetaljId by viewModel.postDetaljId.collectAsState()
                 val paminnelserPa by viewModel.paminnelserPa.collectAsState()
+                val proDialogSynlig by viewModel.proDialogSynlig.collectAsState()
                 val snackbarHostState = remember { SnackbarHostState() }
                 val markeradGjordText = stringResource(R.string.uppgift_markerad_gjord)
                 val idag = LocalDate.now()
@@ -261,6 +263,13 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     }
+                }
+
+                if (proDialogSynlig) {
+                    ProDialog(
+                        onDismiss = viewModel::stangProDialog,
+                        onKopPro = viewModel::kopPro,
+                    )
                 }
             }
         }
