@@ -47,6 +47,9 @@ function Kor([string]$fil, [string[]]$argument) {
 }
 
 function KorGit([string[]]$argument) {
+    # PowerShell 5.1 gör varje rad som git skriver på stderr (till exempel "Already on 'main'")
+    # till ett avslutande fel när $ErrorActionPreference är Stop. Här räknas bara felkoden.
+    $ErrorActionPreference = "Continue"
     $ut = & git @argument 2>&1
     $kod = $LASTEXITCODE
     if ($ut) { $ut | ForEach-Object { Write-Host $_ } }
@@ -54,6 +57,7 @@ function KorGit([string[]]$argument) {
 }
 
 function SkapaUppgiftsgren([string]$gren, [string]$uppgiftsNamn) {
+    $ErrorActionPreference = "Continue"   # se KorGit: git skriver vanliga meddelanden på stderr
     $script:namn = $uppgiftsNamn
     git show-ref --verify --quiet "refs/heads/$gren" 2>&1 | Out-Null
     if ($LASTEXITCODE -eq 0) {
