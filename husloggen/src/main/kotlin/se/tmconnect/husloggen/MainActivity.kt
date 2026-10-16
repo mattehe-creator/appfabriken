@@ -244,8 +244,7 @@ class MainActivity : ComponentActivity() {
                                 onInstallningar = { visaInstallningar = true },
                                 onNyUppgift = viewModel::visaNyUppgift,
                                 onNyPost = {
-                                    // Kontrollera om användaren kan lägga till ny post
-                                    if (arPro || poster.size < 15) {
+                                    if (viewModel.kanLaggaTillNyPost()) {
                                         viewModel.visaNyPost()
                                     } else {
                                         viewModel.visaProDialog()

@@ -124,16 +124,7 @@ fun HusStartSkarm(
                 }
                 HusFlik.LOGG -> {
                     ExtendedFloatingActionButton(
-                        onClick = {
-                            // Kontrollera om användaren kan lägga till ny post
-                            if (arPro || poster.size < 15) {
-                                onNyPost()
-                            } else {
-                                // Visa Pro-dialog istället för formulär
-                                // Denna logik hanteras i MainActivity genom att skicka arPro
-                                // och använda en callback som skickas till MainActivity
-                            }
-                        },
+                        onClick = onNyPost,
                         icon = {
                             Icon(
                                 imageVector = Icons.Filled.Add,
@@ -164,7 +155,6 @@ fun HusStartSkarm(
                 contentPadding = innerPadding,
                 onNyPost = onNyPost,
                 onOppnaPost = onOppnaPost,
-                arPro = arPro,
             )
         }
     }
@@ -270,7 +260,6 @@ private fun LoggFlik(
     contentPadding: PaddingValues,
     onNyPost: () -> Unit,
     onOppnaPost: (Long) -> Unit,
-    arPro: Boolean = false,
 ) {
     if (poster.isEmpty()) {
         TomFlikText(
