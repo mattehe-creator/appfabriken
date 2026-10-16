@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import java.time.LocalDate
 import se.tmconnect.husloggen.data.HusDatabas
 import se.tmconnect.husloggen.data.HusRepository
+import se.tmconnect.husloggen.data.skapaHusBildLager
 import se.tmconnect.husloggen.ui.HusStartSkarm
 import se.tmconnect.husloggen.ui.HusUiMeddelande
 import se.tmconnect.husloggen.ui.HusViewModel
@@ -34,7 +35,8 @@ import se.tmconnect.karna.tema.AppfabrikTema
 class MainActivity : ComponentActivity() {
     private val viewModel: HusViewModel by viewModels {
         val databas = HusDatabas.hamta(applicationContext)
-        HusViewModelFactory(HusRepository(databas.husDao()))
+        val bildLager = skapaHusBildLager(applicationContext)
+        HusViewModelFactory(HusRepository(databas.husDao(), bildLager))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
