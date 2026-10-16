@@ -30,6 +30,7 @@ import se.tmconnect.husloggen.ProKonfig
 import se.tmconnect.husloggen.data.HusDatabas
 import se.tmconnect.husloggen.pro.ProKallaSkapare
 import se.tmconnect.husloggen.data.HusRepository
+import se.tmconnect.husloggen.data.InstallningarLager
 import se.tmconnect.husloggen.data.skapaHusBildLager
 import se.tmconnect.husloggen.paminnelse.HusPaminnelseKalla
 import se.tmconnect.husloggen.paminnelse.PaminnelseWorker
@@ -57,6 +58,10 @@ class MainActivity : ComponentActivity() {
         )
     }
 
+    private val installningarLager: InstallningarLager by lazy {
+        InstallningarLager(applicationContext)
+    }
+
     private val viewModel: HusViewModel by viewModels {
         val databas = HusDatabas.hamta(applicationContext)
         val bildLager = skapaHusBildLager(applicationContext)
@@ -65,21 +70,52 @@ class MainActivity : ComponentActivity() {
             HusPaminnelseKalla.DATASTORE_NAMN,
         )
         HusViewModelFactory(
-            HusRepository(databas.husDao(), bildLager),
+            HusRepository(databas, databas.husDao(), bildLager),
             paminnelseInstallningar,
+            installningarLager,
             applicationContext,
             proKalla,
         )
     }
 
-    // Resultatkontrakt för bildval
+    private val valjMappContract = registerForActivityResult(
+        ActivityResultContracts.OpenDocumentTree(),
+    ) { uri: Uri? ->
+        if (uri != null) {
+            try {
+                contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+                )
+            } catch (_: Exception) {
+            }
+            viewModel.valtAutoBackupMapp(uri, mappNamn(uri))
+        }
+    }
+
+    private fun mappNamn(trad: Uri): String? =
+        try {
+            val dokument = android.provider.DocumentsContract.buildDocumentUriUsingTree(
+                trad,
+                android.provider.DocumentsContract.getTreeDocumentId(trad),
+            )
+            contentResolver.query(
+                dokument,
+                arrayOf(android.provider.DocumentsContract.Document.COLUMN_DISPLAY_NAME),
+                null,
+                null,
+                null,
+            )?.use { markor -> if (markor.moveToFirst()) markor.getString(0) else null }
+        } catch (_: Exception) {
+            null
+        }
+
     private val pickImageContract = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia(),
     ) { uri ->
         uri?.let { viewModel.laggTillBildUri(it) }
     }
 
-    // Resultatkontrakt för kamera
     private var kameraUri: Uri? = null
     private val takePictureContract = registerForActivityResult(
         ActivityResultContracts.TakePicture(),
@@ -90,7 +126,6 @@ class MainActivity : ComponentActivity() {
         kameraUri = null
     }
 
-    // Resultatkontrakt för notisbehörighet
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -108,6 +143,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         hanteraPaminnelseIntent(intent)
         viewModel.synkaPaminnelseJobb()
+        viewModel.synkaAutoBackupJobb()
         enableEdgeToEdge()
         setContent {
             AppfabrikTema(morkt = isSystemInDarkTheme()) {
@@ -130,6 +166,7 @@ class MainActivity : ComponentActivity() {
                 val paminnelserPa by viewModel.paminnelserPa.collectAsState()
                 val proDialogSynlig by viewModel.proDialogSynlig.collectAsState()
                 val snackbarHostState = remember { SnackbarHostState() }
+                val autoBackup by viewModel.autoBackup.collectAsState()
                 val markeradGjordText = stringResource(R.string.uppgift_markerad_gjord)
                 val uppgiftGjordPostEjSparadText = stringResource(R.string.uppgift_gjord_post_ej_sparad)
                 val idag = LocalDate.now()
@@ -234,7 +271,16 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         visaInstallningar -> {
-                            InstallningarSkarm(onTillbaka = { visaInstallningar = false })
+                            InstallningarSkarm(
+                                onTillbaka = { visaInstallningar = false },
+                                autoBackup = autoBackup,
+                                onAutoBackupPa = { pa ->
+                                    if (pa) valjMappContract.launch(null) else viewModel.stangAvAutoBackup()
+                                },
+                                onByttAutoBackupMapp = { valjMappContract.launch(null) },
+                                onAutoBackupIntervall = viewModel::sattAutoBackupIntervall,
+                                onKorNuAutoBackup = viewModel::korNuAutoBackup,
+                            )
                         }
                         else -> {
                             HusStartSkarm(

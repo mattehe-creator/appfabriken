@@ -30,6 +30,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLooper
 import se.tmconnect.husloggen.data.HusDatabas
 import se.tmconnect.husloggen.data.HusRepository
+import se.tmconnect.husloggen.data.InstallningarLager
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.PostTyp
 import se.tmconnect.husloggen.data.SparaPostResult
@@ -57,12 +58,19 @@ class HusViewModelBilderTest {
             Room.inMemoryDatabaseBuilder(context, HusDatabas::class.java)
                 .allowMainThreadQueries()
                 .build()
-        repository = HusRepository(databas.husDao(), skapaHusBildLager(context))
+        repository = HusRepository(databas, databas.husDao(), skapaHusBildLager(context))
         val paminnelseInstallningar = PaminnelseInstallningarLager(
             context,
             HusPaminnelseKalla.DATASTORE_NAMN + "_test_bilder",
         )
-        viewModel = HusViewModel(repository, paminnelseInstallningar, context, FakeProKalla(), idag)
+        viewModel = HusViewModel(
+            repository,
+            paminnelseInstallningar,
+            InstallningarLager(context),
+            context,
+            FakeProKalla(),
+            idag,
+        )
     }
 
     @After

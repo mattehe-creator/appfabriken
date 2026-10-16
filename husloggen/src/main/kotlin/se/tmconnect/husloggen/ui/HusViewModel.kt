@@ -15,15 +15,20 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import se.tmconnect.husloggen.data.HusRepository
+import se.tmconnect.husloggen.data.InstallningarLager
 import se.tmconnect.husloggen.data.MarkeraGjordResult
 import se.tmconnect.husloggen.data.SparaPostResult
+import se.tmconnect.husloggen.export.SakerhetskopiaPlanerare
 import se.tmconnect.husloggen.regler.kanLaggaTillPost
 import se.tmconnect.karna.pro.ProKalla
+import se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand
 import se.tmconnect.husloggen.regler.formateraBilder
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.PostTyp
@@ -39,7 +44,6 @@ import se.tmconnect.husloggen.paminnelse.HusPaminnelseKalla
 import se.tmconnect.husloggen.paminnelse.PaminnelseWorker
 import se.tmconnect.karna.paminnelse.PaminnelseInstallningarLager
 import se.tmconnect.karna.paminnelse.PaminnelsePlanerare
-import kotlinx.coroutines.flow.first
 
 data class UppgiftFormularTillstand(
     val redigerarId: Long = 0L,
@@ -73,6 +77,7 @@ sealed class HusUiMeddelande {
 class HusViewModel(
     private val repository: HusRepository,
     private val paminnelseInstallningar: PaminnelseInstallningarLager,
+    private val installningarLager: InstallningarLager,
     private val appContext: Context,
     private val proKalla: ProKalla,
     private val idag: LocalDate = LocalDate.now(),
@@ -97,6 +102,23 @@ class HusViewModel(
     /** Om globala dagliga påminnelser för uppgifter är på. */
     val paminnelserPa: StateFlow<Boolean> = paminnelseInstallningar.paminnelserPa
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    val autoBackup: StateFlow<AutoBackupTillstand> =
+        combine(
+            installningarLager.autoBackupMapp,
+            installningarLager.autoBackupMappNamn,
+            installningarLager.autoBackupIntervallDagar,
+            installningarLager.autoBackupSenaste,
+            installningarLager.autoBackupFel,
+        ) { mapp, namn, intervall, senaste, fel ->
+            AutoBackupTillstand(
+                pa = mapp != null,
+                mappNamn = namn,
+                intervallDagar = intervall,
+                senaste = senaste,
+                fel = fel,
+            )
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AutoBackupTillstand())
 
     private val _formular = MutableStateFlow<UppgiftFormularTillstand?>(null)
     val formular: StateFlow<UppgiftFormularTillstand?> = _formular.asStateFlow()
@@ -457,6 +479,41 @@ class HusViewModel(
         bilderTillagdaISession = emptySet()
     }
 
+    fun valtAutoBackupMapp(uri: Uri, namn: String?) {
+        viewModelScope.launch {
+            val tidigare = installningarLager.autoBackupMapp.first()
+            installningarLager.sattAutoBackupMapp(uri.toString(), namn)
+            if (tidigare == null) {
+                SakerhetskopiaPlanerare.korNu(appContext)
+            }
+            synkaAutoBackupJobb()
+        }
+    }
+
+    fun stangAvAutoBackup() {
+        viewModelScope.launch {
+            installningarLager.sattAutoBackupMapp(null, null)
+            synkaAutoBackupJobb()
+        }
+    }
+
+    fun sattAutoBackupIntervall(dagar: Int) {
+        viewModelScope.launch { installningarLager.sattAutoBackupIntervall(dagar) }
+    }
+
+    fun korNuAutoBackup() {
+        SakerhetskopiaPlanerare.korNu(appContext)
+    }
+
+    fun synkaAutoBackupJobb() {
+        viewModelScope.launch {
+            SakerhetskopiaPlanerare.synka(
+                appContext,
+                installningarLager.autoBackupMapp.first() != null,
+            )
+        }
+    }
+
     private fun rensaOsparadeBilder() {
         val tillstand = _postFormular.value ?: return
         // Endast radera bilder i nyskapa-läge (redigerarId == 0)
@@ -472,13 +529,20 @@ class HusViewModel(
 class HusViewModelFactory(
     private val repository: HusRepository,
     private val paminnelseInstallningar: PaminnelseInstallningarLager,
+    private val installningarLager: InstallningarLager,
     private val appContext: Context,
     private val proKalla: ProKalla,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(HusViewModel::class.java)) {
-            return HusViewModel(repository, paminnelseInstallningar, appContext, proKalla) as T
+            return HusViewModel(
+                repository,
+                paminnelseInstallningar,
+                installningarLager,
+                appContext,
+                proKalla,
+            ) as T
         }
         throw IllegalArgumentException("Okänd ViewModel: ${modelClass.name}")
     }
