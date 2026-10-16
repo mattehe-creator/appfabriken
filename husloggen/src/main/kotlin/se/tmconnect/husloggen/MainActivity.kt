@@ -176,11 +176,11 @@ class MainActivity : ComponentActivity() {
                 val paminnelserPa by viewModel.paminnelserPa.collectAsState()
                 val arPro by viewModel.arPro.collectAsState()
                 val proDialogSynlig by viewModel.proDialogSynlig.collectAsState()
-                val snackbarHostState = remember { SnackbarHostState() }
                 val autoBackup by viewModel.autoBackup.collectAsState()
                 val markeradGjordText = stringResource(R.string.uppgift_markerad_gjord)
                 val uppgiftGjordPostEjSparadText = stringResource(R.string.uppgift_gjord_post_ej_sparad)
                 val idag = LocalDate.now()
+                val snackbarHostState = remember { SnackbarHostState() }
 
                 LaunchedEffect(viewModel) {
                     viewModel.meddelanden.collect { meddelande ->
