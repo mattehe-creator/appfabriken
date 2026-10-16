@@ -374,6 +374,8 @@ fun InstallningarSkarm(
     onByttAutoBackupMapp: () -> Unit = {},
     onAutoBackupIntervall: (Int) -> Unit = {},
     onKorNuAutoBackup: () -> Unit = {},
+    onSparaSakerhetskopia: () -> Unit = {},
+    onHamtaSakerhetskopia: () -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier,
@@ -409,6 +411,47 @@ fun InstallningarSkarm(
                 onIntervall = onAutoBackupIntervall,
                 onKorNu = onKorNuAutoBackup,
             )
+            
+            // Säkerhetskopia avsnitt
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = stringResource(R.string.sakerhetskopia_rubrik),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = stringResource(R.string.sakerhetskopia_beskrivning),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = stringResource(R.string.sakerhetskopia_import_beskrivning),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    androidx.compose.material3.Button(
+                        onClick = onSparaSakerhetskopia,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp),
+                    ) {
+                        Text(text = stringResource(R.string.sakerhetskopia_spara))
+                    }
+                    androidx.compose.material3.Button(
+                        onClick = onHamtaSakerhetskopia,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp),
+                    ) {
+                        Text(text = stringResource(R.string.sakerhetskopia_hamta))
+                    }
+                }
+            }
         }
     }
 }
