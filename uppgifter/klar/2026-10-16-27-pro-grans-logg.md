@@ -33,3 +33,5 @@ gradle :husloggen:testDebugUnitTest --tests "*StringsNycklarTest"
 ## Gör inte
 - Ändra repository eller databasschema.
 - Blockera visning eller redigering av befintliga poster.
+
+utfall: godkänd 2026-10-16 (FAB/onNyPost, kanLaggaTillNyPost(), borttagen oanvänd arPro i LoggFlik)

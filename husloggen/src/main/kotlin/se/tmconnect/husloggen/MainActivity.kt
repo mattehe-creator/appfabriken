@@ -128,6 +128,7 @@ class MainActivity : ComponentActivity() {
                 val postFormular by viewModel.postFormular.collectAsState()
                 val postDetaljId by viewModel.postDetaljId.collectAsState()
                 val paminnelserPa by viewModel.paminnelserPa.collectAsState()
+                val arPro by viewModel.arPro.collectAsState()
                 val proDialogSynlig by viewModel.proDialogSynlig.collectAsState()
                 val snackbarHostState = remember { SnackbarHostState() }
                 val markeradGjordText = stringResource(R.string.uppgift_markerad_gjord)
@@ -242,7 +243,13 @@ class MainActivity : ComponentActivity() {
                                 poster = poster,
                                 onInstallningar = { visaInstallningar = true },
                                 onNyUppgift = viewModel::visaNyUppgift,
-                                onNyPost = viewModel::visaNyPost,
+                                onNyPost = {
+                                    if (viewModel.kanLaggaTillNyPost()) {
+                                        viewModel.visaNyPost()
+                                    } else {
+                                        viewModel.visaProDialog()
+                                    }
+                                },
                                 onOppnaUppgift = viewModel::visaAndraUppgift,
                                 onOppnaPost = viewModel::visaPostDetalj,
                                 onMarkeraGjord = viewModel::markeraSomGjord,
@@ -261,6 +268,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 },
                                 behorighetNekad = behorighetNekad,
+                                arPro = arPro,
                             )
                         }
                     }
