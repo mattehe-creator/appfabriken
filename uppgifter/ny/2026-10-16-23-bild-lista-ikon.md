@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-16-husloggen-bilder.md
 försök: 1
-beror-på: cursor:2026-10-16-husloggen-bilder, 2026-10-16-17-bild-filnamnslista.md, 2026-10-16-20-bild-strangar.md
+beror-på: 2026-10-16-17-bild-filnamnslista.md, 2026-10-16-20-bild-strangar.md
 
 ## Ändra bara dessa filer
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/ui/HusListRader.kt

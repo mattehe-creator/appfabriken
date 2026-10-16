@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-16-husloggen-bilder.md
 försök: 1
-beror-på: cursor:2026-10-16-husloggen-bilder, 2026-10-16-20-bild-strangar.md
+beror-på: 2026-10-16-20-bild-strangar.md
 
 ## Ändra bara dessa filer
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/ui/PostBildFalt.kt (ny)
@@ -17,7 +17,7 @@ beror-på: cursor:2026-10-16-husloggen-bilder, 2026-10-16-20-bild-strangar.md
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/regler/BildGrans.kt
 
 ## Uppgift
-1. **`PostBildFalt`**: composable med miniatyrer (FileProvider-URI per filnamn), knappar **Välj bild** och **Ta foto** (minst 48 dp), borttagningsknapp per bild med `bild_ta_bort`. När `kanLaggaTillBild(antal)` är false: inaktivera lägg-till-knapparna och visa `bild_max_antal`.
+1. **`PostBildFalt`**: composable med miniatyrer (FileProvider-URI per filnamn), knappar **Välj bild** och **Ta foto** (minst 48 dp), borttagningsknapp per bild med `bild_ta_bort`. När `kanLäggaTillBild(antal)` är false: inaktivera lägg-till-knapparna och visa `bild_max_antal`.
 2. **`PostFormularSkarm`**: visa `PostBildFalt` med data från `PostFormularTillstand` (bildfilnamn) och callbacks från ViewModel.
 3. **`MainActivity`**: registrera `PickVisualMedia` och `TakePicture`; vid val anropa `viewModel.laggTillBildUri(uri)`; kamera med `viewModel.skapaKameraFotoUri()` före intent.
 
