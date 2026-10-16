@@ -1,5 +1,6 @@
 package se.tmconnect.husloggen.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -289,6 +290,11 @@ private fun TomFlikText(
 fun InstallningarSkarm(
     onTillbaka: () -> Unit,
     modifier: Modifier = Modifier,
+    autoBackup: se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand = se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand(),
+    onAutoBackupPa: (Boolean) -> Unit = {},
+    onByttAutoBackupMapp: () -> Unit = {},
+    onAutoBackupIntervall: (Int) -> Unit = {},
+    onKorNuAutoBackup: () -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier,
@@ -311,10 +317,18 @@ fun InstallningarSkarm(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
             Text(
                 text = stringResource(R.string.installningar_version, BuildConfig.VERSION_NAME),
                 style = MaterialTheme.typography.bodyLarge,
+            )
+            HusAutoBackupAvsnitt(
+                tillstand = autoBackup,
+                onPa = onAutoBackupPa,
+                onByttMapp = onByttAutoBackupMapp,
+                onIntervall = onAutoBackupIntervall,
+                onKorNu = onKorNuAutoBackup,
             )
         }
     }

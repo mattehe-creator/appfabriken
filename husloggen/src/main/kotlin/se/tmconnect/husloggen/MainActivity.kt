@@ -1,5 +1,6 @@
 package se.tmconnect.husloggen
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -24,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import java.time.LocalDate
 import se.tmconnect.husloggen.data.HusDatabas
 import se.tmconnect.husloggen.data.HusRepository
+import se.tmconnect.husloggen.data.InstallningarLager
 import se.tmconnect.husloggen.data.skapaHusBildLager
 import se.tmconnect.husloggen.ui.BildHelskarm
 import se.tmconnect.husloggen.ui.HusStartSkarm
@@ -37,11 +39,51 @@ import se.tmconnect.husloggen.ui.UppgiftFormularSkarm
 import se.tmconnect.karna.tema.AppfabrikTema
 
 class MainActivity : ComponentActivity() {
+    private val installningarLager: InstallningarLager by lazy {
+        InstallningarLager(applicationContext)
+    }
+
     private val viewModel: HusViewModel by viewModels {
         val databas = HusDatabas.hamta(applicationContext)
         val bildLager = skapaHusBildLager(applicationContext)
-        HusViewModelFactory(HusRepository(databas.husDao(), bildLager))
+        HusViewModelFactory(
+            HusRepository(databas, databas.husDao(), bildLager),
+            installningarLager,
+            applicationContext,
+        )
     }
+
+    private val valjMappContract = registerForActivityResult(
+        ActivityResultContracts.OpenDocumentTree(),
+    ) { uri: Uri? ->
+        if (uri != null) {
+            try {
+                contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+                )
+            } catch (_: Exception) {
+            }
+            viewModel.valtAutoBackupMapp(uri, mappNamn(uri))
+        }
+    }
+
+    private fun mappNamn(trad: Uri): String? =
+        try {
+            val dokument = android.provider.DocumentsContract.buildDocumentUriUsingTree(
+                trad,
+                android.provider.DocumentsContract.getTreeDocumentId(trad),
+            )
+            contentResolver.query(
+                dokument,
+                arrayOf(android.provider.DocumentsContract.Document.COLUMN_DISPLAY_NAME),
+                null,
+                null,
+                null,
+            )?.use { markor -> if (markor.moveToFirst()) markor.getString(0) else null }
+        } catch (_: Exception) {
+            null
+        }
 
     private val pickImageContract = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia(),
@@ -61,6 +103,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.synkaAutoBackupJobb()
         enableEdgeToEdge()
         setContent {
             AppfabrikTema(morkt = isSystemInDarkTheme()) {
@@ -74,6 +117,7 @@ class MainActivity : ComponentActivity() {
                 val postFormular by viewModel.postFormular.collectAsState()
                 val postDetaljId by viewModel.postDetaljId.collectAsState()
                 val snackbarHostState = remember { SnackbarHostState() }
+                val autoBackup by viewModel.autoBackup.collectAsState()
                 val markeradGjordText = stringResource(R.string.uppgift_markerad_gjord)
                 val idag = LocalDate.now()
 
@@ -174,7 +218,16 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         visaInstallningar -> {
-                            InstallningarSkarm(onTillbaka = { visaInstallningar = false })
+                            InstallningarSkarm(
+                                onTillbaka = { visaInstallningar = false },
+                                autoBackup = autoBackup,
+                                onAutoBackupPa = { pa ->
+                                    if (pa) valjMappContract.launch(null) else viewModel.stangAvAutoBackup()
+                                },
+                                onByttAutoBackupMapp = { valjMappContract.launch(null) },
+                                onAutoBackupIntervall = viewModel::sattAutoBackupIntervall,
+                                onKorNuAutoBackup = viewModel::korNuAutoBackup,
+                            )
                         }
                         else -> {
                             HusStartSkarm(

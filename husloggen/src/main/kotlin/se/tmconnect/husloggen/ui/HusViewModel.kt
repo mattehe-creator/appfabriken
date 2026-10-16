@@ -1,5 +1,6 @@
 package se.tmconnect.husloggen.ui
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -13,11 +14,16 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import se.tmconnect.husloggen.data.HusRepository
+import se.tmconnect.husloggen.data.InstallningarLager
+import se.tmconnect.husloggen.export.SakerhetskopiaPlanerare
+import se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand
 import se.tmconnect.husloggen.regler.formateraBilder
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.PostTyp
@@ -59,6 +65,8 @@ sealed class HusUiMeddelande {
 
 class HusViewModel(
     private val repository: HusRepository,
+    private val installningarLager: InstallningarLager,
+    private val appContext: Context,
     private val idag: LocalDate = LocalDate.now(),
 ) : ViewModel() {
     val uppgifter: StateFlow<List<Uppgift>> = repository.uppgifter
@@ -67,6 +75,23 @@ class HusViewModel(
 
     val poster: StateFlow<List<Post>> = repository.poster
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val autoBackup: StateFlow<AutoBackupTillstand> =
+        combine(
+            installningarLager.autoBackupMapp,
+            installningarLager.autoBackupMappNamn,
+            installningarLager.autoBackupIntervallDagar,
+            installningarLager.autoBackupSenaste,
+            installningarLager.autoBackupFel,
+        ) { mapp, namn, intervall, senaste, fel ->
+            AutoBackupTillstand(
+                pa = mapp != null,
+                mappNamn = namn,
+                intervallDagar = intervall,
+                senaste = senaste,
+                fel = fel,
+            )
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AutoBackupTillstand())
 
     private val _formular = MutableStateFlow<UppgiftFormularTillstand?>(null)
     val formular: StateFlow<UppgiftFormularTillstand?> = _formular.asStateFlow()
@@ -372,6 +397,41 @@ class HusViewModel(
         bilderTillagdaISession = emptySet()
     }
 
+    fun valtAutoBackupMapp(uri: Uri, namn: String?) {
+        viewModelScope.launch {
+            val tidigare = installningarLager.autoBackupMapp.first()
+            installningarLager.sattAutoBackupMapp(uri.toString(), namn)
+            if (tidigare == null) {
+                SakerhetskopiaPlanerare.korNu(appContext)
+            }
+            synkaAutoBackupJobb()
+        }
+    }
+
+    fun stangAvAutoBackup() {
+        viewModelScope.launch {
+            installningarLager.sattAutoBackupMapp(null, null)
+            synkaAutoBackupJobb()
+        }
+    }
+
+    fun sattAutoBackupIntervall(dagar: Int) {
+        viewModelScope.launch { installningarLager.sattAutoBackupIntervall(dagar) }
+    }
+
+    fun korNuAutoBackup() {
+        SakerhetskopiaPlanerare.korNu(appContext)
+    }
+
+    fun synkaAutoBackupJobb() {
+        viewModelScope.launch {
+            SakerhetskopiaPlanerare.synka(
+                appContext,
+                installningarLager.autoBackupMapp.first() != null,
+            )
+        }
+    }
+
     private fun rensaOsparadeBilder() {
         val tillstand = _postFormular.value ?: return
         // Endast radera bilder i nyskapa-läge (redigerarId == 0)
@@ -386,11 +446,13 @@ class HusViewModel(
 
 class HusViewModelFactory(
     private val repository: HusRepository,
+    private val installningarLager: InstallningarLager,
+    private val appContext: Context,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(HusViewModel::class.java)) {
-            return HusViewModel(repository) as T
+            return HusViewModel(repository, installningarLager, appContext) as T
         }
         throw IllegalArgumentException("Okänd ViewModel: ${modelClass.name}")
     }

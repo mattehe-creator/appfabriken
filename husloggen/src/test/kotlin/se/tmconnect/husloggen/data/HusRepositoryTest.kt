@@ -36,7 +36,7 @@ class HusRepositoryTest {
         databas = Room.inMemoryDatabaseBuilder(context, HusDatabas::class.java)
             .allowMainThreadQueries()
             .build()
-        repository = HusRepository(databas.husDao(), skapaHusBildLager(context))
+        repository = HusRepository(databas, databas.husDao(), skapaHusBildLager(context))
     }
 
     private fun nollstallFileProviderCache() {

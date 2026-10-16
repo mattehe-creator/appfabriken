@@ -1,13 +1,27 @@
 package se.tmconnect.husloggen.data
 
 import android.net.Uri
+import androidx.room.withTransaction
 import java.time.LocalDate
 import kotlinx.coroutines.flow.Flow
+import se.tmconnect.husloggen.export.SakerhetskopiaImportResultat
+import se.tmconnect.husloggen.export.SakerhetskopiaInnehall
+import se.tmconnect.husloggen.export.SakerhetskopiaPost
+import se.tmconnect.husloggen.export.SakerhetskopiaUppgift
+import se.tmconnect.husloggen.export.arSakerhetskopiaPostDubblett
+import se.tmconnect.husloggen.export.arSakerhetskopiaPostNyckelLik
+import se.tmconnect.husloggen.export.arSakerhetskopiaUppgiftDubblett
+import se.tmconnect.husloggen.export.arSakerhetskopiaUppgiftLik
+import se.tmconnect.husloggen.export.sakerhetskopiaPostNyckel
+import se.tmconnect.husloggen.export.sakerhetskopiaPostTillPost
+import se.tmconnect.husloggen.export.sakerhetskopiaUppgiftTillUppgift
+import se.tmconnect.husloggen.export.uppgiftTillSakerhetskopia
 import se.tmconnect.husloggen.regler.formateraBilder
 import se.tmconnect.husloggen.regler.tolkaBilder
 import se.tmconnect.karna.bild.BildLager
 
 class HusRepository(
+    private val databas: HusDatabas,
     private val dao: HusDao,
     private val bildLager: BildLager,
 ) {
@@ -84,6 +98,75 @@ class HusRepository(
     }
 
     suspend fun antalPoster(): Int = dao.antalPoster()
+
+    suspend fun allaUppgifter(): List<Uppgift> = dao.allaUppgifter()
+
+    suspend fun allaPoster(): List<Post> = dao.allaPoster()
+
+    suspend fun importeraSakerhetskopia(
+        innehall: SakerhetskopiaInnehall,
+        bildFiler: Map<String, ByteArray>,
+    ): SakerhetskopiaImportResultat {
+        val befintligaUppgifter = dao.allaUppgifter()
+        val befintligaPoster = dao.allaPoster()
+        val uppgiftLookup = befintligaUppgifter.associateBy { it.id }
+
+        val posterAttInfoga = mutableListOf<Pair<SakerhetskopiaPost, List<String>>>()
+        var hoppadeOver = 0
+        val tillagdaPostNycklar = mutableListOf<se.tmconnect.husloggen.export.SakerhetskopiaPostNyckel>()
+
+        for (export in innehall.poster) {
+            val arDubblettMotDb =
+                befintligaPoster.any { post ->
+                    arSakerhetskopiaPostDubblett(
+                        export,
+                        innehall.uppgifter,
+                        post,
+                        post.uppgiftId?.let { uppgiftLookup[it] },
+                    )
+                }
+            val exportNyckel = sakerhetskopiaPostNyckel(export, innehall.uppgifter)
+            val arDubblettMotFil = tillagdaPostNycklar.any { arSakerhetskopiaPostNyckelLik(exportNyckel, it) }
+            if (arDubblettMotDb || arDubblettMotFil) {
+                hoppadeOver++
+                continue
+            }
+            export.bilder.forEach { filnamn ->
+                if (filnamn !in bildFiler) {
+                    error("Saknad bild i säkerhetskopia: $filnamn")
+                }
+            }
+            posterAttInfoga.add(export to export.bilder.map { bildLager.sparaFranBytes(bildFiler[it]!!, it) })
+            tillagdaPostNycklar.add(exportNyckel)
+        }
+
+        var tillagda = 0
+        databas.withTransaction {
+            val indexTillUppgiftId = mutableMapOf<Int, Long>()
+            innehall.uppgifter.forEachIndexed { index, export ->
+                befintligaUppgifter.firstOrNull { arSakerhetskopiaUppgiftDubblett(export, it) }?.let {
+                    indexTillUppgiftId[index] = it.id
+                    return@forEachIndexed
+                }
+                val tidigareIndex =
+                    innehall.uppgifter.withIndex().firstOrNull { (i, u) ->
+                        i < index && arSakerhetskopiaUppgiftLik(export, u) && indexTillUppgiftId.containsKey(i)
+                    }?.index
+                if (tidigareIndex != null) {
+                    indexTillUppgiftId[index] = indexTillUppgiftId[tidigareIndex]!!
+                    return@forEachIndexed
+                }
+                val nyttId = dao.infogaUppgift(sakerhetskopiaUppgiftTillUppgift(export))
+                indexTillUppgiftId[index] = nyttId
+            }
+            for ((export, nyaBilder) in posterAttInfoga) {
+                val uppgiftId = export.uppgiftIndex?.let { indexTillUppgiftId[it] }
+                dao.infogaPost(sakerhetskopiaPostTillPost(export, uppgiftId, nyaBilder))
+                tillagda++
+            }
+        }
+        return SakerhetskopiaImportResultat(tillagda = tillagda, hoppadeOver = hoppadeOver)
+    }
 
     fun kopieraBildTillLagring(kallaUri: Uri): String? = bildLager.kopieraFranUri(kallaUri)
 
