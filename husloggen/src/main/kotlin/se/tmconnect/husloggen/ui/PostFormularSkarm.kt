@@ -1,5 +1,6 @@
 package se.tmconnect.husloggen.ui
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +39,7 @@ import se.tmconnect.husloggen.R
 import se.tmconnect.husloggen.data.PostTyp
 import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.husloggen.regler.PostFel
+import se.tmconnect.husloggen.regler.kanLäggaTillBild
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,6 +54,10 @@ fun PostFormularSkarm(
     onUtforareAndras: (String) -> Unit,
     onUppgiftAndras: (Long?) -> Unit,
     onAnteckningAndras: (String) -> Unit,
+    bildUri: (String) -> Uri?,
+    onBildValj: () -> Unit,
+    onTaFoto: () -> Unit,
+    onTaBortBild: (String) -> Unit,
     onSpara: () -> Unit,
     onTaBort: () -> Unit,
     onStang: () -> Unit,
@@ -191,6 +197,15 @@ fun PostFormularSkarm(
                 uppgifter = uppgifter,
                 valdUppgiftId = tillstand.uppgiftId,
                 onValjUppgift = onUppgiftAndras,
+            )
+
+            PostBildFalt(
+                bildFilnamn = tillstand.bildFilnamn,
+                bildUri = bildUri,
+                kanLaggaTill = kanLäggaTillBild(tillstand.bildFilnamn.size),
+                onValjBild = onBildValj,
+                onTaFoto = onTaFoto,
+                onTaBortBild = onTaBortBild,
             )
 
             PostAnteckningFalt(

@@ -1,9 +1,12 @@
 package se.tmconnect.husloggen
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +40,22 @@ class MainActivity : ComponentActivity() {
         val databas = HusDatabas.hamta(applicationContext)
         val bildLager = skapaHusBildLager(applicationContext)
         HusViewModelFactory(HusRepository(databas.husDao(), bildLager))
+    }
+
+    private val pickImageContract = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia(),
+    ) { uri ->
+        uri?.let { viewModel.laggTillBildUri(it) }
+    }
+
+    private var kameraUri: Uri? = null
+    private val takePictureContract = registerForActivityResult(
+        ActivityResultContracts.TakePicture(),
+    ) { success ->
+        if (success) {
+            kameraUri?.let { viewModel.laggTillBildUri(it) }
+        }
+        kameraUri = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,6 +101,20 @@ class MainActivity : ComponentActivity() {
                                 onUtforareAndras = viewModel::uppdateraPostUtforare,
                                 onUppgiftAndras = viewModel::uppdateraPostUppgift,
                                 onAnteckningAndras = viewModel::uppdateraPostAnteckning,
+                                bildUri = viewModel::bildUri,
+                                onBildValj = {
+                                    pickImageContract.launch(
+                                        PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.ImageOnly,
+                                        ),
+                                    )
+                                },
+                                onTaFoto = {
+                                    val uri = viewModel.skapaKameraFotoUri()
+                                    kameraUri = uri
+                                    takePictureContract.launch(uri)
+                                },
+                                onTaBortBild = viewModel::taBortBildFranFormular,
                                 onSpara = viewModel::sparaPostFormular,
                                 onTaBort = viewModel::taBortPostFormularPost,
                                 onStang = viewModel::stangPostFormular,

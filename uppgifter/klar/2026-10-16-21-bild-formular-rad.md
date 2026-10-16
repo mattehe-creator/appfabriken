@@ -33,3 +33,5 @@ gradle :husloggen:testDebugUnitTest --tests "*BildTolkningTest" --tests "*BildGr
 ## Gör inte
 - Ändra `HusRepository`, `BildLager` eller databas.
 - Lägga till beroenden eller manifestbehörigheter.
+
+utfall: godkänd 2026-10-16 (kompilationsfel, placeholders, miniatyr-URI, kamera-URI)
