@@ -27,6 +27,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -65,6 +66,8 @@ fun HusStartSkarm(
     paminnelserPa: Boolean = false,
     onPaminnelserAndras: (Boolean) -> Unit = {},
     behorighetNekad: Boolean = false,
+    arPro: Boolean = false,
+    onVisaProDialog: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var valdFlik by rememberSaveable { mutableIntStateOf(HusFlik.ATT_GORA.ordinal) }
@@ -154,6 +157,8 @@ fun HusStartSkarm(
                 contentPadding = innerPadding,
                 onNyPost = onNyPost,
                 onOppnaPost = onOppnaPost,
+                arPro = arPro,
+                onVisaProDialog = onVisaProDialog,
             )
         }
     }
@@ -259,13 +264,24 @@ private fun LoggFlik(
     contentPadding: PaddingValues,
     onNyPost: () -> Unit,
     onOppnaPost: (Long) -> Unit,
+    arPro: Boolean = false,
+    onVisaProDialog: () -> Unit = {},
 ) {
     if (poster.isEmpty()) {
-        TomFlikText(
-            text = stringResource(R.string.tom_logg),
-            contentPadding = contentPadding,
-            onNyPost = onNyPost,
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(contentPadding)
+                .padding(horizontal = 16.dp),
+        ) {
+            ProLoggRad(arPro = arPro, onVisaProDialog = onVisaProDialog)
+            TomFlikText(
+                text = stringResource(R.string.tom_logg),
+                contentPadding = PaddingValues(0.dp),
+                onNyPost = onNyPost,
+                modifier = Modifier.weight(1f),
+            )
+        }
         return
     }
 
@@ -277,6 +293,9 @@ private fun LoggFlik(
             .padding(contentPadding),
         contentPadding = PaddingValues(16.dp),
     ) {
+        item(key = "pro-rad") {
+            ProLoggRad(arPro = arPro, onVisaProDialog = onVisaProDialog)
+        }
         grupperadePoster.forEach { arGrupp ->
             item {
                 val harBelopp = arGrupp.poster.any { it.beloppOre != null }
@@ -302,6 +321,32 @@ private fun LoggFlik(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ProLoggRad(
+    arPro: Boolean,
+    onVisaProDialog: () -> Unit,
+) {
+    if (!arPro) {
+        TextButton(
+            onClick = onVisaProDialog,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+                .tryckyta48(),
+        ) {
+            Text(text = stringResource(R.string.pro_las_upp))
+        }
+    } else {
+        Text(
+            text = stringResource(R.string.pro_du_har),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+        )
     }
 }
 

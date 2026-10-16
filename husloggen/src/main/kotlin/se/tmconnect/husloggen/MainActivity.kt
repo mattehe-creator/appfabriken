@@ -129,6 +129,7 @@ class MainActivity : ComponentActivity() {
                 val postDetaljId by viewModel.postDetaljId.collectAsState()
                 val paminnelserPa by viewModel.paminnelserPa.collectAsState()
                 val proDialogSynlig by viewModel.proDialogSynlig.collectAsState()
+                val arPro by viewModel.arPro.collectAsState()
                 val snackbarHostState = remember { SnackbarHostState() }
                 val markeradGjordText = stringResource(R.string.uppgift_markerad_gjord)
                 val uppgiftGjordPostEjSparadText = stringResource(R.string.uppgift_gjord_post_ej_sparad)
@@ -261,6 +262,8 @@ class MainActivity : ComponentActivity() {
                                     }
                                 },
                                 behorighetNekad = behorighetNekad,
+                                arPro = arPro,
+                                onVisaProDialog = viewModel::visaProDialog,
                             )
                         }
                     }
