@@ -35,7 +35,8 @@ while ($korda -lt $Max -and (Get-Date) -lt $slut) {
     }
     $felIRad++
     $vanta = if ($felIRad -ge 6) { 1800 } else { 300 }
-    Write-Host "Körningen stannade med fel ($kod), fel i rad: $felIRad. Se loggen i $env:LOCALAPPDATA\appfabriken\logg. Försöker igen om $($vanta / 60) minuter." -ForegroundColor Red
+    $orsak = if ($kod -eq 2) { "Uppgiften fastnade (t.ex. git-gren). Uppgiften ligger kvar i uppgifter/ny/." } else { "Körningen stannade med fel ($kod)." }
+    Write-Host "$orsak Fel i rad: $felIRad. Se loggen i $env:LOCALAPPDATA\appfabriken\logg. Försöker igen om $($vanta / 60) minuter." -ForegroundColor Red
     Start-Sleep -Seconds $vanta
 }
 Write-Host "Loopen avslutad ($korda uppgifter körda). Starta 'Starta lokal modell' igen." -ForegroundColor Yellow

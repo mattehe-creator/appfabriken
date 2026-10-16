@@ -46,6 +46,41 @@ function Kor([string]$fil, [string[]]$argument) {
     if ($LASTEXITCODE -ne 0) { Avbryt "$fil $($argument -join ' ') gav felkod $LASTEXITCODE" }
 }
 
+function KorGit([string[]]$argument) {
+    $ut = & git @argument 2>&1
+    $kod = $LASTEXITCODE
+    if ($ut) { $ut | ForEach-Object { Write-Host $_ } }
+    if ($kod -ne 0) { Avbryt "git $($argument -join ' ') gav felkod $kod" }
+}
+
+function SkapaUppgiftsgren([string]$gren, [string]$uppgiftsNamn) {
+    $script:namn = $uppgiftsNamn
+    git show-ref --verify --quiet "refs/heads/$gren" 2>&1 | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+        $ejPaOrigin = @(git rev-list $gren --not --remotes=origin 2>$null)
+        if ($ejPaOrigin.Count -gt 0) {
+            $rescue = "rescue/$uppgiftsNamn-$stampel"
+            Write-Host "Sparar kvarliggande gren $gren som $rescue ($($ejPaOrigin.Count) commit(s) som inte finns på origin)." -ForegroundColor Yellow
+            $ut = & git branch $rescue $gren 2>&1
+            $kod = $LASTEXITCODE
+            if ($ut) { $ut | ForEach-Object { Write-Host $_ } }
+            if ($kod -ne 0) {
+                Status "fastnad" "Kunde inte spara $gren som $rescue."
+                Stop-Transcript | Out-Null
+                exit 2
+            }
+        }
+    }
+    $ut = & git checkout -B $gren origin/main 2>&1
+    $kod = $LASTEXITCODE
+    if ($ut) { $ut | ForEach-Object { Write-Host $_ } }
+    if ($kod -ne 0) {
+        Status "fastnad" "Kunde inte skapa gren $gren från origin/main (se loggen)."
+        Stop-Transcript | Out-Null
+        exit 2
+    }
+}
+
 function Sektion([string[]]$rader, [string]$rubrik) {
     $ut = @(); $inne = $false
     foreach ($r in $rader) {
@@ -90,28 +125,28 @@ if (-not (Test-Path $localProps)) {
 $aktuell = (git rev-parse --abbrev-ref HEAD).Trim()
 if ($aktuell -like "lokal/*" -and -not (git ls-remote --heads origin $aktuell)) {
     Write-Host "Avbruten körning på $aktuell kastas." -ForegroundColor Yellow
-    Kor git @("reset", "-q", "--hard")
-    Kor git @("clean", "-q", "-fd")
-    Kor git @("checkout", "-q", "main")
-    Kor git @("branch", "-q", "-D", $aktuell)
+    KorGit @("reset", "--hard")
+    KorGit @("clean", "-fd")
+    KorGit @("checkout", "main")
+    KorGit @("branch", "-D", $aktuell)
 }
 # Övriga ändringar (till exempel byggfiler som inte är ignorerade, eller en uppdaterad fil i verktyg/)
 # läggs undan i git stash i stället för att körningen stannar. De går att hämta med "git stash list".
 if (git status --porcelain) {
     Write-Host "Lägger undan ändringar som inte är committade (git stash)." -ForegroundColor Yellow
-    Kor git @("stash", "push", "-q", "-u", "-m", "appfabriken $stampel")
+    KorGit @("stash", "push", "-u", "-m", "appfabriken $stampel")
 }
-Kor git @("checkout", "-q", "main")
-Kor git @("fetch", "-q", "origin", "main")
+KorGit @("checkout", "main")
+KorGit @("fetch", "--prune", "origin")
 # Lokal main ska alltid vara lika med origin/main. Har den egna commits (main på GitHub squash-mergas,
 # så historiken går isär) sparas de på en gren och main sätts till origin/main.
 $egna = (git rev-list --count origin/main..main).Trim()
 if ($egna -ne "0") {
     $sparad = "sparad/lokal-main-$stampel"
     Write-Host "Lokal main hade $egna egna commits. Sparas på $sparad, main sätts till origin/main." -ForegroundColor Yellow
-    Kor git @("branch", "-q", $sparad, "main")
+    KorGit @("branch", $sparad, "main")
 }
-Kor git @("reset", "-q", "--hard", "origin/main")
+KorGit @("reset", "--hard", "origin/main")
 
 # Välj den första uppgiften som inte redan körts (gren finns) och vars beroenden är klara på main.
 $uppgift = $null
@@ -143,6 +178,7 @@ if (-not $uppgift) {
 }
 
 $namn = $uppgift.BaseName
+$script:namn = $namn
 $gren = "lokal/$namn"
 
 Write-Host "Uppgift: $namn" -ForegroundColor Cyan
@@ -158,10 +194,10 @@ $testFil = Join-Path $loggMapp "test-$stampel.cmd"
 "@echo off`r`ncd /d `"$Repo`"`r`n$testCmd`r`n" | Set-Content -Encoding ASCII $testFil
 
 # --- Gren och flytt till pagar ---
-Kor git @("checkout", "-q", "-b", $gren)
+SkapaUppgiftsgren $gren $namn
 $iPagar = "uppgifter/pagar/$($uppgift.Name)"
-Kor git @("mv", "uppgifter/ny/$($uppgift.Name)", $iPagar)
-Kor git @("commit", "-q", "-m", "Uppgift startad: $namn")
+KorGit @("mv", "uppgifter/ny/$($uppgift.Name)", $iPagar)
+KorGit @("commit", "-m", "Uppgift startad: $namn")
 
 # --- Aider ---
 # Meddelandet är uppgiften plus en regel för frågor (ARBETSFLODE.md).
@@ -211,14 +247,14 @@ $testOk = ($LASTEXITCODE -eq 0)
 # Aider committar normalt själv. Ligger ändringar i de tillåtna filerna kvar okommittade, committas de här.
 $kvar = git status --porcelain -- $tillatna
 if ($kvar) {
-    Kor git (@("add", "--") + $tillatna)
-    Kor git @("commit", "-q", "-m", "Lokal modell: $namn (okommittade ändringar efter Aider)")
+    KorGit (@("add", "--") + $tillatna)
+    KorGit @("commit", "-m", "Lokal modell: $namn (okommittade ändringar efter Aider)")
 }
 
 $harFraga = (Test-Path "FRAGA.md") -and ((Get-Content -Raw "FRAGA.md") -match "\S")
 if ($harFraga) {
-    Kor git @("add", "FRAGA.md")
-    if (git status --porcelain -- FRAGA.md) { Kor git @("commit", "-q", "-m", "Lokal modell: fråga om $namn") }
+    KorGit @("add", "FRAGA.md")
+    if (git status --porcelain -- FRAGA.md) { KorGit @("commit", "-m", "Lokal modell: fråga om $namn") }
     Write-Host "Den lokala modellen har en fråga (FRAGA.md)." -ForegroundColor Yellow
     $testOk = $false
 }
@@ -234,14 +270,14 @@ if ($utanfor) { Write-Host "Filer utanför uppgiften: $($utanfor -join ', ')" -F
 
 if ($IngenPush) {
     Write-Host "Ingen push (-IngenPush). Grenen $gren finns bara lokalt."
-    Kor git @("checkout", "-q", "main")
+    KorGit @("checkout", "main")
     Stop-Transcript | Out-Null
     exit 0
 }
 
 # --- Push och PR ---
 Status "pushar" "Öppnar PR."
-Kor git @("push", "-q", "-u", "origin", $gren)
+KorGit @("push", "-u", "origin", $gren)
 $utanforText = if ($utanfor) { $utanfor -join ", " } else { "inga" }
 $saknasText = if ($saknas) { $saknas -join ", " } else { "inga" }
 $format = if ($EditFormat) { $EditFormat } else { "standard" }
@@ -269,7 +305,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host "PR #$finns finns." -ForegroundColor Yellow
 }
 
-Kor git @("checkout", "-q", "main")
+KorGit @("checkout", "main")
 Write-Host "Klart." -ForegroundColor Green
 Status "klar" "PR öppnad för $namn. Tester: $resultat."
 Stop-Transcript | Out-Null
