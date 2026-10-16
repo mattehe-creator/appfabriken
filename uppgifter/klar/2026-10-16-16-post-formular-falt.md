@@ -48,3 +48,5 @@ gradle :husloggen:testDebugUnitTest --tests "*PostValideringTest" --tests "*Stri
 - Ändra `HusViewModel`, `HusRepository`, `MainActivity` eller databas.
 - Lägga till beroenden.
 - Hårdkoda synlig text.
+
+utfall: godkänd 2026-10-16 (FlowRow i PostTypValjare, borttagen död PostUppgiftMeny och oanvända importer)
