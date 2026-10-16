@@ -1,81 +1,48 @@
 package se.tmconnect.husloggen.paminnelse
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import java.time.LocalDate
-import java.util.Locale
-import kotlinx.coroutines.flow.first
+import android.os.Build
+import androidx.core.app.NotificationCompat
 import se.tmconnect.husloggen.MainActivity
 import se.tmconnect.husloggen.R
-import se.tmconnect.husloggen.data.HusDatabas
-import se.tmconnect.husloggen.data.Uppgift
-import se.tmconnect.husloggen.regler.PAMINNELSE_DAGAR_FORE
-import se.tmconnect.karna.format.formateraDatum
-import se.tmconnect.karna.paminnelse.PaminnelseFrist
-import se.tmconnect.karna.paminnelse.PaminnelseInstallningarLager
-import se.tmconnect.karna.paminnelse.PaminnelseKalla
-import se.tmconnect.karna.paminnelse.PaminnelseNotisInnehall
 
-class HusPaminnelseKalla(
-    private val context: Context,
-) : PaminnelseKalla {
-    override val installningarLager: PaminnelseInstallningarLager =
-        PaminnelseInstallningarLager(context, DATASTORE_NAMN)
-
-    override val dagarInnan: Int = PAMINNELSE_DAGAR_FORE
-
-    override suspend fun hamtaFrister(idag: LocalDate): List<PaminnelseFrist> {
-        val dao = HusDatabas.hamta(context).husDao()
-        val uppgifter = dao.allaUppgifterFlow().first()
-        return paminnelseFristerFranUppgifter(uppgifter, idag)
+class HusPaminnelseKalla(private val context: Context) {
+    companion object {
+        private const val KANAL_ID = "paminnelse_kanal"
+        private const val NOTIS_ID = 1001
     }
 
-    override suspend fun notisForEnFrist(frist: PaminnelseFrist): PaminnelseNotisInnehall {
-        val uppgift = uppgiftForFrist(frist)
-        val locale = Locale.getDefault()
-        return PaminnelseNotisInnehall(
-            titel = context.getString(R.string.paminnelse_notis_titel),
-            text = context.getString(
-                R.string.paminnelse_notis_text,
-                uppgift?.namn ?: "",
-                formateraDatum(frist.slutdatum, locale),
-            ),
-            notisId = notisIdForFrist(frist),
-        )
-    }
+    fun skapaPaminnelse(uppgiftsNamn: String, datum: String) {
+        // Skapa en notification med uppgiftens namn och datum
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        
+        val builder = NotificationCompat.Builder(context, KANAL_ID)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(context.getString(R.string.paminnelse_notis_titel))
+            .setContentText(context.getString(R.string.paminnelle_notis_text, uppgiftsNamn, datum)) // Ändrad från paminnelse_notis_text till paminnelle_notis_text
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
 
-    override suspend fun notisSamlad(antal: Int): PaminnelseNotisInnehall =
-        PaminnelseNotisInnehall(
-            titel = context.getString(R.string.paminnelse_notis_samlad_titel),
-            text = context.getString(R.string.paminnelse_notis_samlad_text, antal),
-            notisId = SAMMANSATT_NOTIS_ID,
-        )
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-    override fun skapaAppIntent(frist: PaminnelseFrist?): Intent =
-        Intent(context, MainActivity::class.java).apply {
-            putExtra(PaminnelseWorker.EXTRA_OPPNA_ATT_GORA, true)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                KANAL_ID,
+                context.getString(R.string.paminnelse_kanal_namn),
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            notificationManager.createNotificationChannel(channel)
         }
 
-    override fun kanalId(): String = KANAL_ID
-
-    override fun kanalNamn(context: Context): String =
-        context.getString(R.string.paminnelse_kanal_namn)
-
-    override fun notisIkon(): Int = R.drawable.ic_launcher_foreground
-
-    private suspend fun uppgiftForFrist(frist: PaminnelseFrist): Uppgift? {
-        val uppgiftId = frist.nyckel.substringBefore(':').toLongOrNull() ?: return null
-        return HusDatabas.hamta(context).husDao().hamtaUppgift(uppgiftId)
-    }
-
-    companion object {
-        const val DATASTORE_NAMN = "husloggen_paminnelser"
-        const val UNIKT_JOBB_NAMN = "husloggen_paminnelse_daglig"
-        private const val KANAL_ID = "husloggen_paminnelser"
-        private const val SAMMANSATT_NOTIS_ID = 1
-
-        fun notisIdForFrist(frist: PaminnelseFrist): Int =
-            frist.nyckel.substringBefore(':').toLongOrNull()?.toInt()
-                ?: frist.nyckel.hashCode()
+        notificationManager.notify(NOTIS_ID, builder.build())
     }
 }
