@@ -31,3 +31,5 @@ gradle :husloggen:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra andra filer.
 - Import eller openDocument här.
 - Nya behörigheter.
+
+utfall: underkänd 2026-10-16 av Cursor (PR #216). Ersatt av 2026-10-16-26-sakerhetskopia-spara-f2.md

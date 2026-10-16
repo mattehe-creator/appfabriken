@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-16-husloggen-sakerhetskopia.md
 försök: 1
-beror-på: 2026-10-16-26-sakerhetskopia-spara.md, cursor:2026-10-16-husloggen-sakerhetskopia-v2
+beror-på: 2026-10-16-26-sakerhetskopia-spara-f2.md, cursor:2026-10-16-husloggen-sakerhetskopia-v2
 
 ## Ändra bara dessa filer
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/MainActivity.kt
