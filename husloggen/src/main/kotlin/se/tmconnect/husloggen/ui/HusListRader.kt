@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.outlined.Photo
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
@@ -33,6 +34,7 @@ import se.tmconnect.husloggen.regler.intervallEtikett
 import se.tmconnect.husloggen.regler.nastaDatum
 import se.tmconnect.husloggen.regler.UppgiftStatus
 import se.tmconnect.husloggen.regler.uppgiftStatus
+import se.tmconnect.husloggen.regler.tolkaBilder
 import se.tmconnect.karna.format.formateraDatum
 import se.tmconnect.karna.format.formateraPrisKr
 import se.tmconnect.karna.tema.AppfabrikStatus
@@ -156,13 +158,32 @@ fun PostListRad(
         }
     }
 
-    Text(
-        text = radText,
-        style = MaterialTheme.typography.bodyLarge,
+    Row(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp)
             .clickable(onClick = onClick)
             .padding(vertical = 8.dp),
-    )
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp),
+        ) {
+            Text(
+                text = radText,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
+        
+        // Visa ikon om posten har bilder
+        if (tolkaBilder(post.bilder).isNotEmpty()) {
+            Icon(
+                imageVector = Icons.Outlined.Photo,
+                contentDescription = stringResource(R.string.bild_har_bilder),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
 }
