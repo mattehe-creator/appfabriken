@@ -69,7 +69,7 @@ Samma nycklar i båda språkfiler:
 
 `intervall_ar` (plurals): `%d` år — English: "Every %d year" / "Every %d years".
 
-Utöka `StringsNycklarTest` med ett test `forslagsNamnFinnsPaBadaSprak()` som kontrollerar att varje nyckel som börjar med `forslag_` finns i båda `strings.xml` (samma logik som nyckeljämförelsen, inklusive plurals om du lägger förslag där — här bara `<string name="forslag_...">`).
+Utöka `StringsNycklarTest` med ett test `forslagsNamnFinnsPaBadaSprak()` som kontrollerar att varje nyckel som börjar med `forslag_` **utom** `forslag_rubrik` finns i båda `strings.xml` (åtta namnnycklar). Pluralnycklarna `intervall_manader` och `intervall_ar` ska ingå i befintliga nyckeljämförelsen.
 
 ## Exempel
 - `forslag_sotning` är "Sotning" / "Chimney sweep"
