@@ -157,34 +157,40 @@ function Invoke-MisslyckatForsok([string]$namn, [string]$orsak) {
     Push-Location $Repo
     try {
         $gren = "lokal/$namn"
-        $pagar = Get-ChildItem "uppgifter/pagar/$namn.md" -ErrorAction SilentlyContinue
-        $ny = Get-ChildItem "uppgifter/ny/$namn.md" -ErrorAction SilentlyContinue
-        $fil = if ($pagar) { $pagar.FullName } elseif ($ny) { $ny.FullName } else { $null }
-        if (-not $fil) {
-            Logga "Hittade ingen uppgiftsfil för $namn i pagar/ eller ny/."
-            return
-        }
-        $forsok = 1
-        foreach ($r in (Get-Content -Encoding UTF8 $fil)) {
-            if ($r -match '^försök:\s*(\d+)') { $forsok = [int]$Matches[1]; break }
-        }
         $ErrorActionPreference = "Continue"
         & git checkout main 2>&1 | Out-Null
         & git show-ref --verify --quiet "refs/heads/$gren" 2>&1 | Out-Null
         if ($LASTEXITCODE -eq 0) {
             & git branch -D $gren 2>&1 | ForEach-Object { Logga $_ }
         }
-        if ($pagar) {
-            $mal = Join-Path $Repo "uppgifter/ny/$namn.md"
-            if ($forsok -lt 2) {
-                Move-Item -Force $fil $mal
-                Set-Forsok $mal 2
-                Logga "Uppgift $namn tillbaka i uppgifter/ny/ med försök 2."
+        $fil = Join-Path $Repo "uppgifter/ny/$namn.md"
+        if (-not (Test-Path $fil)) {
+            Logga "Hittade ingen uppgiftsfil för $namn i uppgifter/ny/ på main."
+            return
+        }
+        $forsok = 1
+        foreach ($r in (Get-Content -Encoding UTF8 $fil)) {
+            if ($r -match '^försök:\s*(\d+)') { $forsok = [int]$Matches[1]; break }
+        }
+        if ($forsok -lt 2) {
+            Set-Forsok $fil 2
+            $rel = "uppgifter/ny/$namn.md"
+            & git add $rel 2>&1 | ForEach-Object { Logga "git: $_" }
+            & git commit -m "Uppgift tillbaka: $namn (försök 2)" 2>&1 | ForEach-Object { Logga "git: $_" }
+            if ($LASTEXITCODE -ne 0) {
+                Logga "Kunde inte committa försök 2 för $namn — ändringen ligger kvar ocommittad på main."
             } else {
-                Move-Item -Force $fil $mal
-                Logga "Uppgift $namn (försök 2) tillbaka i uppgifter/ny/ utan lokala commits; Cursor tar över enligt ARBETSFLODE."
-                Skriv-LokalStopp "Uppgift ``$namn`` misslyckades lokalt två gånger (senast: $orsak). Cursor ska ta över."
+                & git push origin main 2>&1 | ForEach-Object { Logga "git: $_" }
+                if ($LASTEXITCODE -ne 0) {
+                    Logga "Push av försök 2 för $namn misslyckades — återställer commit, ändringen ligger kvar ocommittad."
+                    & git reset HEAD~1 2>&1 | ForEach-Object { Logga "git: $_" }
+                } else {
+                    Logga "Uppgift $namn kvar i uppgifter/ny/ med försök 2 (committad och pushad på main)."
+                }
             }
+        } else {
+            Logga "Uppgift $namn (försök 2) utan lokala kod-commits; Cursor tar över enligt ARBETSFLODE."
+            Skriv-LokalStopp "Uppgift ``$namn`` misslyckades lokalt två gånger (senast: $orsak). Cursor ska ta över."
         }
         try { if (Test-Path $aktivFil) { Remove-Item -Force $aktivFil } } catch { }
     } finally {
