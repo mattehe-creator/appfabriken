@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHost
@@ -22,7 +23,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import java.time.LocalDate
+import se.tmconnect.husloggen.ProKonfig
 import se.tmconnect.husloggen.data.HusDatabas
+import se.tmconnect.husloggen.pro.ProKallaSkapare
 import se.tmconnect.husloggen.data.HusRepository
 import se.tmconnect.husloggen.data.skapaHusBildLager
 import se.tmconnect.husloggen.ui.BildHelskarm
@@ -37,10 +40,21 @@ import se.tmconnect.husloggen.ui.UppgiftFormularSkarm
 import se.tmconnect.karna.tema.AppfabrikTema
 
 class MainActivity : ComponentActivity() {
+    private val proKalla by lazy {
+        ProKallaSkapare.skapa(
+            applicationContext,
+            ProKonfig.PRODUKT_ID,
+            lifecycleScope,
+        )
+    }
+
     private val viewModel: HusViewModel by viewModels {
         val databas = HusDatabas.hamta(applicationContext)
         val bildLager = skapaHusBildLager(applicationContext)
-        HusViewModelFactory(HusRepository(databas.husDao(), bildLager))
+        HusViewModelFactory(
+            HusRepository(databas.husDao(), bildLager),
+            proKalla,
+        )
     }
 
     private val pickImageContract = registerForActivityResult(
@@ -82,6 +96,9 @@ class MainActivity : ComponentActivity() {
                         when (meddelande) {
                             HusUiMeddelande.UppgiftMarkeradGjord -> {
                                 snackbarHostState.showSnackbar(markeradGjordText)
+                            }
+                            HusUiMeddelande.UppgiftMarkeradGjordPostEjSparad -> {
+                                // Snackbar med uppgift_gjord_post_ej_sparad i uppgift 2026-10-16-28.
                             }
                         }
                     }
