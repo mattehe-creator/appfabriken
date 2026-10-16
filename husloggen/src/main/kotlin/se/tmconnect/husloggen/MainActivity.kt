@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -41,17 +42,20 @@ class MainActivity : ComponentActivity() {
         HusViewModelFactory(HusRepository(databas.husDao(), bildLager))
     }
 
-    // Result contracts for image picking and camera
-    private val pickImageContract = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+    private val pickImageContract = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia(),
+    ) { uri ->
         uri?.let { viewModel.laggTillBildUri(it) }
     }
 
-    private val takePictureContract = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+    private var kameraUri: Uri? = null
+    private val takePictureContract = registerForActivityResult(
+        ActivityResultContracts.TakePicture(),
+    ) { success ->
         if (success) {
-            viewModel.skapaKameraFotoUri()?.let { uri ->
-                viewModel.laggTillBildUri(uri)
-            }
+            kameraUri?.let { viewModel.laggTillBildUri(it) }
         }
+        kameraUri = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,11 +101,18 @@ class MainActivity : ComponentActivity() {
                                 onUtforareAndras = viewModel::uppdateraPostUtforare,
                                 onUppgiftAndras = viewModel::uppdateraPostUppgift,
                                 onAnteckningAndras = viewModel::uppdateraPostAnteckning,
+                                bildUri = viewModel::bildUri,
                                 onBildValj = {
-                                    pickImageContract.launch(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    pickImageContract.launch(
+                                        PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.ImageOnly,
+                                        ),
+                                    )
                                 },
                                 onTaFoto = {
-                                    takePictureContract.launch(viewModel.skapaKameraFotoUri())
+                                    val uri = viewModel.skapaKameraFotoUri()
+                                    kameraUri = uri
+                                    takePictureContract.launch(uri)
                                 },
                                 onTaBortBild = viewModel::taBortBildFranFormular,
                                 onSpara = viewModel::sparaPostFormular,
