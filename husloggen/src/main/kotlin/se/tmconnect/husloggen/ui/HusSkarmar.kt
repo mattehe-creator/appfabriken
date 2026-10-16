@@ -151,7 +151,7 @@ fun HusStartSkarm(
             HusFlik.ATT_GORA -> AttGoraFlik(
                 uppgifter = uppgifter,
                 contentPadding = innerPadding,
-                onNyUppgift = onNyUppift,
+                onNyUppgift = onNyUppgift,
                 onOppnaUppgift = onOppnaUppgift,
                 onMarkeraGjord = onMarkeraGjord,
                 paminnelserPa = paminnelserPa,
