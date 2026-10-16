@@ -74,4 +74,14 @@
         <item quantity="one">Every %d year</item>
         <item quantity="other">Every %d years</item>
     </plurals>
+    
+    <!-- Bildfunktioner -->
+    <string name="bild_valj_bild">Choose image</string>
+    <string name="bild_ta_foto">Take photo</string>
+    <string name="bild_ta_bort">Remove image</string>
+    <string name="bild_max_antal">No more images can be added (max 10)</string>
+    <string name="bild_har_bilder">Entry has images</string>
+    <string name="bild_dela">Share</string>
+    <string name="bild_stang">Close</string>
+    <string name="bild_fel_lasning">Could not read or save the image</string>
 </resources>

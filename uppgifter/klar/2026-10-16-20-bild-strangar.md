@@ -37,3 +37,5 @@ gradle :husloggen:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra Kotlin-kod utöver testfilen om det behövs.
 - Lägga till beroenden.
 - Hårdkoda synlig text i composables (det kommer i senare uppgifter).
+
+utfall: godkänd 2026-10-16 (justerade `bild_max_antal` och `bild_fel_lasning` så texterna matchar uppgiftens syfte)
