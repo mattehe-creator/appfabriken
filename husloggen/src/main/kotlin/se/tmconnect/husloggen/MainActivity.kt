@@ -147,6 +147,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private val hamtaSakerhetskopiaContract = registerForActivityResult(
+        ActivityResultContracts.OpenDocument(),
+    ) { uri: Uri? ->
+        if (uri != null) {
+            viewModel.lasInSakerhetskopia(uri)
+        }
+    }
+
     private var behorighetNekad by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -181,25 +189,25 @@ class MainActivity : ComponentActivity() {
                 val uppgiftGjordPostEjSparadText = stringResource(R.string.uppgift_gjord_post_ej_sparad)
                 val sakerhetskopiaSparadText = stringResource(R.string.sakerhetskopia_sparad)
                 val sakerhetskopiaKundeInteLasasText = stringResource(R.string.sakerhetskopia_kunde_inte_lasas)
+                val sakerhetskopiaNyareVersionText = stringResource(R.string.sakerhetskopia_nyare_version)
                 val idag = LocalDate.now()
                 val snackbarHostState = remember { SnackbarHostState() }
 
                 LaunchedEffect(viewModel) {
                     viewModel.meddelanden.collect { meddelande ->
-                        when (meddelande) {
-                            HusUiMeddelande.UppgiftMarkeradGjord -> {
-                                snackbarHostState.showSnackbar(markeradGjordText)
-                            }
-                            HusUiMeddelande.UppgiftMarkeradGjordPostEjSparad -> {
-                                snackbarHostState.showSnackbar(uppgiftGjordPostEjSparadText)
-                            }
-                            HusUiMeddelande.SakerhetskopiaSparad -> {
-                                snackbarHostState.showSnackbar(sakerhetskopiaSparadText)
-                            }
-                            HusUiMeddelande.SakerhetskopiaKundeInteLasas -> {
-                                snackbarHostState.showSnackbar(sakerhetskopiaKundeInteLasasText)
-                            }
+                        val text = when (meddelande) {
+                            HusUiMeddelande.UppgiftMarkeradGjord -> markeradGjordText
+                            HusUiMeddelande.UppgiftMarkeradGjordPostEjSparad -> uppgiftGjordPostEjSparadText
+                            HusUiMeddelande.SakerhetskopiaSparad -> sakerhetskopiaSparadText
+                            HusUiMeddelande.SakerhetskopiaKundeInteLasas -> sakerhetskopiaKundeInteLasasText
+                            HusUiMeddelande.SakerhetskopiaNyareVersion -> sakerhetskopiaNyareVersionText
+                            is HusUiMeddelande.SakerhetskopiaImporterad -> getString(
+                                R.string.sakerhetskopia_importerad,
+                                meddelande.tillagda,
+                                meddelande.hoppadeOver,
+                            )
                         }
+                        snackbarHostState.showSnackbar(text)
                     }
                 }
 
@@ -304,7 +312,11 @@ class MainActivity : ComponentActivity() {
                                         sakerhetskopiaFilnamn(LocalDate.now()),
                                     )
                                 },
-                                onHamtaSakerhetskopia = {},
+                                onHamtaSakerhetskopia = {
+                                    hamtaSakerhetskopiaContract.launch(
+                                        arrayOf("application/zip", "application/octet-stream"),
+                                    )
+                                },
                             )
                         }
                         else -> {
