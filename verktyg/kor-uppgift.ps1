@@ -30,13 +30,18 @@ Start-Transcript -Path (Join-Path $loggMapp "kor-$stampel.log") | Out-Null
 function Avbryt([string]$text) {
     Write-Host "AVBRYTER: $text" -ForegroundColor Red
     Status "fel" $text
+    RensaAktiv
     Stop-Transcript | Out-Null
     exit 1
 }
 
 # Läget skrivs till status.json, som panelen (verktyg/panel.py) visar.
 $statusFil = Join-Path (Split-Path -Parent $loggMapp) "status.json"
+$aktivFil = Join-Path (Split-Path -Parent $loggMapp) "aktiv-uppgift.json"
 $aiderLogg = Join-Path $loggMapp "aider-senaste.log"
+function RensaAktiv() {
+    try { if (Test-Path $script:aktivFil) { Remove-Item -Force $script:aktivFil } } catch { }
+}
 function Status([string]$fas, [string]$text = "") {
     try {
         @{ fas = $fas; text = $text; uppgift = $script:namn; modell = $Modell; tid = (Get-Date).ToString("s") } |
@@ -257,7 +262,7 @@ foreach ($kandidat in (Get-ChildItem "uppgifter\ny\*.md" -ErrorAction SilentlyCo
 if (-not $uppgift) {
     $antal = @(Get-ChildItem "uppgifter\ny\*.md" -ErrorAction SilentlyContinue).Count
     $orsak = if ($antal -eq 0) { "Kön är tom. Väntar på att Cursor delar upp nästa uppdrag." } else { "$antal uppgifter väntar på granskning eller på andra uppgifter." }
-    Status "vilar" $orsak; Write-Host $orsak; Stop-Transcript | Out-Null; exit 3
+    Status "vilar" $orsak; RensaAktiv; Write-Host $orsak; Stop-Transcript | Out-Null; exit 3
 }
 
 $namn = $uppgift.BaseName
@@ -283,6 +288,17 @@ SkapaUppgiftsgren $gren $namn
 $iPagar = "uppgifter/pagar/$($uppgift.Name)"
 KorGit @("mv", "uppgifter/ny/$($uppgift.Name)", $iPagar)
 KorGit @("commit", "-m", "Uppgift startad: $namn")
+
+try {
+    @{
+        namn = $namn
+        gren = $gren
+        pagar = $iPagar
+        modell = $Modell
+        testFil = $testFil
+        start = (Get-Date).ToString("s")
+    } | ConvertTo-Json | Set-Content -Encoding UTF8 $aktivFil
+} catch { }
 
 # --- Aider ---
 # Meddelandet är uppgiften plus en regel för frågor (ARBETSFLODE.md).
@@ -353,6 +369,7 @@ if ($utanfor) { Write-Host "Filer utanför uppgiften: $($utanfor -join ', ')" -F
 if ($IngenPush) {
     Write-Host "Ingen push (-IngenPush). Grenen $gren finns bara lokalt."
     KorGit @("checkout", "main")
+    RensaAktiv
     Stop-Transcript | Out-Null
     exit 0
 }
@@ -390,4 +407,5 @@ if ($LASTEXITCODE -ne 0) {
 KorGit @("checkout", "main")
 Write-Host "Klart." -ForegroundColor Green
 Status "klar" "PR öppnad för $namn. Tester: $resultat."
+RensaAktiv
 Stop-Transcript | Out-Null
