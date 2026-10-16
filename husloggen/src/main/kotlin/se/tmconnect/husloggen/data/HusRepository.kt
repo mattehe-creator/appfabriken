@@ -96,6 +96,6 @@ class HusRepository(
     fun bildfilFinns(filnamn: String) = bildLager.filFinns(filnamn)
 
     companion object {
-        const val MAX_BILDER_PER_POST = 10
+        const val MAX_BILDER_PER_POST = se.tmconnect.husloggen.regler.MAX_BILDER_PER_POST
     }
 }
