@@ -67,7 +67,6 @@ fun HusStartSkarm(
     onPaminnelserAndras: (Boolean) -> Unit = {},
     behorighetNekad: Boolean = false,
     arPro: Boolean = false,
-    onVisaProDialog: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var valdFlik by rememberSaveable { mutableIntStateOf(HusFlik.ATT_GORA.ordinal) }
