@@ -1,9 +1,11 @@
 package se.tmconnect.husloggen
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +39,19 @@ class MainActivity : ComponentActivity() {
         val databas = HusDatabas.hamta(applicationContext)
         val bildLager = skapaHusBildLager(applicationContext)
         HusViewModelFactory(HusRepository(databas.husDao(), bildLager))
+    }
+
+    // Result contracts for image picking and camera
+    private val pickImageContract = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        uri?.let { viewModel.laggTillBildUri(it) }
+    }
+
+    private val takePictureContract = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) {
+            viewModel.skapaKameraFotoUri()?.let { uri ->
+                viewModel.laggTillBildUri(uri)
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,6 +97,13 @@ class MainActivity : ComponentActivity() {
                                 onUtforareAndras = viewModel::uppdateraPostUtforare,
                                 onUppgiftAndras = viewModel::uppdateraPostUppgift,
                                 onAnteckningAndras = viewModel::uppdateraPostAnteckning,
+                                onBildValj = {
+                                    pickImageContract.launch(null)
+                                },
+                                onTaFoto = {
+                                    takePictureContract.launch(viewModel.skapaKameraFotoUri())
+                                },
+                                onTaBortBild = viewModel::taBortBildFranFormular,
                                 onSpara = viewModel::sparaPostFormular,
                                 onTaBort = viewModel::taBortPostFormularPost,
                                 onStang = viewModel::stangPostFormular,

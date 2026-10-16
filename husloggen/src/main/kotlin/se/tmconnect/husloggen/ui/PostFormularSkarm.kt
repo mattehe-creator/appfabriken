@@ -52,6 +52,9 @@ fun PostFormularSkarm(
     onUtforareAndras: (String) -> Unit,
     onUppgiftAndras: (Long?) -> Unit,
     onAnteckningAndras: (String) -> Unit,
+    onBildValj: () -> Unit,
+    onTaFoto: () -> Unit,
+    onTaBortBild: (String) -> Unit,
     onSpara: () -> Unit,
     onTaBort: () -> Unit,
     onStang: () -> Unit,
@@ -191,6 +194,15 @@ fun PostFormularSkarm(
                 uppgifter = uppgifter,
                 valdUppgiftId = tillstand.uppgiftId,
                 onValjUppgift = onUppgiftAndras,
+            )
+
+            PostBildFalt(
+                bildFilnamn = tillstand.bildFilnamn,
+                bildUri = { filnamn -> null }, // Placeholder - ViewModel kommer att hantera detta
+                kanLaggaTill = true, // Placeholder - ViewModel kommer att hantera detta
+                onValjBild = onBildValj,
+                onTaFoto = onTaFoto,
+                onTaBortBild = onTaBortBild,
             )
 
             PostAnteckningFalt(
