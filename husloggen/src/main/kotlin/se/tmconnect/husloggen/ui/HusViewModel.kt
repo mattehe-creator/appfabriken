@@ -26,6 +26,7 @@ import se.tmconnect.husloggen.data.InstallningarLager
 import se.tmconnect.husloggen.data.MarkeraGjordResult
 import se.tmconnect.husloggen.data.SparaPostResult
 import se.tmconnect.husloggen.export.Sakerhetskopia
+import se.tmconnect.husloggen.export.SakerhetskopiaLasResult
 import se.tmconnect.husloggen.export.SakerhetskopiaPlanerare
 import se.tmconnect.husloggen.regler.kanLaggaTillPost
 import se.tmconnect.karna.pro.ProKalla
@@ -76,8 +77,12 @@ sealed class HusUiMeddelande {
     data object UppgiftMarkeradGjordPostEjSparad : HusUiMeddelande()
     
     data object SakerhetskopiaSparad : HusUiMeddelande()
-    
+
     data object SakerhetskopiaKundeInteLasas : HusUiMeddelande()
+
+    data object SakerhetskopiaNyareVersion : HusUiMeddelande()
+
+    data class SakerhetskopiaImporterad(val tillagda: Int, val hoppadeOver: Int) : HusUiMeddelande()
 }
 
 class HusViewModel(
@@ -551,6 +556,58 @@ class HusViewModel(
             } catch (_: Exception) {
                 _meddelanden.emit(HusUiMeddelande.SakerhetskopiaKundeInteLasas)
             }
+        }
+    }
+
+    fun lasInSakerhetskopia(uri: Uri) {
+        viewModelScope.launch {
+            try {
+                val resultat = withContext(Dispatchers.IO) {
+                    val inputStream = appContext.contentResolver.openInputStream(uri)
+                        ?: throw java.io.IOException()
+                    inputStream.use { stream ->
+                        Sakerhetskopia.lasIn(stream)
+                    }
+                }
+                when (resultat) {
+                    is SakerhetskopiaLasResult.Ok -> importeraSakerhetskopia(resultat)
+                    SakerhetskopiaLasResult.Fel.OkandVersion -> {
+                        _meddelanden.emit(HusUiMeddelande.SakerhetskopiaNyareVersion)
+                    }
+                    SakerhetskopiaLasResult.Fel.TrasigFil,
+                    SakerhetskopiaLasResult.Fel.SaknarLoggJson -> {
+                        _meddelanden.emit(HusUiMeddelande.SakerhetskopiaKundeInteLasas)
+                    }
+                }
+            } catch (_: Exception) {
+                _meddelanden.emit(HusUiMeddelande.SakerhetskopiaKundeInteLasas)
+            }
+        }
+    }
+
+    private suspend fun importeraSakerhetskopia(resultat: SakerhetskopiaLasResult.Ok) {
+        try {
+            val importResultat = withContext(Dispatchers.IO) {
+                repository.importeraSakerhetskopia(
+                    resultat.innehall,
+                    resultat.bildFiler,
+                )
+            }
+            if (paminnelseInstallningar.paminnelserPa.first()) {
+                PaminnelsePlanerare.synka<PaminnelseWorker>(
+                    appContext,
+                    true,
+                    HusPaminnelseKalla.UNIKT_JOBB_NAMN,
+                )
+            }
+            _meddelanden.emit(
+                HusUiMeddelande.SakerhetskopiaImporterad(
+                    tillagda = importResultat.tillagda,
+                    hoppadeOver = importResultat.hoppadeOver,
+                ),
+            )
+        } catch (_: Exception) {
+            _meddelanden.emit(HusUiMeddelande.SakerhetskopiaKundeInteLasas)
         }
     }
 }

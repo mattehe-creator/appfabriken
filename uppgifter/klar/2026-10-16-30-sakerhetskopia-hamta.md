@@ -31,3 +31,5 @@ gradle :husloggen:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra andra filer.
 - Delvis import vid fel.
 - Nya behörigheter.
+
+utfall: godkänd 2026-10-16 (fel sökväg i repots rot; fel importmeddelanden och fältnamn; oförändrad husloggen-kod; borttaget BESLUTSLOGG/uppdrag utanför uppgiften; getString i snackbar för importtext)
