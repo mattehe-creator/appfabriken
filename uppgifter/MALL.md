@@ -13,8 +13,6 @@ uppdrag: uppdrag/<filnamn>.md
 försök: 1
 beror-på: <tidigare uppgiftsfil, eller "ingen">
 
-`cursor:<namn>` (samma namn som uppdragsfilen utan `.md`) betyder att Cursors kod för det uppdraget ska vara mergad. Körskriptet räknar det som klart om en mergad PR kommer från grenen `cursor/<namn>`, eller från en annan `cursor/`-gren vars titel eller beskrivning nämner `uppdrag/<namn>.md` eller `<namn>`. Ange helst en tidigare uppgiftsfil i `beror-på` när ordningen följer lokala steg; använd `cursor:` bara när uppgiften behöver Cursors kod.
-
 ## Ändra bara dessa filer
 - garantivalvet/src/main/java/.../Fil.kt (ny)
 - garantivalvet/src/test/java/.../FilTest.kt (ny)

@@ -25,6 +25,7 @@ import java.time.LocalDate
 import se.tmconnect.husloggen.data.HusDatabas
 import se.tmconnect.husloggen.data.HusRepository
 import se.tmconnect.husloggen.data.skapaHusBildLager
+import se.tmconnect.husloggen.ui.BildHelskarm
 import se.tmconnect.husloggen.ui.HusStartSkarm
 import se.tmconnect.husloggen.ui.HusUiMeddelande
 import se.tmconnect.husloggen.ui.HusViewModel
@@ -64,6 +65,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppfabrikTema(morkt = isSystemInDarkTheme()) {
                 var visaInstallningar by rememberSaveable { mutableStateOf(false) }
+                var visaBildHelskarm by remember { mutableStateOf(false) }
+                var bildUrier by remember { mutableStateOf<List<Uri>>(emptyList()) }
+                var valdBildIndex by remember { mutableStateOf(0) }
                 val uppgifter by viewModel.uppgifter.collectAsState()
                 val poster by viewModel.poster.collectAsState()
                 val formular by viewModel.formular.collectAsState()
@@ -88,6 +92,13 @@ class MainActivity : ComponentActivity() {
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                 ) { _ ->
                     when {
+                        visaBildHelskarm -> {
+                            BildHelskarm(
+                                bildUrier = bildUrier,
+                                valdBildIndex = valdBildIndex,
+                                onStang = { visaBildHelskarm = false },
+                            )
+                        }
                         postFormular != null -> {
                             val tillstand = postFormular!!
                             PostFormularSkarm(
@@ -126,12 +137,20 @@ class MainActivity : ComponentActivity() {
                                 val uppgiftNamn = post.uppgiftId?.let { id ->
                                     uppgifter.find { it.id == id }?.namn
                                 }
+                                val bilder = viewModel.lasBilderForPost(post)
                                 PostDetaljSkarm(
                                     post = post,
                                     uppgiftNamn = uppgiftNamn,
                                     onAndra = { viewModel.visaAndraPost(post.id) },
                                     onTaBort = { viewModel.taBortPost(post.id) },
                                     onTillbaka = viewModel::stangPostDetalj,
+                                    bildFilnamn = bilder,
+                                    bildUri = viewModel::bildUri,
+                                    onOppnaBild = { index ->
+                                        bildUrier = bilder.map(viewModel::bildUri)
+                                        valdBildIndex = index
+                                        visaBildHelskarm = true
+                                    },
                                 )
                             } else {
                                 LaunchedEffect(postDetaljId) {
