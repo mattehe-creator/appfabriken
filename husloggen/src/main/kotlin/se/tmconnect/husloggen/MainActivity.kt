@@ -22,6 +22,7 @@ import java.time.LocalDate
 import se.tmconnect.husloggen.data.HusDatabas
 import se.tmconnect.husloggen.data.HusRepository
 import se.tmconnect.husloggen.data.skapaHusBildLager
+import se.tmconnect.husloggen.ui.BildHelskarm
 import se.tmconnect.husloggen.ui.HusStartSkarm
 import se.tmconnect.husloggen.ui.HusUiMeddelande
 import se.tmconnect.husloggen.ui.HusViewModel
@@ -45,6 +46,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppfabrikTema(morkt = isSystemInDarkTheme()) {
                 var visaInstallningar by rememberSaveable { mutableStateOf(false) }
+                var visaBildHelskarm by rememberSaveable { mutableStateOf(false) }
+                var valdBildIndex by rememberSaveable { mutableStateOf(0) }
+                var bildUrier by rememberSaveable { mutableStateOf<List<android.net.Uri>>(emptyList()) }
                 val uppgifter by viewModel.uppgifter.collectAsState()
                 val poster by viewModel.poster.collectAsState()
                 val formular by viewModel.formular.collectAsState()
@@ -69,6 +73,13 @@ class MainActivity : ComponentActivity() {
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                 ) { _ ->
                     when {
+                        visaBildHelskarm -> {
+                            BildHelskarm(
+                                bildUrier = bildUrier,
+                                valdIndex = valdBildIndex,
+                                onTillbaka = { visaBildHelskarm = false }
+                            )
+                        }
                         postFormular != null -> {
                             val tillstand = postFormular!!
                             PostFormularSkarm(
