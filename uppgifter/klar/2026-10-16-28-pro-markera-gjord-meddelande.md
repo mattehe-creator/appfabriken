@@ -26,3 +26,5 @@ gradle :husloggen:testDebugUnitTest --tests "*HusRepositoryTest"
 ## Gör inte
 - Ändra ViewModel eller repository (Cursor äger gränslogiken).
 - Ändra andra filer.
+
+utfall: godkänd 2026-10-16 (inget)
