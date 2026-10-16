@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
@@ -176,11 +176,9 @@ fun PostListRad(
                 style = MaterialTheme.typography.bodyLarge,
             )
         }
-        
-        // Visa ikon om posten har bilder
         if (tolkaBilder(post.bilder).isNotEmpty()) {
             Icon(
-                imageVector = Icons.Outlined.Image,
+                imageVector = Icons.Filled.CheckCircle,
                 contentDescription = stringResource(R.string.bild_har_bilder),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )

@@ -27,3 +27,5 @@ gradle :husloggen:testDebugUnitTest --tests "*BildTolkningTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-16 (ikon: CheckCircle i material-icons-core istället för Outlined.Image)
