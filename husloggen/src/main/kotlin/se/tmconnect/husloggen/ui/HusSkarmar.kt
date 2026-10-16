@@ -52,7 +52,9 @@ fun HusStartSkarm(
     poster: List<Post>,
     onInstallningar: () -> Unit,
     onNyUppgift: () -> Unit,
+    onNyPost: () -> Unit,
     onOppnaUppgift: (Long) -> Unit,
+    onOppnaPost: (Long) -> Unit,
     onMarkeraGjord: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -91,18 +93,33 @@ fun HusStartSkarm(
             }
         },
         floatingActionButton = {
-            if (valdFlik == HusFlik.ATT_GORA.ordinal) {
-                ExtendedFloatingActionButton(
-                    onClick = onNyUppgift,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = null,
-                        )
-                    },
-                    text = { Text(text = stringResource(R.string.fab_ny_uppgift)) },
-                    modifier = Modifier.tryckyta48(),
-                )
+            when (HusFlik.entries[valdFlik]) {
+                HusFlik.ATT_GORA -> {
+                    ExtendedFloatingActionButton(
+                        onClick = onNyUppgift,
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Filled.Add,
+                                contentDescription = null,
+                            )
+                        },
+                        text = { Text(text = stringResource(R.string.fab_ny_uppgift)) },
+                        modifier = Modifier.tryckyta48(),
+                    )
+                }
+                HusFlik.LOGG -> {
+                    ExtendedFloatingActionButton(
+                        onClick = onNyPost,
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Filled.Add,
+                                contentDescription = null,
+                            )
+                        },
+                        text = { Text(text = stringResource(R.string.fab_ny_post)) },
+                        modifier = Modifier.tryckyta48(),
+                    )
+                }
             }
         },
     ) { innerPadding ->
@@ -118,6 +135,8 @@ fun HusStartSkarm(
                 poster = poster,
                 locale = locale,
                 contentPadding = innerPadding,
+                onNyPost = onNyPost,
+                onOppnaPost = onOppnaPost,
             )
         }
     }
@@ -160,11 +179,14 @@ private fun LoggFlik(
     poster: List<Post>,
     locale: Locale,
     contentPadding: PaddingValues,
+    onNyPost: () -> Unit,
+    onOppnaPost: (Long) -> Unit,
 ) {
     if (poster.isEmpty()) {
         TomFlikText(
             text = stringResource(R.string.tom_logg),
             contentPadding = contentPadding,
+            onNyPost = onNyPost,
         )
         return
     }
@@ -179,8 +201,14 @@ private fun LoggFlik(
     ) {
         grupperadePoster.forEach { arGrupp ->
             item {
+                val harBelopp = arGrupp.poster.any { it.beloppOre != null }
+                val rubrik = if (harBelopp) {
+                    "${arGrupp.ar} (${formateraPrisKr(arGrupp.summaOre, locale)})"
+                } else {
+                    arGrupp.ar.toString()
+                }
                 Text(
-                    text = "${arGrupp.ar} (${formateraPrisKr(arGrupp.summaOre, locale)})",
+                    text = rubrik,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -188,8 +216,12 @@ private fun LoggFlik(
                 )
             }
 
-            items(arGrupp.poster) { post ->
-                PostListRad(post = post, locale = locale)
+            items(arGrupp.poster, key = { it.id }) { post ->
+                PostListRad(
+                    post = post,
+                    locale = locale,
+                    onClick = { onOppnaPost(post.id) },
+                )
             }
         }
     }
@@ -200,6 +232,7 @@ private fun TomFlikText(
     text: String,
     contentPadding: PaddingValues,
     onNyUppgift: (() -> Unit)? = null,
+    onNyPost: (() -> Unit)? = null,
 ) {
     Box(
         modifier = Modifier
@@ -215,20 +248,37 @@ private fun TomFlikText(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
             )
-            if (onNyUppgift != null) {
-                ExtendedFloatingActionButton(
-                    onClick = onNyUppgift,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = null,
-                        )
-                    },
-                    text = { Text(text = stringResource(R.string.fab_ny_uppgift)) },
-                    modifier = Modifier
-                        .padding(top = 24.dp)
-                        .tryckyta48(),
-                )
+            when {
+                onNyUppgift != null -> {
+                    ExtendedFloatingActionButton(
+                        onClick = onNyUppgift,
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Filled.Add,
+                                contentDescription = null,
+                            )
+                        },
+                        text = { Text(text = stringResource(R.string.fab_ny_uppgift)) },
+                        modifier = Modifier
+                            .padding(top = 24.dp)
+                            .tryckyta48(),
+                    )
+                }
+                onNyPost != null -> {
+                    ExtendedFloatingActionButton(
+                        onClick = onNyPost,
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Filled.Add,
+                                contentDescription = null,
+                            )
+                        },
+                        text = { Text(text = stringResource(R.string.fab_ny_post)) },
+                        modifier = Modifier
+                            .padding(top = 24.dp)
+                            .tryckyta48(),
+                    )
+                }
             }
         }
     }

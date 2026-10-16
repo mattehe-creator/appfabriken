@@ -18,6 +18,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import java.time.LocalDate
 import se.tmconnect.husloggen.data.HusDatabas
 import se.tmconnect.husloggen.data.HusRepository
 import se.tmconnect.husloggen.ui.HusStartSkarm
@@ -25,6 +26,8 @@ import se.tmconnect.husloggen.ui.HusUiMeddelande
 import se.tmconnect.husloggen.ui.HusViewModel
 import se.tmconnect.husloggen.ui.HusViewModelFactory
 import se.tmconnect.husloggen.ui.InstallningarSkarm
+import se.tmconnect.husloggen.ui.PostDetaljSkarm
+import se.tmconnect.husloggen.ui.PostFormularSkarm
 import se.tmconnect.husloggen.ui.UppgiftFormularSkarm
 import se.tmconnect.karna.tema.AppfabrikTema
 
@@ -43,8 +46,11 @@ class MainActivity : ComponentActivity() {
                 val uppgifter by viewModel.uppgifter.collectAsState()
                 val poster by viewModel.poster.collectAsState()
                 val formular by viewModel.formular.collectAsState()
+                val postFormular by viewModel.postFormular.collectAsState()
+                val postDetaljId by viewModel.postDetaljId.collectAsState()
                 val snackbarHostState = remember { SnackbarHostState() }
                 val markeradGjordText = stringResource(R.string.uppgift_markerad_gjord)
+                val idag = LocalDate.now()
 
                 LaunchedEffect(viewModel) {
                     viewModel.meddelanden.collect { meddelande ->
@@ -61,6 +67,43 @@ class MainActivity : ComponentActivity() {
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                 ) { _ ->
                     when {
+                        postFormular != null -> {
+                            val tillstand = postFormular!!
+                            PostFormularSkarm(
+                                tillstand = tillstand,
+                                uppgifter = uppgifter,
+                                idag = idag,
+                                onVadAndras = viewModel::uppdateraPostVad,
+                                onDatumAndras = viewModel::uppdateraPostDatum,
+                                onTypAndras = viewModel::uppdateraPostTyp,
+                                onBeloppAndras = viewModel::uppdateraPostBelopp,
+                                onUtforareAndras = viewModel::uppdateraPostUtforare,
+                                onUppgiftAndras = viewModel::uppdateraPostUppgift,
+                                onAnteckningAndras = viewModel::uppdateraPostAnteckning,
+                                onSpara = viewModel::sparaPostFormular,
+                                onTaBort = viewModel::taBortPostFormularPost,
+                                onStang = viewModel::stangPostFormular,
+                            )
+                        }
+                        postDetaljId != null -> {
+                            val post = poster.find { it.id == postDetaljId }
+                            if (post != null) {
+                                val uppgiftNamn = post.uppgiftId?.let { id ->
+                                    uppgifter.find { it.id == id }?.namn
+                                }
+                                PostDetaljSkarm(
+                                    post = post,
+                                    uppgiftNamn = uppgiftNamn,
+                                    onAndra = { viewModel.visaAndraPost(post.id) },
+                                    onTaBort = { viewModel.taBortPost(post.id) },
+                                    onTillbaka = viewModel::stangPostDetalj,
+                                )
+                            } else {
+                                LaunchedEffect(postDetaljId) {
+                                    viewModel.stangPostDetalj()
+                                }
+                            }
+                        }
                         formular != null -> {
                             val tillstand = formular!!
                             UppgiftFormularSkarm(
@@ -85,7 +128,9 @@ class MainActivity : ComponentActivity() {
                                 poster = poster,
                                 onInstallningar = { visaInstallningar = true },
                                 onNyUppgift = viewModel::visaNyUppgift,
+                                onNyPost = viewModel::visaNyPost,
                                 onOppnaUppgift = viewModel::visaAndraUppgift,
+                                onOppnaPost = viewModel::visaPostDetalj,
                                 onMarkeraGjord = viewModel::markeraSomGjord,
                             )
                         }

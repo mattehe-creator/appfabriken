@@ -139,13 +139,17 @@ fun UppgiftListRad(
 fun PostListRad(
     post: Post,
     locale: java.util.Locale,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val belopp = formateraPrisKr(post.beloppOre, locale)
+    val typText = postTypEtikett(post.typ)
     val radText = buildString {
+        append(post.vad)
+        append(" · ")
         append(formateraDatum(post.datum, locale))
         append(" · ")
-        append(post.vad)
+        append(typText)
         if (belopp.isNotEmpty()) {
             append(" · ")
             append(belopp)
@@ -157,7 +161,8 @@ fun PostListRad(
         style = MaterialTheme.typography.bodyLarge,
         modifier = modifier
             .fillMaxWidth()
-            .tryckyta48()
+            .heightIn(min = 48.dp)
+            .clickable(onClick = onClick)
             .padding(vertical = 8.dp),
     )
 }

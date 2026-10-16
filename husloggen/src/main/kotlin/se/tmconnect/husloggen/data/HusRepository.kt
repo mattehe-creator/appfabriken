@@ -32,6 +32,8 @@ class HusRepository(private val dao: HusDao) {
         dao.markeraSomGjord(uppdaterad, post)
     }
 
+    suspend fun hamtaPost(id: Long): Post? = dao.hamtaPost(id)
+
     suspend fun sparaPost(post: Post): Long =
         if (post.id == 0L) {
             dao.infogaPost(post)
@@ -39,6 +41,8 @@ class HusRepository(private val dao: HusDao) {
             dao.uppdateraPost(post)
             post.id
         }
+
+    suspend fun uppdateraPost(post: Post) = dao.uppdateraPost(post)
 
     suspend fun taBortPost(post: Post) = dao.taBortPost(post)
 

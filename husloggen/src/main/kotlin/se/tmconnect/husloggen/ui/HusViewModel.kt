@@ -16,9 +16,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import se.tmconnect.husloggen.data.HusRepository
 import se.tmconnect.husloggen.data.Post
+import se.tmconnect.husloggen.data.PostTyp
 import se.tmconnect.husloggen.data.Uppgift
+import se.tmconnect.husloggen.regler.PostFel
 import se.tmconnect.husloggen.regler.UppgiftFel
+import se.tmconnect.husloggen.regler.beloppOreTillFaltText
 import se.tmconnect.husloggen.regler.sorteraUppgifter
+import se.tmconnect.husloggen.regler.tolkaBeloppTillOre
+import se.tmconnect.husloggen.regler.valideraPost
 import se.tmconnect.husloggen.regler.valideraUppgift
 
 data class UppgiftFormularTillstand(
@@ -29,6 +34,18 @@ data class UppgiftFormularTillstand(
     val paminnelse: Boolean = true,
     val anteckning: String = "",
     val valideringsFel: UppgiftFel? = null,
+)
+
+data class PostFormularTillstand(
+    val redigerarId: Long = 0L,
+    val vad: String = "",
+    val datum: LocalDate = LocalDate.now(),
+    val typ: PostTyp = PostTyp.UNDERHALL,
+    val beloppText: String = "",
+    val utforare: String = "",
+    val uppgiftId: Long? = null,
+    val anteckning: String = "",
+    val valideringsFel: PostFel? = null,
 )
 
 sealed class HusUiMeddelande {
@@ -48,6 +65,12 @@ class HusViewModel(
 
     private val _formular = MutableStateFlow<UppgiftFormularTillstand?>(null)
     val formular: StateFlow<UppgiftFormularTillstand?> = _formular.asStateFlow()
+
+    private val _postFormular = MutableStateFlow<PostFormularTillstand?>(null)
+    val postFormular: StateFlow<PostFormularTillstand?> = _postFormular.asStateFlow()
+
+    private val _postDetaljId = MutableStateFlow<Long?>(null)
+    val postDetaljId: StateFlow<Long?> = _postDetaljId.asStateFlow()
 
     private val _meddelanden = MutableSharedFlow<HusUiMeddelande>()
     val meddelanden: SharedFlow<HusUiMeddelande> = _meddelanden.asSharedFlow()
@@ -151,8 +174,123 @@ class HusViewModel(
         }
     }
 
+    fun visaNyPost() {
+        _postDetaljId.value = null
+        _postFormular.value = PostFormularTillstand(datum = idag)
+    }
+
+    fun visaPostDetalj(postId: Long) {
+        _postFormular.value = null
+        _postDetaljId.value = postId
+    }
+
+    fun stangPostDetalj() {
+        _postDetaljId.value = null
+    }
+
+    fun visaAndraPost(postId: Long) {
+        viewModelScope.launch {
+            val post = repository.hamtaPost(postId) ?: return@launch
+            _postDetaljId.value = null
+            _postFormular.value = PostFormularTillstand(
+                redigerarId = post.id,
+                vad = post.vad,
+                datum = post.datum,
+                typ = post.typ,
+                beloppText = post.beloppOre?.let { beloppOreTillFaltText(it) }.orEmpty(),
+                utforare = post.utforare.orEmpty(),
+                uppgiftId = post.uppgiftId,
+                anteckning = post.anteckning.orEmpty(),
+            )
+        }
+    }
+
+    fun stangPostFormular() {
+        _postFormular.value = null
+    }
+
+    fun uppdateraPostVad(vad: String) {
+        uppdateraPostFormular { it.copy(vad = vad, valideringsFel = null) }
+    }
+
+    fun uppdateraPostDatum(datum: LocalDate) {
+        uppdateraPostFormular { it.copy(datum = datum, valideringsFel = null) }
+    }
+
+    fun uppdateraPostTyp(typ: PostTyp) {
+        uppdateraPostFormular { it.copy(typ = typ) }
+    }
+
+    fun uppdateraPostBelopp(text: String) {
+        uppdateraPostFormular { it.copy(beloppText = text, valideringsFel = null) }
+    }
+
+    fun uppdateraPostUtforare(text: String) {
+        uppdateraPostFormular { it.copy(utforare = text) }
+    }
+
+    fun uppdateraPostUppgift(uppgiftId: Long?) {
+        uppdateraPostFormular { it.copy(uppgiftId = uppgiftId) }
+    }
+
+    fun uppdateraPostAnteckning(text: String) {
+        uppdateraPostFormular { it.copy(anteckning = text) }
+    }
+
+    fun sparaPostFormular(): Boolean {
+        val tillstand = _postFormular.value ?: return false
+        val fel = valideraPost(tillstand.vad, tillstand.datum, idag, tillstand.beloppText)
+        if (fel != null) {
+            _postFormular.value = tillstand.copy(valideringsFel = fel)
+            return false
+        }
+        viewModelScope.launch {
+            val befintlig = if (tillstand.redigerarId != 0L) {
+                repository.hamtaPost(tillstand.redigerarId)
+            } else {
+                null
+            }
+            val beloppOre = tillstand.beloppText.trim().takeIf { it.isNotEmpty() }
+                ?.let { tolkaBeloppTillOre(it) }
+            val post = Post(
+                id = tillstand.redigerarId,
+                datum = tillstand.datum,
+                vad = tillstand.vad.trim(),
+                typ = tillstand.typ,
+                beloppOre = beloppOre,
+                utforare = tillstand.utforare.trim().ifEmpty { null },
+                anteckning = tillstand.anteckning.trim().ifEmpty { null },
+                uppgiftId = tillstand.uppgiftId,
+                kvittoFil = befintlig?.kvittoFil,
+                bilder = befintlig?.bilder,
+                skapad = befintlig?.skapad ?: System.currentTimeMillis(),
+            )
+            repository.sparaPost(post)
+            _postFormular.value = null
+        }
+        return true
+    }
+
+    fun taBortPost(postId: Long) {
+        viewModelScope.launch {
+            repository.hamtaPost(postId)?.let { repository.taBortPost(it) }
+            _postDetaljId.value = null
+            _postFormular.value = null
+        }
+    }
+
+    fun taBortPostFormularPost() {
+        val tillstand = _postFormular.value ?: return
+        if (tillstand.redigerarId == 0L) return
+        taBortPost(tillstand.redigerarId)
+    }
+
     private fun uppdateraFormular(block: (UppgiftFormularTillstand) -> UppgiftFormularTillstand) {
         _formular.value = _formular.value?.let(block)
+    }
+
+    private fun uppdateraPostFormular(block: (PostFormularTillstand) -> PostFormularTillstand) {
+        _postFormular.value = _postFormular.value?.let(block)
     }
 }
 

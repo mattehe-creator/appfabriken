@@ -78,6 +78,68 @@ class HusRepositoryTest {
     }
 
     @Test
+    fun sparaAndraOchTaBortPost() = runTest {
+        val idag = LocalDate.of(2026, 10, 16)
+        val postId = repository.sparaPost(
+            Post(
+                datum = idag,
+                vad = "Målade fasaden",
+                typ = PostTyp.UNDERHALL,
+                beloppOre = 12_500L,
+            ),
+        )
+        val sparad = repository.hamtaPost(postId)!!
+        assertEquals("Målade fasaden", sparad.vad)
+        assertEquals(12_500L, sparad.beloppOre)
+
+        repository.sparaPost(
+            sparad.copy(vad = "Ommålning", beloppOre = 15_000L),
+        )
+        val uppdaterad = repository.hamtaPost(postId)!!
+        assertEquals("Ommålning", uppdaterad.vad)
+        assertEquals(15_000L, uppdaterad.beloppOre)
+
+        repository.taBortPost(uppdaterad)
+        assertNull(repository.hamtaPost(postId))
+        assertEquals(0, repository.poster.first().size)
+    }
+
+    @Test
+    fun postKoppladTillUppgiftBehallerKopplingVidAndring() = runTest {
+        val uppgiftId = repository.sparaUppgift(
+            Uppgift(
+                namn = "Rensa hängrännor",
+                intervallManader = 12,
+                startDatum = LocalDate.of(2026, 1, 1),
+            ),
+        )
+        val postId = repository.sparaPost(
+            Post(
+                datum = LocalDate.of(2026, 5, 1),
+                vad = "Rensning",
+                typ = PostTyp.UNDERHALL,
+                uppgiftId = uppgiftId,
+            ),
+        )
+        val post = repository.hamtaPost(postId)!!
+        repository.sparaPost(post.copy(vad = "Rensning klart"))
+        assertEquals(uppgiftId, repository.hamtaPost(postId)!!.uppgiftId)
+    }
+
+    @Test
+    fun postUtanBeloppSparasMedNull() = runTest {
+        val postId = repository.sparaPost(
+            Post(
+                datum = LocalDate.of(2026, 4, 1),
+                vad = "Kontroll",
+                typ = PostTyp.UNDERHALL,
+                beloppOre = null,
+            ),
+        )
+        assertNull(repository.hamtaPost(postId)!!.beloppOre)
+    }
+
+    @Test
     fun taBortUppgiftBehallerPostMedNullUppgiftId() = runTest {
         val uppgiftId = repository.sparaUppgift(
             Uppgift(
