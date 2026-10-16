@@ -38,6 +38,8 @@ import se.tmconnect.husloggen.BuildConfig
 import se.tmconnect.husloggen.R
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.Uppgift
+import se.tmconnect.husloggen.regler.ArGrupp
+import se.tmconnect.husloggen.regler.grupperaPerAr
 import se.tmconnect.karna.format.formateraDatum
 import se.tmconnect.karna.format.formateraPrisKr
 
@@ -119,7 +121,7 @@ private fun AttGoraFlik(
         contentPadding = PaddingValues(16.dp),
     ) {
         items(uppgifter, key = { it.id }) { uppgift ->
-            UppgiftEnkelRad(uppgift = uppgift)
+            UppgiftListRad(uppgift = uppgift) {}
         }
     }
 }
@@ -137,14 +139,28 @@ private fun LoggFlik(
         )
         return
     }
+    
+    val grupperadePoster = grupperaPerAr(poster)
+    
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(contentPadding),
         contentPadding = PaddingValues(16.dp),
     ) {
-        items(poster, key = { it.id }) { post ->
-            PostEnkelRad(post = post, locale = locale)
+        items(grupperadePoster, key = { it.ar }) { arGrupp ->
+            item {
+                Text(
+                    text = "${arGrupp.ar} (${formateraPrisKr(arGrupp.summaOre, locale)})",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                )
+            }
+            items(arGrupp.poster, key = { it.id }) { post ->
+                PostListRad(post = post, locale = locale)
+            }
         }
     }
 }
@@ -170,48 +186,6 @@ private fun TomFlikText(
     }
 }
 
-@Composable
-fun UppgiftEnkelRad(
-    uppgift: Uppgift,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = uppgift.namn,
-        style = MaterialTheme.typography.bodyLarge,
-        modifier = modifier
-            .fillMaxWidth()
-            .tryckyta48()
-            .padding(vertical = 8.dp),
-    )
-}
-
-@Composable
-fun PostEnkelRad(
-    post: Post,
-    locale: Locale,
-    modifier: Modifier = Modifier,
-) {
-    val belopp = formateraPrisKr(post.beloppOre, locale)
-    val radText = buildString {
-        append(formateraDatum(post.datum, locale))
-        append(" · ")
-        append(post.vad)
-        if (belopp.isNotEmpty()) {
-            append(" · ")
-            append(belopp)
-        }
-    }
-    Text(
-        text = radText,
-        style = MaterialTheme.typography.bodyLarge,
-        modifier = modifier
-            .fillMaxWidth()
-            .tryckyta48()
-            .padding(vertical = 8.dp),
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InstallningarSkarm(
     onTillbaka: () -> Unit,

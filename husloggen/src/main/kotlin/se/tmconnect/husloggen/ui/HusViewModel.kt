@@ -9,12 +9,17 @@ import kotlinx.coroutines.flow.stateIn
 import se.tmconnect.husloggen.data.HusRepository
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.Uppgift
+import se.tmconnect.husloggen.regler.sorteraUppgifter
+import java.time.LocalDate
 
 class HusViewModel(
     repository: HusRepository,
 ) : ViewModel() {
     val uppgifter: StateFlow<List<Uppgift>> = repository.uppgifter
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+        .map { uppgifter ->
+            sorteraUppgifter(uppgifter, LocalDate.now())
+        }
 
     val poster: StateFlow<List<Post>> = repository.poster
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
