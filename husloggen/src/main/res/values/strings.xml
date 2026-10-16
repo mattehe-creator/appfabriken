@@ -94,7 +94,7 @@
     <string name="bild_dela">Share</string>
     <string name="bild_stang">Close</string>
     <string name="bild_fel_lasning">Could not read or save the image</string>
-    
+
     <!-- Pro -->
     <string name="pro">Pro</string>
     <string name="pro_las_upp">Unlock Pro</string>
@@ -104,4 +104,19 @@
     <string name="pro_grans_nadd">Limit reached: 15 entries</string>
     <string name="pro_inte_nu">Not now</string>
     <string name="uppgift_gjord_post_ej_sparad">Task moved but entry not saved (Pro required)</string>
+
+    <!-- Automatic backup (Cursor del A; manual backup strings in task 24) -->
+    <string name="auto_rubrik">Automatic backup</string>
+    <string name="auto_beskrivning">The app saves a copy of all tasks, log entries and images in a folder you choose, for example with your own cloud service through the file picker. The app sends nothing itself and keeps the 5 latest copies. Off by default.</string>
+    <string name="auto_pa">Save automatically</string>
+    <string name="auto_mapp">Folder: %1$s</string>
+    <string name="auto_mapp_okand">chosen folder</string>
+    <string name="auto_dagligen">Every day</string>
+    <string name="auto_veckovis">Every week</string>
+    <string name="auto_manadsvis">Every month</string>
+    <string name="auto_senaste">Latest copy: %1$s</string>
+    <string name="auto_ingen_an">No copy has been made yet.</string>
+    <string name="auto_fel">Could not save in the folder. Choose the folder again.</string>
+    <string name="auto_byt_mapp">Change folder</string>
+    <string name="auto_kor_nu">Copy now</string>
 </resources>

@@ -94,7 +94,7 @@
     <string name="bild_dela">Dela</string>
     <string name="bild_stang">Stäng</string>
     <string name="bild_fel_lasning">Kunde inte läsa eller spara bilden</string>
-    
+
     <!-- Pro -->
     <string name="pro">Pro</string>
     <string name="pro_las_upp">Lås upp Pro</string>
@@ -104,4 +104,18 @@
     <string name="pro_grans_nadd">Gränsen är nådd: 15 poster</string>
     <string name="pro_inte_nu">Inte nu</string>
     <string name="uppgift_gjord_post_ej_sparad">Uppgiften flyttades men posten sparades inte (Pro krävs)</string>
+
+    <string name="auto_rubrik">Automatisk säkerhetskopia</string>
+    <string name="auto_beskrivning">Appen sparar en kopia av alla uppgifter, poster och bilder i en mapp du väljer, till exempel hos din egen molntjänst via filväljaren. Appen skickar inget själv och sparar de 5 senaste kopiorna. Av som standard.</string>
+    <string name="auto_pa">Spara automatiskt</string>
+    <string name="auto_mapp">Mapp: %1$s</string>
+    <string name="auto_mapp_okand">vald mapp</string>
+    <string name="auto_dagligen">Varje dag</string>
+    <string name="auto_veckovis">Varje vecka</string>
+    <string name="auto_manadsvis">Varje månad</string>
+    <string name="auto_senaste">Senaste kopia: %1$s</string>
+    <string name="auto_ingen_an">Ingen kopia har gjorts än.</string>
+    <string name="auto_fel">Det gick inte att spara i mappen. Välj mappen igen.</string>
+    <string name="auto_byt_mapp">Byt mapp</string>
+    <string name="auto_kor_nu">Kopiera nu</string>
 </resources>

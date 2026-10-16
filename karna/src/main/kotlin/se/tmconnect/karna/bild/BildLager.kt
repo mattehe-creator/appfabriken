@@ -79,6 +79,24 @@ class BildLager(
 
     fun filFinns(filnamn: String): Boolean = File(bildKatalog, filnamn).isFile
 
+    /** Rå bytes för export till säkerhetskopia. */
+    fun lasRåBytes(filnamn: String): ByteArray? {
+        val fil = File(bildKatalog, filnamn)
+        if (!fil.isFile) {
+            return null
+        }
+        return fil.readBytes()
+    }
+
+    /** Sparar bilddata vid import; returnerar nytt filnamn i [katalogNamn]. */
+    fun sparaFranBytes(innehall: ByteArray, ursprungligtFilnamn: String): String {
+        val delar = ursprungligtFilnamn.substringAfterLast('.', missingDelimiterValue = "")
+        val andelse = delar.ifEmpty { "jpg" }.take(10)
+        val filnamn = "${UUID.randomUUID()}.$andelse"
+        File(bildKatalog, filnamn).writeBytes(innehall)
+        return filnamn
+    }
+
     private fun lasStorlek(kalla: Uri): Pair<Int, Int>? {
         val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         val strom = context.contentResolver.openInputStream(kalla) ?: return null
