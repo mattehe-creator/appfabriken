@@ -1,5 +1,6 @@
 package se.tmconnect.husloggen
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -25,6 +26,9 @@ import java.time.LocalDate
 import se.tmconnect.husloggen.data.HusDatabas
 import se.tmconnect.husloggen.data.HusRepository
 import se.tmconnect.husloggen.data.skapaHusBildLager
+import se.tmconnect.husloggen.paminnelse.HusPaminnelseKalla
+import se.tmconnect.husloggen.paminnelse.PaminnelseWorker
+import se.tmconnect.karna.paminnelse.PaminnelseInstallningarLager
 import se.tmconnect.husloggen.ui.BildHelskarm
 import se.tmconnect.husloggen.ui.HusStartSkarm
 import se.tmconnect.husloggen.ui.HusUiMeddelande
@@ -37,10 +41,20 @@ import se.tmconnect.husloggen.ui.UppgiftFormularSkarm
 import se.tmconnect.karna.tema.AppfabrikTema
 
 class MainActivity : ComponentActivity() {
+    private var skaOppnaAttGora = false
+
     private val viewModel: HusViewModel by viewModels {
         val databas = HusDatabas.hamta(applicationContext)
         val bildLager = skapaHusBildLager(applicationContext)
-        HusViewModelFactory(HusRepository(databas.husDao(), bildLager))
+        val paminnelseInstallningar = PaminnelseInstallningarLager(
+            applicationContext,
+            HusPaminnelseKalla.DATASTORE_NAMN,
+        )
+        HusViewModelFactory(
+            HusRepository(databas.husDao(), bildLager),
+            paminnelseInstallningar,
+            applicationContext,
+        )
     }
 
     private val pickImageContract = registerForActivityResult(
@@ -61,10 +75,19 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        hanteraPaminnelseIntent(intent)
+        viewModel.synkaPaminnelseJobb()
         enableEdgeToEdge()
         setContent {
             AppfabrikTema(morkt = isSystemInDarkTheme()) {
                 var visaInstallningar by rememberSaveable { mutableStateOf(false) }
+                var oppnaAttGora by remember { mutableStateOf(skaOppnaAttGora) }
+                LaunchedEffect(skaOppnaAttGora) {
+                    if (skaOppnaAttGora) {
+                        oppnaAttGora = true
+                        skaOppnaAttGora = false
+                    }
+                }
                 var visaBildHelskarm by remember { mutableStateOf(false) }
                 var bildUrier by remember { mutableStateOf<List<Uri>>(emptyList()) }
                 var valdBildIndex by remember { mutableStateOf(0) }
@@ -186,11 +209,25 @@ class MainActivity : ComponentActivity() {
                                 onOppnaUppgift = viewModel::visaAndraUppgift,
                                 onOppnaPost = viewModel::visaPostDetalj,
                                 onMarkeraGjord = viewModel::markeraSomGjord,
+                                oppnaAttGora = oppnaAttGora,
                             )
                         }
                     }
                 }
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        hanteraPaminnelseIntent(intent)
+    }
+
+    private fun hanteraPaminnelseIntent(intent: Intent?) {
+        if (intent?.getBooleanExtra(PaminnelseWorker.EXTRA_OPPNA_ATT_GORA, false) == true) {
+            skaOppnaAttGora = true
+            intent.removeExtra(PaminnelseWorker.EXTRA_OPPNA_ATT_GORA)
         }
     }
 }

@@ -75,6 +75,16 @@
         <item quantity="other">Var %d:e år</item>
     </plurals>
     
+    <!-- Globala uppgiftspåminnelser -->
+    <string name="paminnelse_kanal_namn">Påminnelser om uppgifter</string>
+    <string name="paminnelse_notis_titel">Uppgift snart dags</string>
+    <string name="paminnelse_notis_text">%1$s ska göras senast %2$s</string>
+    <string name="paminnelse_notis_samlad_titel">Flera uppgifter snart dags</string>
+    <string name="paminnelse_notis_samlad_text">%1$d uppgifter ska göras inom en vecka</string>
+    <string name="paminnelse_installning_rubrik">Påminn mig innan uppgifter ska göras</string>
+    <string name="paminnelse_installning_beskrivning">Daglig notis när en uppgift ska göras inom 7 dagar</string>
+    <string name="paminnelse_behorighet_nekad">Notiser är avstängda. Slå på dem i systeminställningarna för att få påminnelser.</string>
+
     <!-- Bildfunktioner -->
     <string name="bild_valj_bild">Välj bild</string>
     <string name="bild_ta_foto">Ta foto</string>

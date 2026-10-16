@@ -25,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -56,9 +57,15 @@ fun HusStartSkarm(
     onOppnaUppgift: (Long) -> Unit,
     onOppnaPost: (Long) -> Unit,
     onMarkeraGjord: (Long) -> Unit,
+    oppnaAttGora: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     var valdFlik by rememberSaveable { mutableIntStateOf(HusFlik.ATT_GORA.ordinal) }
+    LaunchedEffect(oppnaAttGora) {
+        if (oppnaAttGora) {
+            valdFlik = HusFlik.ATT_GORA.ordinal
+        }
+    }
     val locale = LocalConfiguration.current.locales[0]
 
     Scaffold(

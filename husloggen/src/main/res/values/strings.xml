@@ -75,6 +75,16 @@
         <item quantity="other">Every %d years</item>
     </plurals>
     
+    <!-- Global task reminders -->
+    <string name="paminnelse_kanal_namn">Task reminders</string>
+    <string name="paminnelse_notis_titel">Task due soon</string>
+    <string name="paminnelse_notis_text">%1$s is due on %2$s</string>
+    <string name="paminnelse_notis_samlad_titel">Several tasks due soon</string>
+    <string name="paminnelse_notis_samlad_text">%1$d tasks are due within a week</string>
+    <string name="paminnelse_installning_rubrik">Remind me before tasks are due</string>
+    <string name="paminnelse_installning_beskrivning">Daily notification when a task is due within 7 days</string>
+    <string name="paminnelse_behorighet_nekad">Notifications are off. Enable them in system settings to get reminders.</string>
+
     <!-- Bildfunktioner -->
     <string name="bild_valj_bild">Choose image</string>
     <string name="bild_ta_foto">Take photo</string>
