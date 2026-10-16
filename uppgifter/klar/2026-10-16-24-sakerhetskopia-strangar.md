@@ -38,3 +38,5 @@ gradle :husloggen:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-16 (svenska sakerhetskopia-strängar: borttagna markdown-asterisker **, meningar enligt garantivalvet-förebild)

@@ -107,10 +107,10 @@
 
     <!-- Säkerhetskopia -->
     <string name="sakerhetskopia_rubrik">Säkerhetskopia</string>
-    <string name="sakerhetskopia_beskrivning">Filen innehåller alla uppgifter, poster och bilder, sparas var användaren vill, **inte krypterad**</string>
+    <string name="sakerhetskopia_beskrivning">Filen innehåller alla uppgifter, poster och bilder. Den sparas var användaren vill, och är inte krypterad.</string>
     <string name="sakerhetskopia_spara">Spara säkerhetskopia</string>
     <string name="sakerhetskopia_hamta">Hämta från säkerhetskopia</string>
-    <string name="sakerhetskopia_import_beskrivning">Import **lägger bara till**, skriver inte över befintliga poster</string>
+    <string name="sakerhetskopia_import_beskrivning">Import lägger bara till, skriver inte över befintliga poster.</string>
     <string name="sakerhetskopia_sparad">Säkerhetskopia sparad</string>
     <string name="sakerhetskopia_importerad">Importerade %1$d poster, hoppade över %2$d</string>
     <string name="sakerhetskopia_kunde_inte_lasas">Filen kunde inte läsas</string>
