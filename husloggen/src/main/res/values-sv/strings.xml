@@ -79,9 +79,9 @@
     <string name="bild_valj_bild">Välj bild</string>
     <string name="bild_ta_foto">Ta foto</string>
     <string name="bild_ta_bort">Ta bort bild</string>
-    <string name="bild_max_antal">Max 10 bilder</string>
+    <string name="bild_max_antal">Fler bilder kan inte läggas till (max 10)</string>
     <string name="bild_har_bilder">Posten har bilder</string>
     <string name="bild_dela">Dela</string>
     <string name="bild_stang">Stäng</string>
-    <string name="bild_fel_lasning">Kunde inte spara bilden</string>
+    <string name="bild_fel_lasning">Kunde inte läsa eller spara bilden</string>
 </resources>
