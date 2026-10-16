@@ -374,9 +374,12 @@ class HusViewModel(
 
     private fun rensaOsparadeBilder() {
         val tillstand = _postFormular.value ?: return
-        val nu = tillstand.bildFilnamn.toSet()
-        val skaBehalla = bilderVidOppning
-        (nu - skaBehalla).forEach { repository.taBortBildfil(it) }
+        // Endast radera bilder i nyskapa-läge (redigerarId == 0)
+        if (tillstand.redigerarId == 0L) {
+            val nu = tillstand.bildFilnamn.toSet()
+            val skaBehalla = bilderVidOppning
+            (nu - skaBehalla).forEach { repository.taBortBildfil(it) }
+        }
         bilderTillagdaISession = emptySet()
     }
 }
