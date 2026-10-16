@@ -1,6 +1,5 @@
 ﻿# Kör uppgifter med kor-uppgift.ps1 i följd, utan att någonsin ge upp av sig själv.
-#  - Ingen uppgift redo (kön tom eller väntar på granskning): väntar 3 minuter och försöker igen.
-#  - Uppgifter väntar på beroenden (exit 4): väntar 1 minut och försöker igen.
+#  - Ingen uppgift redo (de väntar på granskning): väntar 3 minuter och försöker igen.
 #  - Körningen föll (git, Gradle, nätet, Aider): väntar 5 minuter och försöker igen. Efter 6 fel i rad
 #    väntar den 30 minuter mellan försöken, så att ett fel som kräver Mattias syns utan att loopen spinner.
 #  - Tidsgränsen -VantaTimmar räknas från senaste lyckade uppgift (eller start), inte från start.
@@ -26,12 +25,6 @@ while ($korda -lt $Max -and (Get-Date) -lt $slut) {
     if ($kod -eq 0) {
         $korda++; $felIRad = 0
         $slut = (Get-Date).AddHours($VantaTimmar)
-        continue
-    }
-    if ($kod -eq 4) {
-        Write-Host "Ingen uppgift redo (beroenden saknas). Försöker igen om 1 minut. Stäng fönstret för att sluta." -ForegroundColor DarkGreen
-        Start-Sleep -Seconds 60
-        Vakta
         continue
     }
     if ($kod -eq 3) {

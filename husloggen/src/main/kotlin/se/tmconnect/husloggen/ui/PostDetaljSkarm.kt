@@ -1,10 +1,16 @@
 package se.tmconnect.husloggen.ui
 
+import android.graphics.BitmapFactory
+import android.net.Uri
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -26,7 +32,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import se.tmconnect.husloggen.R
@@ -42,6 +50,9 @@ fun PostDetaljSkarm(
     onAndra: () -> Unit,
     onTaBort: () -> Unit,
     onTillbaka: () -> Unit,
+    bildFilnamn: List<String> = emptyList(),
+    bildUri: (String) -> Uri = { Uri.EMPTY },
+    onOppnaBild: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val locale = LocalConfiguration.current.locales[0]
@@ -131,6 +142,14 @@ fun PostDetaljSkarm(
                 )
             }
 
+            if (bildFilnamn.isNotEmpty()) {
+                PostBildMiniatyrer(
+                    bildFilnamn = bildFilnamn,
+                    bildUri = bildUri,
+                    onOppnaBild = onOppnaBild,
+                )
+            }
+
             Button(
                 onClick = onAndra,
                 modifier = Modifier
@@ -169,4 +188,66 @@ private fun PostDetaljRad(
             modifier = Modifier.padding(top = 4.dp),
         )
     }
+}
+
+@Composable
+private fun PostBildMiniatyrer(
+    bildFilnamn: List<String>,
+    bildUri: (String) -> Uri,
+    onOppnaBild: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+    val bildHarBilder = stringResource(R.string.bild_har_bilder)
+
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        bildFilnamn.forEachIndexed { index, filnamn ->
+            val uri = remember(filnamn) { bildUri(filnamn) }
+            val bitmap = remember(uri) {
+                try {
+                    val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                    context.contentResolver.openInputStream(uri)?.use {
+                        BitmapFactory.decodeStream(it, null, options)
+                    }
+                    val sampleSize = calculateMiniatyrInSampleSize(options.outWidth, options.outHeight)
+                    context.contentResolver.openInputStream(uri)?.use { input ->
+                        BitmapFactory.decodeStream(
+                            input,
+                            null,
+                            BitmapFactory.Options().apply { inSampleSize = sampleSize },
+                        )
+                    }
+                } catch (_: Exception) {
+                    null
+                }
+            }
+
+            bitmap?.let { decoded ->
+                Image(
+                    bitmap = decoded.asImageBitmap(),
+                    contentDescription = bildHarBilder,
+                    modifier = Modifier
+                        .size(64.dp)
+                        .tryckyta48()
+                        .clickable { onOppnaBild(index) },
+                )
+            }
+        }
+    }
+}
+
+private fun calculateMiniatyrInSampleSize(width: Int, height: Int): Int {
+    val maxSida = 480
+    var inSampleSize = 1
+    if (height > maxSida || width > maxSida) {
+        val halfHeight = height / 2
+        val halfWidth = width / 2
+        while ((halfHeight / inSampleSize) >= maxSida && (halfWidth / inSampleSize) >= maxSida) {
+            inSampleSize *= 2
+        }
+    }
+    return inSampleSize
 }

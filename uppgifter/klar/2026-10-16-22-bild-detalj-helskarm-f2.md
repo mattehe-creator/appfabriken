@@ -38,3 +38,5 @@ gradle :husloggen:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra `strings.xml`, repository, `HusViewModel` eller manifest.
 - Lägga till beroenden eller nya drawable-/strängnycklar.
 - Hårdkoda synlig text i composables.
+
+utfall: godkänd 2026-10-16 (Cursor: flyttade kod från repots rot till husloggen-modulen, färdigställde miniatyrer och helskärm, rättade navigationsordning och ogiltiga strängnycklar; återställde otillåtna ändringar i verktyg/ och MALL.md)
