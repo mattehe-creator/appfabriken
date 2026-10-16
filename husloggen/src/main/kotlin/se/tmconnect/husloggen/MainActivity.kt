@@ -110,6 +110,7 @@ class MainActivity : ComponentActivity() {
                 val postDetaljId by viewModel.postDetaljId.collectAsState()
                 val snackbarHostState = remember { SnackbarHostState() }
                 val markeradGjordText = stringResource(R.string.uppgift_markerad_gjord)
+                val uppgiftGjordPostEjSparadText = stringResource(R.string.uppgift_gjord_post_ej_sparad)
                 val idag = LocalDate.now()
 
                 LaunchedEffect(viewModel) {
@@ -119,7 +120,7 @@ class MainActivity : ComponentActivity() {
                                 snackbarHostState.showSnackbar(markeradGjordText)
                             }
                             HusUiMeddelande.UppgiftMarkeradGjordPostEjSparad -> {
-                                // Snackbar med uppgift_gjord_post_ej_sparad i uppgift 2026-10-16-28.
+                                snackbarHostState.showSnackbar(uppgiftGjordPostEjSparadText)
                             }
                         }
                     }
