@@ -182,6 +182,7 @@ class MainActivity : ComponentActivity() {
                 val idag = LocalDate.now()
                 val snackbarHostState = remember { SnackbarHostState() }
 
+                // Flytta LaunchedEffect till rätt plats i composable-funktionen
                 LaunchedEffect(viewModel) {
                     viewModel.meddelanden.collect { meddelande ->
                         when (meddelande) {
