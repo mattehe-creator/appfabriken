@@ -105,6 +105,17 @@
     <string name="pro_inte_nu">Inte nu</string>
     <string name="uppgift_gjord_post_ej_sparad">Uppgiften flyttades men posten sparades inte (Pro krävs)</string>
 
+    <!-- Säkerhetskopia -->
+    <string name="sakerhetskopia_rubrik">Säkerhetskopia</string>
+    <string name="sakerhetskopia_beskrivning">Filen innehåller alla uppgifter, poster och bilder, sparas var användaren vill, **inte krypterad**</string>
+    <string name="sakerhetskopia_spara">Spara säkerhetskopia</string>
+    <string name="sakerhetskopia_hamta">Hämta från säkerhetskopia</string>
+    <string name="sakerhetskopia_import_beskrivning">Import **lägger bara till**, skriver inte över befintliga poster</string>
+    <string name="sakerhetskopia_sparad">Säkerhetskopia sparad</string>
+    <string name="sakerhetskopia_importerad">Importerade %1$d poster, hoppade över %2$d</string>
+    <string name="sakerhetskopia_kunde_inte_lasas">Filen kunde inte läsas</string>
+    <string name="sakerhetskopia_nyare_version">Filen kommer från en nyare version av appen</string>
+
     <string name="auto_rubrik">Automatisk säkerhetskopia</string>
     <string name="auto_beskrivning">Appen sparar en kopia av alla uppgifter, poster och bilder i en mapp du väljer, till exempel hos din egen molntjänst via filväljaren. Appen skickar inget själv och sparar de 5 senaste kopiorna. Av som standard.</string>
     <string name="auto_pa">Spara automatiskt</string>

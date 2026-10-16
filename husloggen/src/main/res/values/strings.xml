@@ -105,6 +105,17 @@
     <string name="pro_inte_nu">Not now</string>
     <string name="uppgift_gjord_post_ej_sparad">Task moved but entry not saved (Pro required)</string>
 
+    <!-- Säkerhetskopia -->
+    <string name="sakerhetskopia_rubrik">Backup</string>
+    <string name="sakerhetskopia_beskrivning">The file contains all tasks, log entries and images. It is saved where you choose, and is not encrypted.</string>
+    <string name="sakerhetskopia_spara">Save backup</string>
+    <string name="sakerhetskopia_hamta">Restore from backup</string>
+    <string name="sakerhetskopia_import_beskrivning">Import only adds new entries, it does not overwrite existing ones.</string>
+    <string name="sakerhetskopia_sparad">Backup saved</string>
+    <string name="sakerhetskopia_importerad">Imported %1$d log entries, skipped %2$d</string>
+    <string name="sakerhetskopia_kunde_inte_lasas">Could not read the file</string>
+    <string name="sakerhetskopia_nyare_version">The file is from a newer version of the app</string>
+
     <!-- Automatic backup (Cursor del A; manual backup strings in task 24) -->
     <string name="auto_rubrik">Automatic backup</string>
     <string name="auto_beskrivning">The app saves a copy of all tasks, log entries and images in a folder you choose, for example with your own cloud service through the file picker. The app sends nothing itself and keeps the 5 latest copies. Off by default.</string>
