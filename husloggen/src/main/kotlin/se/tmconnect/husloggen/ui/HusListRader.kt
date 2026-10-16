@@ -43,6 +43,11 @@ import se.tmconnect.husloggen.regler.statusForKop
 import se.tmconnect.karna.tema.AppfabrikKortForm
 import se.tmconnect.karna.tema.statusChipFarger
 
+// Extension function for minimum touch target size (48 dp)
+fun Modifier.tryckyta48(): Modifier {
+    return this.heightIn(min = 48.dp)
+}
+
 @Composable
 fun UppgiftListRad(
     uppgift: Uppgift,
