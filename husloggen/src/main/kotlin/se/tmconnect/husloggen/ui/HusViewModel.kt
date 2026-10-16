@@ -25,6 +25,7 @@ import se.tmconnect.husloggen.data.HusRepository
 import se.tmconnect.husloggen.data.InstallningarLager
 import se.tmconnect.husloggen.data.MarkeraGjordResult
 import se.tmconnect.husloggen.data.SparaPostResult
+import se.tmconnect.husloggen.export.Sakerhetskopia
 import se.tmconnect.husloggen.export.SakerhetskopiaPlanerare
 import se.tmconnect.husloggen.regler.kanLaggaTillPost
 import se.tmconnect.karna.pro.ProKalla
@@ -536,15 +537,14 @@ class HusViewModel(
     fun sparaSakerhetskopia(uri: Uri) {
         viewModelScope.launch {
             try {
-                val uppgifter = repository.allaUppgifter()
-                val poster = repository.allaPoster()
-                val bildLager = skapaHusBildLager(appContext)
-                
                 withContext(Dispatchers.IO) {
+                    val uppgifter = repository.allaUppgifter()
+                    val poster = repository.allaPoster()
+                    val bildLager = skapaHusBildLager(appContext)
                     val outputStream = appContext.contentResolver.openOutputStream(uri)
                         ?: throw java.io.IOException()
                     outputStream.use {
-                        se.tmconnect.husloggen.export.Sakerhetskopia.skriv(it, uppgifter, poster, bildLager)
+                        Sakerhetskopia.skriv(it, uppgifter, poster, bildLager)
                     }
                 }
                 _meddelanden.emit(HusUiMeddelande.SakerhetskopiaSparad)

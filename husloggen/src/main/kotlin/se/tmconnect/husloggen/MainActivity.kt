@@ -179,10 +179,11 @@ class MainActivity : ComponentActivity() {
                 val autoBackup by viewModel.autoBackup.collectAsState()
                 val markeradGjordText = stringResource(R.string.uppgift_markerad_gjord)
                 val uppgiftGjordPostEjSparadText = stringResource(R.string.uppgift_gjord_post_ej_sparad)
+                val sakerhetskopiaSparadText = stringResource(R.string.sakerhetskopia_sparad)
+                val sakerhetskopiaKundeInteLasasText = stringResource(R.string.sakerhetskopia_kunde_inte_lasas)
                 val idag = LocalDate.now()
                 val snackbarHostState = remember { SnackbarHostState() }
 
-                // Flytta LaunchedEffect till rätt plats i composable-funktionen
                 LaunchedEffect(viewModel) {
                     viewModel.meddelanden.collect { meddelande ->
                         when (meddelande) {
@@ -193,10 +194,10 @@ class MainActivity : ComponentActivity() {
                                 snackbarHostState.showSnackbar(uppgiftGjordPostEjSparadText)
                             }
                             HusUiMeddelande.SakerhetskopiaSparad -> {
-                                snackbarHostState.showSnackbar(stringResource(R.string.sakerhetskopia_sparad))
+                                snackbarHostState.showSnackbar(sakerhetskopiaSparadText)
                             }
                             HusUiMeddelande.SakerhetskopiaKundeInteLasas -> {
-                                snackbarHostState.showSnackbar(stringResource(R.string.sakerhetskopia_kunde_inte_lasas))
+                                snackbarHostState.showSnackbar(sakerhetskopiaKundeInteLasasText)
                             }
                         }
                     }

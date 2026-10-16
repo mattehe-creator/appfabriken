@@ -40,3 +40,5 @@ gradle :husloggen:testDebugUnitTest --tests "*StringsNycklarTest"
 - Import eller openDocument här.
 - Nya behörigheter.
 - Lägg `FRAGA.md` i rot — implementera enligt förebilderna ovan.
+
+utfall: godkänd 2026-10-16 (stringResource utanför LaunchedEffect; IO-block och Sakerhetskopia-import)
