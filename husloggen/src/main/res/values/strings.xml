@@ -14,4 +14,47 @@
     <string name="status_forsenad">Overdue</string>
     <string name="status_snart">Due soon</string>
     <string name="status_senare">Later</string>
+    <string name="fab_ny_uppgift">New task</string>
+    <string name="ny_uppgift_rubrik">New task</string>
+    <string name="andra_uppgift_rubrik">Edit task</string>
+    <string name="spara">Save</string>
+    <string name="avbryt">Cancel</string>
+    <string name="ta_bort">Delete</string>
+    <string name="stang">Close</string>
+    <string name="falt_namn">Name</string>
+    <string name="falt_intervall_manader">Interval (months)</string>
+    <string name="falt_startdatum">Start date</string>
+    <string name="falt_paminnelse">Reminder</string>
+    <string name="paminnelse_pa">On</string>
+    <string name="paminnelse_av">Off</string>
+    <string name="falt_anteckning">Notes</string>
+    <string name="valj_datum">Choose date</string>
+    <string name="forslag_rubrik">Suggestions</string>
+    <string name="enligt_kommunen">As set by your municipality</string>
+    <string name="enligt_tillverkaren">As set by the manufacturer</string>
+    <string name="fel_namn_saknas">Enter a name</string>
+    <string name="fel_intervall_saknas">Enter interval in months</string>
+    <string name="fel_intervall_ogiltigt">Interval must be 1–120 months</string>
+    <string name="markera_gjord">Mark as done</string>
+    <string name="uppgift_markerad_gjord">Task marked as done</string>
+    <string name="bekrafta_ta_bort_uppgift_titel">Delete task?</string>
+    <string name="bekrafta_ta_bort_uppgift_text">The task will be deleted. Log entries are kept.</string>
+    <string name="ja_ta_bort">Yes, delete</string>
+    <string name="nej">No</string>
+    <string name="forslag_rensa_hangrannor">Clean gutters</string>
+    <string name="forslag_kontrollera_brandvarnare">Test smoke alarms</string>
+    <string name="forslag_byt_filter_ventilation">Replace ventilation filter</string>
+    <string name="forslag_rensa_golvbrunn">Clean floor drain</string>
+    <string name="forslag_kontrollera_tak">Inspect the roof</string>
+    <string name="forslag_sotning">Chimney sweep</string>
+    <string name="forslag_service_varmepump">Heat pump service</string>
+    <string name="forslag_service_ventilation">Ventilation service</string>
+    <plurals name="intervall_manader">
+        <item quantity="one">Every %d month</item>
+        <item quantity="other">Every %d months</item>
+    </plurals>
+    <plurals name="intervall_ar">
+        <item quantity="one">Every %d year</item>
+        <item quantity="other">Every %d years</item>
+    </plurals>
 </resources>

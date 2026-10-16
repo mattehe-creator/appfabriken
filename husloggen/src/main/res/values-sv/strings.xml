@@ -14,4 +14,47 @@
     <string name="status_forsenad">Försenad</string>
     <string name="status_snart">Snart</string>
     <string name="status_senare">Senare</string>
+    <string name="fab_ny_uppgift">Ny uppgift</string>
+    <string name="ny_uppgift_rubrik">Ny uppgift</string>
+    <string name="andra_uppgift_rubrik">Ändra uppgift</string>
+    <string name="spara">Spara</string>
+    <string name="avbryt">Avbryt</string>
+    <string name="ta_bort">Ta bort</string>
+    <string name="stang">Stäng</string>
+    <string name="falt_namn">Namn</string>
+    <string name="falt_intervall_manader">Intervall (månader)</string>
+    <string name="falt_startdatum">Startdatum</string>
+    <string name="falt_paminnelse">Påminnelse</string>
+    <string name="paminnelse_pa">På</string>
+    <string name="paminnelse_av">Av</string>
+    <string name="falt_anteckning">Anteckning</string>
+    <string name="valj_datum">Välj datum</string>
+    <string name="forslag_rubrik">Färdiga förslag</string>
+    <string name="enligt_kommunen">Enligt kommunen</string>
+    <string name="enligt_tillverkaren">Enligt tillverkaren</string>
+    <string name="fel_namn_saknas">Ange ett namn</string>
+    <string name="fel_intervall_saknas">Ange intervall i månader</string>
+    <string name="fel_intervall_ogiltigt">Intervall ska vara 1–120 månader</string>
+    <string name="markera_gjord">Markera som gjord</string>
+    <string name="uppgift_markerad_gjord">Uppgiften är markerad som gjord</string>
+    <string name="bekrafta_ta_bort_uppgift_titel">Ta bort uppgift?</string>
+    <string name="bekrafta_ta_bort_uppgift_text">Uppgiften tas bort. Poster i loggen behålls.</string>
+    <string name="ja_ta_bort">Ja, ta bort</string>
+    <string name="nej">Nej</string>
+    <string name="forslag_rensa_hangrannor">Rensa hängrännor</string>
+    <string name="forslag_kontrollera_brandvarnare">Kontrollera brandvarnare</string>
+    <string name="forslag_byt_filter_ventilation">Byt filter i ventilationen</string>
+    <string name="forslag_rensa_golvbrunn">Rensa golvbrunn</string>
+    <string name="forslag_kontrollera_tak">Kontrollera takets skick</string>
+    <string name="forslag_sotning">Sotning</string>
+    <string name="forslag_service_varmepump">Service av värmepump</string>
+    <string name="forslag_service_ventilation">Service av ventilation</string>
+    <plurals name="intervall_manader">
+        <item quantity="one">Var %d:e månad</item>
+        <item quantity="other">Var %d:e månad</item>
+    </plurals>
+    <plurals name="intervall_ar">
+        <item quantity="one">Var %d:e år</item>
+        <item quantity="other">Var %d:e år</item>
+    </plurals>
 </resources>

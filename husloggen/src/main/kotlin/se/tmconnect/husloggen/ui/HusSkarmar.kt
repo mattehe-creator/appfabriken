@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -49,6 +51,9 @@ fun HusStartSkarm(
     uppgifter: List<Uppgift>,
     poster: List<Post>,
     onInstallningar: () -> Unit,
+    onNyUppgift: () -> Unit,
+    onOppnaUppgift: (Long) -> Unit,
+    onMarkeraGjord: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var valdFlik by rememberSaveable { mutableIntStateOf(HusFlik.ATT_GORA.ordinal) }
@@ -85,11 +90,29 @@ fun HusStartSkarm(
                 )
             }
         },
+        floatingActionButton = {
+            if (valdFlik == HusFlik.ATT_GORA.ordinal) {
+                ExtendedFloatingActionButton(
+                    onClick = onNyUppgift,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = null,
+                        )
+                    },
+                    text = { Text(text = stringResource(R.string.fab_ny_uppgift)) },
+                    modifier = Modifier.tryckyta48(),
+                )
+            }
+        },
     ) { innerPadding ->
         when (HusFlik.entries[valdFlik]) {
-            HusFlik.ATT_GORA ->             AttGoraFlik(
+            HusFlik.ATT_GORA -> AttGoraFlik(
                 uppgifter = uppgifter,
                 contentPadding = innerPadding,
+                onNyUppgift = onNyUppgift,
+                onOppnaUppgift = onOppnaUppgift,
+                onMarkeraGjord = onMarkeraGjord,
             )
             HusFlik.LOGG -> LoggFlik(
                 poster = poster,
@@ -104,11 +127,15 @@ fun HusStartSkarm(
 private fun AttGoraFlik(
     uppgifter: List<Uppgift>,
     contentPadding: PaddingValues,
+    onNyUppgift: () -> Unit,
+    onOppnaUppgift: (Long) -> Unit,
+    onMarkeraGjord: (Long) -> Unit,
 ) {
     if (uppgifter.isEmpty()) {
         TomFlikText(
             text = stringResource(R.string.tom_uppgifter),
             contentPadding = contentPadding,
+            onNyUppgift = onNyUppgift,
         )
         return
     }
@@ -119,7 +146,11 @@ private fun AttGoraFlik(
         contentPadding = PaddingValues(16.dp),
     ) {
         items(uppgifter, key = { it.id }) { uppgift ->
-            UppgiftListRad(uppgift = uppgift, onClick = { })
+            UppgiftListRad(
+                uppgift = uppgift,
+                onClick = { onOppnaUppgift(uppgift.id) },
+                onMarkeraGjord = { onMarkeraGjord(uppgift.id) },
+            )
         }
     }
 }
@@ -137,9 +168,9 @@ private fun LoggFlik(
         )
         return
     }
-    
+
     val grupperadePoster = grupperaPerAr(poster)
-    
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -156,7 +187,7 @@ private fun LoggFlik(
                         .padding(top = 16.dp, bottom = 8.dp),
                 )
             }
-            
+
             items(arGrupp.poster) { post ->
                 PostListRad(post = post, locale = locale)
             }
@@ -168,6 +199,7 @@ private fun LoggFlik(
 private fun TomFlikText(
     text: String,
     contentPadding: PaddingValues,
+    onNyUppgift: (() -> Unit)? = null,
 ) {
     Box(
         modifier = Modifier
@@ -176,12 +208,29 @@ private fun TomFlikText(
             .padding(24.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+            if (onNyUppgift != null) {
+                ExtendedFloatingActionButton(
+                    onClick = onNyUppgift,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = null,
+                        )
+                    },
+                    text = { Text(text = stringResource(R.string.fab_ny_uppgift)) },
+                    modifier = Modifier
+                        .padding(top = 24.dp)
+                        .tryckyta48(),
+                )
+            }
+        }
     }
 }
 
