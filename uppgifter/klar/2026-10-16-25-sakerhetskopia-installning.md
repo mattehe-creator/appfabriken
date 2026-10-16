@@ -33,3 +33,5 @@ gradle :husloggen:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra andra filer.
 - Implementera filväljare eller ZIP här.
 - Pro-gate eller nya behörigheter.
+
+utfall: godkänd 2026-10-16 (Button-import; ordning säkerhetskopia före auto-backup)

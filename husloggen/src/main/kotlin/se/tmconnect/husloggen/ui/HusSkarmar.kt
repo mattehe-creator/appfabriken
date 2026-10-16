@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -404,15 +405,7 @@ fun InstallningarSkarm(
                 text = stringResource(R.string.installningar_version, BuildConfig.VERSION_NAME),
                 style = MaterialTheme.typography.bodyLarge,
             )
-            HusAutoBackupAvsnitt(
-                tillstand = autoBackup,
-                onPa = onAutoBackupPa,
-                onByttMapp = onByttAutoBackupMapp,
-                onIntervall = onAutoBackupIntervall,
-                onKorNu = onKorNuAutoBackup,
-            )
-            
-            // Säkerhetskopia avsnitt
+
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     text = stringResource(R.string.sakerhetskopia_rubrik),
@@ -434,7 +427,7 @@ fun InstallningarSkarm(
                         .padding(top = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    androidx.compose.material3.Button(
+                    Button(
                         onClick = onSparaSakerhetskopia,
                         modifier = Modifier
                             .weight(1f)
@@ -442,7 +435,7 @@ fun InstallningarSkarm(
                     ) {
                         Text(text = stringResource(R.string.sakerhetskopia_spara))
                     }
-                    androidx.compose.material3.Button(
+                    Button(
                         onClick = onHamtaSakerhetskopia,
                         modifier = Modifier
                             .weight(1f)
@@ -452,6 +445,13 @@ fun InstallningarSkarm(
                     }
                 }
             }
+            HusAutoBackupAvsnitt(
+                tillstand = autoBackup,
+                onPa = onAutoBackupPa,
+                onByttMapp = onByttAutoBackupMapp,
+                onIntervall = onAutoBackupIntervall,
+                onKorNu = onKorNuAutoBackup,
+            )
         }
     }
 }
