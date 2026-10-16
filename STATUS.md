@@ -12,26 +12,26 @@ På Mattias dator: körskriptet i Schemaläggaren (när datorn är oanvänd 10 m
 
 Funktionsfryst 2026-10-16 (BESLUTSLOGG.md). Inget nytt byggs förrän appen är publicerad. Fel från Mattias prov och från Googles granskning går före allt annat i kön.
 
-- Klart: köp, lista och formulär; kvittofoto och avläsning på enheten (ML Kit, alla fyra rotationer, kända kedjor, öppet köp och garantitid ur kvittot); påminnelser; reklamationsrätt enligt konsumentköplagen; gratisgräns 15 köp och Pro i `:karna`; reklamationshjälp, reklamationslogg och uppföljning; PDF, CSV och hemförsäkringsunderlag; säkerhetskopia, import och automatisk säkerhetskopia; sök och filter; mörkt läge; välkomstskärm; ny design; release-bygge (targetSdk 36, R8, workflow Release, `butik/PUBLICERA.md`); butiksmaterial i `garantivalvet/butik/`. Detaljer i BESLUTSLOGG.md.
+- Klart: köp, lista och formulär; kvittofoto och avläsning på enheten (ML Kit, alla fyra rotationer, kända kedjor, öppet köp och garantitid ur kvittot); påminnelser; reklamationsrätt enligt konsumentköplagen; gratisgräns 15 köp och Pro i `:karna`; reklamationshjälp, reklamationslogg och uppföljning; PDF, CSV och hemsäkringsunderlag; säkerhetskopia, import och automatisk säkerhetskopia; sök och filter; mörkt läge; välkomstskärm; ny design; release-bygge (targetSdk 36, R8, workflow Release, `butik/PUBLICERA.md`); butiksmaterial i `garantivalvet/butik/`. Detaljer i BESLUTSLOGG.md.
 - Kvar, Mattias:
-  1. Prova på telefon (APK från `senaste-main`): kvittoavläsning med riktiga kvitton, rotera, Välj PDF, Reklamera med bilder och AI-hjälp, automatisk säkerhetskopia, hemförsäkringsunderlag, välkomstskärmen.
+  1. Prova på telefon (APK från `senaste-main`): kvittoavläsning med riktiga kvitton, rotera, Välj PDF, Reklamera med bilder och AI-hjälp, automatisk säkerhetskopia, hemsäkringsunderlag, välkomstskärmen.
   2. Integritetspolicyn på en publik adress (FRAGOR.md).
   3. Play Console: kontot godkänns (pågår), internt testspår, produkten `pro`, prova köpet, butikstexter och Data safety.
 - Efter publicering (1.1): byt till de delar som Husloggen har lyft till `:karna`.
 
 ## Nu: Husloggen 1.0 (app 2)
 
-Val och omfång i IDEURVAL.md (omprövning 2026-10-16), regler i `husloggen/APP.md`. Ett uppdrag i taget; nästa skrivs när förra uppdragets del A är mergad.
+Val och omfång i IDEURVAL.md (omprövning 2026-10-16), regler i `husloggen/APP.md`. Uppdragen skrivs i förväg, flera i taget, så att Cursor och den lokala modellen alltid har arbete i kön (Mattias 2026-10-16, ersätter "ett uppdrag i taget"). Uppdrag som rör samma filer (`HusViewModel.kt`, `MainActivity.kt`) lägger Cursor så att konflikterna blir små. Spåret är fortfarande ett i taget: bara Husloggen är i aktiv utveckling (CLAUDE.md punkt 10).
 
 1. `2026-10-16-husloggen-grund`: modul, databas version 1, flikarna Att göra och Logg. Klart 2026-10-16.
 2. Uppgifter: formulär, intervall och nästa datum, färdiga förslag, markera som gjord med ett tryck (skapar en post). Klart 2026-10-16.
 3. Loggen: formulär för utfört arbete och utgifter, lista per år, detaljvy, ändra och ta bort. Klart 2026-10-16.
-4. Kvittofoto och bilder på poster (flera bilder, `BildLager` i `:karna`). `2026-10-16-husloggen-bilder`, skickat 2026-10-16. Avläsning (OCR) är inte med; tas i eget uppdrag om den behövs.
-5. Påminnelser före nästa datum. Cursor lyfter påminnelsemönstret till `:karna`.
-6. Gratisgräns (15 poster) och Pro.
-7. Sammanställning per år och typ, underlag för förbättringsutgifter vid försäljning, PDF "Husets historik" och CSV. Kontrollera reglerna hos Skatteverket och i inkomstskattelagen innan uppdraget skrivs.
-8. Säkerhetskopia, import och automatisk säkerhetskopia. Cursor lyfter dem till `:karna`.
-9. Mörkt läge, välkomstskärm, butiksmaterial, skärmbilder, Data safety och integritetspolicy.
+4. Kvittofoto och bilder på poster (flera bilder, `BildLager` i `:karna`). `2026-10-16-husloggen-bilder`, del A mergad, uppgifter pågår. Avläsning (OCR) är inte med; tas i eget uppdrag om den behövs.
+5. Påminnelser före nästa datum. Cursor lyfter påminnelsemönstret till `:karna`. `2026-10-16-husloggen-paminnelser`, skickat 2026-10-16.
+6. Gratisgräns (15 poster) och Pro. `2026-10-16-husloggen-pro-gratisgrans`, skickat 2026-10-16.
+7. Sammanställning per år och typ, underlag för förbättringsutgifter vid försäljning, PDF "Husets historik" och CSV. Kontrollera reglerna hos Skatteverket och i inkomstskattelagen innan uppdraget skrivs. Nästa att skriva.
+8. Säkerhetskopia, import och automatisk säkerhetskopia. Cursor lyfter dem till `:karna`. `2026-10-16-husloggen-sakerhetskopia`, skickat 2026-10-16.
+9. Mörkt läge, välkomstskärm, butiksmaterial, skärmbilder, Data safety och integritetspolicy. Nästa efter 7.
 10. Mattias provar på telefon.
 
 ## Senare
