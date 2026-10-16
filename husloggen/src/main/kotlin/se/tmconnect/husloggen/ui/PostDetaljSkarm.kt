@@ -152,7 +152,7 @@ fun PostDetaljSkarm(
                     // Visa miniatyrer av bilder
                     post.bilder.forEachIndexed { index, filnamn ->
                         Image(
-                            bitmap = painterResource(R.drawable.placeholder_image).asImageBitmap(),
+                            painter = painterResource(id = R.drawable.placeholder_image),
                             contentDescription = stringResource(R.string.bild_miniatyr),
                             modifier = Modifier
                                 .weight(1f)
