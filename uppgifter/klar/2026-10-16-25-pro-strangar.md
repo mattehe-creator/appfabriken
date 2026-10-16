@@ -39,3 +39,4 @@ gradle :husloggen:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+utfall: godkänd 2026-10-16 (återställde HusPaminnelseKalla.kt; rättade paminnelse_notis_text)

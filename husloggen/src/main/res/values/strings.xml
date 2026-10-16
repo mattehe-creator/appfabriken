@@ -94,4 +94,14 @@
     <string name="bild_dela">Share</string>
     <string name="bild_stang">Close</string>
     <string name="bild_fel_lasning">Could not read or save the image</string>
+    
+    <!-- Pro -->
+    <string name="pro">Pro</string>
+    <string name="pro_las_upp">Unlock Pro</string>
+    <string name="pro_forklaring">The free version saves up to 15 entries in the log. Pro is a one-time purchase without subscription and removes the limit. Tasks and reminders are always unlimited.</string>
+    <string name="pro_du_har">You have Pro</string>
+    <string name="pro_kop_misslyckades">The purchase could not be completed. Try again.</string>
+    <string name="pro_grans_nadd">Limit reached: 15 entries</string>
+    <string name="pro_inte_nu">Not now</string>
+    <string name="uppgift_gjord_post_ej_sparad">Task moved but entry not saved (Pro required)</string>
 </resources>

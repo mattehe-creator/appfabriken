@@ -94,4 +94,14 @@
     <string name="bild_dela">Dela</string>
     <string name="bild_stang">Stäng</string>
     <string name="bild_fel_lasning">Kunde inte läsa eller spara bilden</string>
+    
+    <!-- Pro -->
+    <string name="pro">Pro</string>
+    <string name="pro_las_upp">Lås upp Pro</string>
+    <string name="pro_forklaring">Gratisversionen sparar upp till 15 poster i loggen. Pro är ett engångsköp utan prenumeration och tar bort gränsen. Uppgifter och påminnelser är alltid obegränsade.</string>
+    <string name="pro_du_har">Du har Pro</string>
+    <string name="pro_kop_misslyckades">Köpet kunde inte genomföras. Försök igen.</string>
+    <string name="pro_grans_nadd">Gränsen är nådd: 15 poster</string>
+    <string name="pro_inte_nu">Inte nu</string>
+    <string name="uppgift_gjord_post_ej_sparad">Uppgiften flyttades men posten sparades inte (Pro krävs)</string>
 </resources>
