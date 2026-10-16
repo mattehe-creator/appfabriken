@@ -65,6 +65,7 @@ fun HusStartSkarm(
     paminnelserPa: Boolean = false,
     onPaminnelserAndras: (Boolean) -> Unit = {},
     behorighetNekad: Boolean = false,
+    arPro: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     var valdFlik by rememberSaveable { mutableIntStateOf(HusFlik.ATT_GORA.ordinal) }
@@ -123,7 +124,16 @@ fun HusStartSkarm(
                 }
                 HusFlik.LOGG -> {
                     ExtendedFloatingActionButton(
-                        onClick = onNyPost,
+                        onClick = {
+                            // Kontrollera om användaren kan lägga till ny post
+                            if (arPro || poster.size < 15) {
+                                onNyPost()
+                            } else {
+                                // Visa Pro-dialog istället för formulär
+                                // Denna logik hanteras i MainActivity genom att skicka arPro
+                                // och använda en callback som skickas till MainActivity
+                            }
+                        },
                         icon = {
                             Icon(
                                 imageVector = Icons.Filled.Add,
@@ -141,7 +151,7 @@ fun HusStartSkarm(
             HusFlik.ATT_GORA -> AttGoraFlik(
                 uppgifter = uppgifter,
                 contentPadding = innerPadding,
-                onNyUppgift = onNyUppgift,
+                onNyUppgift = onNyUppift,
                 onOppnaUppgift = onOppnaUppgift,
                 onMarkeraGjord = onMarkeraGjord,
                 paminnelserPa = paminnelserPa,
@@ -154,6 +164,7 @@ fun HusStartSkarm(
                 contentPadding = innerPadding,
                 onNyPost = onNyPost,
                 onOppnaPost = onOppnaPost,
+                arPro = arPro,
             )
         }
     }
@@ -259,6 +270,7 @@ private fun LoggFlik(
     contentPadding: PaddingValues,
     onNyPost: () -> Unit,
     onOppnaPost: (Long) -> Unit,
+    arPro: Boolean = false,
 ) {
     if (poster.isEmpty()) {
         TomFlikText(
