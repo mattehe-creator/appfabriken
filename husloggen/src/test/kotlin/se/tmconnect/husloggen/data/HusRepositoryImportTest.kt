@@ -46,6 +46,7 @@ class HusRepositoryImportTest {
                 typ = PostTyp.UNDERHALL,
                 beloppOre = 50L,
             ),
+            arPro = true,
         )
         val innehall =
             SakerhetskopiaInnehall(
