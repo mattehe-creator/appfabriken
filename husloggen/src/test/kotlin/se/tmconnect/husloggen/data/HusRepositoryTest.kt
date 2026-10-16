@@ -21,6 +21,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import se.tmconnect.husloggen.data.skapaHusBildLager
+import se.tmconnect.husloggen.regler.GRATIS_MAX_POSTER
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28])
@@ -71,7 +72,7 @@ class HusRepositoryTest {
         )
         val uppgift = repository.hamtaUppgift(uppgiftId)!!
 
-        repository.markeraSomGjord(uppgift, idag)
+        repository.markeraSomGjord(uppgift, idag, arPro = false)
 
         val uppdaterad = repository.hamtaUppgift(uppgiftId)!!
         assertEquals(idag, uppdaterad.senastGjord)
@@ -96,7 +97,7 @@ class HusRepositoryTest {
                 senastGjord = null,
             ),
         )
-        repository.markeraSomGjord(repository.hamtaUppgift(uppgiftId)!!, idag)
+        repository.markeraSomGjord(repository.hamtaUppgift(uppgiftId)!!, idag, arPro = false)
         assertEquals(idag, repository.hamtaUppgift(uppgiftId)!!.senastGjord)
         assertEquals(1, repository.poster.first().size)
     }
@@ -104,20 +105,27 @@ class HusRepositoryTest {
     @Test
     fun sparaAndraOchTaBortPost() = runTest {
         val idag = LocalDate.of(2026, 10, 16)
-        val postId = repository.sparaPost(
-            Post(
-                datum = idag,
-                vad = "Målade fasaden",
-                typ = PostTyp.UNDERHALL,
-                beloppOre = 12_500L,
-            ),
-        )
+        val postId = when (
+            val result = repository.sparaPost(
+                Post(
+                    datum = idag,
+                    vad = "Målade fasaden",
+                    typ = PostTyp.UNDERHALL,
+                    beloppOre = 12_500L,
+                ),
+                arPro = false,
+            )
+        ) {
+            is SparaPostResult.Sparad -> result.id
+            SparaPostResult.GransNadd -> error("oväntat GransNadd")
+        }
         val sparad = repository.hamtaPost(postId)!!
         assertEquals("Målade fasaden", sparad.vad)
         assertEquals(12_500L, sparad.beloppOre)
 
         repository.sparaPost(
             sparad.copy(vad = "Ommålning", beloppOre = 15_000L),
+            arPro = false,
         )
         val uppdaterad = repository.hamtaPost(postId)!!
         assertEquals("Ommålning", uppdaterad.vad)
@@ -137,54 +145,58 @@ class HusRepositoryTest {
                 startDatum = LocalDate.of(2026, 1, 1),
             ),
         )
-        val postId = repository.sparaPost(
+        val postId = (repository.sparaPost(
             Post(
                 datum = LocalDate.of(2026, 5, 1),
                 vad = "Rensning",
                 typ = PostTyp.UNDERHALL,
                 uppgiftId = uppgiftId,
             ),
-        )
+            arPro = false,
+        ) as SparaPostResult.Sparad).id
         val post = repository.hamtaPost(postId)!!
-        repository.sparaPost(post.copy(vad = "Rensning klart"))
+        repository.sparaPost(post.copy(vad = "Rensning klart"), arPro = false)
         assertEquals(uppgiftId, repository.hamtaPost(postId)!!.uppgiftId)
     }
 
     @Test
     fun postUtanBeloppSparasMedNull() = runTest {
-        val postId = repository.sparaPost(
+        val postId = (repository.sparaPost(
             Post(
                 datum = LocalDate.of(2026, 4, 1),
                 vad = "Kontroll",
                 typ = PostTyp.UNDERHALL,
                 beloppOre = null,
             ),
-        )
+            arPro = false,
+        ) as SparaPostResult.Sparad).id
         assertNull(repository.hamtaPost(postId)!!.beloppOre)
     }
 
     @Test
     fun postUtanBilderGerTomLista() = runTest {
-        val postId = repository.sparaPost(
+        val postId = (repository.sparaPost(
             Post(
                 datum = LocalDate.of(2026, 1, 1),
                 vad = "Utan bild",
                 typ = PostTyp.UNDERHALL,
             ),
-        )
+            arPro = false,
+        ) as SparaPostResult.Sparad).id
         val post = repository.hamtaPost(postId)!!
         assertTrue(repository.lasBilder(post).isEmpty())
     }
 
     @Test
     fun laggTillOchTaBortBildPaPost() = runTest {
-        val postId = repository.sparaPost(
+        val postId = (repository.sparaPost(
             Post(
                 datum = LocalDate.of(2026, 2, 1),
                 vad = "Med kvitto",
                 typ = PostTyp.REPARATION,
             ),
-        )
+            arPro = false,
+        ) as SparaPostResult.Sparad).id
         val uri = skapaTestBildUri()
         assertTrue(repository.laggTillBild(postId, uri))
 
@@ -199,13 +211,14 @@ class HusRepositoryTest {
 
     @Test
     fun taBortPostRaderarBildfiler() = runTest {
-        val postId = repository.sparaPost(
+        val postId = (repository.sparaPost(
             Post(
                 datum = LocalDate.of(2026, 3, 1),
                 vad = "Raderas",
                 typ = PostTyp.UNDERHALL,
             ),
-        )
+            arPro = false,
+        ) as SparaPostResult.Sparad).id
         assertTrue(repository.laggTillBild(postId, skapaTestBildUri()))
         val post = repository.hamtaPost(postId)!!
         val filnamn = repository.lasBilder(post).single()
@@ -225,7 +238,7 @@ class HusRepositoryTest {
             ),
         )
         val uppgift = repository.hamtaUppgift(uppgiftId)!!
-        repository.markeraSomGjord(uppgift, LocalDate.of(2026, 3, 1))
+        repository.markeraSomGjord(uppgift, LocalDate.of(2026, 3, 1), arPro = false)
         val postId = repository.poster.first().first().id
 
         repository.taBortUppgift(uppgift)
@@ -234,5 +247,108 @@ class HusRepositoryTest {
         val post = databas.husDao().hamtaPost(postId)!!
         assertNull(post.uppgiftId)
         assertEquals(1, repository.antalPoster())
+    }
+
+    @Test
+    fun nyPostVidGransReturnerarGransNadd() = runTest {
+        repeat(GRATIS_MAX_POSTER) { i ->
+            repository.sparaPost(
+                Post(
+                    datum = LocalDate.of(2026, 1, 1).plusDays(i.toLong()),
+                    vad = "Post $i",
+                    typ = PostTyp.UNDERHALL,
+                ),
+                arPro = false,
+            )
+        }
+        assertEquals(GRATIS_MAX_POSTER, repository.antalPoster())
+
+        val result = repository.sparaPost(
+            Post(
+                datum = LocalDate.of(2026, 2, 1),
+                vad = "För mycket",
+                typ = PostTyp.UNDERHALL,
+            ),
+            arPro = false,
+        )
+        assertEquals(SparaPostResult.GransNadd, result)
+        assertEquals(GRATIS_MAX_POSTER, repository.antalPoster())
+    }
+
+    @Test
+    fun andraBefintligPostOverGransenFungerar() = runTest {
+        repeat(GRATIS_MAX_POSTER) { i ->
+            repository.sparaPost(
+                Post(
+                    datum = LocalDate.of(2026, 1, 1).plusDays(i.toLong()),
+                    vad = "Post $i",
+                    typ = PostTyp.UNDERHALL,
+                ),
+                arPro = false,
+            )
+        }
+        val forsta = repository.poster.first().first()
+        val result = repository.sparaPost(forsta.copy(vad = "Ändrad"), arPro = false)
+        assertTrue(result is SparaPostResult.Sparad)
+        assertEquals("Ändrad", repository.hamtaPost(forsta.id)!!.vad)
+    }
+
+    @Test
+    fun markeraSomGjordVidGransFlyttarUppgiftUtanNyPost() = runTest {
+        repeat(GRATIS_MAX_POSTER) { i ->
+            repository.sparaPost(
+                Post(
+                    datum = LocalDate.of(2026, 1, 1).plusDays(i.toLong()),
+                    vad = "Post $i",
+                    typ = PostTyp.UNDERHALL,
+                ),
+                arPro = false,
+            )
+        }
+        val uppgiftId = repository.sparaUppgift(
+            Uppgift(
+                namn = "Service",
+                intervallManader = 12,
+                startDatum = LocalDate.of(2026, 1, 1),
+            ),
+        )
+        val idag = LocalDate.of(2026, 10, 16)
+        val result = repository.markeraSomGjord(
+            repository.hamtaUppgift(uppgiftId)!!,
+            idag,
+            arPro = false,
+        )
+        assertEquals(MarkeraGjordResult.UtanPostGransNadd, result)
+        assertEquals(idag, repository.hamtaUppgift(uppgiftId)!!.senastGjord)
+        assertEquals(GRATIS_MAX_POSTER, repository.antalPoster())
+    }
+
+    @Test
+    fun markeraSomGjordMedProSkaparPostVidGrans() = runTest {
+        repeat(GRATIS_MAX_POSTER) { i ->
+            repository.sparaPost(
+                Post(
+                    datum = LocalDate.of(2026, 1, 1).plusDays(i.toLong()),
+                    vad = "Post $i",
+                    typ = PostTyp.UNDERHALL,
+                ),
+                arPro = false,
+            )
+        }
+        val uppgiftId = repository.sparaUppgift(
+            Uppgift(
+                namn = "Service",
+                intervallManader = 12,
+                startDatum = LocalDate.of(2026, 1, 1),
+            ),
+        )
+        val idag = LocalDate.of(2026, 10, 16)
+        val result = repository.markeraSomGjord(
+            repository.hamtaUppgift(uppgiftId)!!,
+            idag,
+            arPro = true,
+        )
+        assertEquals(MarkeraGjordResult.MedPost, result)
+        assertEquals(GRATIS_MAX_POSTER + 1, repository.antalPoster())
     }
 }
