@@ -46,6 +46,7 @@ import se.tmconnect.husloggen.ui.PostFormularSkarm
 import se.tmconnect.husloggen.ui.ProDialog
 import se.tmconnect.husloggen.ui.UppgiftFormularSkarm
 import se.tmconnect.karna.tema.AppfabrikTema
+import se.tmconnect.husloggen.export.sakerhetskopiaFilnamn
 
 class MainActivity : ComponentActivity() {
     private var skaOppnaAttGora = false
@@ -189,6 +190,12 @@ class MainActivity : ComponentActivity() {
                             }
                             HusUiMeddelande.UppgiftMarkeradGjordPostEjSparad -> {
                                 snackbarHostState.showSnackbar(uppgiftGjordPostEjSparadText)
+                            }
+                            HusUiMeddelande.SakerhetskopiaSparad -> {
+                                snackbarHostState.showSnackbar(stringResource(R.string.sakerhetskopia_sparad))
+                            }
+                            HusUiMeddelande.SakerhetskopiaKundeInteLasas -> {
+                                snackbarHostState.showSnackbar(stringResource(R.string.sakerhetskopia_kunde_inte_lasas))
                             }
                         }
                     }

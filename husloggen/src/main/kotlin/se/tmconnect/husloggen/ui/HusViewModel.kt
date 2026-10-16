@@ -44,6 +44,7 @@ import se.tmconnect.husloggen.paminnelse.HusPaminnelseKalla
 import se.tmconnect.husloggen.paminnelse.PaminnelseWorker
 import se.tmconnect.karna.paminnelse.PaminnelseInstallningarLager
 import se.tmconnect.karna.paminnelse.PaminnelsePlanerare
+import se.tmconnect.husloggen.data.skapaHusBildLager
 
 data class UppgiftFormularTillstand(
     val redigerarId: Long = 0L,
