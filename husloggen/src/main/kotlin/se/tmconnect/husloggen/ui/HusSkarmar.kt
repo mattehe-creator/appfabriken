@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -424,6 +425,8 @@ fun InstallningarSkarm(
     onByttAutoBackupMapp: () -> Unit = {},
     onAutoBackupIntervall: (Int) -> Unit = {},
     onKorNuAutoBackup: () -> Unit = {},
+    onSparaSakerhetskopia: () -> Unit = {},
+    onHamtaSakerhetskopia: () -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier,
@@ -452,6 +455,46 @@ fun InstallningarSkarm(
                 text = stringResource(R.string.installningar_version, BuildConfig.VERSION_NAME),
                 style = MaterialTheme.typography.bodyLarge,
             )
+
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = stringResource(R.string.sakerhetskopia_rubrik),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = stringResource(R.string.sakerhetskopia_beskrivning),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = stringResource(R.string.sakerhetskopia_import_beskrivning),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Button(
+                        onClick = onSparaSakerhetskopia,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp),
+                    ) {
+                        Text(text = stringResource(R.string.sakerhetskopia_spara))
+                    }
+                    Button(
+                        onClick = onHamtaSakerhetskopia,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp),
+                    ) {
+                        Text(text = stringResource(R.string.sakerhetskopia_hamta))
+                    }
+                }
+            }
             HusAutoBackupAvsnitt(
                 tillstand = autoBackup,
                 onPa = onAutoBackupPa,

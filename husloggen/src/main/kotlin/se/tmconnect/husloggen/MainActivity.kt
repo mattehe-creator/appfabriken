@@ -281,6 +281,8 @@ class MainActivity : ComponentActivity() {
                                 onByttAutoBackupMapp = { valjMappContract.launch(null) },
                                 onAutoBackupIntervall = viewModel::sattAutoBackupIntervall,
                                 onKorNuAutoBackup = viewModel::korNuAutoBackup,
+                                onSparaSakerhetskopia = {},
+                                onHamtaSakerhetskopia = {},
                             )
                         }
                         else -> {
