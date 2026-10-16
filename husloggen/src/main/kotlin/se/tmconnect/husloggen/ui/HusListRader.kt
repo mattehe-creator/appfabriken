@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
@@ -16,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -26,12 +24,19 @@ import se.tmconnect.husloggen.R
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.husloggen.regler.nastaDatum
+import se.tmconnect.husloggen.regler.UppgiftStatus
 import se.tmconnect.husloggen.regler.uppgiftStatus
-import se.tmconnect.husloggen.regler.grupperaPerAr
 import se.tmconnect.karna.format.formateraDatum
 import se.tmconnect.karna.format.formateraPrisKr
 import se.tmconnect.karna.tema.AppfabrikStatus
 import se.tmconnect.karna.tema.statusChipFarger
+
+private fun appfabrikStatusFran(status: UppgiftStatus): AppfabrikStatus =
+    when (status) {
+        UppgiftStatus.FORSENAD -> AppfabrikStatus.UTGANGEN
+        UppgiftStatus.SNART -> AppfabrikStatus.SNART
+        UppgiftStatus.SENARE -> AppfabrikStatus.GALLER
+    }
 
 @Composable
 fun UppgiftListRad(
@@ -44,14 +49,7 @@ fun UppgiftListRad(
     val nasta = nastaDatum(uppgift.senastGjord, uppgift.startDatum, uppgift.intervallManader)
     val status = uppgiftStatus(nasta, idag)
     
-    // Mappning från UppgiftStatus till AppfabrikStatus
-    val appfabrikStatus = when (status) {
-        se.tmconnect.husloggen.regler.UppgiftStatus.FORSENAD -> AppfabrikStatus.UTGANGEN
-        se.tmconnect.husloggen.regler.UppgiftStatus.SNART -> AppfabrikStatus.SNART
-        se.tmconnect.husloggen.regler.UppgiftStatus.SENARE -> AppfabrikStatus.GALLER
-    }
-    
-    val chipFarger = statusChipFarger(appfabrikStatus)
+    val chipFarger = statusChipFarger(appfabrikStatusFran(status))
     
     Card(
         modifier = modifier
@@ -90,9 +88,9 @@ fun UppgiftListRad(
                 label = {
                     Text(
                         text = when (status) {
-                            se.tmconnect.husloggen.regler.UppgiftStatus.FORSENAD -> stringResource(R.string.status_forsenad)
-                            se.tmconnect.husloggen.regler.UppgiftStatus.SNART -> stringResource(R.string.status_snart)
-                            se.tmconnect.husloggen.regler.UppgiftStatus.SENARE -> stringResource(R.string.status_senare)
+                            UppgiftStatus.FORSENAD -> stringResource(R.string.status_forsenad)
+                            UppgiftStatus.SNART -> stringResource(R.string.status_snart)
+                            UppgiftStatus.SENARE -> stringResource(R.string.status_senare)
                         },
                         style = MaterialTheme.typography.labelSmall,
                         maxLines = 2,
