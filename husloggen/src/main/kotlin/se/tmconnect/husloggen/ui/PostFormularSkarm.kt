@@ -271,9 +271,5 @@ private fun PostUppgiftMeny(
     }
 }
 
-@Composable
-fun postTypEtikett(typ: PostTyp): String = when (typ) {
-    PostTyp.UNDERHALL -> stringResource(R.string.post_typ_underhall)
-    PostTyp.REPARATION -> stringResource(R.string.post_typ_reparation)
-    PostTyp.OMBYGGNAD -> stringResource(R.string.post_typ_ombyggnad)
-}
+// Funktionen postTypEtikett har tagits bort från PostFormularSkarm.kt för att undvika överlappning
+// Den finns nu i PostFormularFalt.kt

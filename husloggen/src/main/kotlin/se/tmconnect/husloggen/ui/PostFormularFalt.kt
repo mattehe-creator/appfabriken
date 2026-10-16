@@ -209,9 +209,5 @@ fun PostAnteckningFalt(
     )
 }
 
-@Composable
-fun postTypEtikett(typ: PostTyp): String = when (typ) {
-    PostTyp.UNDERHALL -> stringResource(R.string.post_typ_underhall)
-    PostTyp.REPARATION -> stringResource(R.string.post_typ_reparation)
-    PostTyp.OMBYGGNAD -> stringResource(R.string.post_typ_ombyggnad)
-}
+// Funktionen postTypEtikett är redan definierad i PostFormularFalt.kt
+// Funktionen har tagits bort från PostFormularSkarm.kt för att undvika överlappning
