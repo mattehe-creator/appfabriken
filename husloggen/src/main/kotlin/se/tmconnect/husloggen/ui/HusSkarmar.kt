@@ -1,10 +1,13 @@
 package se.tmconnect.husloggen.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,7 +17,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -24,14 +26,12 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -170,59 +170,83 @@ private fun AttGoraFlik(
     onPaminnelserAndras: (Boolean) -> Unit = {},
     behorighetNekad: Boolean = false,
 ) {
-    if (uppgifter.isEmpty()) {
-        TomFlikText(
-            text = stringResource(R.string.tom_uppgifter),
-            contentPadding = contentPadding,
-            onNyUppgift = onNyUppgift,
-        )
-        return
-    }
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(contentPadding),
-        contentPadding = PaddingValues(16.dp),
     ) {
-        item {
-            // PÅMINNELSER-REGLAGET
-            Column(
+        AttGoraPaminnelseReglage(
+            paminnelserPa = paminnelserPa,
+            onPaminnelserAndras = onPaminnelserAndras,
+            behorighetNekad = behorighetNekad,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+        )
+        if (uppgifter.isEmpty()) {
+            TomFlikText(
+                text = stringResource(R.string.tom_uppgifter),
+                contentPadding = PaddingValues(0.dp),
+                onNyUppgift = onNyUppgift,
+                modifier = Modifier.weight(1f),
+            )
+        } else {
+            LazyColumn(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             ) {
-                androidx.compose.material3.Switch(
-                    checked = paminnelserPa,
-                    onCheckedChange = { pa ->
-                        onPaminnelserAndras(pa)
-                    },
-                    modifier = Modifier.tryckyta48()
-                )
-                Text(
-                    text = stringResource(R.string.paminnelse_installning_rubrik),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-                )
-                Text(
-                    text = stringResource(R.string.paminnelse_installning_beskrivning),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                if (behorighetNekad) {
-                    Text(
-                        text = stringResource(R.string.paminnelse_behorighet_nekad),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(top = 8.dp)
+                items(uppgifter, key = { it.id }) { uppgift ->
+                    UppgiftListRad(
+                        uppgift = uppgift,
+                        onClick = { onOppnaUppgift(uppgift.id) },
+                        onMarkeraGjord = { onMarkeraGjord(uppgift.id) },
                     )
                 }
             }
         }
-        items(uppgifter, key = { it.id }) { uppgift ->
-            UppgiftListRad(
-                uppgift = uppgift,
-                onClick = { onOppnaUppgift(uppgift.id) },
-                onMarkeraGjord = { onMarkeraGjord(uppgift.id) },
+    }
+}
+
+@Composable
+private fun AttGoraPaminnelseReglage(
+    paminnelserPa: Boolean,
+    onPaminnelserAndras: (Boolean) -> Unit,
+    behorighetNekad: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.paminnelse_installning_rubrik),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = stringResource(R.string.paminnelse_installning_beskrivning),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Switch(
+                checked = paminnelserPa,
+                onCheckedChange = onPaminnelserAndras,
+                modifier = Modifier.tryckyta48(),
+            )
+        }
+        if (behorighetNekad) {
+            Text(
+                text = stringResource(R.string.paminnelse_behorighet_nekad),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(top = 8.dp),
             )
         }
     }
@@ -287,9 +311,10 @@ private fun TomFlikText(
     contentPadding: PaddingValues,
     onNyUppgift: (() -> Unit)? = null,
     onNyPost: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(contentPadding)
             .padding(24.dp),
