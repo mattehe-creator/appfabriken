@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-16-husloggen-uppgifter.md
 försök: 1
-beror-på: cursor:2026-10-16-husloggen-uppgifter
+beror-på: ingen
 
 ## Ändra bara dessa filer
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/ui/UppgiftFormularFalt.kt (ny)
