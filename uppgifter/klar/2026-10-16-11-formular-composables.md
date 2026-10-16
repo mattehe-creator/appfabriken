@@ -51,3 +51,5 @@ gradle :husloggen:testDebugUnitTest --tests "*UppgiftValideringTest" --tests "*S
 - Ändra `HusViewModel`, `HusRepository`, `MainActivity` eller databas.
 - Lägga till beroenden.
 - Hårdkoda synlig text (använd `stringResource`).
+
+utfall: godkänd 2026-10-16 (flytt från reporot, förslagsväljarens hjälptext, getString i onValj, OutlinedButton på datum)
