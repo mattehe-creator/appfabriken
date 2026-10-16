@@ -38,4 +38,19 @@ class BildTolkningTest {
         val result3 = formateraBilder(listOf("a.jpg"))
         assertEquals("a.jpg", result3)
     }
+    
+    @Test
+    fun testTolkaBilder_med_bildkontroll() {
+        // Testa att en post med bilder identifieras korrekt
+        val result = tolkaBilder("a.jpg")
+        assertFalse(result.isEmpty())
+        
+        // Testa att en post utan bilder identifieras korrekt
+        val result2 = tolkaBilder("")
+        assertTrue(result2.isEmpty())
+        
+        // Testa att en post med null identifieras korrekt
+        val result3 = tolkaBilder(null)
+        assertTrue(result3.isEmpty())
+    }
 }
