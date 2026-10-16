@@ -1,7 +1,9 @@
 package se.tmconnect.husloggen
 
+import android.Manifest
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -69,12 +71,14 @@ class MainActivity : ComponentActivity() {
         )
     }
 
+    // Resultatkontrakt för bildval
     private val pickImageContract = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia(),
     ) { uri ->
         uri?.let { viewModel.laggTillBildUri(it) }
     }
 
+    // Resultatkontrakt för kamera
     private var kameraUri: Uri? = null
     private val takePictureContract = registerForActivityResult(
         ActivityResultContracts.TakePicture(),
@@ -84,6 +88,20 @@ class MainActivity : ComponentActivity() {
         }
         kameraUri = null
     }
+
+    // Resultatkontrakt för notisbehörighet
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            viewModel.sattPaminnelser(true)
+            behorighetNekad = false
+        } else {
+            behorighetNekad = true
+        }
+    }
+
+    private var behorighetNekad by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,6 +126,7 @@ class MainActivity : ComponentActivity() {
                 val formular by viewModel.formular.collectAsState()
                 val postFormular by viewModel.postFormular.collectAsState()
                 val postDetaljId by viewModel.postDetaljId.collectAsState()
+                val paminnelserPa by viewModel.paminnelserPa.collectAsState()
                 val snackbarHostState = remember { SnackbarHostState() }
                 val markeradGjordText = stringResource(R.string.uppgift_markerad_gjord)
                 val idag = LocalDate.now()
@@ -225,6 +244,20 @@ class MainActivity : ComponentActivity() {
                                 onOppnaPost = viewModel::visaPostDetalj,
                                 onMarkeraGjord = viewModel::markeraSomGjord,
                                 oppnaAttGora = oppnaAttGora,
+                                paminnelserPa = paminnelserPa,
+                                onPaminnelserAndras = { pa ->
+                                    if (pa) {
+                                        if (Build.VERSION.SDK_INT >= 33) {
+                                            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                        } else {
+                                            viewModel.sattPaminnelser(true)
+                                        }
+                                    } else {
+                                        viewModel.sattPaminnelser(false)
+                                        behorighetNekad = false
+                                    }
+                                },
+                                behorighetNekad = behorighetNekad,
                             )
                         }
                     }

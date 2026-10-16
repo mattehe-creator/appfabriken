@@ -40,3 +40,5 @@ gradle :husloggen:testDebugUnitTest
 - Lägga till beroenden.
 - Begära notisbehörighet vid appstart.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-16 (tom lista visade inte reglage; reglage-rad enligt InstallningarSkarm; borttagna oanvända importer; layout.weight-import)
