@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-16-husloggen-loggen.md
 försök: 1
-beror-på: cursor:2026-10-16-husloggen-loggen, 2026-10-16-15-strangar-logg.md
+beror-på: ingen
 
 ## Ändra bara dessa filer
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/ui/PostFormularFalt.kt (ny)
