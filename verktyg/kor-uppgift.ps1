@@ -18,6 +18,9 @@ param(
     [switch]$IngenPush
 )
 
+# Max tid för Aider (kod + inbyggt teststeg). Vid tidsgräns avbryts Aider; skriptet kör egna tester och pushar om kod committats.
+$AiderTimeoutMinuter = 60
+
 $ErrorActionPreference = "Stop"
 $loggMapp = Join-Path $env:LOCALAPPDATA "appfabriken\logg"
 New-Item -ItemType Directory -Force -Path $loggMapp | Out-Null
@@ -100,6 +103,87 @@ function Filer([string[]]$rader) {
     return $ut
 }
 
+function Add-AiderLogRad([string]$rad) {
+    Write-Host $rad
+    foreach ($f in 1..3) {
+        try {
+            Add-Content -Encoding UTF8 -Path $script:aiderLogg -Value $rad -ErrorAction Stop
+            return
+        } catch {
+            Start-Sleep -Milliseconds 100
+        }
+    }
+    Add-Content -Encoding UTF8 -Path $script:aiderLogg -Value $rad -ErrorAction SilentlyContinue
+}
+
+function SkrivNyaRader([string]$fil, [ref]$offset) {
+    if (-not (Test-Path -LiteralPath $fil)) { return }
+    try {
+        $fs = [System.IO.File]::Open($fil, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::ReadWrite)
+        if ($fs.Length -le $offset.Value) { $fs.Dispose(); return }
+        $fs.Seek($offset.Value, [System.IO.SeekOrigin]::Begin) | Out-Null
+        $reader = New-Object System.IO.StreamReader($fs, [System.Text.Encoding]::UTF8)
+        while ($null -ne ($line = $reader.ReadLine())) { Add-AiderLogRad $line }
+        $offset.Value = $fs.Position
+        $reader.Dispose()
+        $fs.Dispose()
+    } catch { }
+}
+
+function VarmGradle {
+    $gradlew = Join-Path $Repo "gradlew.bat"
+    if (-not (Test-Path -LiteralPath $gradlew)) { Avbryt "gradlew.bat saknas i $Repo" }
+    Write-Host "Värmer Gradle (startar daemon om det behövs)..." -ForegroundColor DarkGray
+    $ErrorActionPreference = "Continue"
+    & $gradlew help 1>$null 2>$null
+    $kod = $LASTEXITCODE
+    if ($kod -ne 0) {
+        $ErrorActionPreference = "Stop"
+        Avbryt "Gradle uppvärmning (gradlew help) gav felkod $kod"
+    }
+    $status = (& $gradlew --status 2>&1 | Out-String)
+    $ErrorActionPreference = "Stop"
+    if ($status -notmatch '(?m)^\s*\d+\s+(IDLE|BUSY)') {
+        Avbryt "Ingen Gradle-daemon lever efter uppvärmning (gradlew --status)."
+    }
+}
+
+function KorAider([string]$aiderExe, [string[]]$Argument, [int]$timeoutMin) {
+    $outTmp = Join-Path $loggMapp "aider-stdout-$stampel.log"
+    $errTmp = Join-Path $loggMapp "aider-stderr-$stampel.log"
+    "" | Set-Content -Encoding UTF8 -Path $outTmp
+    "" | Set-Content -Encoding UTF8 -Path $errTmp
+    $ErrorActionPreference = "Continue"
+    $proc = Start-Process -FilePath $aiderExe -ArgumentList $Argument `
+        -RedirectStandardOutput $outTmp -RedirectStandardError $errTmp -PassThru -NoNewWindow
+    $ErrorActionPreference = "Stop"
+    if (-not $proc) { Avbryt "Kunde inte starta Aider." }
+    $outPos = 0; $errPos = 0
+    $deadline = (Get-Date).AddMinutes($timeoutMin)
+    $avbruten = $false
+    while (-not $proc.HasExited) {
+        SkrivNyaRader $outTmp ([ref]$outPos)
+        SkrivNyaRader $errTmp ([ref]$errPos)
+        if ((Get-Date) -gt $deadline) {
+            $avbruten = $true
+            Add-AiderLogRad "Aider avbröts efter tidsgränsen ($timeoutMin min)."
+            $ErrorActionPreference = "Continue"
+            & taskkill /PID $proc.Id /T /F 2>&1 | Out-Null
+            $ErrorActionPreference = "Stop"
+            Start-Sleep -Seconds 2
+            break
+        }
+        Start-Sleep -Milliseconds 200
+    }
+    if (-not $proc.HasExited) {
+        try { $proc.WaitForExit(5000) } catch { }
+    }
+    SkrivNyaRader $outTmp ([ref]$outPos)
+    SkrivNyaRader $errTmp ([ref]$errPos)
+    if ($avbruten) { return -1 }
+    return $proc.ExitCode
+}
+
 # --- Förkontroller ---
 $aider = Join-Path $env:USERPROFILE ".local\bin\aider.exe"
 if (-not (Test-Path $aider)) { Avbryt "Aider saknas: $aider" }
@@ -124,15 +208,23 @@ if (-not (Test-Path $localProps)) {
 }
 
 # --- Utgå från senaste main ---
-# En körning som Windows stoppade mitt i (datorn användes igen) lämnar en opushad lokal/-gren
-# med halvfärdiga ändringar. Den kastas, och uppgiften körs om från början nästa gång.
+# En avbruten körning på lokal/<uppgift> utan push: om det finns commits som inte finns på origin
+# behålls grenen (nästa uppgiftsstart sparar den som rescue/ vid behov). Annars kastas tom/halv gren.
 $aktuell = (git rev-parse --abbrev-ref HEAD).Trim()
 if ($aktuell -like "lokal/*" -and -not (git ls-remote --heads origin $aktuell)) {
-    Write-Host "Avbruten körning på $aktuell kastas." -ForegroundColor Yellow
-    KorGit @("reset", "--hard")
-    KorGit @("clean", "-fd")
-    KorGit @("checkout", "main")
-    KorGit @("branch", "-D", $aktuell)
+    $ErrorActionPreference = "Continue"
+    $sparade = @(git rev-list $aktuell --not --remotes=origin 2>$null)
+    $ErrorActionPreference = "Stop"
+    if ($sparade.Count -gt 0) {
+        Write-Host "Kvarliggande gren $aktuell behålls ($($sparade.Count) commit(s) som inte finns på origin)." -ForegroundColor Yellow
+        KorGit @("checkout", "main")
+    } else {
+        Write-Host "Avbruten körning på $aktuell kastas." -ForegroundColor Yellow
+        KorGit @("reset", "--hard")
+        KorGit @("clean", "-fd")
+        KorGit @("checkout", "main")
+        KorGit @("branch", "-D", $aktuell)
+    }
 }
 # Övriga ändringar (till exempel byggfiler som inte är ignorerade, eller en uppdaterad fil i verktyg/)
 # läggs undan i git stash i stället för att körningen stannar. De går att hämta med "git stash list".
@@ -203,6 +295,8 @@ $iPagar = "uppgifter/pagar/$($uppgift.Name)"
 KorGit @("mv", "uppgifter/ny/$($uppgift.Name)", $iPagar)
 KorGit @("commit", "-m", "Uppgift startad: $namn")
 
+VarmGradle
+
 # --- Aider ---
 # Meddelandet är uppgiften plus en regel för frågor (ARBETSFLODE.md).
 $meddelande = Join-Path $loggMapp "meddelande-$stampel.md"
@@ -229,18 +323,13 @@ $aiderArg += $tillatna
 $start = Get-Date
 Status "kodar" "Aider och $Modell arbetar."
 "" | Set-Content -Encoding UTF8 $aiderLogg
-# Aiders utskrift visas i fönstret och sparas samtidigt för panelen.
-# Utskriften går genom en pipe, och då använder Python Windows teckentabell (cp1252). Den saknar
-# tecken som Aider skriver (till exempel █ i förloppsindikatorn) och Aider kraschar. Tvinga UTF-8
-# i Python och låt PowerShell läsa pipen som UTF-8, så att å, ä och ö också blir rätt.
+# Aider körs som egen process (inte via pipe), så Gradle-daemoner som startas i teststeget
+# inte hänger kvar i skriptets stdout. Tvinga UTF-8 i Python så att Aider inte kraschar på cp1252.
 $env:PYTHONUTF8 = "1"
 $env:PYTHONIOENCODING = "utf-8"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
-$ErrorActionPreference = "Continue"
-& $aider @aiderArg 2>&1 | ForEach-Object { $rad = "$_"; Write-Host $rad; Add-Content -Encoding UTF8 -Path $aiderLogg -Value $rad }
-$aiderKod = $LASTEXITCODE
-$ErrorActionPreference = "Stop"
+$aiderKod = KorAider $aider $aiderArg $AiderTimeoutMinuter
 $minuter = [math]::Round(((Get-Date) - $start).TotalMinutes, 1)
 
 # --- Egen kontroll efteråt ---
