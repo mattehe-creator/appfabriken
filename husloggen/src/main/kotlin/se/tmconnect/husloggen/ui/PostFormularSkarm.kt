@@ -169,90 +169,44 @@ fun PostFormularSkarm(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            OutlinedTextField(
-                value = tillstand.vad,
-                onValueChange = onVadAndras,
-                label = { Text(text = stringResource(R.string.falt_vad)) },
-                isError = tillstand.valideringsFel == PostFel.VAD_SAKNAS,
-                supportingText = if (tillstand.valideringsFel == PostFel.VAD_SAKNAS) {
-                    { Text(text = stringResource(R.string.fel_vad_saknas)) }
-                } else {
-                    null
-                },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
+            PostVadFalt(
+                vad = tillstand.vad,
+                onVadAndras = onVadAndras,
+                fel = tillstand.valideringsFel,
             )
 
-            OutlinedButton(
-                onClick = { visarDatumvaljare = true },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .tryckyta48(),
-            ) {
-                Icon(Icons.Filled.DateRange, contentDescription = null)
-                Text(
-                    text = "${stringResource(R.string.falt_datum)}: ${formateraDatum(tillstand.datum, locale)}",
-                    modifier = Modifier.padding(start = 8.dp),
-                )
-            }
-            if (tillstand.valideringsFel == PostFel.DATUM_I_FRAMTIDEN) {
-                Text(
-                    text = stringResource(R.string.fel_datum_framtid),
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-
-            Text(text = stringResource(R.string.falt_typ), style = MaterialTheme.typography.labelLarge)
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                PostTyp.entries.forEach { typ ->
-                    FilterChip(
-                        selected = tillstand.typ == typ,
-                        onClick = { onTypAndras(typ) },
-                        label = { Text(text = postTypEtikett(typ)) },
-                        modifier = Modifier.tryckyta48(),
-                    )
-                }
-            }
-
-            OutlinedTextField(
-                value = tillstand.beloppText,
-                onValueChange = onBeloppAndras,
-                label = { Text(text = stringResource(R.string.falt_belopp)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                isError = tillstand.valideringsFel == PostFel.BELOPP_OGILTIGT,
-                supportingText = if (tillstand.valideringsFel == PostFel.BELOPP_OGILTIGT) {
-                    { Text(text = stringResource(R.string.fel_belopp_ogiltigt)) }
-                } else {
-                    null
-                },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
+            PostDatumFalt(
+                datum = tillstand.datum,
+                onValjDatum = { visarDatumvaljare = true },
+                locale = locale,
+                fel = tillstand.valideringsFel,
             )
 
-            OutlinedTextField(
-                value = tillstand.utforare,
-                onValueChange = onUtforareAndras,
-                label = { Text(text = stringResource(R.string.falt_utforare)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
+            PostTypValjare(
+                typ = tillstand.typ,
+                onTypAndras = onTypAndras,
             )
 
-            PostUppgiftMeny(
+            PostBeloppFalt(
+                beloppText = tillstand.beloppText,
+                onBeloppAndras = onBeloppAndras,
+                fel = tillstand.valideringsFel,
+            )
+
+            PostUtforareFalt(
+                utforare = tillstand.utforare,
+                onUtforareAndras = onUtforareAndras,
+            )
+
+            PostUppgiftValjare(
                 uppgifter = uppgifter,
                 valdUppgiftId = tillstand.uppgiftId,
-                onValj = onUppgiftAndras,
+                onValjUppgift = onUppgiftAndras,
             )
 
-            OutlinedTextField(
-                value = tillstand.anteckning,
-                onValueChange = onAnteckningAndras,
-                label = { Text(text = stringResource(R.string.falt_anteckning)) },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 2,
+            PostAnteckningFalt(
+                anteckning = tillstand.anteckning,
+                onAnteckningAndras = onAnteckningAndras,
             )
 
             if (tillstand.redigerarId != 0L) {
