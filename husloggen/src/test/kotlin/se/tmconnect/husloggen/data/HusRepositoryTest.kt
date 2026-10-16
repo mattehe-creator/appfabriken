@@ -1,33 +1,57 @@
 package se.tmconnect.husloggen.data
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.net.Uri
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import java.io.File
+import java.io.FileOutputStream
 import java.time.LocalDate
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import se.tmconnect.husloggen.data.skapaHusBildLager
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28])
 class HusRepositoryTest {
+    private lateinit var context: Context
     private lateinit var databas: HusDatabas
     private lateinit var repository: HusRepository
 
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
+        context = ApplicationProvider.getApplicationContext()
+        nollstallFileProviderCache()
         databas = Room.inMemoryDatabaseBuilder(context, HusDatabas::class.java)
             .allowMainThreadQueries()
             .build()
-        repository = HusRepository(databas.husDao())
+        repository = HusRepository(databas.husDao(), skapaHusBildLager(context))
+    }
+
+    private fun nollstallFileProviderCache() {
+        val falt = androidx.core.content.FileProvider::class.java.getDeclaredField("sCache")
+        falt.isAccessible = true
+        (falt.get(null) as MutableMap<*, *>).clear()
+    }
+
+    private fun skapaTestBildUri(bredd: Int = 100, hojd: Int = 80): Uri {
+        val bitmap = Bitmap.createBitmap(bredd, hojd, Bitmap.Config.ARGB_8888)
+        bitmap.eraseColor(Color.GRAY)
+        val fil = File(context.cacheDir, "repo-test-${System.nanoTime()}.jpg")
+        FileOutputStream(fil).use { bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it) }
+        bitmap.recycle()
+        return Uri.fromFile(fil)
     }
 
     @After
@@ -137,6 +161,58 @@ class HusRepositoryTest {
             ),
         )
         assertNull(repository.hamtaPost(postId)!!.beloppOre)
+    }
+
+    @Test
+    fun postUtanBilderGerTomLista() = runTest {
+        val postId = repository.sparaPost(
+            Post(
+                datum = LocalDate.of(2026, 1, 1),
+                vad = "Utan bild",
+                typ = PostTyp.UNDERHALL,
+            ),
+        )
+        val post = repository.hamtaPost(postId)!!
+        assertTrue(repository.lasBilder(post).isEmpty())
+    }
+
+    @Test
+    fun laggTillOchTaBortBildPaPost() = runTest {
+        val postId = repository.sparaPost(
+            Post(
+                datum = LocalDate.of(2026, 2, 1),
+                vad = "Med kvitto",
+                typ = PostTyp.REPARATION,
+            ),
+        )
+        val uri = skapaTestBildUri()
+        assertTrue(repository.laggTillBild(postId, uri))
+
+        val medBild = repository.hamtaPost(postId)!!
+        val filnamn = repository.lasBilder(medBild).single()
+        assertTrue(repository.bildfilFinns(filnamn))
+
+        repository.taBortBild(postId, filnamn)
+        assertTrue(repository.lasBilder(repository.hamtaPost(postId)!!).isEmpty())
+        assertTrue(!repository.bildfilFinns(filnamn))
+    }
+
+    @Test
+    fun taBortPostRaderarBildfiler() = runTest {
+        val postId = repository.sparaPost(
+            Post(
+                datum = LocalDate.of(2026, 3, 1),
+                vad = "Raderas",
+                typ = PostTyp.UNDERHALL,
+            ),
+        )
+        assertTrue(repository.laggTillBild(postId, skapaTestBildUri()))
+        val post = repository.hamtaPost(postId)!!
+        val filnamn = repository.lasBilder(post).single()
+
+        repository.taBortPost(post)
+        assertNull(repository.hamtaPost(postId))
+        assertTrue(!repository.bildfilFinns(filnamn))
     }
 
     @Test
