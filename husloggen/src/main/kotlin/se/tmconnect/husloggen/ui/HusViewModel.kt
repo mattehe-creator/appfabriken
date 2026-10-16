@@ -72,6 +72,10 @@ sealed class HusUiMeddelande {
     data object UppgiftMarkeradGjord : HusUiMeddelande()
 
     data object UppgiftMarkeradGjordPostEjSparad : HusUiMeddelande()
+    
+    data object SakerhetskopiaSparad : HusUiMeddelande()
+    
+    data object SakerhetskopiaKundeInteLasas : HusUiMeddelande()
 }
 
 class HusViewModel(
@@ -523,6 +527,30 @@ class HusViewModel(
             (nu - skaBehalla).forEach { repository.taBortBildfil(it) }
         }
         bilderTillagdaISession = emptySet()
+    }
+    
+    /**
+     * Sparar säkerhetskopia till angiven URI
+     */
+    fun sparaSakerhetskopia(uri: Uri) {
+        viewModelScope.launch {
+            try {
+                val uppgifter = repository.allaUppgifter()
+                val poster = repository.allaPoster()
+                val bildLager = skapaHusBildLager(appContext)
+                
+                withContext(Dispatchers.IO) {
+                    val outputStream = appContext.contentResolver.openOutputStream(uri)
+                        ?: throw java.io.IOException()
+                    outputStream.use {
+                        se.tmconnect.husloggen.export.Sakerhetskopia.skriv(it, uppgifter, poster, bildLager)
+                    }
+                }
+                _meddelanden.emit(HusUiMeddelande.SakerhetskopiaSparad)
+            } catch (_: Exception) {
+                _meddelanden.emit(HusUiMeddelande.SakerhetskopiaKundeInteLasas)
+            }
+        }
     }
 }
 

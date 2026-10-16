@@ -137,6 +137,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Resultatkontrakt för säkerhetskopia
+    private val createSakerhetskopiaContract = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/zip")
+    ) { uri: Uri? ->
+        if (uri != null) {
+            viewModel.sparaSakerhetskopia(uri)
+        }
+    }
+
     private var behorighetNekad by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -281,7 +290,11 @@ class MainActivity : ComponentActivity() {
                                 onByttAutoBackupMapp = { valjMappContract.launch(null) },
                                 onAutoBackupIntervall = viewModel::sattAutoBackupIntervall,
                                 onKorNuAutoBackup = viewModel::korNuAutoBackup,
-                                onSparaSakerhetskopia = {},
+                                onSparaSakerhetskopia = {
+                                    createSakerhetskopiaContract.launch(
+                                        sakerhetskopiaFilnamn(LocalDate.now()),
+                                    )
+                                },
                                 onHamtaSakerhetskopia = {},
                             )
                         }
