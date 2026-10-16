@@ -1,1 +1,0 @@
-Hur fungerar Sakerhetskopia.skriv-metoden i :karna-modulen? Jag ser att den är refererad i uppdraget men inte finns tillgänglig i de filer som kan redigeras. Behöver jag implementera denna metod eller finns den redan i :karna?
