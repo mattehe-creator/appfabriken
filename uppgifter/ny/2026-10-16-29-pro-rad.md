@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-16-husloggen-pro-gratisgrans.md
 försök: 1
-beror-på: 2026-10-16-25-pro-strangar.md, 2026-10-16-26-pro-dialog.md, cursor:2026-10-16-husloggen-pro-gratisgrans
+beror-på: 2026-10-16-25-pro-strangar.md, 2026-10-16-26-pro-dialog.md, cursor:2026-10-16-husloggen-pro-gratisgrans-del-a
 
 ## Ändra bara dessa filer
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/ui/HusSkarmar.kt
