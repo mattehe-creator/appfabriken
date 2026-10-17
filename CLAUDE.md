@@ -8,7 +8,7 @@ Gäller alla appar i portföljen. Varje app har dessutom en egen `APP.md` med de
 
 Bygga en portfölj av små Android-appar som säljs på Google Play via TM Connect. Varje app ska vara liten nog att byggas av en lokal kodmodell i små steg, fungera helt offline och kunna drivas utan löpande underhåll.
 
-Framgång mäts per app efter 90 dagar i produktion: installationer, andel som köper Pro, betyg och antal felrapporter. En app som inte når 1 % köpkonvertering eller ligger under 3,5 i betyg får inga nya funktioner; den underhålls bara.
+Framgång mäts per app: installationer, andel som köper Pro, betyg och antal felrapporter. Apparna underhålls och förbättras även när siffrorna är låga.
 
 ## 2. Roller
 
@@ -88,12 +88,11 @@ Bara detta kräver Mattias:
 - applicationId och appnamn vid första publiceringen.
 - Signeringsnyckeln. Den finns bara hos Mattias och i Play App Signing, aldrig i repot.
 
-Kod skrivs i första hand av den lokala modellen. Cursor skriver bara det som är för tungt för den. Claude skriver ingen appkod.
+Kod skrivs i första hand av den lokala modellen. Cursor skriver det som är för tungt för den. Claude skriver kod när varken den lokala modellen eller Cursor räcker till eller har klarat uppgiften (till exempel efter två misslyckade försök, eller när en rättelse är liten och snabbare att göra direkt), och verktyg på Mattias dator.
 
 ## 10. Arbetsregler
 
 - Ett spår i taget per app. STATUS.md har Nu, Nästa och Senare. Claude säger ifrån när något nytt läggs till innan Nu är klart.
-- Högst en app i aktiv utveckling åt gången tills den första är publicerad.
 - En agent i taget per gren. Commit före och efter varje uppgift.
 - Push till egna grenar är fritt. Merge till main bara med grönt bygge.
 - Före borttagning av filer eller ändring av databasschema: stanna, rapportera och vänta på godkännande.
