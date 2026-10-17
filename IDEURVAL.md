@@ -109,8 +109,77 @@ Pro (engångsköp, 49 kr): obegränsad logg.
 
 Inte i 1.0: flera bostäder, mätarställningar, dokument (manualer, ritningar), plan för framtida kostnader, delning, widgets.
 
+## Omprövning 2026-10-17: app 3
+
+Mattias frågade 2026-10-17 vad app 3 ska vara. Samma dag beslutade han att flera appar får vara i utveckling samtidigt (BESLUTSLOGG.md). Claude prövade de idéer som var kvar och åtta nya mot samma kriterier.
+
+Det som styrde utöver kriterierna:
+- Pro tar bara bort gränsen på 15 poster (CLAUDE.md punkt 6). Appen behöver poster som samlas över tid och blir värda något som historik, medan den som har lite klarar sig gratis.
+- A och G vann på ett svenskt pengavärde som kräver dokumentation (reklamationsrätten, förbättringsutgifter) och på svag svensk konkurrens.
+- Husloggens skelett finns: återkommande uppgifter med intervall och påminnelse, logg med typ, belopp, kvitto och bilder, sammanställning per år och typ, PDF, CSV och säkerhetskopia. Påminnelser, bilder, säkerhetskopia och Pro ligger i `:karna`.
+- Play gick inte att söka direkt från Claudes miljö. Konkurrensen bedömdes med webbsökning på Play-listningar och är därför ungefärlig.
+
+| # | Idé | Bygg | Konk. | Betal | Upptäck | Återanv. | Risk | Summa |
+|---|---|---|---|---|---|---|---|---|
+| K | **Djurloggen** — hund och katt: vaccinationer, avmaskning, veterinärbesök, försäkring och kostnader, med påminnelser | 4 | 3 | 3 | 4 | 5 | 4 | **37** |
+| L | Billoggen — service, besiktning, däck, reparationer och kostnader; underlag vid försäljning | 4 | 2 | 3 | 4 | 5 | 5 | 36 |
+| Q | Avtalskollen — abonnemang och avtal med bindningstid och uppsägning | 5 | 2 | 2 | 3 | 4 | 5 | 35 |
+| N | Dödsboet — frister, uppgifter, tillgångar, lösöre och utlägg; underlag för bouppteckning | 3 | 5 | 4 | 1 | 3 | 3 | 34 |
+| O | Säljloggen — begagnatförsäljning: inköp, försäljning och vinst per år | 5 | 3 | 2 | 2 | 4 | 3 | 34 |
+| R | Körjournal utan GPS | 4 | 1 | 4 | 5 | 3 | 4 | 34 |
+| M | Flytten — checklista mot flyttdagen och flyttlådor med innehåll och foto | 4 | 3 | 2 | 3 | 3 | 5 | 33 |
+| P | Hyresloggen — felanmälan, temperatur och störningar som underlag för hyresreduktion | 4 | 4 | 2 | 1 | 4 | 4 | 33 |
+| C | Laddloggen | 4 | 2 | 3 | 3 | 3 | 5 | 33 |
+| F | Flextid | 4 | 3 | 3 | 2 | 3 | 4 | 33 |
+
+Varför de andra inte valdes:
+- L: Svenska alternativ finns redan. Serviceboken har servicebok och påminnelser, Digital Servicebook är gratis för bilägaren och verkstäderna för in servicen, Opus Bilprovning påminner om besiktning, och Fuelio och Drivvo räknar kostnader. Påminnelser om besiktning skickar besiktningsföretagen redan.
+- Q: Bankerna visar abonnemang som dras från kontot (Swedbanks Abonnemangshjälpen), och det finns många gratis appar för prenumerationer. Få hushåll har fler än 15 avtal.
+- N: Störst pengavärde och ingen app, men ingen söker efter det i Play, appen används en gång, och innehållet (ärvdabalken) är tungt och känsligt.
+- O: Gränsen 50 000 kr gäller vinst, inte försäljning, och de flesta som säljer begagnat når den inte. Den som köper för att sälja vidare driver verksamhet och behöver bokföring. Den som söker på Vinted eller Tradera hittar plattformarnas egna appar.
+- R: Driversnote och många svenska företagstjänster finns, och den som för körjournal vill att GPS gör jobbet. Vi använder inte plats, och 15 resor räcker inte till en hel app.
+- M: Används en gång och har svagt pengavärde. Engelska appar som Movemark (offline, lådor med QR-etiketter) gör redan detta.
+- P: Få söker efter det i Play, och få användare får fler än 15 poster.
+
+## Val app 3: K, Djurloggen (arbetsnamn)
+
+Claude valde 2026-10-17. När bygget startar bestämmer Mattias (BESLUTSLOGG.md 2026-10-17).
+
+**Varför:**
+- Stor målgrupp som lägger pengar på djuren. Jordbruksverkets register hade drygt 1,15 miljoner hundar vid årsskiftet 2024/25 (cirka 90 % av alla), och katterna uppskattas till 1,6 miljoner. Cirka 90 % av hundarna och 65 % av katterna är försäkrade (Agria och SKK 2026).
+- Ingen svensk app för djurets journal och kostnader hittades i Play. Det som finns på svenska är klinikernas appar (Evidensia: bokning och journalen från egna besök) och videoveterinär (FirstVet). Liknande appar finns på engelska, till exempel ApPET.
+- Pengavärde: försäkringen kan sätta ned ersättningen om djuret inte är vaccinerat enligt rekommendationerna. Hedvigs förköpsinformation (2025) anger till exempel att djuret ska vara vaccinerat enligt Sveriges Veterinärförbunds riktlinjer och FASS, och att ersättningen kan sättas ned om villkoren inte följts. Journalen visar vad som gjorts och när, oavsett klinik. Kostnader per år, med det försäkringen ersatt, visar vad djuret faktiskt kostar.
+- Svensk vinkel: id-märkning och registrering hos Jordbruksverket (hund sedan 2001, katt sedan 2023; bara drygt 650 000 katter är registrerade). Senare även resor: rabiesvaccination minst 21 dagar före avresa med EU-pass.
+- Husloggens skelett används igen. Det nya är en tabell för djuren och ett val av djur överst.
+- Gratisgränsen träffar rätt. Två djur ger på ett år fler än 15 poster (vaccinationer, avmaskningar, veterinärbesök, kostnader), medan den som bara vill ha påminnelser klarar sig gratis.
+- Inga regler som ändras varje år. Skelettet kan bli nästa app (häst).
+
+**Svagheter att känna till:**
+- Pengavärdet är svagare än i A och G. Det finns ingen lagstadgad rätt, bara försäkringsvillkor och kostnadskoll.
+- Konkurrensen är svag på svenska men stark på engelska, och klinikkedjornas appar kan växa.
+- Vaccination och avmaskning är veterinärens sak. Färdiga förslag visas "enligt veterinärens råd" med intervall som går att ändra, aldrig som regel, och appen ger inga doser eller läkemedelsråd. Förslagen kontrolleras mot SVA:s och Sveriges Veterinärförbunds aktuella rekommendationer och de största försäkringsbolagens vaccinationsvillkor innan uppdraget för förslagen skrivs.
+- Barn tycker om djur. Appen riktar sig till vuxna djurägare: målgrupp 18+ i Play Console och ingen design för barn.
+- CLAUDE.md punkt 6 säger "ingen hälsodata". Claude läser det som användarens hälsa, inte djurets, och djurets journal lämnar aldrig telefonen. Mattias bekräftar tolkningen.
+- Flera djur måste finnas i 1.0, till skillnad från flera bostäder i Husloggen.
+
+## Omfång för Djurloggen 1.0
+
+Gratis:
+- Djur: namn, art (hund, katt, annat), ras, födelsedatum, chipnummer, registrerad hos Jordbruksverket, passnummer, försäkringsbolag, försäkringsnummer, förnyelsedatum och foto. Flera djur.
+- Återkommande skötsel: namn, intervall, nästa datum och "markera som gjord" med ett tryck (skapar en post). Färdiga förslag med intervall som går att ändra: vaccination, avmaskning, fästing- och loppskydd, kloklippning, tandkontroll och förnyelse av försäkringen.
+- Påminnelse före nästa datum.
+- Logg: datum, typ (vaccination, behandling, veterinärbesök, försäkring, kostnad), vad, belopp, varav ersatt av försäkringen, klinik eller utförare, anteckning, kvitto och bilder.
+- Sammanställning per djur, år och typ, totalt och egen kostnad. PDF "Journal" per djur (för veterinär, djurvakt, försäkringsbolag eller ny ägare), CSV och säkerhetskopia.
+- Högst 15 poster i loggen. Djur, skötsel och påminnelser är obegränsade.
+
+Pro (engångsköp, 49 kr): obegränsad logg.
+
+Inte i 1.0: kvittoavläsning, vikt och viktkurva, självrisk per försäkringsperiod, avel och löp, foderschema, resor (rabies och EU-pass), delning, widgets, häst.
+
 ## Portföljordning
 
 1. A Garantivalvet (funktionsfryst, väntar på Google Play)
 2. G Husloggen (påbörjad 2026-10-16)
-3. Väljs när Mattias vill, utan väntetid efter publicering. B som egen app faller bort; mätarställningar kan bli en funktion i G.
+3. K Djurloggen (vald 2026-10-17). Bygget startar när Mattias bestämmer. B som egen app faller bort; mätarställningar kan bli en funktion i G.
+
+Närmaste kandidat därefter: L Billoggen, med Laddloggen (C) som funktion.

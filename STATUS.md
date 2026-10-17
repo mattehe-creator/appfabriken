@@ -37,5 +37,5 @@ Val och omfång i IDEURVAL.md (omprövning 2026-10-16), regler i `husloggen/APP.
 ## Senare
 
 - Husloggen efter 1.0: mätarställningar, flera bostäder, dokument (manualer, ritningar), plan för framtida kostnader.
-- App 3 väljs när Mattias vill (IDEURVAL.md). Ingen väntetid efter publicering.
+- App 3: Djurloggen (arbetsnamn), journal och kostnader för hund och katt. Vald 2026-10-17, se IDEURVAL.md. Bygget startar när Mattias bestämmer. Förslag: första uppdraget (modul `:djurloggen`, databas version 1, flikar) skrivs när Husloggens punkt 9 är skickad, och Husloggens uppgifter går först i kön. Före uppdraget för färdiga förslag kontrolleras vaccinations- och avmaskningsråden (SVA, Sveriges Veterinärförbund) och försäkringsbolagens vaccinationsvillkor.
 - Mätaren i panelen (`release.json`) följer Garantivalvet tills den är publicerad. Claude uppdaterar den när ett steg ändras.
