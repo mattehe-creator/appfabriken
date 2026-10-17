@@ -13,10 +13,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -83,7 +83,7 @@ fun HusStartSkarm(
         }
     }
     val locale = LocalConfiguration.current.locales[0]
-    val visaSkatteInfo = arSverigeForSkatteInfo(locale.country)
+    val visaSkatteInfo = locale.country.equals("SE", ignoreCase = true)
 
     Scaffold(
         modifier = modifier,
