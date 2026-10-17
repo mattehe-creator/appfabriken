@@ -8,6 +8,8 @@ import se.tmconnect.husloggen.export.SakerhetskopiaImportResultat
 import se.tmconnect.husloggen.export.SakerhetskopiaInnehall
 import se.tmconnect.husloggen.export.SakerhetskopiaPost
 import se.tmconnect.husloggen.export.SakerhetskopiaUppgift
+import se.tmconnect.husloggen.export.sakerhetskopiaAvlasningTillAvlasning
+import se.tmconnect.husloggen.export.sakerhetskopiaMatareTillMatare
 import se.tmconnect.husloggen.export.arSakerhetskopiaPostDubblett
 import se.tmconnect.husloggen.export.arSakerhetskopiaPostNyckelLik
 import se.tmconnect.husloggen.export.arSakerhetskopiaUppgiftDubblett
@@ -41,6 +43,10 @@ class HusRepository(
 ) {
     val uppgifter: Flow<List<Uppgift>> = dao.allaUppgifterFlow()
     val poster: Flow<List<Post>> = dao.allaPosterFlow()
+    val matare: Flow<List<Matare>> = dao.allaMatareFlow()
+
+    fun avlasningarForMatare(matareId: Long): Flow<List<Avlasning>> =
+        dao.avlasningarForMatareFlow(matareId)
 
     suspend fun hamtaUppgift(id: Long): Uppgift? = dao.hamtaUppgift(id)
 
@@ -121,7 +127,37 @@ class HusRepository(
 
     suspend fun antalPoster(): Int = dao.antalPoster()
 
-    suspend fun harData(): Boolean = dao.antalPoster() > 0 || dao.antalUppgifter() > 0
+    suspend fun harData(): Boolean =
+        dao.antalPoster() > 0 || dao.antalUppgifter() > 0 || dao.antalMatare() > 0
+
+    suspend fun hamtaMatare(id: Long): Matare? = dao.hamtaMatare(id)
+
+    suspend fun sparaMatare(matare: Matare): Long =
+        if (matare.id == 0L) {
+            dao.infogaMatare(matare)
+        } else {
+            dao.uppdateraMatare(matare)
+            matare.id
+        }
+
+    suspend fun taBortMatare(matare: Matare) = dao.taBortMatare(matare)
+
+    suspend fun sparaAvlasning(avlasning: Avlasning): Long =
+        if (avlasning.id == 0L) {
+            dao.infogaAvlasning(avlasning)
+        } else {
+            dao.uppdateraAvlasning(avlasning)
+            avlasning.id
+        }
+
+    suspend fun taBortAvlasning(avlasning: Avlasning) = dao.taBortAvlasning(avlasning)
+
+    suspend fun avlasningarForMatareLista(matareId: Long): List<Avlasning> =
+        dao.avlasningarForMatare(matareId)
+
+    suspend fun allaMatare(): List<Matare> = dao.allaMatare()
+
+    suspend fun allaAvlasningar(): List<Avlasning> = dao.allaAvlasningar()
 
     suspend fun allaUppgifter(): List<Uppgift> = dao.allaUppgifter()
 
@@ -187,6 +223,15 @@ class HusRepository(
                 val uppgiftId = export.uppgiftIndex?.let { indexTillUppgiftId[it] }
                 dao.infogaPost(sakerhetskopiaPostTillPost(export, uppgiftId, nyaBilder))
                 tillagda++
+            }
+            val matareIndexTillId = mutableMapOf<Int, Long>()
+            innehall.matare.forEachIndexed { index, export ->
+                val nyttId = dao.infogaMatare(sakerhetskopiaMatareTillMatare(export))
+                matareIndexTillId[index] = nyttId
+            }
+            for (export in innehall.avlasningar) {
+                val matareId = matareIndexTillId[export.matareIndex] ?: continue
+                dao.infogaAvlasning(sakerhetskopiaAvlasningTillAvlasning(export, matareId))
             }
         }
         return SakerhetskopiaImportResultat(tillagda = tillagda, hoppadeOver = hoppadeOver)

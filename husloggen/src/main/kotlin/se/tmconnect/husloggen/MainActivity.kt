@@ -49,7 +49,9 @@ import se.tmconnect.husloggen.ui.PostFormularSkarm
 import se.tmconnect.husloggen.ui.ProDialog
 import se.tmconnect.husloggen.ui.UppgiftFormularSkarm
 import se.tmconnect.karna.tema.AppfabrikTema
+import se.tmconnect.husloggen.export.AvlasningCsvTexter
 import se.tmconnect.husloggen.export.HusHistorikTexter
+import se.tmconnect.husloggen.export.avlasningCsvFilnamn
 import se.tmconnect.husloggen.export.husHistorikCsvFilnamn
 import se.tmconnect.husloggen.export.husHistorikPdfFilnamn
 import se.tmconnect.husloggen.export.skatteKallorText
@@ -183,6 +185,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private var avlasningCsvMatareId: Long? = null
+    private val createAvlasningCsvContract = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("text/csv"),
+    ) { uri: Uri? ->
+        val matareId = avlasningCsvMatareId
+        if (uri != null && matareId != null) {
+            viewModel.sparaAvlasningCsv(uri, matareId, avlasningCsvTexter(), resources.configuration.locales[0])
+        }
+        avlasningCsvMatareId = null
+    }
+
     private var behorighetNekad by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -221,6 +234,11 @@ class MainActivity : ComponentActivity() {
                 var valdBildIndex by remember { mutableStateOf(0) }
                 val uppgifter by viewModel.uppgifter.collectAsState()
                 val poster by viewModel.poster.collectAsState()
+                val matare by viewModel.matare.collectAsState()
+                val matareDetaljId by viewModel.matareDetaljId.collectAsState()
+                val matareFormular by viewModel.matareFormular.collectAsState()
+                val avlasningFormular by viewModel.avlasningFormular.collectAsState()
+                val valdMatareAvlasningar by viewModel.valdMatareAvlasningar.collectAsState()
                 val formular by viewModel.formular.collectAsState()
                 val postFormular by viewModel.postFormular.collectAsState()
                 val postDetaljId by viewModel.postDetaljId.collectAsState()
@@ -238,6 +256,8 @@ class MainActivity : ComponentActivity() {
                 val historikPdfFelText = stringResource(R.string.export_pdf_misslyckades)
                 val historikCsvSparadText = stringResource(R.string.export_csv_sparad)
                 val historikCsvFelText = stringResource(R.string.export_csv_misslyckades)
+                val avlasningCsvSparadText = stringResource(R.string.export_csv_sparad)
+                val avlasningCsvFelText = stringResource(R.string.export_csv_misslyckades)
                 val idag = LocalDate.now()
                 val snackbarHostState = remember { SnackbarHostState() }
 
@@ -258,6 +278,8 @@ class MainActivity : ComponentActivity() {
                             HusUiMeddelande.HistorikPdfMisslyckades -> historikPdfFelText
                             HusUiMeddelande.HistorikCsvSparad -> historikCsvSparadText
                             HusUiMeddelande.HistorikCsvMisslyckades -> historikCsvFelText
+                            HusUiMeddelande.AvlasningCsvSparad -> avlasningCsvSparadText
+                            HusUiMeddelande.AvlasningCsvMisslyckades -> avlasningCsvFelText
                         }
                         snackbarHostState.showSnackbar(text)
                     }
@@ -274,6 +296,63 @@ class MainActivity : ComponentActivity() {
                                 valdBildIndex = valdBildIndex,
                                 onStang = { visaBildHelskarm = false },
                             )
+                        }
+                        avlasningFormular != null -> {
+                            val tillstand = avlasningFormular!!
+                            val matareRad = matare.find { it.id == tillstand.matareId }
+                            if (matareRad != null) {
+                                se.tmconnect.husloggen.ui.AvlasningFormularSkarm(
+                                    tillstand = tillstand,
+                                    enhet = matareRad.enhet,
+                                    idag = idag,
+                                    onDatumAndras = viewModel::uppdateraAvlasningDatum,
+                                    onVardeAndras = viewModel::uppdateraAvlasningVarde,
+                                    onSpara = { viewModel.sparaAvlasningFormular() },
+                                    onBekraftaLagreVarde = { viewModel.sparaAvlasningFormular(bekraftatLagreVarde = true) },
+                                    onAvbrytLagreVarde = viewModel::avbrytLagreVardeBekraftelse,
+                                    onStang = viewModel::stangAvlasningFormular,
+                                )
+                            } else {
+                                LaunchedEffect(tillstand.matareId) {
+                                    viewModel.stangAvlasningFormular()
+                                }
+                            }
+                        }
+                        matareFormular != null -> {
+                            se.tmconnect.husloggen.ui.MatareFormularSkarm(
+                                tillstand = matareFormular!!,
+                                onNamnAndras = viewModel::uppdateraMatareNamn,
+                                onEnhetAndras = viewModel::uppdateraMatareEnhet,
+                                onAnteckningAndras = viewModel::uppdateraMatareAnteckning,
+                                onValjForslag = viewModel::appliceraMatareForslag,
+                                onSpara = viewModel::sparaMatareFormular,
+                                onStang = viewModel::stangMatareFormular,
+                            )
+                        }
+                        matareDetaljId != null -> {
+                            val matareRad = matare.find { it.id == matareDetaljId }
+                            if (matareRad != null) {
+                                val locale = resources.configuration.locales[0]
+                                se.tmconnect.husloggen.ui.MatareDetaljSkarm(
+                                    matare = matareRad,
+                                    avlasningar = valdMatareAvlasningar,
+                                    locale = locale,
+                                    idag = idag,
+                                    onTillbaka = viewModel::stangMatareDetalj,
+                                    onNyAvlasning = { viewModel.visaNyAvlasning(matareRad.id) },
+                                    onExportCsv = {
+                                        avlasningCsvMatareId = matareRad.id
+                                        createAvlasningCsvContract.launch(
+                                            avlasningCsvFilnamn(matareRad.namn, idag),
+                                        )
+                                    },
+                                    onTaBortMatare = { viewModel.taBortMatare(matareRad.id) },
+                                )
+                            } else {
+                                LaunchedEffect(matareDetaljId) {
+                                    viewModel.stangMatareDetalj()
+                                }
+                            }
                         }
                         postFormular != null -> {
                             val tillstand = postFormular!!
@@ -387,8 +466,10 @@ class MainActivity : ComponentActivity() {
                             HusStartSkarm(
                                 uppgifter = uppgifter,
                                 poster = poster,
+                                matare = matare,
                                 onInstallningar = { visaInstallningar = true },
                                 onNyUppgift = viewModel::visaNyUppgift,
+                                onNyMatare = viewModel::visaNyMatare,
                                 onNyPost = {
                                     if (viewModel.kanLaggaTillNyPost()) {
                                         viewModel.visaNyPost()
@@ -398,6 +479,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onOppnaUppgift = viewModel::visaAndraUppgift,
                                 onOppnaPost = viewModel::visaPostDetalj,
+                                onOppnaMatare = viewModel::visaMatareDetalj,
                                 onMarkeraGjord = viewModel::markeraSomGjord,
                                 oppnaAttGora = oppnaAttGora,
                                 paminnelserPa = paminnelserPa,
@@ -477,6 +559,15 @@ class MainActivity : ComponentActivity() {
             beloppEtikett = { post -> formateraPrisKr(postBeloppForSammanstallningOre(post), locale) },
         )
     }
+
+    private fun avlasningCsvTexter(): AvlasningCsvTexter =
+        AvlasningCsvTexter(
+            kolumnDatum = getString(R.string.falt_datum),
+            kolumnVarde = getString(R.string.falt_avlasning_varde),
+            kolumnEnhet = getString(R.string.falt_enhet),
+            kolumnForbrukning = getString(R.string.falt_forbrukning),
+            kolumnEnhetKort = getString(R.string.falt_enhet),
+        )
 
     private fun historikTexter(@Suppress("UNUSED_PARAMETER") locale: Locale): HusHistorikTexter =
         HusHistorikTexter(

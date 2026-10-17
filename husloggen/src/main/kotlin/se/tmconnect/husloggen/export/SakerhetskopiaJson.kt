@@ -32,6 +32,16 @@ fun skrivSakerhetskopiaJson(innehall: SakerhetskopiaInnehall): String =
             if (index > 0) append(',')
             append(skrivPostObjekt(post))
         }
+        append("],\"matare\":[")
+        innehall.matare.forEachIndexed { index, matare ->
+            if (index > 0) append(',')
+            append(skrivMatareObjekt(matare))
+        }
+        append("],\"avlasningar\":[")
+        innehall.avlasningar.forEachIndexed { index, avlasning ->
+            if (index > 0) append(',')
+            append(skrivAvlasningObjekt(avlasning))
+        }
         append("]}")
     }
 
@@ -75,6 +85,36 @@ private fun skrivPostObjekt(post: SakerhetskopiaPost): String =
         append('}')
     }
 
+private fun skrivMatareObjekt(matare: SakerhetskopiaMatare): String =
+    buildString {
+        append('{')
+        var forsta = true
+        fun laggTillFalt(namn: String, varde: String) {
+            if (!forsta) append(',')
+            forsta = false
+            append('"').append(namn).append("\":").append(varde)
+        }
+        laggTillFalt("namn", jsonStrang(matare.namn))
+        laggTillFalt("enhet", jsonStrang(matare.enhet))
+        matare.anteckning?.let { laggTillFalt("anteckning", jsonStrang(it)) }
+        append('}')
+    }
+
+private fun skrivAvlasningObjekt(avlasning: SakerhetskopiaAvlasning): String =
+    buildString {
+        append('{')
+        var forsta = true
+        fun laggTillFalt(namn: String, varde: String) {
+            if (!forsta) append(',')
+            forsta = false
+            append('"').append(namn).append("\":").append(varde)
+        }
+        laggTillFalt("matareIndex", avlasning.matareIndex.toString())
+        laggTillFalt("datum", jsonStrang(avlasning.datum.toString()))
+        laggTillFalt("vardeTusendel", avlasning.vardeTusendel.toString())
+        append('}')
+    }
+
 private fun jsonStrang(text: String): String =
     buildString {
         append('"')
@@ -105,7 +145,7 @@ fun lasSakerhetskopiaJson(text: String): SakerhetskopiaJsonLasResult {
         if (version.toInt() > HUSLOGGEN_SAKERHETSKOPIA_VERSION) {
             return SakerhetskopiaJsonLasResult.Fel.OkandVersion
         }
-        if (version.toInt() != HUSLOGGEN_SAKERHETSKOPIA_VERSION) {
+        if (version.toInt() < HUSLOGGEN_SAKERHETSKOPIA_MIN_VERSION) {
             return SakerhetskopiaJsonLasResult.Fel.TrasigJson
         }
         val skapad = rot["skapad"] as? String ?: return SakerhetskopiaJsonLasResult.Fel.TrasigJson
@@ -131,12 +171,36 @@ fun lasSakerhetskopiaJson(text: String): SakerhetskopiaJsonLasResult {
         if (uppgifter.size != rawUppgifter.size || poster.size != rawPoster.size) {
             return SakerhetskopiaJsonLasResult.Fel.TrasigJson
         }
+        val rawMatare = rot["matare"] as? List<*> ?: emptyList<Any>()
+        val rawAvlasningar = rot["avlasningar"] as? List<*> ?: emptyList<Any>()
+        if (rawMatare.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_MATARE ||
+            rawAvlasningar.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_AVLASNINGAR
+        ) {
+            return SakerhetskopiaJsonLasResult.Fel.TrasigJson
+        }
+        val matare =
+            rawMatare.mapNotNull { element ->
+                val falt = element as? Map<*, *> ?: return@mapNotNull null
+                @Suppress("UNCHECKED_CAST")
+                lasMatareObjekt(falt as Map<String, Any?>)
+            }
+        val avlasningar =
+            rawAvlasningar.mapNotNull { element ->
+                val falt = element as? Map<*, *> ?: return@mapNotNull null
+                @Suppress("UNCHECKED_CAST")
+                lasAvlasningObjekt(falt as Map<String, Any?>)
+            }
+        if (matare.size != rawMatare.size || avlasningar.size != rawAvlasningar.size) {
+            return SakerhetskopiaJsonLasResult.Fel.TrasigJson
+        }
         SakerhetskopiaJsonLasResult.Ok(
             SakerhetskopiaInnehall(
                 version = version.toInt(),
                 skapad = skapad,
                 uppgifter = uppgifter,
                 poster = poster,
+                matare = matare,
+                avlasningar = avlasningar,
             ),
         )
     } catch (_: Exception) {
@@ -163,6 +227,31 @@ private fun lasUppgiftObjekt(falt: Map<String, Any?>): SakerhetskopiaUppgift? {
         startDatum = start,
         senastGjord = lasDatum(falt["senastGjord"]),
         anteckning = falt["anteckning"] as? String,
+    )
+}
+
+private fun lasMatareObjekt(falt: Map<String, Any?>): SakerhetskopiaMatare? {
+    val namn = falt["namn"] as? String ?: return null
+    val enhet = falt["enhet"] as? String ?: return null
+    return SakerhetskopiaMatare(
+        namn = namn,
+        enhet = enhet,
+        anteckning = falt["anteckning"] as? String,
+    )
+}
+
+private fun lasAvlasningObjekt(falt: Map<String, Any?>): SakerhetskopiaAvlasning? {
+    val matareIndex = falt["matareIndex"] as? Number ?: return null
+    val datum = lasDatum(falt["datum"]) ?: return null
+    val varde =
+        when (val v = falt["vardeTusendel"]) {
+            is Number -> v.toLong()
+            else -> return null
+        }
+    return SakerhetskopiaAvlasning(
+        matareIndex = matareIndex.toInt(),
+        datum = datum,
+        vardeTusendel = varde,
     )
 }
 

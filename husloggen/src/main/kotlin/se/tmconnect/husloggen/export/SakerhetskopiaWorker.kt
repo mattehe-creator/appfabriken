@@ -72,13 +72,18 @@ internal suspend fun korSakerhetskopiaJobb(
                 val repository = HusRepository(databas, dao, bildLager)
                 val uppgifter = repository.allaUppgifter()
                 val poster = repository.allaPoster()
+                val matare = repository.allaMatare()
+                val avlasningar = repository.allaAvlasningar()
                 val lagring =
                     SakerhetskopiaWorker.testMappLagring
                         ?: SafMapp(context, Uri.parse(mapp))
                 kopiera(
                     lagring = lagring,
                     filPrefix = HUSLOGGEN_AUTO_FILPREFIX,
-                    skrivZip = { ut -> Sakerhetskopia.skriv(ut, uppgifter, poster, bildLager) },
+                    skrivZip = {
+                            ut ->
+                        Sakerhetskopia.skriv(ut, uppgifter, poster, matare, avlasningar, bildLager)
+                    },
                     idag = idag,
                 )
             } catch (_: Exception) {

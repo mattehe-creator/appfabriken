@@ -8,3 +8,35 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
         db.execSQL("ALTER TABLE post ADD COLUMN rot_rut_avdrag_ore INTEGER")
     }
 }
+
+val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS matare (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                namn TEXT NOT NULL,
+                enhet TEXT NOT NULL,
+                anteckning TEXT,
+                skapad INTEGER NOT NULL
+            )
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS avlasning (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                matare_id INTEGER NOT NULL,
+                datum INTEGER NOT NULL,
+                varde INTEGER NOT NULL,
+                skapad INTEGER NOT NULL,
+                FOREIGN KEY(matare_id) REFERENCES matare(id) ON UPDATE NO ACTION ON DELETE CASCADE
+            )
+            """.trimIndent(),
+        )
+        db.execSQL("CREATE INDEX IF NOT EXISTS index_avlasning_matare_id ON avlasning (matare_id)")
+        db.execSQL(
+            "CREATE UNIQUE INDEX IF NOT EXISTS index_avlasning_matare_id_datum ON avlasning (matare_id, datum)",
+        )
+    }
+}

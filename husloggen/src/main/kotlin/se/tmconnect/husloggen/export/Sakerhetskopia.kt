@@ -7,6 +7,8 @@ import java.time.Instant
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
+import se.tmconnect.husloggen.data.Avlasning
+import se.tmconnect.husloggen.data.Matare
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.karna.bild.BildLager
@@ -31,11 +33,15 @@ object Sakerhetskopia {
         outputStream: OutputStream,
         uppgifter: List<Uppgift>,
         poster: List<Post>,
+        matare: List<Matare>,
+        avlasningar: List<Avlasning>,
         bildLager: BildLager,
         skapad: String = Instant.now().toString(),
     ) {
         if (uppgifter.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_UPPGIFTER ||
-            poster.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_POSTER
+            poster.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_POSTER ||
+            matare.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_MATARE ||
+            avlasningar.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_AVLASNINGAR
         ) {
             error("För många rader för säkerhetskopia")
         }
@@ -52,12 +58,21 @@ object Sakerhetskopia {
                     },
                 )
             }
+        val sorteradeMatare = matare.sortedBy { it.id }
+        val matareIdTillIndex = sorteradeMatare.mapIndexed { index, m -> m.id to index }.toMap()
+        val exportMatare = sorteradeMatare.map { matareTillSakerhetskopia(it) }
+        val exportAvlasningar =
+            avlasningar
+                .sortedBy { it.id }
+                .map { avlasningTillSakerhetskopia(it, matareIdTillIndex) }
         val innehall =
             SakerhetskopiaInnehall(
                 version = HUSLOGGEN_SAKERHETSKOPIA_VERSION,
                 skapad = skapad,
                 uppgifter = exportUppgifter,
                 poster = exportPoster,
+                matare = exportMatare,
+                avlasningar = exportAvlasningar,
             )
         val json = skrivSakerhetskopiaJson(innehall)
         val bilderAttSkriva = exportPoster.flatMap { it.bilder }.distinct()

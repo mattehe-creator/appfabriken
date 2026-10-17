@@ -58,9 +58,49 @@ interface HusDao {
         infogaPost(nyPost)
     }
 
+    @Query("SELECT * FROM matare ORDER BY namn COLLATE NOCASE, id")
+    fun allaMatareFlow(): Flow<List<Matare>>
+
+    @Query("SELECT * FROM matare ORDER BY id")
+    suspend fun allaMatare(): List<Matare>
+
+    @Query("SELECT * FROM matare WHERE id = :id")
+    suspend fun hamtaMatare(id: Long): Matare?
+
+    @Insert
+    suspend fun infogaMatare(matare: Matare): Long
+
+    @Update
+    suspend fun uppdateraMatare(matare: Matare)
+
+    @Delete
+    suspend fun taBortMatare(matare: Matare)
+
+    @Query("SELECT * FROM avlasning WHERE matare_id = :matareId ORDER BY datum DESC, id DESC")
+    fun avlasningarForMatareFlow(matareId: Long): Flow<List<Avlasning>>
+
+    @Query("SELECT * FROM avlasning WHERE matare_id = :matareId ORDER BY datum, id")
+    suspend fun avlasningarForMatare(matareId: Long): List<Avlasning>
+
+    @Query("SELECT * FROM avlasning ORDER BY id")
+    suspend fun allaAvlasningar(): List<Avlasning>
+
+    @Insert
+    suspend fun infogaAvlasning(avlasning: Avlasning): Long
+
+    @Update
+    suspend fun uppdateraAvlasning(avlasning: Avlasning)
+
+    @Delete
+    suspend fun taBortAvlasning(avlasning: Avlasning)
+
+    @Query("SELECT COUNT(*) FROM matare")
+    suspend fun antalMatare(): Int
+
     @Transaction
     suspend fun importeraSakerhetskopiaData(uppgifter: List<Uppgift>, poster: List<Post>) {
         uppgifter.forEach { infogaUppgift(it) }
         poster.forEach { infogaPost(it) }
     }
+
 }
