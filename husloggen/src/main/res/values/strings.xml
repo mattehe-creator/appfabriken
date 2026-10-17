@@ -23,12 +23,16 @@
     <string name="falt_datum">Date</string>
     <string name="falt_typ">Type</string>
     <string name="falt_belopp">Amount (SEK)</string>
+    <string name="falt_rot_rut_avdrag">Deduction (ROT/RUT) (SEK)</string>
+    <string name="hjalp_rot_rut_avdrag">Optional. Invoice amount you received as a tax reduction (ROT or RUT). Summaries use amount minus deduction. Check with the Swedish Tax Agency (Skatteverket).</string>
     <string name="falt_utforare">Who did the work</string>
     <string name="falt_uppgift">Linked task</string>
     <string name="ingen_uppgift">No task</string>
     <string name="fel_vad_saknas">Enter what was done</string>
     <string name="fel_datum_framtid">Date cannot be in the future</string>
     <string name="fel_belopp_ogiltigt">Invalid amount</string>
+    <string name="fel_avdrag_ogiltigt">Invalid deduction</string>
+    <string name="fel_avdrag_for_stort">Deduction cannot exceed the amount</string>
     <string name="bekrafta_ta_bort_post_titel">Delete entry?</string>
     <string name="bekrafta_ta_bort_post_text">This entry will be deleted permanently.</string>
     <string name="knapp_andra">Edit</string>

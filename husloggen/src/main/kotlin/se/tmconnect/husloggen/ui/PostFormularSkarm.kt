@@ -51,6 +51,7 @@ fun PostFormularSkarm(
     onDatumAndras: (LocalDate) -> Unit,
     onTypAndras: (PostTyp) -> Unit,
     onBeloppAndras: (String) -> Unit,
+    onRotRutAvdragAndras: (String) -> Unit,
     onUtforareAndras: (String) -> Unit,
     onUppgiftAndras: (Long?) -> Unit,
     onAnteckningAndras: (String) -> Unit,
@@ -185,6 +186,12 @@ fun PostFormularSkarm(
             PostBeloppFalt(
                 beloppText = tillstand.beloppText,
                 onBeloppAndras = onBeloppAndras,
+                fel = tillstand.valideringsFel,
+            )
+
+            PostRotRutAvdragFalt(
+                avdragText = tillstand.rotRutAvdragText,
+                onAvdragAndras = onRotRutAvdragAndras,
                 fel = tillstand.valideringsFel,
             )
 

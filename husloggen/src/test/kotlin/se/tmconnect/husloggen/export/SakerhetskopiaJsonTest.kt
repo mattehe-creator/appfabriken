@@ -62,6 +62,17 @@ class SakerhetskopiaJsonTest {
         assertEquals(null, post.utforare)
         assertEquals(null, post.uppgiftIndex)
         assertEquals(emptyList<String>(), post.bilder)
+        assertEquals(null, post.rotRutAvdragOre)
+    }
+
+    @Test
+    fun importUtanRotRutAvdragFalt() {
+        val json =
+            """
+            {"version":1,"skapad":"2026-10-16","uppgifter":[],"poster":[{"datum":"2026-01-01","vad":"Gammal","typ":"UNDERHALL","beloppOre":100000}]}
+            """.trimIndent()
+        val las = lasSakerhetskopiaJson(json) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals(null, las.innehall.poster.single().rotRutAvdragOre)
     }
 
     @Test

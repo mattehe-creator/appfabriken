@@ -132,6 +132,35 @@ fun PostBeloppFalt(
 }
 
 @Composable
+fun PostRotRutAvdragFalt(
+    avdragText: String,
+    onAvdragAndras: (String) -> Unit,
+    fel: PostFel?,
+    modifier: Modifier = Modifier,
+) {
+    OutlinedTextField(
+        value = avdragText,
+        onValueChange = onAvdragAndras,
+        label = { Text(text = stringResource(R.string.falt_rot_rut_avdrag)) },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+        isError = fel == PostFel.AVDRAG_OGILTIGT || fel == PostFel.AVDRAG_FOR_STORT,
+        supportingText = when (fel) {
+            PostFel.AVDRAG_OGILTIGT -> {
+                { Text(text = stringResource(R.string.fel_avdrag_ogiltigt)) }
+            }
+            PostFel.AVDRAG_FOR_STORT -> {
+                { Text(text = stringResource(R.string.fel_avdrag_for_stort)) }
+            }
+            else -> {
+                { Text(text = stringResource(R.string.hjalp_rot_rut_avdrag)) }
+            }
+        },
+        modifier = modifier.fillMaxWidth(),
+        singleLine = true,
+    )
+}
+
+@Composable
 fun PostUtforareFalt(
     utforare: String,
     onUtforareAndras: (String) -> Unit,

@@ -33,6 +33,7 @@ import se.tmconnect.husloggen.regler.ForbattringMojlighet
 import se.tmconnect.husloggen.regler.arStodjerGransbelopp
 import se.tmconnect.husloggen.regler.grupperaPerAr
 import se.tmconnect.husloggen.regler.kanVaraForbattring
+import se.tmconnect.husloggen.regler.postBeloppForSammanstallningOre
 import se.tmconnect.husloggen.regler.summeraPerAr
 import se.tmconnect.karna.format.formateraDatum
 import se.tmconnect.karna.format.formateraPrisKr
@@ -172,7 +173,9 @@ fun SammanstallningSkarm(
                             style = MaterialTheme.typography.bodySmall,
                         )
                         Text(
-                            text = post.beloppOre?.let { formateraPrisKr(it, locale) }.orEmpty(),
+                            text = postBeloppForSammanstallningOre(post)
+                                ?.let { formateraPrisKr(it, locale) }
+                                .orEmpty(),
                             style = MaterialTheme.typography.bodySmall,
                         )
                     }

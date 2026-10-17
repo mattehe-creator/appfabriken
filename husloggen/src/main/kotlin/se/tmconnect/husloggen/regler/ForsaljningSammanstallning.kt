@@ -13,12 +13,13 @@ enum class ForbattringMojlighet {
 /** Summa i öre per kalenderår och posttyp (poster utan belopp räknas inte). */
 fun summeraPerAr(poster: List<Post>): Map<Int, Map<PostTyp, Long>> =
     poster
-        .filter { it.beloppOre != null }
-        .groupBy { it.datum.year }
-        .mapValues { (_, arPoster) ->
-            arPoster
-                .groupBy { it.typ }
-                .mapValues { (_, typPoster) -> typPoster.sumOf { it.beloppOre!! } }
+        .mapNotNull { post ->
+            postBeloppForSammanstallningOre(post)?.let { Triple(post.datum.year, post.typ, it) }
+        }
+        .groupBy({ it.first }, { it.second to it.third })
+        .mapValues { (_, typPar) ->
+            typPar.groupBy({ it.first }, { it.second })
+                .mapValues { (_, belopp) -> belopp.sum() }
         }
 
 fun kanVaraForbattring(post: Post, forsaljningsar: Int): ForbattringMojlighet =
@@ -36,8 +37,8 @@ fun kanVaraForbattring(post: Post, forsaljningsar: Int): ForbattringMojlighet =
 /** Sant när årets förbättringsutgifter (alla loggtyper med belopp) uppgår till minst 5 000 kr. */
 fun arStodjerGransbelopp(poster: List<Post>, ar: Int): Boolean {
     val summa = poster
-        .filter { it.datum.year == ar && it.beloppOre != null }
-        .sumOf { it.beloppOre!! }
+        .filter { it.datum.year == ar }
+        .sumOf { postBeloppForSammanstallningOre(it) ?: 0L }
     return summa >= FORBATTRING_GRANS_ORE
 }
 

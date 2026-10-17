@@ -20,4 +20,11 @@ class PostValideringTest {
         assertNull(valideraPost("Målade fasaden", idag, idag, ""))
         assertNull(valideraPost("Målade fasaden", idag, idag, "12500"))
     }
+
+    @Test
+    fun rotRutAvdragValidering() {
+        assertEquals(PostFel.AVDRAG_OGILTIGT, valideraPost("X", idag, idag, "", "1000"))
+        assertEquals(PostFel.AVDRAG_FOR_STORT, valideraPost("X", idag, idag, "5000", "5001"))
+        assertNull(valideraPost("X", idag, idag, "10000", "3000"))
+    }
 }

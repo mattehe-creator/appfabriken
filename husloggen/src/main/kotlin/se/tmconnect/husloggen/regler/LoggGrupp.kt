@@ -14,8 +14,7 @@ fun grupperaPerAr(poster: List<Post>): List<ArGrupp> {
     return grupperad.entries
         .map { (ar, posterForAr) ->
             val summa = posterForAr
-                .filter { it.beloppOre != null }
-                .sumOf { it.beloppOre!! }
+                .sumOf { postBeloppForSammanstallningOre(it) ?: 0L }
             
             ArGrupp(ar, posterForAr, summa)
         }
