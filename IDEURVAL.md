@@ -141,6 +141,26 @@ Varför de andra inte valdes:
 - M: Används en gång och har svagt pengavärde. Engelska appar som Movemark (offline, lådor med QR-etiketter) gör redan detta.
 - P: Få söker efter det i Play, och få användare får fler än 15 poster.
 
+Andra rundan samma dag (Mattias bad om fler alternativ):
+
+| # | Idé | Bygg | Konk. | Betal | Upptäck | Återanv. | Risk | Summa |
+|---|---|---|---|---|---|---|---|---|
+| S | Familjelånet — lån och gåvor inom familjen, avbetalningar, skuldebrev och gåvobrev; gåva till barn räknas som förskott på arv om inget annat sägs (ärvdabalken 6 kap.) | 5 | 5 | 3 | 1 | 3 | 3 | 38 |
+| T | Förrådet — lådor i förråd, vind och garage med innehåll och foto; även vid flytt | 5 | 3 | 2 | 3 | 4 | 5 | 37 |
+| U | Barnens kostnader vid växelvis boende — vem betalade vad, saldo per månad | 4 | 4 | 3 | 2 | 3 | 3 | 34 |
+| V | Andrahandsuthyrning av egen bostad — hyra, kostnadsbaserad hyra, schablonavdrag | 4 | 4 | 3 | 1 | 3 | 3 | 33 |
+| W | Hästjournalen — hovslagare, vaccination, avmaskning, läkemedelsjournal | 4 | 2 | 3 | 3 | 5 | 3 | 33 |
+| X | Båtloggen — service, sjösättning, upptagning, kvitton; underlag vid försäljning | 4 | 3 | 2 | 2 | 5 | 5 | 34 |
+
+- S får höga poäng men ingen söker efter det i Play, och vikten 1 för upptäckbarhet underskattar det för en portfölj utan marknadsföring. Bra som funktion eller senare app om vi får trafik från de andra.
+- T är den billigaste appen hittills men saknar pengavärde, och Sortly med flera finns. Kandidat om vi vill ha en snabb app med Husloggens delar.
+- U: Delad ekonomi kräver att båda föräldrarna ser samma data, vilket inte går utan nätverk. 2houses och OurFamilyWizard finns.
+- V: Reglerna för privatuthyrning kan ändras 2026 och Qasa och Samtrygg sköter mycket åt hyresvärden.
+- W: Svenska appar finns redan (Equikura med läkemedelsjournal enligt Jordbruksverket, SVA:s MASK-app, Stallkoll), och många ryttare är barn.
+- X: Engelska motsvarigheter (Vessly: offline, kvitto, PDF inför försäljning) och liten svensk sökvolym.
+
+Valet står kvar: K före L.
+
 ## Val app 3: K, Djurloggen (arbetsnamn)
 
 Claude valde 2026-10-17. När bygget startar bestämmer Mattias (BESLUTSLOGG.md 2026-10-17).
