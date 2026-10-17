@@ -1,1 +1,13 @@
-Preliminary long description. The local model will write the final English text in task 2026-10-17-07.
+Track house maintenance, log work and expenses offline. No accounts, no ads.
+
+What you can do:
+• Set up recurring tasks with intervals in months (1–120). The app reminds you when it's time, and you mark them as done.
+• Log work and expenses. Each entry has an amount, date, and can include images of receipts. You can link entries to tasks.
+• See a yearly and type-based summary. This is the basis when selling your home.
+• Tax information about improvement expenses is shown as information according to sections 45 and 46 of the Income Tax Act (2022:260) for Sweden. The app provides guidance but no legal advice.
+
+Husloggen works completely offline. The app does not request any internet permission. No account is required, no ads, and no analytics. All data stays on your phone until you choose to export or share it.
+
+Everything in the app is free, but the free version holds 15 entries. Pro (one-time purchase, no subscription) removes the limit. Tasks and reminders are unlimited. Export and backup are always free.
+
+Note: Tax information in the app applies to Sweden only and is provided as information, not advice.
