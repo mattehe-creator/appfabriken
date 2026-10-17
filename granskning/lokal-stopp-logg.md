@@ -1,6 +1,6 @@
 ﻿# Senaste lokala stopp
 
-2026-10-17T18:30:35 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
+2026-10-17T18:33:02 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
 
 ## Fel
 Felkod 1, källa: okänd.
@@ -50,43 +50,43 @@ Consider enabling configuration cache to speed up this build: https://docs.gradl
 
 ## Sista rader: kor-alla.log
 
-2026-10-17 18:29:35 ollama stop qwen3-coder:30b
-2026-10-17 18:29:35 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
-2026-10-17 18:29:35 kor-uppgift startad (PID 42608).
-2026-10-17 18:30:05 kor-uppgift avslutades: Felkod 1, källa: okänd.
-2026-10-17 18:30:05 Felkod 1, källa: okänd.
-2026-10-17 18:30:05 Full återställning och nytt försök (högst ett omförsök per uppgift och försök).
-2026-10-17 18:30:05 Full återställning (Gradle, processer, Ollama).
-2026-10-17 18:30:05 gradlew --stop:  
-2026-10-17 18:30:05 gradlew --stop: ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH. 
-2026-10-17 18:30:05 gradlew --stop:  
-2026-10-17 18:30:05 gradlew --stop: Please set the JAVA_HOME variable in your environment to match the 
-2026-10-17 18:30:05 gradlew --stop: location of your Java installation. 
-2026-10-17 18:30:05 gradlew --stop:  
-2026-10-17 18:30:05 gradlew --stop: ERROR: JAVA_HOME is set to an invalid directory: "= 1>&2
-2026-10-17 18:30:05 gradlew --stop:  
-2026-10-17 18:30:05 gradlew --stop: Please set the JAVA_HOME variable in your environment to match the 
-2026-10-17 18:30:05 gradlew --stop: location of your Java installation. 
-2026-10-17 18:30:05 gradlew --stop: '""' is not recognized as an internal or external command,
-2026-10-17 18:30:05 gradlew --stop: operable program or batch file.
-2026-10-17 18:30:05 ollama stop qwen3-coder:30b
-2026-10-17 18:30:05 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
-2026-10-17 18:30:05 Full återställning (Gradle, processer, Ollama).
-2026-10-17 18:30:05 gradlew --stop:  
-2026-10-17 18:30:05 gradlew --stop: ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH. 
-2026-10-17 18:30:05 gradlew --stop:  
-2026-10-17 18:30:05 gradlew --stop: Please set the JAVA_HOME variable in your environment to match the 
-2026-10-17 18:30:05 gradlew --stop: location of your Java installation. 
-2026-10-17 18:30:05 gradlew --stop:  
-2026-10-17 18:30:05 gradlew --stop: ERROR: JAVA_HOME is set to an invalid directory: "= 1>&2
-2026-10-17 18:30:05 gradlew --stop:  
-2026-10-17 18:30:05 gradlew --stop: Please set the JAVA_HOME variable in your environment to match the 
-2026-10-17 18:30:05 gradlew --stop: location of your Java installation. 
-2026-10-17 18:30:05 gradlew --stop: '""' is not recognized as an internal or external command,
-2026-10-17 18:30:05 gradlew --stop: operable program or batch file.
-2026-10-17 18:30:05 ollama stop qwen3-coder:30b
-2026-10-17 18:30:05 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
-2026-10-17 18:30:05 kor-uppgift startad (PID 38024).
-2026-10-17 18:30:35 kor-uppgift avslutades: Felkod 1, källa: okänd.
-2026-10-17 18:30:35 Felkod 1, källa: okänd.
-2026-10-17 18:30:35 Skriver lokal-stopp: 2026-10-17T18:30:35 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
+2026-10-17 18:32:01 ollama stop qwen3-coder:30b
+2026-10-17 18:32:01 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
+2026-10-17 18:32:01 kor-uppgift startad (PID 42600).
+2026-10-17 18:32:31 kor-uppgift avslutades: Felkod 1, källa: okänd.
+2026-10-17 18:32:31 Felkod 1, källa: okänd.
+2026-10-17 18:32:31 Full återställning och nytt försök (högst ett omförsök per uppgift och försök).
+2026-10-17 18:32:31 Full återställning (Gradle, processer, Ollama).
+2026-10-17 18:32:32 gradlew --stop:  
+2026-10-17 18:32:32 gradlew --stop: ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH. 
+2026-10-17 18:32:32 gradlew --stop:  
+2026-10-17 18:32:32 gradlew --stop: Please set the JAVA_HOME variable in your environment to match the 
+2026-10-17 18:32:32 gradlew --stop: location of your Java installation. 
+2026-10-17 18:32:32 gradlew --stop:  
+2026-10-17 18:32:32 gradlew --stop: ERROR: JAVA_HOME is set to an invalid directory: "= 1>&2
+2026-10-17 18:32:32 gradlew --stop:  
+2026-10-17 18:32:32 gradlew --stop: Please set the JAVA_HOME variable in your environment to match the 
+2026-10-17 18:32:32 gradlew --stop: location of your Java installation. 
+2026-10-17 18:32:32 gradlew --stop: '""' is not recognized as an internal or external command,
+2026-10-17 18:32:32 gradlew --stop: operable program or batch file.
+2026-10-17 18:32:32 ollama stop qwen3-coder:30b
+2026-10-17 18:32:32 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
+2026-10-17 18:32:32 Full återställning (Gradle, processer, Ollama).
+2026-10-17 18:32:32 gradlew --stop:  
+2026-10-17 18:32:32 gradlew --stop: ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH. 
+2026-10-17 18:32:32 gradlew --stop:  
+2026-10-17 18:32:32 gradlew --stop: Please set the JAVA_HOME variable in your environment to match the 
+2026-10-17 18:32:32 gradlew --stop: location of your Java installation. 
+2026-10-17 18:32:32 gradlew --stop:  
+2026-10-17 18:32:32 gradlew --stop: ERROR: JAVA_HOME is set to an invalid directory: "= 1>&2
+2026-10-17 18:32:32 gradlew --stop:  
+2026-10-17 18:32:32 gradlew --stop: Please set the JAVA_HOME variable in your environment to match the 
+2026-10-17 18:32:32 gradlew --stop: location of your Java installation. 
+2026-10-17 18:32:32 gradlew --stop: '""' is not recognized as an internal or external command,
+2026-10-17 18:32:32 gradlew --stop: operable program or batch file.
+2026-10-17 18:32:32 ollama stop qwen3-coder:30b
+2026-10-17 18:32:32 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
+2026-10-17 18:32:32 kor-uppgift startad (PID 21308).
+2026-10-17 18:33:02 kor-uppgift avslutades: Felkod 1, källa: okänd.
+2026-10-17 18:33:02 Felkod 1, källa: okänd.
+2026-10-17 18:33:02 Skriver lokal-stopp: 2026-10-17T18:33:02 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
