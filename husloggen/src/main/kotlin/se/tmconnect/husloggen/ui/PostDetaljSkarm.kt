@@ -125,6 +125,13 @@ fun PostDetaljSkarm(
                     varde = belopp,
                 )
             }
+            val avdrag = formateraPrisKr(post.rotRutAvdragOre, locale)
+            if (avdrag.isNotEmpty()) {
+                PostDetaljRad(
+                    etikett = stringResource(R.string.falt_rot_rut_avdrag),
+                    varde = avdrag,
+                )
+            }
             post.utforare?.takeIf { it.isNotBlank() }?.let {
                 PostDetaljRad(
                     etikett = stringResource(R.string.falt_utforare),

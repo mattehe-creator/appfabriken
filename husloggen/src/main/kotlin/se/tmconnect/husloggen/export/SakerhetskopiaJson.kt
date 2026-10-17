@@ -65,6 +65,7 @@ private fun skrivPostObjekt(post: SakerhetskopiaPost): String =
         laggTillFalt("vad", jsonStrang(post.vad))
         laggTillFalt("typ", jsonStrang(post.typ))
         post.beloppOre?.let { laggTillFalt("beloppOre", it.toString()) }
+        post.rotRutAvdragOre?.let { laggTillFalt("rotRutAvdragOre", it.toString()) }
         post.utforare?.let { laggTillFalt("utforare", jsonStrang(it)) }
         post.anteckning?.let { laggTillFalt("anteckning", jsonStrang(it)) }
         post.uppgiftIndex?.let { laggTillFalt("uppgiftIndex", it.toString()) }
@@ -175,6 +176,12 @@ private fun lasPostObjekt(falt: Map<String, Any?>): SakerhetskopiaPost? {
             is Number -> p.toLong()
             else -> return null
         }
+    val rotRutAvdrag =
+        when (val p = falt["rotRutAvdragOre"]) {
+            null -> null
+            is Number -> p.toLong()
+            else -> return null
+        }
     val uppgiftIndex =
         when (val u = falt["uppgiftIndex"]) {
             null -> null
@@ -187,6 +194,7 @@ private fun lasPostObjekt(falt: Map<String, Any?>): SakerhetskopiaPost? {
         vad = vad,
         typ = typ,
         beloppOre = belopp,
+        rotRutAvdragOre = rotRutAvdrag,
         utforare = falt["utforare"] as? String,
         anteckning = falt["anteckning"] as? String,
         uppgiftIndex = uppgiftIndex,

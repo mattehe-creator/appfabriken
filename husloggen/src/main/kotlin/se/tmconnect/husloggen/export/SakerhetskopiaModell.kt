@@ -28,6 +28,7 @@ data class SakerhetskopiaPost(
     val vad: String,
     val typ: String,
     val beloppOre: Long? = null,
+    val rotRutAvdragOre: Long? = null,
     val utforare: String? = null,
     val anteckning: String? = null,
     val uppgiftIndex: Int? = null,
@@ -74,6 +75,7 @@ fun postTillSakerhetskopia(post: Post, uppgiftIdTillIndex: Map<Long, Int>): Sake
         vad = post.vad,
         typ = post.typ.name,
         beloppOre = post.beloppOre,
+        rotRutAvdragOre = post.rotRutAvdragOre,
         utforare = post.utforare,
         anteckning = post.anteckning,
         uppgiftIndex = post.uppgiftId?.let { uppgiftIdTillIndex[it] },
@@ -93,6 +95,7 @@ fun sakerhetskopiaPostTillPost(
         vad = export.vad.trim(),
         typ = PostTyp.franNamn(export.typ) ?: PostTyp.UNDERHALL,
         beloppOre = export.beloppOre,
+        rotRutAvdragOre = export.rotRutAvdragOre,
         utforare = export.utforare?.trim()?.takeIf { it.isNotEmpty() },
         anteckning = export.anteckning?.trim()?.takeIf { it.isNotEmpty() },
         kvittoFil = kvitto,
@@ -129,6 +132,7 @@ fun arSakerhetskopiaPostNyckelLik(a: SakerhetskopiaPostNyckel, b: Sakerhetskopia
         p1.vad == p2.vad &&
         p1.typ == p2.typ &&
         p1.beloppOre == p2.beloppOre &&
+        p1.rotRutAvdragOre == p2.rotRutAvdragOre &&
         p1.utforare == p2.utforare &&
         p1.anteckning == p2.anteckning &&
         p1.bilder.size == p2.bilder.size &&
@@ -155,6 +159,7 @@ fun arSakerhetskopiaPostDubblett(
             vad = befintlig.vad,
             typ = befintlig.typ.name,
             beloppOre = befintlig.beloppOre,
+            rotRutAvdragOre = befintlig.rotRutAvdragOre,
             utforare = befintlig.utforare,
             anteckning = befintlig.anteckning,
             uppgiftIndex = null,

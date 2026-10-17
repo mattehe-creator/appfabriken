@@ -55,6 +55,7 @@ import se.tmconnect.husloggen.export.husHistorikPdfFilnamn
 import se.tmconnect.husloggen.export.skatteKallorText
 import se.tmconnect.husloggen.export.sakerhetskopiaFilnamn
 import se.tmconnect.husloggen.regler.ForbattringMojlighet
+import se.tmconnect.husloggen.regler.postBeloppForSammanstallningOre
 import se.tmconnect.karna.format.formateraDatum
 import se.tmconnect.karna.format.formateraPrisKr
 import java.util.Locale
@@ -284,6 +285,7 @@ class MainActivity : ComponentActivity() {
                                 onDatumAndras = viewModel::uppdateraPostDatum,
                                 onTypAndras = viewModel::uppdateraPostTyp,
                                 onBeloppAndras = viewModel::uppdateraPostBelopp,
+                                onRotRutAvdragAndras = viewModel::uppdateraPostRotRutAvdrag,
                                 onUtforareAndras = viewModel::uppdateraPostUtforare,
                                 onUppgiftAndras = viewModel::uppdateraPostUppgift,
                                 onAnteckningAndras = viewModel::uppdateraPostAnteckning,
@@ -459,7 +461,7 @@ class MainActivity : ComponentActivity() {
             typEtikett = { typ -> getString(typTillResId(typ)) },
             forbattringEtikett = { mojlighet -> getString(forbattringTillResId(mojlighet)) },
             datumEtikett = { post -> formateraDatum(post.datum, locale) },
-            beloppEtikett = { post -> formateraPrisKr(post.beloppOre, locale) },
+            beloppEtikett = { post -> formateraPrisKr(postBeloppForSammanstallningOre(post), locale) },
         )
     }
 
@@ -472,7 +474,7 @@ class MainActivity : ComponentActivity() {
             typEtikett = { typ -> getString(typTillResId(typ)) },
             forbattringEtikett = { mojlighet -> getString(forbattringTillResId(mojlighet)) },
             datumEtikett = { post -> formateraDatum(post.datum, locale) },
-            beloppEtikett = { post -> formateraPrisKr(post.beloppOre, locale) },
+            beloppEtikett = { post -> formateraPrisKr(postBeloppForSammanstallningOre(post), locale) },
         )
     }
 

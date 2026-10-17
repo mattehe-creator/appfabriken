@@ -27,6 +27,8 @@ data class Post(
     val typ: PostTyp,
     @ColumnInfo(name = "belopp_ore")
     val beloppOre: Long? = null,
+    @ColumnInfo(name = "rot_rut_avdrag_ore")
+    val rotRutAvdragOre: Long? = null,
     val utforare: String? = null,
     val anteckning: String? = null,
     @ColumnInfo(name = "kvitto_fil")

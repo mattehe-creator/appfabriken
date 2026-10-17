@@ -23,12 +23,16 @@
     <string name="falt_datum">Datum</string>
     <string name="falt_typ">Typ</string>
     <string name="falt_belopp">Belopp (kr)</string>
+    <string name="falt_rot_rut_avdrag">Avdrag (rot/rut) (kr)</string>
+    <string name="hjalp_rot_rut_avdrag">Valfritt. Beloppet på fakturan som du fick som skattereduktion (rot eller rut). Sammanställningen räknar belopp minus avdrag. Kontrollera mot Skatteverket.</string>
     <string name="falt_utforare">Vem utförde arbetet</string>
     <string name="falt_uppgift">Kopplad uppgift</string>
     <string name="ingen_uppgift">Ingen uppgift</string>
     <string name="fel_vad_saknas">Ange vad som gjordes</string>
     <string name="fel_datum_framtid">Datum får inte ligga i framtiden</string>
     <string name="fel_belopp_ogiltigt">Ogiltigt belopp</string>
+    <string name="fel_avdrag_ogiltigt">Ogiltigt avdrag</string>
+    <string name="fel_avdrag_for_stort">Avdraget får inte vara större än beloppet</string>
     <string name="bekrafta_ta_bort_post_titel">Ta bort post?</string>
     <string name="bekrafta_ta_bort_post_text">Posten tas bort permanent.</string>
     <string name="knapp_andra">Ändra</string>

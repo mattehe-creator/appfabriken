@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 
 @Database(
     entities = [Uppgift::class, Post::class],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 @TypeConverters(Konverterare::class)
@@ -28,6 +28,7 @@ abstract class HusDatabas : RoomDatabase() {
                     HusDatabas::class.java,
                     FILNAMN,
                 )
+                    .addMigrations(MIGRATION_1_2)
                     .build().also { instans = it }
             }
     }

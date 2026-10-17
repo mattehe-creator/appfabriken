@@ -74,6 +74,7 @@ data class PostFormularTillstand(
     val datum: LocalDate = LocalDate.now(),
     val typ: PostTyp = PostTyp.UNDERHALL,
     val beloppText: String = "",
+    val rotRutAvdragText: String = "",
     val utforare: String = "",
     val uppgiftId: Long? = null,
     val anteckning: String = "",
@@ -379,6 +380,7 @@ class HusViewModel(
                 datum = post.datum,
                 typ = post.typ,
                 beloppText = post.beloppOre?.let { beloppOreTillFaltText(it) }.orEmpty(),
+                rotRutAvdragText = post.rotRutAvdragOre?.let { beloppOreTillFaltText(it) }.orEmpty(),
                 utforare = post.utforare.orEmpty(),
                 uppgiftId = post.uppgiftId,
                 anteckning = post.anteckning.orEmpty(),
@@ -408,6 +410,10 @@ class HusViewModel(
         uppdateraPostFormular { it.copy(beloppText = text, valideringsFel = null) }
     }
 
+    fun uppdateraPostRotRutAvdrag(text: String) {
+        uppdateraPostFormular { it.copy(rotRutAvdragText = text, valideringsFel = null) }
+    }
+
     fun uppdateraPostUtforare(text: String) {
         uppdateraPostFormular { it.copy(utforare = text) }
     }
@@ -422,7 +428,13 @@ class HusViewModel(
 
     fun sparaPostFormular(): Boolean {
         val tillstand = _postFormular.value ?: return false
-        val fel = valideraPost(tillstand.vad, tillstand.datum, idag, tillstand.beloppText)
+        val fel = valideraPost(
+            tillstand.vad,
+            tillstand.datum,
+            idag,
+            tillstand.beloppText,
+            tillstand.rotRutAvdragText,
+        )
         if (fel != null) {
             _postFormular.value = tillstand.copy(valideringsFel = fel)
             return false
@@ -435,6 +447,8 @@ class HusViewModel(
             }
             val beloppOre = tillstand.beloppText.trim().takeIf { it.isNotEmpty() }
                 ?.let { tolkaBeloppTillOre(it) }
+            val rotRutAvdragOre = tillstand.rotRutAvdragText.trim().takeIf { it.isNotEmpty() }
+                ?.let { tolkaBeloppTillOre(it) }
             val gamlaBilder = befintlig?.let { repository.lasBilder(it) }.orEmpty()
             val nyaBilder = tillstand.bildFilnamn
             gamlaBilder.filter { it !in nyaBilder }.forEach { repository.taBortBildfil(it) }
@@ -445,6 +459,7 @@ class HusViewModel(
                 vad = tillstand.vad.trim(),
                 typ = tillstand.typ,
                 beloppOre = beloppOre,
+                rotRutAvdragOre = rotRutAvdragOre,
                 utforare = tillstand.utforare.trim().ifEmpty { null },
                 anteckning = tillstand.anteckning.trim().ifEmpty { null },
                 uppgiftId = tillstand.uppgiftId,

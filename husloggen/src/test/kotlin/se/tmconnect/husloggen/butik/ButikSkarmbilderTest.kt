@@ -204,6 +204,7 @@ abstract class ButikSkarmbilderBas {
                 onDatumAndras = {},
                 onTypAndras = {},
                 onBeloppAndras = {},
+                onRotRutAvdragAndras = {},
                 onUtforareAndras = {},
                 onUppgiftAndras = {},
                 onAnteckningAndras = {},

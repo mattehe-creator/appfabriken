@@ -11,6 +11,9 @@ const val SKATTE_KALLOR_SKATTEVERKET_SMÅHUS =
 const val SKATTE_KALLOR_SKATTEVERKET_REPARATION =
     "Skatteverket, Reparationer och underhåll"
 
+const val SKATTE_KALLOR_SKATTEVERKET_FORBATRING =
+    "Skatteverket, Avdrag för renoveringar och nybyggnad (ej rotavdrag igen)"
+
 const val SKATTE_KALLOR_BLANKETT = "Hjälpblankett SKV 2197"
 
 /** Inkomstskattelagen (SFS 1999:1229), verifierat mot riksdagen.se 2026-10-17. */
