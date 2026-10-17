@@ -138,7 +138,6 @@
     <string name="sammanstallning_forbattring_ja">Kan vara förbättringsutgift</string>
     <string name="sammanstallning_forbattring_bedomning">Kräver bedömning</string>
     <string name="sammanstallning_forbattring_nej">Nej</string>
-    <string name="sammanstallning_kolumn_forbattring">Förbättringsutgift</string>
     <string name="sammanstallning_skatte_info_rubrik">Information om förbättringsutgifter</string>
     <string name="sammanstallning_skatte_info_text">Förbättringsutgifter kan dras av när bostaden säljs. Reparation och underhåll räknas bara för försäljningsåret och de fem åren före. Utgifterna ska sammanlagt vara minst 5 000 kr per år. Det här är information, inte skatteråd. Kontrollera alltid med Skatteverket.</string>
     <string name="sammanstallning_grans_ar">Minst 5 000 kr detta år</string>
