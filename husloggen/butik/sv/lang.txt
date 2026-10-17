@@ -1,1 +1,11 @@
-Preliminär lång beskrivning. Den lokala modellen skriver den slutgiltiga svenska texten i uppgift 2026-10-17-06.
+Håll ordning på husets underhåll: återkommande uppgifter med påminnelser, och en logg över utfört arbete och utgifter med kvitton. Loggen är underlag när bostaden säljs.
+
+Det här kan du göra:
+• Sätt upp återkommande uppgifter med intervall i månader (1–120). Appen påminner dig när det är dags, och du markerar dem som gjorda.
+• Logga arbete och utgifter. Varje post har ett belopp, datum och kan ha bilder av kvitton. Du kan koppla poster till uppgifter.
+• Se en sammanställning per år och typ av arbete. Det är underlag när bostaden säljs.
+• Skatteinformation om förbättringsutgifter visas som information enligt 45 kap. och 46 kap. inkomstskattelagen (2022:260) för Sverige. Appen ger vägledning men ingen juridisk rådgivning.
+
+Husloggen fungerar helt offline. Appen begär ingen internetbehörighet. Inget konto krävs, ingen reklam och ingen analys. All data stannar på din telefon tills du själv väljer att exportera eller dela den.
+
+Allt i appen är gratis, men gratisversionen rymmer 15 poster. Pro (engångsköp, ingen prenumeration) tar bort gränsen. Uppgifter och påminnelser är obegränsade. Export och säkerhetskopia är alltid gratis.
