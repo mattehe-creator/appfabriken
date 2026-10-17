@@ -3,7 +3,10 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.devtools.ksp")
+    id("io.github.takahirom.roborazzi")
 }
+
+val roborazziVersion = "1.36.0"
 
 android {
     namespace = "se.tmconnect.husloggen"
@@ -51,6 +54,10 @@ android {
     }
 }
 
+roborazzi {
+    outputDir.set(file("butik/skarmbilder"))
+}
+
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
@@ -82,6 +89,9 @@ dependencies {
     testImplementation("androidx.room:room-testing:$roomVersion")
     testImplementation("androidx.work:work-testing:2.10.1")
     testImplementation("androidx.compose.ui:ui-test-junit4")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi:$roborazziVersion")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:$roborazziVersion")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-junit-rule:$roborazziVersion")
     testImplementation("androidx.work:work-testing:2.10.1")
 
     implementation("androidx.work:work-runtime-ktx:2.10.1")

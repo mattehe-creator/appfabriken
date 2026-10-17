@@ -1,4 +1,4 @@
-package se.tmconnect.garantivalvet.regler
+package se.tmconnect.karna.tema
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -13,13 +13,13 @@ class TemaLageTest {
     }
 
     @Test
-    fun ljustOchMorktGalIgenomTelefonensVal() {
+    fun ljustOchMorktArFasta() {
         assertFalse(TemaLage.LJUST.arMorkt(telefonenArMork = true))
         assertTrue(TemaLage.MORKT.arMorkt(telefonenArMork = false))
     }
 
     @Test
-    fun okantNamnGerSystem() {
+    fun franNamnOkantBlirSystem() {
         assertEquals(TemaLage.MORKT, TemaLage.franNamn("MORKT"))
         assertEquals(TemaLage.SYSTEM, TemaLage.franNamn(null))
         assertEquals(TemaLage.SYSTEM, TemaLage.franNamn("blå"))

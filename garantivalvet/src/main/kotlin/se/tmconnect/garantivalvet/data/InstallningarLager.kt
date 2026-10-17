@@ -32,7 +32,7 @@ class InstallningarLager(
         }
     }
 
-    /** Namnet på [se.tmconnect.garantivalvet.regler.TemaLage], eller `null` (följ telefonen). */
+    /** Namnet på [se.tmconnect.karna.tema.TemaLage], eller `null` (följ telefonen). */
     val temaLage: Flow<String?> =
         context.installningarDataStore.data.map { prefs -> prefs[TEMA_LAGE] }
 

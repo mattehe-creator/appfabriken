@@ -1,6 +1,8 @@
 package se.tmconnect.husloggen.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,6 +20,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -38,6 +41,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.selected
+import androidx.compose.foundation.layout.size
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -49,8 +57,9 @@ import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.husloggen.regler.grupperaPerAr
 import se.tmconnect.karna.format.formateraPrisKr
+import se.tmconnect.karna.tema.TemaLage
 
-private enum class HusFlik { ATT_GORA, LOGG, SAMMANSTALLNING }
+enum class HusFlik { ATT_GORA, LOGG, SAMMANSTALLNING }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,9 +82,10 @@ fun HusStartSkarm(
     onForsaljningsArAndras: (Int) -> Unit = {},
     onExportHistorikPdf: () -> Unit = {},
     onExportHistorikCsv: () -> Unit = {},
+    startFlik: HusFlik = HusFlik.ATT_GORA,
     modifier: Modifier = Modifier,
 ) {
-    var valdFlik by rememberSaveable { mutableIntStateOf(HusFlik.ATT_GORA.ordinal) }
+    var valdFlik by rememberSaveable { mutableIntStateOf(startFlik.ordinal) }
     LaunchedEffect(oppnaAttGora) {
         if (oppnaAttGora) {
             valdFlik = HusFlik.ATT_GORA.ordinal
@@ -446,6 +456,8 @@ private fun TomFlikText(
 fun InstallningarSkarm(
     onTillbaka: () -> Unit,
     modifier: Modifier = Modifier,
+    temaLage: TemaLage = TemaLage.SYSTEM,
+    onTemaLage: (TemaLage) -> Unit = {},
     autoBackup: se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand = se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand(),
     onAutoBackupPa: (Boolean) -> Unit = {},
     onByttAutoBackupMapp: () -> Unit = {},
@@ -481,6 +493,44 @@ fun InstallningarSkarm(
                 text = stringResource(R.string.installningar_version, BuildConfig.VERSION_NAME),
                 style = MaterialTheme.typography.bodyLarge,
             )
+
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = stringResource(R.string.utseende_rubrik),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Column(modifier = Modifier.selectableGroup()) {
+                    listOf(
+                        TemaLage.SYSTEM to R.string.utseende_system,
+                        TemaLage.LJUST to R.string.utseende_ljust,
+                        TemaLage.MORKT to R.string.utseende_morkt,
+                    ).forEach { (lage, namn) ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 48.dp)
+                                .semantics(mergeDescendants = true) {
+                                    selected = temaLage == lage
+                                }
+                                .clickable(role = Role.RadioButton) { onTemaLage(lage) },
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(
+                                selected = temaLage == lage,
+                                onClick = null,
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clearAndSetSemantics { },
+                            )
+                            Text(
+                                text = stringResource(namn),
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(start = 12.dp),
+                            )
+                        }
+                    }
+                }
+            }
 
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(

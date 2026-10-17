@@ -39,7 +39,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import se.tmconnect.garantivalvet.R
-import se.tmconnect.garantivalvet.regler.TemaLage
+import se.tmconnect.karna.tema.TemaLage
 import se.tmconnect.garantivalvet.export.AUTO_INTERVALL_DAGLIGEN
 import se.tmconnect.garantivalvet.export.AUTO_INTERVALL_MANADSVIS
 import se.tmconnect.garantivalvet.export.AUTO_INTERVALL_VECKOVIS

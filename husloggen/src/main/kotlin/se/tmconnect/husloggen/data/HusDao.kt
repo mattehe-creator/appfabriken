@@ -49,6 +49,9 @@ interface HusDao {
     @Query("SELECT COUNT(*) FROM post")
     suspend fun antalPoster(): Int
 
+    @Query("SELECT COUNT(*) FROM uppgift")
+    suspend fun antalUppgifter(): Int
+
     @Transaction
     suspend fun markeraSomGjord(uppdateradUppgift: Uppgift, nyPost: Post) {
         uppdateraUppgift(uppdateradUppgift)

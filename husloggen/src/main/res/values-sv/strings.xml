@@ -152,4 +152,21 @@
     <string name="historik_pdf_rubrik">Husets historik</string>
     <string name="historik_pdf_skatt_rubrik">Skatteinformation (Sverige)</string>
     <string name="historik_pdf_skatt_text">Förbättringsutgifter kan dras av när bostaden säljs. Reparation och underhåll räknas bara för försäljningsåret och de fem åren före. Utgifterna ska sammanlagt vara minst 5 000 kr per år. Det här är information, inte skatteråd. Kontrollera alltid med Skatteverket.</string>
+
+    <string name="utseende_rubrik">Utseende</string>
+    <string name="utseende_system">Följ telefonen</string>
+    <string name="utseende_ljust">Ljust</string>
+    <string name="utseende_morkt">Mörkt</string>
+
+    <string name="valkommen_rubrik">Välkommen till Husloggen</string>
+    <string name="valkommen_ingress">Underhållsuppgifter, logg och sammanställning vid försäljning. Allt stannar på din telefon.</string>
+    <string name="valkommen_steg1_rubrik">Lägg till återkommande uppgifter</string>
+    <string name="valkommen_steg1_text">Välj bland förslag eller skapa egna. Ställ in intervall och valfria påminnelser.</string>
+    <string name="valkommen_steg2_rubrik">Logga arbete och kvitton</string>
+    <string name="valkommen_steg2_text">Spara vad som gjorts, kostnad och bilder på kvitton. Markera uppgift som gjord för att flytta nästa datum.</string>
+    <string name="valkommen_steg3_rubrik">Sammanställning vid försäljning</string>
+    <string name="valkommen_steg3_text">Se summor per år och typ. För Sverige visas skatteinformation som information, aldrig som råd.</string>
+    <string name="valkommen_integritet">Inget konto, ingen reklam och ingen molntjänst. Gratis upp till 15 poster i loggen.</string>
+    <string name="valkommen_lagg_till">Lägg till min första uppgift</string>
+    <string name="valkommen_titta">Titta runt först</string>
 </resources>
