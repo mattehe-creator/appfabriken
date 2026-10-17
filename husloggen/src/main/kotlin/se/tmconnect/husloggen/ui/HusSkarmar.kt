@@ -183,6 +183,7 @@ fun HusStartSkarm(
                     onForsaljningsArAndras = onForsaljningsArAndras,
                     locale = locale,
                     visaSkatteInfo = visaSkatteInfo,
+                    modifier = Modifier.padding(innerPadding),
                 )
             }
         }

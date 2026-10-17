@@ -47,3 +47,5 @@ gradle :husloggen:testDebugUnitTest --tests "*SammanstallningSkarmTest"
 - Lägga till beroenden.
 - Ändra databasschemat.
 - Använda kotlin.test — använd org.junit som i övriga appmodultester.
+
+utfall: godkänd 2026-10-17 (fel sökvägar i rot, LazyColumn items, imports, test Robolectric/strängresurser, innerPadding)
