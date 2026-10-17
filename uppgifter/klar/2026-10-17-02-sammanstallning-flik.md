@@ -36,3 +36,5 @@ gradle :husloggen:testDebugUnitTest --tests "*SammanstallningSkarmTest"
 - Ändra `HusViewModel.kt` eller `MainActivity.kt` (export och state sköts av Cursor).
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: underkänd 2026-10-17 av Cursor (PR #226). Ersatt av 2026-10-17-02-sammanstallning-flik-f2.md

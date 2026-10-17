@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-17-husloggen-forsaljning.md
 försök: 1
-beror-på: 2026-10-17-02-sammanstallning-flik.md, cursor:2026-10-17-husloggen-forsaljning
+beror-på: 2026-10-17-02-sammanstallning-flik-f2.md, cursor:2026-10-17-husloggen-forsaljning
 
 ## Ändra bara dessa filer
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/ui/HusSkarmar.kt
