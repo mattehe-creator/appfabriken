@@ -24,12 +24,21 @@ $AiderTimeoutMin = 60
 $ErrorActionPreference = "Stop"
 $loggMapp = Join-Path $env:LOCALAPPDATA "appfabriken\logg"
 New-Item -ItemType Directory -Force -Path $loggMapp | Out-Null
+$senasteFelFil = Join-Path (Split-Path -Parent $loggMapp) "senaste-fel.json"
 $stampel = Get-Date -Format "yyyyMMdd-HHmmss"
 Start-Transcript -Path (Join-Path $loggMapp "kor-$stampel.log") | Out-Null
 
-function Avbryt([string]$text) {
-    Write-Host "AVBRYTER: $text" -ForegroundColor Red
-    Status "fel" $text
+function Skriv-Felsignal([int]$kod, [string]$kalla, [string]$text) {
+    try {
+        @{ kod = $kod; kalla = $kalla; text = $text; tid = (Get-Date).ToString("s") } |
+            ConvertTo-Json | Set-Content -Encoding UTF8 $script:senasteFelFil
+    } catch { }
+}
+
+function Avbryt([string]$text, [string]$kalla = "okänd") {
+    Write-Host "AVBRYTER [$kalla]: $text" -ForegroundColor Red
+    Skriv-Felsignal 1 $kalla $text
+    Status "fel" "$kalla`: $text"
     RensaAktiv
     Stop-Transcript | Out-Null
     exit 1
@@ -49,9 +58,9 @@ function Status([string]$fas, [string]$text = "") {
     } catch { }
 }
 
-function Kor([string]$fil, [string[]]$argument) {
+function Kor([string]$fil, [string[]]$argument, [string]$kalla = "test") {
     & $fil @argument
-    if ($LASTEXITCODE -ne 0) { Avbryt "$fil $($argument -join ' ') gav felkod $LASTEXITCODE" }
+    if ($LASTEXITCODE -ne 0) { Avbryt "$fil $($argument -join ' ') gav felkod $LASTEXITCODE" $kalla }
 }
 
 function KorGit([string[]]$argument) {
@@ -61,7 +70,7 @@ function KorGit([string[]]$argument) {
     $ut = & git @argument 2>&1
     $kod = $LASTEXITCODE
     if ($ut) { $ut | ForEach-Object { Write-Host $_ } }
-    if ($kod -ne 0) { Avbryt "git $($argument -join ' ') gav felkod $kod" }
+    if ($kod -ne 0) { Avbryt "git $($argument -join ' ') gav felkod $kod" "git" }
 }
 
 function SkapaUppgiftsgren([string]$gren, [string]$uppgiftsNamn) {
@@ -77,7 +86,9 @@ function SkapaUppgiftsgren([string]$gren, [string]$uppgiftsNamn) {
             $kod = $LASTEXITCODE
             if ($ut) { $ut | ForEach-Object { Write-Host $_ } }
             if ($kod -ne 0) {
-                Status "fastnad" "Kunde inte spara $gren som $rescue."
+                $msg = "Kunde inte spara $gren som $rescue."
+                Skriv-Felsignal 2 "git" $msg
+                Status "fastnad" $msg
                 Stop-Transcript | Out-Null
                 exit 2
             }
@@ -87,7 +98,9 @@ function SkapaUppgiftsgren([string]$gren, [string]$uppgiftsNamn) {
     $kod = $LASTEXITCODE
     if ($ut) { $ut | ForEach-Object { Write-Host $_ } }
     if ($kod -ne 0) {
-        Status "fastnad" "Kunde inte skapa gren $gren från origin/main (se loggen)."
+        $msg = "Kunde inte skapa gren $gren från origin/main (se loggen)."
+        Skriv-Felsignal 2 "git" $msg
+        Status "fastnad" $msg
         Stop-Transcript | Out-Null
         exit 2
     }
@@ -121,16 +134,16 @@ function Add-AiderLogLine([string]$rad) {
 
 function VarmaGradle {
     $gradlew = Join-Path $Repo "gradlew.bat"
-    if (-not (Test-Path $gradlew)) { Avbryt "gradlew.bat saknas i $Repo" }
+    if (-not (Test-Path $gradlew)) { Avbryt "gradlew.bat saknas i $Repo" "Gradle" }
     Write-Host "Värmer upp Gradle (startar daemon om ingen lever)..." -ForegroundColor DarkGray
     $ErrorActionPreference = "Continue"
     & $gradlew help *> $null
     $kod = $LASTEXITCODE
     $status = (& $gradlew --status 2>&1 | Out-String)
     $ErrorActionPreference = "Stop"
-    if ($kod -ne 0) { Avbryt "gradlew help gav felkod $kod" }
+    if ($kod -ne 0) { Avbryt "gradlew help gav felkod $kod" "Gradle" }
     if ($status -notmatch '(?m)^\s*PID\s' -and $status -notmatch 'IDLE|BUSY') {
-        Avbryt "Ingen Gradle-daemon efter uppvärmning. gradlew --status:`n$status"
+        Avbryt "Ingen Gradle-daemon efter uppvärmning. gradlew --status:`n$status" "Gradle"
     }
 }
 
@@ -189,24 +202,24 @@ function KorAider([string]$aiderExe, [string[]]$argument, [int]$timeoutMin) {
 
 # --- Förkontroller ---
 $aider = Join-Path $env:USERPROFILE ".local\bin\aider.exe"
-if (-not (Test-Path $aider)) { Avbryt "Aider saknas: $aider" }
-if (-not (Get-Command git -ErrorAction SilentlyContinue)) { Avbryt "git saknas" }
-if (-not $IngenPush -and -not (Get-Command gh -ErrorAction SilentlyContinue)) { Avbryt "gh saknas (winget install GitHub.cli, sedan gh auth login)" }
+if (-not (Test-Path $aider)) { Avbryt "Aider saknas: $aider" "Aider" }
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) { Avbryt "git saknas" "git" }
+if (-not $IngenPush -and -not (Get-Command gh -ErrorAction SilentlyContinue)) { Avbryt "gh saknas (winget install GitHub.cli, sedan gh auth login)" "push" }
 
 $env:OLLAMA_API_BASE = "http://127.0.0.1:11434"
 try { Invoke-RestMethod "$env:OLLAMA_API_BASE/api/tags" -TimeoutSec 10 | Out-Null }
-catch { Avbryt "Ollama svarar inte på $env:OLLAMA_API_BASE" }
+catch { Avbryt "Ollama svarar inte på $env:OLLAMA_API_BASE" "Ollama" }
 
 if (-not $env:JAVA_HOME) {
     $jbr = "C:\Program Files\Android\Android Studio\jbr"
-    if (Test-Path $jbr) { $env:JAVA_HOME = $jbr } else { Avbryt "JAVA_HOME saknas och Android Studios JDK hittades inte" }
+    if (Test-Path $jbr) { $env:JAVA_HOME = $jbr } else { Avbryt "JAVA_HOME saknas och Android Studios JDK hittades inte" "Gradle" }
 }
 
 Set-Location $Repo
 $localProps = Join-Path $Repo "local.properties"
 if (-not (Test-Path $localProps)) {
     $sdk = Join-Path $env:LOCALAPPDATA "Android\Sdk"
-    if (-not (Test-Path $sdk)) { Avbryt "Android SDK saknas: $sdk" }
+    if (-not (Test-Path $sdk)) { Avbryt "Android SDK saknas: $sdk" "Gradle" }
     "sdk.dir=" + ($sdk -replace '\\', '\\') | Set-Content -Encoding ASCII $localProps
 }
 
@@ -274,8 +287,8 @@ $rader = Get-Content -Encoding UTF8 $uppgift.FullName
 $tillatna = Filer (Sektion $rader "Ändra bara dessa filer")
 $forebild = Filer (Sektion $rader "Läs som förebild")
 $testRad = (Sektion $rader "Test som ska gå igenom" | Where-Object { $_ -match '^\s*gradle\s' } | Select-Object -First 1)
-if (-not $tillatna) { Avbryt "Uppgiften saknar filer under 'Ändra bara dessa filer'" }
-if (-not $testRad) { Avbryt "Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'" }
+if (-not $tillatna) { Avbryt "Uppgiften saknar filer under 'Ändra bara dessa filer'" "uppgift" }
+if (-not $testRad) { Avbryt "Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'" "uppgift" }
 $testCmd = ($testRad.Trim() -replace '^gradle\s', 'call gradlew.bat ')
 # Testkommandot läggs i en .cmd-fil, eftersom PowerShell 5.1 förstör citattecken i argument till andra program.
 $testFil = Join-Path $loggMapp "test-$stampel.cmd"
@@ -400,7 +413,7 @@ if (-not $testOk -or $utanfor -or $harFraga) { $prArg += "--draft" }
 if ($LASTEXITCODE -ne 0) {
     # gh kan ge felkod fast PR:en skapades. Det räcker att den finns.
     $finns = gh pr list --head $gren --state open --json number --jq ".[0].number"
-    if (-not $finns) { Avbryt "PR för $gren kunde inte skapas." }
+    if (-not $finns) { Avbryt "PR för $gren kunde inte skapas." "push" }
     Write-Host "PR #$finns finns." -ForegroundColor Yellow
 }
 
