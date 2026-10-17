@@ -34,3 +34,5 @@ gradle :husloggen:testDebugUnitTest --tests "*ButikTexterTest"
 - Ändra andra filer (inklusive engelska texter och `lang.txt`).
 - Lägga till beroenden.
 - Ändra appkod, manifest eller databasschema.
+
+utfall: godkänd 2026-10-17 (inget)
