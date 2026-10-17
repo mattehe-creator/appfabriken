@@ -31,6 +31,8 @@ $sistVakt = [datetime]::MinValue
 $VaktMinuter = 30
 $pollSek = 30
 $VilaEfterStoppMin = 5
+$script:korUppgiftStart = $null
+$script:aiderBasTid = [datetime]::MinValue
 
 function Logga([string]$text) {
     $rad = "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') $text"
@@ -38,12 +40,39 @@ function Logga([string]$text) {
     try { Add-Content -Encoding UTF8 -Path $korAllaLogg -Value $rad } catch { }
 }
 
+function Set-JavaHomeOmBehov {
+    if ($env:JAVA_HOME) {
+        $env:JAVA_HOME = ($env:JAVA_HOME -replace '^["'']|["'']$', '').Trim()
+        if (-not (Test-Path $env:JAVA_HOME)) {
+            Logga "JAVA_HOME pekar på ogiltig katalog ($($env:JAVA_HOME)) — försöker Android Studio jbr."
+            $env:JAVA_HOME = $null
+        }
+    }
+    if (-not $env:JAVA_HOME) {
+        $jbr = "C:\Program Files\Android\Android Studio\jbr"
+        if (Test-Path $jbr) {
+            $env:JAVA_HOME = $jbr
+            Logga "JAVA_HOME satt till Android Studio jbr."
+        } else {
+            Logga "JAVA_HOME saknas och Android Studios JDK hittades inte — gradlew --stop kan misslyckas."
+        }
+    }
+}
+
 function Stop-Gradle {
     $bat = Join-Path $Repo "gradlew.bat"
     if (-not (Test-Path $bat)) { return }
+    Push-Location $Repo
     try {
-        Push-Location $Repo
-        & cmd /c "`"$bat`" --stop" 2>&1 | ForEach-Object { Logga "gradlew --stop: $_" }
+        $ErrorActionPreference = "Continue"
+        $ut = & $bat --stop 2>&1
+        $kod = $LASTEXITCODE
+        if ($ut) { $ut | ForEach-Object { Logga "gradlew --stop: $_" } }
+        if ($kod -eq 0) {
+            Logga "gradlew --stop lyckades."
+        } else {
+            Logga "gradlew --stop gav felkod $kod."
+        }
     } catch {
         Logga "gradlew --stop misslyckades: $_"
     } finally {
@@ -149,6 +178,13 @@ function Get-LoggSlut([string]$fil, [int]$antalRader = 40) {
     return @($all[$start..($all.Count - 1)] | ForEach-Object { Mask-LoggRad $_ })
 }
 
+function Get-SenasteKorTranscript {
+    $filer = @(Get-ChildItem -Path $loggMapp -Filter "kor-*.log" -ErrorAction SilentlyContinue |
+        Sort-Object LastWriteTime -Descending)
+    if ($filer.Count -eq 0) { return $null }
+    return $filer[0].FullName
+}
+
 function Get-Felbeskrivning([int]$kod, [hashtable]$ut) {
     $kalla = "okänd"
     $text = ""
@@ -207,21 +243,43 @@ function Skriv-LokalStopp([string]$rad, [hashtable]$fel = $null) {
     }
     $full = "$(Get-Date -Format s) $rad"
     Logga "Skriver lokal-stopp: $full"
+    $korTranscript = Get-SenasteKorTranscript
     $loggInnehall = @(
         "# Senaste lokala stopp",
         "",
         $full,
         "",
         "## Fel",
-        $(if ($fel) { Format-FelRad $fel } else { "(ingen felbeskrivning)" }),
-        "",
-        "## Sista rader: aider-senaste.log",
-        ""
-    ) + (Get-LoggSlut $aiderLogg) + @(
+        $(if ($fel) { Format-FelRad $fel } else { "(ingen felbeskrivning)" })
+    )
+    if ($korTranscript) {
+        $loggInnehall += @(
+            "",
+            "## Sista rader: $(Split-Path -Leaf $korTranscript)",
+            ""
+        ) + (Get-LoggSlut $korTranscript)
+    } else {
+        $loggInnehall += @("", "## Sista rader: kor-uppgift transcript", "", "(ingen kor-*.log hittades)")
+    }
+    $loggInnehall += @(
         "",
         "## Sista rader: kor-alla.log",
         ""
     ) + (Get-LoggSlut $korAllaLogg)
+    $inkluderaAider = $false
+    if ($script:korUppgiftStart -and (Test-Path $aiderLogg)) {
+        $aiderSenast = (Get-Item $aiderLogg).LastWriteTime
+        if ($aiderSenast -gt $script:aiderBasTid) { $inkluderaAider = $true }
+    }
+    if ($inkluderaAider) {
+        $loggInnehall += @(
+            "",
+            "## Sista rader: aider-senaste.log",
+            ""
+        ) + (Get-LoggSlut $aiderLogg)
+    } else {
+        $loggInnehall += @("", "## Sista rader: aider-senaste.log", "", "(oförändrad sedan kor-uppgift startade — utelämnad)")
+    }
     Push-Location $Repo
     try {
         $ErrorActionPreference = "Continue"
@@ -476,6 +534,8 @@ function Stop-ProcessTree([System.Diagnostics.Process]$proc) {
 function Wait-KorUppgift {
     Vakta
     $start = Get-Date
+    $script:korUppgiftStart = $start
+    $script:aiderBasTid = if (Test-Path $aiderLogg) { (Get-Item $aiderLogg).LastWriteTime } else { [datetime]::MinValue }
     $senasteAktivitet = Get-Date
     $senasteStatusTid = if (Test-Path $statusFil) { (Get-Item $statusFil).LastWriteTime } else { $start }
     $senasteAiderLangd = if (Test-Path $aiderLogg) { (Get-Item $aiderLogg).Length } else { 0 }
@@ -527,6 +587,7 @@ function Wait-KorUppgift {
     return @{ kod = $kod; avbrott = $false; orsak = "" }
 }
 
+Set-JavaHomeOmBehov
 Logga "kor-alla startar (HangMinuter=$HangMinuter, MaxUppgiftMinuter=$MaxUppgiftMinuter, VantaTimmar=$VantaTimmar)."
 
 while ($korda -lt $Max -and (Get-Date) -lt $slut) {
