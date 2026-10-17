@@ -98,6 +98,12 @@ class SammanstallningSkarmTest {
             onNodeWithText(nej).assertExists()
             scrollable.performScrollToNode(hasText(ja))
             onNodeWithText(ja).assertExists()
+            
+            // Kontrollera att exportknapparna finns
+            val pdfKnapp = context.getString(R.string.export_hus_historik_pdf)
+            val csvKnapp = context.getString(R.string.export_hus_historik_csv)
+            onNodeWithText(pdfKnapp).assertExists()
+            onNodeWithText(csvKnapp).assertExists()
         }
     }
 }
