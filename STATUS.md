@@ -1,6 +1,6 @@
 # Status
 
-Uppdaterad 2026-10-16.
+Uppdaterad 2026-10-17.
 
 ## Klart: Grundplattan (2026-10-08–09)
 
@@ -29,9 +29,9 @@ Val och omfång i IDEURVAL.md (omprövning 2026-10-16), regler i `husloggen/APP.
 4. Kvittofoto och bilder på poster (flera bilder, `BildLager` i `:karna`). `2026-10-16-husloggen-bilder`, del A mergad, uppgifter pågår. Avläsning (OCR) är inte med; tas i eget uppdrag om den behövs.
 5. Påminnelser före nästa datum. Cursor lyfter påminnelsemönstret till `:karna`. `2026-10-16-husloggen-paminnelser`, skickat 2026-10-16.
 6. Gratisgräns (15 poster) och Pro. `2026-10-16-husloggen-pro-gratisgrans`, skickat 2026-10-16.
-7. Sammanställning per år och typ, underlag för förbättringsutgifter vid försäljning, PDF "Husets historik" och CSV. Kontrollera reglerna hos Skatteverket och i inkomstskattelagen innan uppdraget skrivs. Nästa att skriva.
+7. Sammanställning per år och typ, underlag för förbättringsutgifter vid försäljning, PDF "Husets historik" och CSV. Skattereglerna kontrollerade mot Skatteverket 2026-10-17 (5 000 kr per år, femårsregeln för reparation och underhåll). `2026-10-17-husloggen-sammanstallning`, skickat 2026-10-17. Kapitelnumren i APP.md (46 kap. för bostadsrätt kan vara fel, troligen 47 kap.) verifierar Cursor.
 8. Säkerhetskopia, import och automatisk säkerhetskopia. Cursor lyfter dem till `:karna`. `2026-10-16-husloggen-sakerhetskopia`, skickat 2026-10-16.
-9. Mörkt läge, välkomstskärm, butiksmaterial, skärmbilder, Data safety och integritetspolicy. Nästa efter 7.
+9. Mörkt läge, välkomstskärm, butiksmaterial, skärmbilder, Data safety och integritetspolicy. Nästa att skriva.
 10. Mattias provar på telefon.
 
 ## Senare
