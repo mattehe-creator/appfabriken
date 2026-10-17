@@ -27,6 +27,7 @@ New-Item -ItemType Directory -Force -Path $loggMapp | Out-Null
 $senasteFelFil = Join-Path (Split-Path -Parent $loggMapp) "senaste-fel.json"
 $stampel = Get-Date -Format "yyyyMMdd-HHmmss"
 Start-Transcript -Path (Join-Path $loggMapp "kor-$stampel.log") | Out-Null
+try { if (Test-Path $senasteFelFil) { Remove-Item -Force $senasteFelFil } } catch { }
 
 function Skriv-Felsignal([int]$kod, [string]$kalla, [string]$text) {
     try {
@@ -56,6 +57,18 @@ function Status([string]$fas, [string]$text = "") {
         @{ fas = $fas; text = $text; uppgift = $script:namn; modell = $Modell; tid = (Get-Date).ToString("s") } |
             ConvertTo-Json | Set-Content -Encoding UTF8 $statusFil
     } catch { }
+}
+
+trap {
+    $rad = $_.InvocationInfo.ScriptLineNumber
+    $msg = $_.Exception.Message
+    if ($rad) { $msg = "$msg (rad $rad)" }
+    Write-Host "OVÄNTAT FEL [skript]: $msg" -ForegroundColor Red
+    Skriv-Felsignal 1 "skript" $msg
+    try { Status "fel" "skript: $msg" } catch { }
+    RensaAktiv
+    Stop-Transcript | Out-Null
+    exit 1
 }
 
 function Kor([string]$fil, [string[]]$argument, [string]$kalla = "test") {
