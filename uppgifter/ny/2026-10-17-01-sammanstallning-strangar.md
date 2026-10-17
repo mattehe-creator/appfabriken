@@ -13,7 +13,7 @@ beror-på: cursor:2026-10-17-husloggen-forsaljning
 - husloggen/src/main/res/values/strings.xml (befintliga `post_typ_*`, `falt_*`)
 
 ## Uppgift
-Lägg till samma nycklar på engelska och svenska:
+Lägg till samma nycklar på engelska och svenska (Cursor kan redan ha lagt in dem i del A — kontrollera då att texterna stämmer exakt, ändra vid behov):
 
 | Nyckel | Syfte |
 |--------|--------|

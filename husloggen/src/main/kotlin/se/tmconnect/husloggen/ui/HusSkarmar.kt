@@ -69,6 +69,10 @@ fun HusStartSkarm(
     behorighetNekad: Boolean = false,
     arPro: Boolean = false,
     onVisaProDialog: () -> Unit = {},
+    forsaljningsAr: Int = java.time.LocalDate.now().year,
+    onForsaljningsArAndras: (Int) -> Unit = {},
+    onExportHistorikPdf: () -> Unit = {},
+    onExportHistorikCsv: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var valdFlik by rememberSaveable { mutableIntStateOf(HusFlik.ATT_GORA.ordinal) }
