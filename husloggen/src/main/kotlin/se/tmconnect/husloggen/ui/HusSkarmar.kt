@@ -50,7 +50,7 @@ import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.husloggen.regler.grupperaPerAr
 import se.tmconnect.karna.format.formateraPrisKr
 
-private enum class HusFlik { ATT_GORA, LOGG }
+private enum class HusFlik { ATT_GORA, LOGG, SAMMANSTALLNING }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -112,6 +112,12 @@ fun HusStartSkarm(
                     icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
                     label = { Text(text = stringResource(R.string.flik_logg)) },
                 )
+                NavigationBarItem(
+                    selected = valdFlik == HusFlik.SAMMANSTALLNING.ordinal,
+                    onClick = { valdFlik = HusFlik.SAMMANSTALLNING.ordinal },
+                    icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
+                    label = { Text(text = stringResource(R.string.flik_sammanstallning)) },
+                )
             }
         },
         floatingActionButton = {
@@ -142,6 +148,9 @@ fun HusStartSkarm(
                         modifier = Modifier.tryckyta48(),
                     )
                 }
+                HusFlik.SAMMANSTALLNING -> {
+                    // Inget flytande knapp för sammanställning
+                }
             }
         },
     ) { innerPadding ->
@@ -165,6 +174,9 @@ fun HusStartSkarm(
                 arPro = arPro,
                 onVisaProDialog = onVisaProDialog,
             )
+            HusFlik.SAMMANSTALLNING -> {
+                // Sammanställning fliken hanteras separat i MainActivity
+            }
         }
     }
 }

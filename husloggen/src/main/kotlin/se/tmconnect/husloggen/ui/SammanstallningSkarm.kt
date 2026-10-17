@@ -14,17 +14,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,6 +51,9 @@ import se.tmconnect.husloggen.regler.summeraPerAr
 import se.tmconnect.karna.format.formateraDatum
 import se.tmconnect.karna.format.formateraPrisKr
 
+private enum class SammanstallningFlik { SAMMANSTALLNING }
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SammanstallningSkarm(
     poster: List<Post>,
@@ -60,12 +65,9 @@ fun SammanstallningSkarm(
     modifier: Modifier = Modifier,
 ) {
     var expanderad by remember { mutableStateOf(false) }
-    
-    val arMedPoster = poster
-        .filter { it.beloppOre != null }
-        .map { it.datum.year }
-        .distinct()
-        .sortedDescending()
+    val ar = LocalDate.now().year
+    val minAr = ar - 10
+    val maxAr = ar + 10
     
     Scaffold(
         modifier = modifier,
@@ -88,14 +90,13 @@ fun SammanstallningSkarm(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             // Försäljningsår väljare
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = stringResource(R.string.sammanstallning_forsaljningsar),
@@ -103,22 +104,20 @@ fun SammanstallningSkarm(
                 )
                 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(0.5f),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    OutlinedButton(
+                    TextButton(
                         onClick = { onForsaljningsArAndras(forsaljningsAr - 1) },
                         modifier = Modifier.tryckyta48(),
                     ) {
                         Text(text = "-")
                     }
                     
-                    // Dropdown för årval
+                    // Dropdown eller TextField beroende på om vi vill ha en dropdown
                     Box {
-                        OutlinedButton(
+                        TextButton(
                             onClick = { expanderad = true },
                             modifier = Modifier.tryckyta48(),
                         ) {
@@ -129,7 +128,7 @@ fun SammanstallningSkarm(
                             expanded = expanderad,
                             onDismissRequest = { expanderad = false },
                         ) {
-                            (2010..2030).forEach { ar ->
+                            (minAr..maxAr).forEach { ar ->
                                 DropdownMenuItem(
                                     text = { Text(text = ar.toString()) },
                                     onClick = {
@@ -142,7 +141,7 @@ fun SammanstallningSkarm(
                         }
                     }
                     
-                    OutlinedButton(
+                    TextButton(
                         onClick = { onForsaljningsArAndras(forsaljningsAr + 1) },
                         modifier = Modifier.tryckyta48(),
                     ) {
@@ -151,78 +150,128 @@ fun SammanstallningSkarm(
                 }
             }
             
+            // Sammanställning
+            val grupperadePoster = poster.groupBy { it.datum.year }.toSortedMap(reverseOrder())
+            val summeringPerAr = summeraPerAr(poster)
+            
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                arMedPoster.forEach { ar ->
+                grupperadePoster.forEach { (ar, arPoster) ->
                     item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 8.dp),
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            ),
                         ) {
-                            // År rubrik med summa
-                            Text(
-                                text = if (poster.any { it.beloppOre != null && it.datum.year == ar }) {
-                                    "${ar} (${formateraPrisKr(poster.filter { it.datum.year == ar && it.beloppOre != null }.sumOf { it.beloppOre!! }, locale)})"
-                                } else {
-                                    ar.toString()
-                                },
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                            
-                            // Summor per typ
-                            val summorPerTyp = summeraPerAr(poster.filter { it.datum.year == ar })
-                            if (summorPerTyp.isNotEmpty()) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 8.dp),
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                            ) {
+                                // År och totalsumma
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
-                                    summorPerTyp.forEach { (typ, summa) ->
-                                        Text(
-                                            text = "${postTypEtikett(typ)}: ${formateraPrisKr(summa, locale)}",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                        )
+                                    Text(
+                                        text = ar.toString(),
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
+                                    
+                                    val summa = summeringPerAr[ar]?.values?.sumOf { it } ?: 0L
+                                    Text(
+                                        text = formateraPrisKr(summa, locale),
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
+                                }
+                                
+                                // Summor per typ
+                                if (summeringPerAr.containsKey(ar)) {
+                                    val typSummor = summeringPerAr[ar]!!
+                                    typSummor.forEach { (typ, summa) ->
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                        ) {
+                                            Text(
+                                                text = postTypEtikett(typ),
+                                                style = MaterialTheme.typography.bodyMedium,
+                                            )
+                                            Text(
+                                                text = formateraPrisKr(summa, locale),
+                                                style = MaterialTheme.typography.bodyMedium,
+                                            )
+                                        }
                                     }
                                 }
-                            }
-                            
-                            // Total summa
-                            val totalSumma = poster.filter { it.datum.year == ar && it.beloppOre != null }.sumOf { it.beloppOre!! }
-                            if (totalSumma > 0) {
-                                Text(
-                                    text = stringResource(R.string.sammanstallning_total_summa, formateraPrisKr(totalSumma, locale)),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier.padding(top = 8.dp),
-                                )
-                            }
-                            
-                            // Gränsbelopp info
-                            if (visaSkatteInfo) {
-                                Text(
-                                    text = if (arStodjerGransbelopp(poster, ar)) {
-                                        stringResource(R.string.sammanstallning_grans_ar)
-                                    } else {
-                                        stringResource(R.string.sammanstallning_grans_ar_ej)
-                                    },
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.padding(top = 4.dp),
-                                )
-                            }
-                            
-                            // Poster för år
-                            val arPoster = poster.filter { it.datum.year == ar }
-                            if (arPoster.isNotEmpty()) {
-                                items(arPoster, key = { it.id }) { post ->
-                                    PostSammanstallningRad(
-                                        post = post,
-                                        locale = locale,
-                                        forsaljningsAr = forsaljningsAr,
-                                        visaSkatteInfo = visaSkatteInfo,
+                                
+                                // Gränsbelopp info
+                                if (visaSkatteInfo) {
+                                    val stodjerGrans = arStodjerGransbelopp(poster, ar)
+                                    Text(
+                                        text = if (stodjerGrans) {
+                                            stringResource(R.string.sammanstallning_grans_ar)
+                                        } else {
+                                            stringResource(R.string.sammanstallning_grans_ar_ej)
+                                        },
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = if (stodjerGrans) {
+                                            MaterialTheme.colorScheme.primary
+                                        } else {
+                                            MaterialTheme.colorScheme.onSurfaceVariant
+                                        }
                                     )
+                                }
+                                
+                                // Poster för år
+                                items(arPoster, key = { it.id }) { post ->
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                        ) {
+                                            Text(
+                                                text = formateraDatum(post.datum, locale),
+                                                style = MaterialTheme.typography.bodySmall,
+                                            )
+                                            Text(
+                                                text = post.vad,
+                                                style = MaterialTheme.typography.bodyMedium,
+                                            )
+                                            Text(
+                                                text = postTypEtikett(post.typ),
+                                                style = MaterialTheme.typography.bodySmall,
+                                            )
+                                        }
+                                        
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                        ) {
+                                            Text(
+                                                text = formateraPrisKr(post.beloppOre ?: 0L, locale),
+                                                style = MaterialTheme.typography.bodyMedium,
+                                            )
+                                            
+                                            if (visaSkatteInfo) {
+                                                val forbattring = kanVaraForbattring(post, forsaljningsAr)
+                                                Text(
+                                                    text = when (forbattring) {
+                                                        ForbattringMojlighet.Ja -> stringResource(R.string.forbattring_ja)
+                                                        ForbattringMojlighet.KravBedomning -> stringResource(R.string.forbattring_krav_bedomning)
+                                                        ForbattringMojlighet.Nej -> stringResource(R.string.forbattring_nej)
+                                                    },
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -232,16 +281,15 @@ fun SammanstallningSkarm(
             
             // Skatteinformation
             if (visaSkatteInfo) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp)
-                        .heightIn(min = 48.dp),
-                    contentAlignment = Alignment.Center,
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.Start,
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Text(
                             text = stringResource(R.string.sammanstallning_skatte_info_rubrik),
@@ -250,62 +298,9 @@ fun SammanstallningSkarm(
                         Text(
                             text = stringResource(R.string.sammanstallning_skatte_info_text),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun PostSammanstallningRad(
-    post: Post,
-    locale: Locale,
-    forsaljningsAr: Int,
-    visaSkatteInfo: Boolean,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(
-                text = "${formateraDatum(post.datum, locale)} - ${post.vad}",
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Text(
-                text = formateraPrisKr(post.beloppOre!!, locale),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        }
-        
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(
-                text = postTypEtikett(post.typ),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            
-            if (visaSkatteInfo) {
-                val forbattring = kanVaraForbattring(post, forsaljningsAr)
-                Text(
-                    text = when (forbattring) {
-                        ForbattringMojlighet.Ja -> stringResource(R.string.forbattring_ja)
-                        ForbattringMojlighet.KravBedomning -> stringResource(R.string.forbattring_krav_bedomning)
-                        ForbattringMojlighet.Nej -> stringResource(R.string.forbattring_nej)
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
             }
         }
     }
