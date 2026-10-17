@@ -15,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -78,10 +77,8 @@ fun SammanstallningSkarm(
                     style = MaterialTheme.typography.titleMedium,
                 )
                 
-                val forsaljningsArValel = remember { mutableIntStateOf(forsaljningsAr) }
-                
                 // Dropdown meny för försäljningsår
-                var expanderad by remember { mutableStateOf(false) }
+                var expanderad by remember { mutableIntStateOf(false) }
                 val ar = (forsaljningsAr - 5)..(forsaljningsAr + 5)
                 
                 OutlinedButton(
@@ -99,7 +96,6 @@ fun SammanstallningSkarm(
                         DropdownMenuItem(
                             text = { Text(text = ar.toString()) },
                             onClick = {
-                                forsaljningsArValel.intValue = ar
                                 onForsaljningsArAndras(ar)
                                 expanderad = false
                             },
