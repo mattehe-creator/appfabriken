@@ -1,6 +1,6 @@
 ﻿# Senaste lokala stopp
 
-2026-10-17T16:46:34 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
+2026-10-17T16:52:37 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
 
 ## Fel
 Felkod 1, källa: okänd.
@@ -50,43 +50,43 @@ Consider enabling configuration cache to speed up this build: https://docs.gradl
 
 ## Sista rader: kor-alla.log
 
-2026-10-17 16:44:33 Vaktmästare (workflow_dispatch) anropad.
-2026-10-17 16:44:33 kor-uppgift startad (PID 26756).
-2026-10-17 16:46:03 kor-uppgift avslutades: Felkod 1, källa: okänd.
-2026-10-17 16:46:03 Felkod 1, källa: okänd.
-2026-10-17 16:46:03 Full återställning och nytt försök (högst ett omförsök per uppgift och försök).
-2026-10-17 16:46:03 Full återställning (Gradle, processer, Ollama).
-2026-10-17 16:46:03 Full återställning: dödar java/Gradle (PID 36828).
-2026-10-17 16:46:03 gradlew --stop:  
-2026-10-17 16:46:03 gradlew --stop: ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH. 
-2026-10-17 16:46:03 gradlew --stop:  
-2026-10-17 16:46:03 gradlew --stop: Please set the JAVA_HOME variable in your environment to match the 
-2026-10-17 16:46:03 gradlew --stop: location of your Java installation. 
-2026-10-17 16:46:03 gradlew --stop:  
-2026-10-17 16:46:03 gradlew --stop: ERROR: JAVA_HOME is set to an invalid directory: "= 1>&2
-2026-10-17 16:46:03 gradlew --stop:  
-2026-10-17 16:46:03 gradlew --stop: Please set the JAVA_HOME variable in your environment to match the 
-2026-10-17 16:46:03 gradlew --stop: location of your Java installation. 
-2026-10-17 16:46:03 gradlew --stop: '""' is not recognized as an internal or external command,
-2026-10-17 16:46:03 gradlew --stop: operable program or batch file.
-2026-10-17 16:46:03 ollama stop qwen3-coder:30b
-2026-10-17 16:46:03 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
-2026-10-17 16:46:03 Full återställning (Gradle, processer, Ollama).
-2026-10-17 16:46:03 gradlew --stop:  
-2026-10-17 16:46:03 gradlew --stop: ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH. 
-2026-10-17 16:46:03 gradlew --stop:  
-2026-10-17 16:46:03 gradlew --stop: Please set the JAVA_HOME variable in your environment to match the 
-2026-10-17 16:46:03 gradlew --stop: location of your Java installation. 
-2026-10-17 16:46:03 gradlew --stop:  
-2026-10-17 16:46:03 gradlew --stop: ERROR: JAVA_HOME is set to an invalid directory: "= 1>&2
-2026-10-17 16:46:03 gradlew --stop:  
-2026-10-17 16:46:03 gradlew --stop: Please set the JAVA_HOME variable in your environment to match the 
-2026-10-17 16:46:04 gradlew --stop: location of your Java installation. 
-2026-10-17 16:46:04 gradlew --stop: '""' is not recognized as an internal or external command,
-2026-10-17 16:46:04 gradlew --stop: operable program or batch file.
-2026-10-17 16:46:04 ollama stop qwen3-coder:30b
-2026-10-17 16:46:04 ollama: [?2026h[?25l[1GÔáÖ [K[?25h[?2026l[?2026h[?25l[1GÔá╣ [K[?25h[?2026l[?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
-2026-10-17 16:46:04 kor-uppgift startad (PID 9780).
-2026-10-17 16:46:34 kor-uppgift avslutades: Felkod 1, källa: okänd.
-2026-10-17 16:46:34 Felkod 1, källa: okänd.
-2026-10-17 16:46:34 Skriver lokal-stopp: 2026-10-17T16:46:34 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
+2026-10-17 16:51:37 ollama stop qwen3-coder:30b
+2026-10-17 16:51:37 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
+2026-10-17 16:51:37 kor-uppgift startad (PID 37760).
+2026-10-17 16:52:07 kor-uppgift avslutades: Felkod 1, källa: okänd.
+2026-10-17 16:52:07 Felkod 1, källa: okänd.
+2026-10-17 16:52:07 Full återställning och nytt försök (högst ett omförsök per uppgift och försök).
+2026-10-17 16:52:07 Full återställning (Gradle, processer, Ollama).
+2026-10-17 16:52:07 gradlew --stop:  
+2026-10-17 16:52:07 gradlew --stop: ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH. 
+2026-10-17 16:52:07 gradlew --stop:  
+2026-10-17 16:52:07 gradlew --stop: Please set the JAVA_HOME variable in your environment to match the 
+2026-10-17 16:52:07 gradlew --stop: location of your Java installation. 
+2026-10-17 16:52:07 gradlew --stop:  
+2026-10-17 16:52:07 gradlew --stop: ERROR: JAVA_HOME is set to an invalid directory: "= 1>&2
+2026-10-17 16:52:07 gradlew --stop:  
+2026-10-17 16:52:07 gradlew --stop: Please set the JAVA_HOME variable in your environment to match the 
+2026-10-17 16:52:07 gradlew --stop: location of your Java installation. 
+2026-10-17 16:52:07 gradlew --stop: '""' is not recognized as an internal or external command,
+2026-10-17 16:52:07 gradlew --stop: operable program or batch file.
+2026-10-17 16:52:07 ollama stop qwen3-coder:30b
+2026-10-17 16:52:07 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
+2026-10-17 16:52:07 Full återställning (Gradle, processer, Ollama).
+2026-10-17 16:52:07 gradlew --stop:  
+2026-10-17 16:52:07 gradlew --stop: ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH. 
+2026-10-17 16:52:07 gradlew --stop:  
+2026-10-17 16:52:07 gradlew --stop: Please set the JAVA_HOME variable in your environment to match the 
+2026-10-17 16:52:07 gradlew --stop: location of your Java installation. 
+2026-10-17 16:52:07 gradlew --stop:  
+2026-10-17 16:52:07 gradlew --stop: ERROR: JAVA_HOME is set to an invalid directory: "= 1>&2
+2026-10-17 16:52:07 gradlew --stop:  
+2026-10-17 16:52:07 gradlew --stop: Please set the JAVA_HOME variable in your environment to match the 
+2026-10-17 16:52:07 gradlew --stop: location of your Java installation. 
+2026-10-17 16:52:07 gradlew --stop: '""' is not recognized as an internal or external command,
+2026-10-17 16:52:07 gradlew --stop: operable program or batch file.
+2026-10-17 16:52:07 ollama stop qwen3-coder:30b
+2026-10-17 16:52:07 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
+2026-10-17 16:52:07 kor-uppgift startad (PID 11848).
+2026-10-17 16:52:37 kor-uppgift avslutades: Felkod 1, källa: okänd.
+2026-10-17 16:52:37 Felkod 1, källa: okänd.
+2026-10-17 16:52:37 Skriver lokal-stopp: 2026-10-17T16:52:37 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
