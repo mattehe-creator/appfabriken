@@ -227,7 +227,7 @@ fun SammanstallningSkarm(
                                 }
                                 
                                 // Poster för år
-                                items(arPoster, key = { it.id }) { post ->
+                                items(arPoster) { post ->
                                     Column(
                                         modifier = Modifier.fillMaxWidth(),
                                         verticalArrangement = Arrangement.spacedBy(4.dp),
