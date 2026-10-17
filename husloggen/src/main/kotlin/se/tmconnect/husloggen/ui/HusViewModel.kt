@@ -25,9 +25,18 @@ import se.tmconnect.husloggen.data.HusRepository
 import se.tmconnect.husloggen.data.InstallningarLager
 import se.tmconnect.husloggen.data.MarkeraGjordResult
 import se.tmconnect.husloggen.data.SparaPostResult
+import se.tmconnect.husloggen.export.HusHistorikTexter
 import se.tmconnect.husloggen.export.Sakerhetskopia
 import se.tmconnect.husloggen.export.SakerhetskopiaLasResult
 import se.tmconnect.husloggen.export.SakerhetskopiaPlanerare
+import se.tmconnect.husloggen.export.byggHusHistorik
+import se.tmconnect.husloggen.export.husHistorikCsv
+import se.tmconnect.husloggen.export.skrivHusHistorikTillPdf
+import se.tmconnect.husloggen.regler.ForbattringMojlighet
+import se.tmconnect.husloggen.regler.standardForsaljningsar
+import se.tmconnect.karna.export.PdfExportResult
+import se.tmconnect.karna.export.skrivCsvMedBom
+import java.util.Locale
 import se.tmconnect.husloggen.regler.kanLaggaTillPost
 import se.tmconnect.karna.pro.ProKalla
 import se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand
@@ -75,6 +84,14 @@ sealed class HusUiMeddelande {
     data object UppgiftMarkeradGjord : HusUiMeddelande()
 
     data object UppgiftMarkeradGjordPostEjSparad : HusUiMeddelande()
+
+    data object HistorikPdfSparad : HusUiMeddelande()
+
+    data object HistorikPdfMisslyckades : HusUiMeddelande()
+
+    data object HistorikCsvSparad : HusUiMeddelande()
+
+    data object HistorikCsvMisslyckades : HusUiMeddelande()
     
     data object SakerhetskopiaSparad : HusUiMeddelande()
 
@@ -109,6 +126,13 @@ class HusViewModel(
 
     val poster: StateFlow<List<Post>> = repository.poster
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    private val _forsaljningsAr = MutableStateFlow(standardForsaljningsar(idag))
+    val forsaljningsAr: StateFlow<Int> = _forsaljningsAr.asStateFlow()
+
+    fun sattForsaljningsAr(ar: Int) {
+        _forsaljningsAr.value = ar
+    }
 
     /** Om globala dagliga påminnelser för uppgifter är på. */
     val paminnelserPa: StateFlow<Boolean> = paminnelseInstallningar.paminnelserPa
@@ -581,6 +605,79 @@ class HusViewModel(
                 }
             } catch (_: Exception) {
                 _meddelanden.emit(HusUiMeddelande.SakerhetskopiaKundeInteLasas)
+            }
+        }
+    }
+
+    fun sparaHusHistorikPdf(
+        uri: Uri,
+        texter: HusHistorikTexter,
+        locale: Locale,
+        typEtikett: (PostTyp) -> String,
+        forbattringEtikett: (ForbattringMojlighet) -> String,
+        datumEtikett: (Post) -> String,
+        beloppEtikett: (Post) -> String,
+    ) {
+        viewModelScope.launch {
+            try {
+                val data = byggHusHistorik(
+                    poster = poster.value,
+                    forsaljningsar = _forsaljningsAr.value,
+                    localeLand = locale.country,
+                    typEtikett = typEtikett,
+                    datumEtikett = datumEtikett,
+                    beloppEtikett = beloppEtikett,
+                    forbattringEtikett = forbattringEtikett,
+                    gransJa = texter.gransJa,
+                    gransNej = texter.gransNej,
+                )
+                val ok = withContext(Dispatchers.IO) {
+                    val stream = appContext.contentResolver.openOutputStream(uri)
+                        ?: return@withContext false
+                    stream.use {
+                        skrivHusHistorikTillPdf(data, texter, locale, it) is PdfExportResult.Ok
+                    }
+                }
+                _meddelanden.emit(
+                    if (ok) HusUiMeddelande.HistorikPdfSparad else HusUiMeddelande.HistorikPdfMisslyckades,
+                )
+            } catch (_: Exception) {
+                _meddelanden.emit(HusUiMeddelande.HistorikPdfMisslyckades)
+            }
+        }
+    }
+
+    fun sparaHusHistorikCsv(
+        uri: Uri,
+        texter: HusHistorikTexter,
+        locale: Locale,
+        typEtikett: (PostTyp) -> String,
+        forbattringEtikett: (ForbattringMojlighet) -> String,
+        datumEtikett: (Post) -> String,
+        beloppEtikett: (Post) -> String,
+    ) {
+        viewModelScope.launch {
+            try {
+                val data = byggHusHistorik(
+                    poster = poster.value,
+                    forsaljningsar = _forsaljningsAr.value,
+                    localeLand = locale.country,
+                    typEtikett = typEtikett,
+                    datumEtikett = datumEtikett,
+                    beloppEtikett = beloppEtikett,
+                    forbattringEtikett = forbattringEtikett,
+                    gransJa = texter.gransJa,
+                    gransNej = texter.gransNej,
+                )
+                val csv = husHistorikCsv(data, texter)
+                withContext(Dispatchers.IO) {
+                    val stream = appContext.contentResolver.openOutputStream(uri)
+                        ?: throw java.io.IOException()
+                    stream.use { skrivCsvMedBom(it, csv) }
+                }
+                _meddelanden.emit(HusUiMeddelande.HistorikCsvSparad)
+            } catch (_: Exception) {
+                _meddelanden.emit(HusUiMeddelande.HistorikCsvMisslyckades)
             }
         }
     }

@@ -46,7 +46,15 @@ import se.tmconnect.husloggen.ui.PostFormularSkarm
 import se.tmconnect.husloggen.ui.ProDialog
 import se.tmconnect.husloggen.ui.UppgiftFormularSkarm
 import se.tmconnect.karna.tema.AppfabrikTema
+import se.tmconnect.husloggen.export.HusHistorikTexter
+import se.tmconnect.husloggen.export.husHistorikCsvFilnamn
+import se.tmconnect.husloggen.export.husHistorikPdfFilnamn
+import se.tmconnect.husloggen.export.skatteKallorText
 import se.tmconnect.husloggen.export.sakerhetskopiaFilnamn
+import se.tmconnect.husloggen.regler.ForbattringMojlighet
+import se.tmconnect.karna.format.formateraDatum
+import se.tmconnect.karna.format.formateraPrisKr
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     private var skaOppnaAttGora = false
@@ -155,6 +163,22 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private val createHistorikPdfContract = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/pdf"),
+    ) { uri: Uri? ->
+        if (uri != null) {
+            sparaHistorikPdf(uri)
+        }
+    }
+
+    private val createHistorikCsvContract = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("text/csv"),
+    ) { uri: Uri? ->
+        if (uri != null) {
+            sparaHistorikCsv(uri)
+        }
+    }
+
     private var behorighetNekad by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -185,11 +209,16 @@ class MainActivity : ComponentActivity() {
                 val arPro by viewModel.arPro.collectAsState()
                 val proDialogSynlig by viewModel.proDialogSynlig.collectAsState()
                 val autoBackup by viewModel.autoBackup.collectAsState()
+                val forsaljningsAr by viewModel.forsaljningsAr.collectAsState()
                 val markeradGjordText = stringResource(R.string.uppgift_markerad_gjord)
                 val uppgiftGjordPostEjSparadText = stringResource(R.string.uppgift_gjord_post_ej_sparad)
                 val sakerhetskopiaSparadText = stringResource(R.string.sakerhetskopia_sparad)
                 val sakerhetskopiaKundeInteLasasText = stringResource(R.string.sakerhetskopia_kunde_inte_lasas)
                 val sakerhetskopiaNyareVersionText = stringResource(R.string.sakerhetskopia_nyare_version)
+                val historikPdfSparadText = stringResource(R.string.export_pdf_sparad)
+                val historikPdfFelText = stringResource(R.string.export_pdf_misslyckades)
+                val historikCsvSparadText = stringResource(R.string.export_csv_sparad)
+                val historikCsvFelText = stringResource(R.string.export_csv_misslyckades)
                 val idag = LocalDate.now()
                 val snackbarHostState = remember { SnackbarHostState() }
 
@@ -206,6 +235,10 @@ class MainActivity : ComponentActivity() {
                                 meddelande.tillagda,
                                 meddelande.hoppadeOver,
                             )
+                            HusUiMeddelande.HistorikPdfSparad -> historikPdfSparadText
+                            HusUiMeddelande.HistorikPdfMisslyckades -> historikPdfFelText
+                            HusUiMeddelande.HistorikCsvSparad -> historikCsvSparadText
+                            HusUiMeddelande.HistorikCsvMisslyckades -> historikCsvFelText
                         }
                         snackbarHostState.showSnackbar(text)
                     }
@@ -352,6 +385,14 @@ class MainActivity : ComponentActivity() {
                                 behorighetNekad = behorighetNekad,
                                 arPro = arPro,
                                 onVisaProDialog = viewModel::visaProDialog,
+                                forsaljningsAr = forsaljningsAr,
+                                onForsaljningsArAndras = viewModel::sattForsaljningsAr,
+                                onExportHistorikPdf = {
+                                    createHistorikPdfContract.launch(husHistorikPdfFilnamn(idag))
+                                },
+                                onExportHistorikCsv = {
+                                    createHistorikCsvContract.launch(husHistorikCsvFilnamn(idag))
+                                },
                             )
                         }
                     }
@@ -379,4 +420,63 @@ class MainActivity : ComponentActivity() {
             intent.removeExtra(PaminnelseWorker.EXTRA_OPPNA_ATT_GORA)
         }
     }
+
+    private fun sparaHistorikPdf(uri: Uri) {
+        val locale = resources.configuration.locales[0]
+        viewModel.sparaHusHistorikPdf(
+            uri = uri,
+            texter = historikTexter(locale),
+            locale = locale,
+            typEtikett = { typ -> getString(typTillResId(typ)) },
+            forbattringEtikett = { mojlighet -> getString(forbattringTillResId(mojlighet)) },
+            datumEtikett = { post -> formateraDatum(post.datum, locale) },
+            beloppEtikett = { post -> formateraPrisKr(post.beloppOre, locale) },
+        )
+    }
+
+    private fun sparaHistorikCsv(uri: Uri) {
+        val locale = resources.configuration.locales[0]
+        viewModel.sparaHusHistorikCsv(
+            uri = uri,
+            texter = historikTexter(locale),
+            locale = locale,
+            typEtikett = { typ -> getString(typTillResId(typ)) },
+            forbattringEtikett = { mojlighet -> getString(forbattringTillResId(mojlighet)) },
+            datumEtikett = { post -> formateraDatum(post.datum, locale) },
+            beloppEtikett = { post -> formateraPrisKr(post.beloppOre, locale) },
+        )
+    }
+
+    private fun historikTexter(@Suppress("UNUSED_PARAMETER") locale: Locale): HusHistorikTexter =
+        HusHistorikTexter(
+            rubrik = getString(R.string.historik_pdf_rubrik),
+            kolumnDatum = getString(R.string.falt_datum),
+            kolumnBeskrivning = getString(R.string.falt_vad),
+            kolumnTyp = getString(R.string.falt_typ),
+            kolumnBelopp = getString(R.string.falt_belopp),
+            kolumnForbattring = getString(R.string.sammanstallning_kolumn_forbattring),
+            arSummaRubrik = { ar -> getString(R.string.sammanstallning_ar_summa, ar.toString()) },
+            typSummaRad = { typ, belopp -> getString(R.string.sammanstallning_typ_summa, typ, belopp) },
+            totalt = getString(R.string.sammanstallning_totalt),
+            gransJa = getString(R.string.sammanstallning_grans_ar),
+            gransNej = getString(R.string.sammanstallning_grans_ar_ej),
+            skattRubrik = getString(R.string.historik_pdf_skatt_rubrik),
+            skattText = getString(R.string.historik_pdf_skatt_text),
+            kallorRubrik = getString(R.string.sammanstallning_skatte_info_rubrik),
+            kallorText = skatteKallorText(),
+        )
+
+    private fun typTillResId(typ: se.tmconnect.husloggen.data.PostTyp): Int =
+        when (typ) {
+            se.tmconnect.husloggen.data.PostTyp.UNDERHALL -> R.string.post_typ_underhall
+            se.tmconnect.husloggen.data.PostTyp.REPARATION -> R.string.post_typ_reparation
+            se.tmconnect.husloggen.data.PostTyp.OMBYGGNAD -> R.string.post_typ_ombyggnad
+        }
+
+    private fun forbattringTillResId(mojlighet: ForbattringMojlighet): Int =
+        when (mojlighet) {
+            ForbattringMojlighet.Ja -> R.string.sammanstallning_forbattring_ja
+            ForbattringMojlighet.KravBedomning -> R.string.sammanstallning_forbattring_bedomning
+            ForbattringMojlighet.Nej -> R.string.sammanstallning_forbattring_nej
+        }
 }

@@ -129,4 +129,27 @@
     <string name="auto_fel">Det gick inte att spara i mappen. Välj mappen igen.</string>
     <string name="auto_byt_mapp">Byt mapp</string>
     <string name="auto_kor_nu">Kopiera nu</string>
+    <string name="flik_sammanstallning">Sammanställning</string>
+    <string name="sammanstallning_rubrik">Sammanställning</string>
+    <string name="sammanstallning_forsaljningsar">Försäljningsår</string>
+    <string name="sammanstallning_ar_summa">%1$s</string>
+    <string name="sammanstallning_typ_summa">%1$s: %2$s</string>
+    <string name="sammanstallning_totalt">Totalt</string>
+    <string name="sammanstallning_forbattring_ja">Kan vara förbättringsutgift</string>
+    <string name="sammanstallning_forbattring_bedomning">Kräver bedömning</string>
+    <string name="sammanstallning_forbattring_nej">Nej</string>
+    <string name="sammanstallning_kolumn_forbattring">Förbättringsutgift</string>
+    <string name="sammanstallning_skatte_info_rubrik">Information om förbättringsutgifter</string>
+    <string name="sammanstallning_skatte_info_text">Förbättringsutgifter kan dras av när bostaden säljs. Reparation och underhåll räknas bara för försäljningsåret och de fem åren före. Utgifterna ska sammanlagt vara minst 5 000 kr per år. Det här är information, inte skatteråd. Kontrollera alltid med Skatteverket.</string>
+    <string name="sammanstallning_grans_ar">Minst 5 000 kr detta år</string>
+    <string name="sammanstallning_grans_ar_ej">Under 5 000 kr detta år</string>
+    <string name="export_hus_historik_pdf">Exportera PDF (Husets historik)</string>
+    <string name="export_hus_historik_csv">Exportera CSV</string>
+    <string name="export_pdf_sparad">PDF sparad</string>
+    <string name="export_pdf_misslyckades">PDF kunde inte skapas</string>
+    <string name="export_csv_sparad">CSV sparad</string>
+    <string name="export_csv_misslyckades">CSV kunde inte skapas</string>
+    <string name="historik_pdf_rubrik">Husets historik</string>
+    <string name="historik_pdf_skatt_rubrik">Skatteinformation (Sverige)</string>
+    <string name="historik_pdf_skatt_text">Förbättringsutgifter kan dras av när bostaden säljs. Reparation och underhåll räknas bara för försäljningsåret och de fem åren före. Utgifterna ska sammanlagt vara minst 5 000 kr per år. Det här är information, inte skatteråd. Kontrollera alltid med Skatteverket.</string>
 </resources>
