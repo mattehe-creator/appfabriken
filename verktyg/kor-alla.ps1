@@ -1,6 +1,6 @@
 ﻿# Kör uppgifter med kor-uppgift.ps1 i följd, utan att någonsin ge upp av sig själv.
 # Övervakar barnprocessen (tillsyn): dödar hängda körningar, räddar commits, full återställning före varje körning.
-#  - Tom uppgifter/ny/: avslutas tyst (exit 3, en rad i loggen).
+#  - Tom uppgifter/ny/: väntar $TomKoMinuter minuter och tittar igen (exit 3). Loopen avslutas inte.
 #  - Uppgift inte redo (beroenden m.m.): väntar 3 minuter och försöker igen (exit 3).
 #  - Fel eller avbrott: full återställning och ett omförsök; därefter stoppnotering + högst 5 min vila.
 #  - Tidsgränsen -VantaTimmar räknas från senaste lyckade uppgift (eller start).
@@ -8,7 +8,8 @@ param(
     [int]$Max = 200,
     [double]$VantaTimmar = 8,
     [int]$HangMinuter = 15,
-    [int]$MaxUppgiftMinuter = 90
+    [int]$MaxUppgiftMinuter = 90,
+    [int]$TomKoMinuter = 10
 )
 
 $DefaultModell = "ollama_chat/qwen3-coder:30b"
@@ -26,6 +27,7 @@ $senasteFelFil = Join-Path $env:LOCALAPPDATA "appfabriken\senaste-fel.json"
 $slut = (Get-Date).AddHours($VantaTimmar)
 $korda = 0
 $retriedEfterFel = $false
+$tomKoSenast = $false
 $script:aktivKorUppgiftPid = $null
 $sistVakt = [datetime]::MinValue
 $VaktMinuter = 30
@@ -597,7 +599,9 @@ while ($korda -lt $Max -and (Get-Date) -lt $slut) {
     $modell = $DefaultModell
     $aktiv = Get-AktivUppgift
     if ($aktiv -and $aktiv.modell) { $modell = $aktiv.modell }
-    Invoke-FullAtstallning $modell
+    # Full återställning behövs inte efter en tom kö; då har inget körts.
+    if (-not $tomKoSenast) { Invoke-FullAtstallning $modell }
+    $tomKoSenast = $false
 
     $ut = Wait-KorUppgift
     $kod = $ut.kod
@@ -613,8 +617,12 @@ while ($korda -lt $Max -and (Get-Date) -lt $slut) {
         $retriedEfterFel = $false
         $antalNy = @(Get-ChildItem (Join-Path $Repo "uppgifter\ny\*.md") -ErrorAction SilentlyContinue).Count
         if ($antalNy -eq 0) {
-            Logga "Ingen uppgift i uppgifter/ny/ — kor-alla avslutas (tom kö, inget fel)."
-            break
+            # Tom kö är inget fel. Vänta och titta igen; Cursor fyller på kön. Loopen avslutas inte av tom kö.
+            Logga "Kön är tom (inget fel). Väntar $TomKoMinuter minuter och tittar igen."
+            $tomKoSenast = $true
+            $slut = (Get-Date).AddHours($VantaTimmar)
+            Start-Sleep -Seconds (60 * $TomKoMinuter)
+            continue
         }
         Write-Host "Ingen uppgift redo. Försöker igen om 3 minuter. Stäng fönstret för att sluta." -ForegroundColor DarkGreen
         Start-Sleep -Seconds 180
