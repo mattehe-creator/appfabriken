@@ -51,6 +51,8 @@ import se.tmconnect.husloggen.regler.summeraPerAr
 import se.tmconnect.karna.format.formateraDatum
 import se.tmconnect.karna.format.formateraPrisKr
 
+private enum class SammanstallningFlik { SAMMANSTALLNING }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SammanstallningSkarm(
