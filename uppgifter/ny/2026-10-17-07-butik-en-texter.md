@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-17-husloggen-butik-mork-valkomst.md
 försök: 1
-beror-på: 2026-10-17-06-butik-sv-lang-beskrivning.md
+beror-på: 2026-10-17-06-butik-sv-lang-beskrivning-f2.md
 
 ## Ändra bara dessa filer
 - husloggen/butik/en/titel.txt
