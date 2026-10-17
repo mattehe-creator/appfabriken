@@ -139,6 +139,7 @@
     <string name="sammanstallning_forbattring_ja">May be an improvement expense</string>
     <string name="sammanstallning_forbattring_bedomning">Requires assessment</string>
     <string name="sammanstallning_forbattring_nej">No</string>
+    <string name="sammanstallning_kolumn_forbattring">Improvement expense</string>
     <string name="sammanstallning_skatte_info_rubrik">Improvement expenses (information)</string>
     <string name="sammanstallning_skatte_info_text">Improvement expenses may be deducted when you sell your home. Repairs and maintenance count only for the sale year and the five years before it. Expenses must total at least SEK 5,000 per year. This is information, not tax advice. Always check with the Swedish Tax Agency (Skatteverket).</string>
     <string name="sammanstallning_grans_ar">At least SEK 5,000 this year</string>
