@@ -47,10 +47,11 @@ import se.tmconnect.husloggen.BuildConfig
 import se.tmconnect.husloggen.R
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.Uppgift
+import se.tmconnect.husloggen.regler.arSverigeForSkatteInfo
 import se.tmconnect.husloggen.regler.grupperaPerAr
 import se.tmconnect.karna.format.formateraPrisKr
 
-private enum class HusFlik { ATT_GORA, LOGG }
+private enum class HusFlik { ATT_GORA, LOGG, SAMMANSTALLNING }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,6 +83,7 @@ fun HusStartSkarm(
         }
     }
     val locale = LocalConfiguration.current.locales[0]
+    val visaSkatteInfo = arSverigeForSkatteInfo(locale.country)
 
     Scaffold(
         modifier = modifier,
@@ -111,6 +113,12 @@ fun HusStartSkarm(
                     onClick = { valdFlik = HusFlik.LOGG.ordinal },
                     icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
                     label = { Text(text = stringResource(R.string.flik_logg)) },
+                )
+                NavigationBarItem(
+                    selected = valdFlik == HusFlik.SAMMANSTALLNING.ordinal,
+                    onClick = { valdFlik = HusFlik.SAMMANSTALLNING.ordinal },
+                    icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
+                    label = { Text(text = stringResource(R.string.flik_sammanstallning)) },
                 )
             }
         },
@@ -142,6 +150,9 @@ fun HusStartSkarm(
                         modifier = Modifier.tryckyta48(),
                     )
                 }
+                HusFlik.SAMMANSTALLNING -> {
+                    // Inget flytande knapp för sammanställningsfliken
+                }
             }
         },
     ) { innerPadding ->
@@ -165,6 +176,15 @@ fun HusStartSkarm(
                 arPro = arPro,
                 onVisaProDialog = onVisaProDialog,
             )
+            HusFlik.SAMMANSTALLNING -> {
+                SammanstallningSkarm(
+                    poster = poster,
+                    forsaljningsAr = forsaljningsAr,
+                    onForsaljningsArAndras = onForsaljningsArAndras,
+                    locale = locale,
+                    visaSkatteInfo = visaSkatteInfo,
+                )
+            }
         }
     }
 }
