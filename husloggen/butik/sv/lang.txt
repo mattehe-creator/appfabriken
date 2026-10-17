@@ -6,6 +6,6 @@ Det här kan du göra:
 • Se en sammanställning per år och typ av arbete. Det är underlag när bostaden säljs.
 • Skatteinformation om förbättringsutgifter visas som information enligt 45 kap. och 46 kap. inkomstskattelagen (2022:260) för Sverige. Appen ger vägledning men ingen juridisk rådgivning.
 
-Garantivalvet fungerar helt offline. Appen begär ingen internetbehörighet. Inget konto krävs, ingen reklam och ingen analys. All data stannar på din telefon tills du själv väljer att exportera eller dela den.
+Husloggen fungerar helt offline. Appen begär ingen internetbehörighet. Inget konto krävs, ingen reklam och ingen analys. All data stannar på din telefon tills du själv väljer att exportera eller dela den.
 
 Allt i appen är gratis, men gratisversionen rymmer 15 poster. Pro (engångsköp, ingen prenumeration) tar bort gränsen. Uppgifter och påminnelser är obegränsade. Export och säkerhetskopia är alltid gratis.

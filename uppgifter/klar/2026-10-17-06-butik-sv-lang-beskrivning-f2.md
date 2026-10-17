@@ -46,3 +46,5 @@ gradle :husloggen:testDebugUnitTest --tests "*ButikTexterTest"
 - Ändra titel, kort beskrivning eller engelska filer.
 - Lägga till beroenden.
 - Ändra appkod eller manifest.
+
+utfall: godkänd 2026-10-17 (ersatte «Garantivalvet» med «Husloggen» i lang.txt)
