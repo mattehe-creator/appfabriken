@@ -30,7 +30,7 @@ import se.tmconnect.garantivalvet.regler.MAX_FEL_BILDER
 import se.tmconnect.garantivalvet.regler.byggHemforsakring
 import se.tmconnect.garantivalvet.regler.hemforsakringCsv
 import se.tmconnect.garantivalvet.regler.ReklamationsUtfall
-import se.tmconnect.garantivalvet.regler.TemaLage
+import se.tmconnect.karna.tema.TemaLage
 import se.tmconnect.garantivalvet.regler.Varutyp
 import se.tmconnect.garantivalvet.regler.kanLaggaTillFelBild
 import se.tmconnect.garantivalvet.regler.lasFelBilder

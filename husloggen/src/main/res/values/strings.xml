@@ -153,4 +153,23 @@
     <string name="historik_pdf_rubrik">House history</string>
     <string name="historik_pdf_skatt_rubrik">Tax information (Sweden)</string>
     <string name="historik_pdf_skatt_text">Improvement expenses may be deducted when you sell your home. Repairs and maintenance count only for the sale year and the five years before it. Expenses must total at least SEK 5,000 per year. This is information, not tax advice. Always check with the Swedish Tax Agency (Skatteverket).</string>
+
+    <!-- Appearance -->
+    <string name="utseende_rubrik">Appearance</string>
+    <string name="utseende_system">Follow phone</string>
+    <string name="utseende_ljust">Light</string>
+    <string name="utseende_morkt">Dark</string>
+
+    <!-- Welcome -->
+    <string name="valkommen_rubrik">Welcome to House Log</string>
+    <string name="valkommen_ingress">Maintenance tasks, a work log and a summary when you sell. Everything stays on your phone.</string>
+    <string name="valkommen_steg1_rubrik">Add recurring tasks</string>
+    <string name="valkommen_steg1_text">Choose from suggestions or create your own. Set how often they should be done and optional reminders.</string>
+    <string name="valkommen_steg2_rubrik">Log work and receipts</string>
+    <string name="valkommen_steg2_text">Save what was done, the cost and photos of receipts. Mark a task as done to move the next date.</string>
+    <string name="valkommen_steg3_rubrik">Summary for sale</string>
+    <string name="valkommen_steg3_text">See totals per year and type. For Sweden, tax information is shown as information only, not advice.</string>
+    <string name="valkommen_integritet">No account, no ads and no cloud. Free for up to 15 log entries.</string>
+    <string name="valkommen_lagg_till">Add my first task</string>
+    <string name="valkommen_titta">Look around first</string>
 </resources>

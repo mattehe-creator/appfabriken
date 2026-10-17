@@ -121,6 +121,8 @@ class HusRepository(
 
     suspend fun antalPoster(): Int = dao.antalPoster()
 
+    suspend fun harData(): Boolean = dao.antalPoster() > 0 || dao.antalUppgifter() > 0
+
     suspend fun allaUppgifter(): List<Uppgift> = dao.allaUppgifter()
 
     suspend fun allaPoster(): List<Post> = dao.allaPoster()

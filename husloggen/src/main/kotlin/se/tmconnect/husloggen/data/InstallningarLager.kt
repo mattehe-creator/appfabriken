@@ -34,6 +34,21 @@ class InstallningarLager(
     val autoBackupFel: Flow<Boolean> =
         context.husInstallningarDataStore.data.map { prefs -> prefs[AUTO_FEL] ?: false }
 
+    /** Namnet på [se.tmconnect.karna.tema.TemaLage], eller `null` (följ telefonen). */
+    val temaLage: Flow<String?> =
+        context.husInstallningarDataStore.data.map { prefs -> prefs[TEMA_LAGE] }
+
+    suspend fun sattTemaLage(namn: String) {
+        context.husInstallningarDataStore.edit { prefs -> prefs[TEMA_LAGE] = namn }
+    }
+
+    val valkommenVisad: Flow<Boolean> =
+        context.husInstallningarDataStore.data.map { prefs -> prefs[VALKOMMEN_VISAD] ?: false }
+
+    suspend fun sattValkommenVisad() {
+        context.husInstallningarDataStore.edit { prefs -> prefs[VALKOMMEN_VISAD] = true }
+    }
+
     suspend fun sattAutoBackupMapp(uri: String?, namn: String?) {
         context.husInstallningarDataStore.edit { prefs ->
             if (uri == null) {
@@ -74,5 +89,7 @@ class InstallningarLager(
         private val AUTO_INTERVALL = intPreferencesKey("auto_backup_intervall_dagar")
         private val AUTO_SENASTE = longPreferencesKey("auto_backup_senaste")
         private val AUTO_FEL = booleanPreferencesKey("auto_backup_fel")
+        private val TEMA_LAGE = stringPreferencesKey("tema_lage")
+        private val VALKOMMEN_VISAD = booleanPreferencesKey("valkommen_visad")
     }
 }

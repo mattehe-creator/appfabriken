@@ -7,7 +7,9 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.DisposableEffect
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -37,6 +39,7 @@ import se.tmconnect.husloggen.paminnelse.PaminnelseWorker
 import se.tmconnect.karna.paminnelse.PaminnelseInstallningarLager
 import se.tmconnect.husloggen.ui.BildHelskarm
 import se.tmconnect.husloggen.ui.HusStartSkarm
+import se.tmconnect.husloggen.ui.ValkommenSkarm
 import se.tmconnect.husloggen.ui.HusUiMeddelande
 import se.tmconnect.husloggen.ui.HusViewModel
 import se.tmconnect.husloggen.ui.HusViewModelFactory
@@ -186,9 +189,24 @@ class MainActivity : ComponentActivity() {
         hanteraPaminnelseIntent(intent)
         viewModel.synkaPaminnelseJobb()
         viewModel.synkaAutoBackupJobb()
-        enableEdgeToEdge()
         setContent {
-            AppfabrikTema(morkt = isSystemInDarkTheme()) {
+            val temaLage by viewModel.temaLage.collectAsState()
+            val visaValkommen by viewModel.visaValkommen.collectAsState()
+            val morkt = temaLage.arMorkt(isSystemInDarkTheme())
+            DisposableEffect(morkt) {
+                enableEdgeToEdge(
+                    statusBarStyle = SystemBarStyle.auto(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT,
+                    ) { morkt },
+                    navigationBarStyle = SystemBarStyle.auto(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT,
+                    ) { morkt },
+                )
+                onDispose {}
+            }
+            AppfabrikTema(morkt = morkt) {
                 var visaInstallningar by rememberSaveable { mutableStateOf(false) }
                 var oppnaAttGora by remember { mutableStateOf(skaOppnaAttGora) }
                 LaunchedEffect(skaOppnaAttGora) {
@@ -333,6 +351,8 @@ class MainActivity : ComponentActivity() {
                         visaInstallningar -> {
                             InstallningarSkarm(
                                 onTillbaka = { visaInstallningar = false },
+                                temaLage = temaLage,
+                                onTemaLage = viewModel::sattTemaLage,
                                 autoBackup = autoBackup,
                                 onAutoBackupPa = { pa ->
                                     if (pa) valjMappContract.launch(null) else viewModel.stangAvAutoBackup()
@@ -350,6 +370,15 @@ class MainActivity : ComponentActivity() {
                                         arrayOf("application/zip", "application/octet-stream"),
                                     )
                                 },
+                            )
+                        }
+                        visaValkommen -> {
+                            ValkommenSkarm(
+                                onLaggTillForstaUppgift = {
+                                    viewModel.avslutaValkommen()
+                                    viewModel.visaNyUppgift()
+                                },
+                                onTittaRunt = viewModel::avslutaValkommen,
                             )
                         }
                         else -> {

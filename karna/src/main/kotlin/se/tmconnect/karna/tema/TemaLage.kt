@@ -1,4 +1,4 @@
-package se.tmconnect.garantivalvet.regler
+package se.tmconnect.karna.tema
 
 /** Användarens val av utseende: följ telefonens inställning (standard), alltid ljust eller alltid mörkt. */
 enum class TemaLage {

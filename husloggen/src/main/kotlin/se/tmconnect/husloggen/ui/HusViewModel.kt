@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import se.tmconnect.karna.tema.TemaLage
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -115,10 +116,38 @@ class HusViewModel(
     private val _proDialogSynlig = MutableStateFlow(false)
     val proDialogSynlig: StateFlow<Boolean> = _proDialogSynlig.asStateFlow()
 
+    private val _visaValkommen = MutableStateFlow(false)
+    val visaValkommen: StateFlow<Boolean> = _visaValkommen.asStateFlow()
+
     init {
         viewModelScope.launch {
             proKalla.kontrollera()
         }
+        viewModelScope.launch {
+            if (!installningarLager.valkommenVisad.first()) {
+                if (repository.harData()) {
+                    installningarLager.sattValkommenVisad()
+                } else {
+                    _visaValkommen.value = true
+                }
+            }
+        }
+    }
+
+    fun avslutaValkommen() {
+        _visaValkommen.value = false
+        viewModelScope.launch { installningarLager.sattValkommenVisad() }
+    }
+
+    val temaLage: StateFlow<TemaLage> =
+        installningarLager.temaLage.map { TemaLage.franNamn(it) }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = TemaLage.SYSTEM,
+        )
+
+    fun sattTemaLage(lage: TemaLage) {
+        viewModelScope.launch { installningarLager.sattTemaLage(lage.name) }
     }
     val uppgifter: StateFlow<List<Uppgift>> = repository.uppgifter
         .map { sorteraUppgifter(it, idag) }
