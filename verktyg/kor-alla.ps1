@@ -1,7 +1,8 @@
 ﻿# Kör uppgifter med kor-uppgift.ps1 i följd, utan att någonsin ge upp av sig själv.
-# Övervakar barnprocessen (tillsyn): dödar hängda körningar, räddar commits, stoppar Gradle.
-#  - Ingen uppgift redo: väntar 3 minuter och försöker igen (exit 3).
-#  - Fel eller avbrott: går vidare till nästa försök/uppgift. Tre avbrott i rad: 30 min vila + rad i granskning/lokal-stopp.md på main.
+# Övervakar barnprocessen (tillsyn): dödar hängda körningar, räddar commits, full återställning före varje körning.
+#  - Tom uppgifter/ny/: avslutas tyst (exit 3, en rad i loggen).
+#  - Uppgift inte redo (beroenden m.m.): väntar 3 minuter och försöker igen (exit 3).
+#  - Fel eller avbrott: full återställning och ett omförsök; därefter stoppnotering + högst 5 min vila.
 #  - Tidsgränsen -VantaTimmar räknas från senaste lyckade uppgift (eller start).
 param(
     [int]$Max = 200,
@@ -9,6 +10,8 @@ param(
     [int]$HangMinuter = 15,
     [int]$MaxUppgiftMinuter = 90
 )
+
+$DefaultModell = "ollama_chat/qwen3-coder:30b"
 
 $Repo = Split-Path -Parent $PSScriptRoot
 $skript = Join-Path $PSScriptRoot "kor-uppgift.ps1"
@@ -18,13 +21,16 @@ $korAllaLogg = Join-Path $loggMapp "kor-alla.log"
 $statusFil = Join-Path $env:LOCALAPPDATA "appfabriken\status.json"
 $aiderLogg = Join-Path $loggMapp "aider-senaste.log"
 $aktivFil = Join-Path $env:LOCALAPPDATA "appfabriken\aktiv-uppgift.json"
+$senasteFelFil = Join-Path $env:LOCALAPPDATA "appfabriken\senaste-fel.json"
 
 $slut = (Get-Date).AddHours($VantaTimmar)
 $korda = 0
-$avbrottIRad = 0
+$retriedEfterFel = $false
+$script:aktivKorUppgiftPid = $null
 $sistVakt = [datetime]::MinValue
 $VaktMinuter = 30
 $pollSek = 30
+$VilaEfterStoppMin = 5
 
 function Logga([string]$text) {
     $rad = "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') $text"
@@ -43,6 +49,132 @@ function Stop-Gradle {
     } finally {
         Pop-Location
     }
+}
+
+function Get-OllamaModellNamn([string]$modellFull) {
+    if ($modellFull -match 'ollama_chat/(.+)$') { return $Matches[1] }
+    if ($modellFull -match '/(.+)$') { return $Matches[1] }
+    return $modellFull
+}
+
+function Stop-KvarvarandeKorProcesser {
+    if ($script:aktivKorUppgiftPid) {
+        try {
+            $p = Get-Process -Id $script:aktivKorUppgiftPid -ErrorAction SilentlyContinue
+            if ($p) { Stop-ProcessTree $p }
+        } catch { }
+        $script:aktivKorUppgiftPid = $null
+    }
+    $repoEsc = [regex]::Escape($Repo)
+    $processer = Get-CimInstance Win32_Process -ErrorAction SilentlyContinue
+    if (-not $processer) { return }
+    foreach ($proc in $processer) {
+        $namn = $proc.Name
+        $cl = $proc.CommandLine
+        if (-not $cl) { continue }
+        if ($namn -eq 'aider.exe') {
+            Logga "Full återställning: dödar aider (PID $($proc.ProcessId))."
+            & taskkill /F /PID $proc.ProcessId 2>&1 | Out-Null
+            continue
+        }
+        if ($namn -eq 'java.exe' -and ($cl -match 'GradleDaemon' -or $cl -match $repoEsc)) {
+            Logga "Full återställning: dödar java/Gradle (PID $($proc.ProcessId))."
+            & taskkill /F /PID $proc.ProcessId 2>&1 | Out-Null
+        }
+    }
+}
+
+function Stop-OllamaModell([string]$modellFull) {
+    if (-not (Get-Command ollama -ErrorAction SilentlyContinue)) {
+        Logga "ollama-kommando saknas — hoppar över ollama stop."
+        return
+    }
+    $tag = Get-OllamaModellNamn $modellFull
+    Logga "ollama stop $tag"
+    & ollama stop $tag 2>&1 | ForEach-Object { Logga "ollama: $_" }
+}
+
+function Test-OllamaSvarar {
+    try {
+        Invoke-RestMethod "http://127.0.0.1:11434/api/tags" -TimeoutSec 8 | Out-Null
+        return $true
+    } catch {
+        return $false
+    }
+}
+
+function Start-OllamaOmBehov {
+    if (Test-OllamaSvarar) { return $true }
+    Logga "Ollama svarar inte — försöker starta om."
+    Get-Process -Name "ollama*" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Seconds 2
+    $ollama = Get-Command ollama -ErrorAction SilentlyContinue
+    if ($ollama) {
+        Start-Process -FilePath $ollama.Source -ArgumentList "serve" -WindowStyle Hidden -ErrorAction SilentlyContinue | Out-Null
+        for ($i = 0; $i -lt 15; $i++) {
+            Start-Sleep -Seconds 2
+            if (Test-OllamaSvarar) {
+                Logga "Ollama svarar efter omstart."
+                return $true
+            }
+        }
+    }
+    Logga "Ollama svarar fortfarande inte efter omstart."
+    return $false
+}
+
+function Invoke-FullAtstallning([string]$modell = $DefaultModell) {
+    Logga "Full återställning (Gradle, processer, Ollama)."
+    Stop-KvarvarandeKorProcesser
+    Stop-Gradle
+    Stop-OllamaModell $modell
+    Start-OllamaOmBehov | Out-Null
+}
+
+function Mask-LoggRad([string]$rad) {
+    if ($null -eq $rad) { return "" }
+    $hem = [regex]::Escape($env:USERPROFILE)
+    $l = $rad -replace $hem, '~'
+    $l = $l -replace '(?i)(ghp_[A-Za-z0-9]{20,}|gho_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})', '[MASKERAD]'
+    $l = $l -replace '\bsk-[A-Za-z0-9]{20,}\b', '[MASKERAD]'
+    $l = $l -replace 'Bearer\s+[A-Za-z0-9_\-\.]+', 'Bearer [MASKERAD]'
+    return $l
+}
+
+function Get-LoggSlut([string]$fil, [int]$antalRader = 40) {
+    if (-not (Test-Path $fil)) { return @("(fil saknas: $(Split-Path -Leaf $fil))") }
+    $all = @(Get-Content -Encoding UTF8 -Path $fil -ErrorAction SilentlyContinue)
+    if ($all.Count -eq 0) { return @("(tom logg)") }
+    $start = [Math]::Max(0, $all.Count - $antalRader)
+    return @($all[$start..($all.Count - 1)] | ForEach-Object { Mask-LoggRad $_ })
+}
+
+function Get-Felbeskrivning([int]$kod, [hashtable]$ut) {
+    $kalla = "okänd"
+    $text = ""
+    if (Test-Path $senasteFelFil) {
+        try {
+            $j = Get-Content -Raw -Encoding UTF8 $senasteFelFil | ConvertFrom-Json
+            if ($j.kalla) { $kalla = [string]$j.kalla }
+            if ($j.text) { $text = [string]$j.text }
+        } catch { }
+    }
+    if ($ut.avbrott) {
+        $kalla = "tillsyn"
+        if ($ut.orsak) { $text = [string]$ut.orsak }
+    } elseif ($kod -eq 2 -and $kalla -eq "okänd") {
+        $kalla = "git"
+        if (-not $text) { $text = "Uppgiften fastnade (t.ex. git-gren)." }
+    } elseif ($kod -eq 4) {
+        $kalla = "tillsyn"
+    }
+    return @{ kod = $kod; kalla = $kalla; text = $text }
+}
+
+function Format-FelRad([hashtable]$fel) {
+    $del = "Felkod $($fel.kod), källa: $($fel.kalla)."
+    if ($fel.text) { $del += " $($fel.text)" }
+    return $del
 }
 
 function Vakta {
@@ -69,9 +201,27 @@ function KorGit([string[]]$argument) {
     }
 }
 
-function Skriv-LokalStopp([string]$rad) {
+function Skriv-LokalStopp([string]$rad, [hashtable]$fel = $null) {
+    if ($fel) {
+        $rad = "$rad $(Format-FelRad $fel)"
+    }
     $full = "$(Get-Date -Format s) $rad"
     Logga "Skriver lokal-stopp: $full"
+    $loggInnehall = @(
+        "# Senaste lokala stopp",
+        "",
+        $full,
+        "",
+        "## Fel",
+        $(if ($fel) { Format-FelRad $fel } else { "(ingen felbeskrivning)" }),
+        "",
+        "## Sista rader: aider-senaste.log",
+        ""
+    ) + (Get-LoggSlut $aiderLogg) + @(
+        "",
+        "## Sista rader: kor-alla.log",
+        ""
+    ) + (Get-LoggSlut $korAllaLogg)
     Push-Location $Repo
     try {
         $ErrorActionPreference = "Continue"
@@ -93,13 +243,15 @@ function Skriv-LokalStopp([string]$rad) {
             ) | Set-Content -Encoding UTF8 $fil
         }
         Add-Content -Encoding UTF8 -Path $fil -Value $full
-        & git add $fil 2>&1 | Out-Null
+        $loggFil = Join-Path $Repo "granskning/lokal-stopp-logg.md"
+        $loggInnehall | Set-Content -Encoding UTF8 $loggFil
+        & git add $fil $loggFil 2>&1 | Out-Null
         & git commit -m "Lokal körning: stoppnotering" 2>&1 | ForEach-Object { Logga $_ }
         if ($LASTEXITCODE -ne 0) { throw "commit lokal-stopp" }
         & git push origin main 2>&1 | ForEach-Object { Logga $_ }
         if ($LASTEXITCODE -ne 0) { throw "push main" }
     } catch {
-        Logga "Kunde inte skriva lokal-stopp.md på main: $_"
+        Logga "Kunde inte skriva lokal-stopp på main: $_"
     } finally {
         Pop-Location
     }
@@ -190,7 +342,8 @@ function Invoke-MisslyckatForsok([string]$namn, [string]$orsak) {
             }
         } else {
             Logga "Uppgift $namn (försök 2) utan lokala kod-commits; Cursor tar över enligt ARBETSFLODE."
-            Skriv-LokalStopp "Uppgift ``$namn`` misslyckades lokalt två gånger (senast: $orsak). Cursor ska ta över."
+            $fel = @{ kod = 1; kalla = "tillsyn"; text = $orsak }
+            Skriv-LokalStopp "Uppgift ``$namn`` misslyckades lokalt två gånger. Cursor ska ta över." $fel
         }
         try { if (Test-Path $aktivFil) { Remove-Item -Force $aktivFil } } catch { }
     } finally {
@@ -329,6 +482,7 @@ function Wait-KorUppgift {
     $proc = Start-Process -FilePath "powershell.exe" -WorkingDirectory $Repo -PassThru -NoNewWindow -ArgumentList @(
         "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $skript
     )
+    $script:aktivKorUppgiftPid = $proc.Id
     Logga "kor-uppgift startad (PID $($proc.Id))."
     $dodad = $false
     $dodsOrsak = ""
@@ -360,54 +514,63 @@ function Wait-KorUppgift {
         Start-Sleep -Seconds 2
         if (-not $proc.HasExited) { Stop-ProcessTree $proc }
         Invoke-RaddaAvbruten $dodsOrsak
-        Stop-Gradle
+        $script:aktivKorUppgiftPid = $null
         return @{ kod = 4; avbrott = $true; orsak = $dodsOrsak }
     }
+    $script:aktivKorUppgiftPid = $null
     $kod = if ($proc.HasExited) { $proc.ExitCode } else { 1 }
     if ($null -eq $kod) { $kod = 1 }
+    if ($kod -ne 0) {
+        $tmpFel = Get-Felbeskrivning $kod @{ avbrott = $false; orsak = "" }
+        Logga "kor-uppgift avslutades: $(Format-FelRad $tmpFel)"
+    }
     return @{ kod = $kod; avbrott = $false; orsak = "" }
 }
 
-Logga "kor-alla startar (HangMinuter=$HangMinuter, MaxUppgiftMinuter=$MaxUppgiftMinuter)."
-Stop-Gradle
+Logga "kor-alla startar (HangMinuter=$HangMinuter, MaxUppgiftMinuter=$MaxUppgiftMinuter, VantaTimmar=$VantaTimmar)."
 
 while ($korda -lt $Max -and (Get-Date) -lt $slut) {
+    $modell = $DefaultModell
+    $aktiv = Get-AktivUppgift
+    if ($aktiv -and $aktiv.modell) { $modell = $aktiv.modell }
+    Invoke-FullAtstallning $modell
+
     $ut = Wait-KorUppgift
     $kod = $ut.kod
-    if ($ut.avbrott) {
-        $avbrottIRad++
-        Logga "Avbrott i rad: $avbrottIRad ($($ut.orsak))."
-        if ($avbrottIRad -ge 3) {
-            Skriv-LokalStopp "Tre avbrott i rad på den lokala körningen (senast: $($ut.orsak))."
-            Logga "Tre avbrott i rad — vilar 30 minuter."
-            Start-Sleep -Seconds 1800
-            $avbrottIRad = 0
-        }
-        continue
-    }
+
     if ($kod -eq 0) {
         $korda++
-        $avbrottIRad = 0
+        $retriedEfterFel = $false
         $slut = (Get-Date).AddHours($VantaTimmar)
         continue
     }
+
     if ($kod -eq 3) {
-        $avbrottIRad = 0
+        $retriedEfterFel = $false
+        $antalNy = @(Get-ChildItem (Join-Path $Repo "uppgifter\ny\*.md") -ErrorAction SilentlyContinue).Count
+        if ($antalNy -eq 0) {
+            Logga "Ingen uppgift i uppgifter/ny/ — kor-alla avslutas (tom kö, inget fel)."
+            break
+        }
         Write-Host "Ingen uppgift redo. Försöker igen om 3 minuter. Stäng fönstret för att sluta." -ForegroundColor DarkGreen
         Start-Sleep -Seconds 180
         continue
     }
-    $avbrottIRad++
-    Stop-Gradle
-    $orsak = if ($kod -eq 2) { "Uppgiften fastnade (t.ex. git-gren)." } else { "Körningen stannade med fel ($kod)." }
-    Logga "$orsak Avbrott i rad: $avbrottIRad."
-    if ($avbrottIRad -ge 3) {
-        Skriv-LokalStopp "Tre avbrott i rad på den lokala körningen (senast: $orsak)."
-        Logga "Tre avbrott i rad — vilar 30 minuter."
-        Start-Sleep -Seconds 1800
-        $avbrottIRad = 0
+
+    $fel = Get-Felbeskrivning $kod $ut
+    Logga (Format-FelRad $fel)
+
+    if (-not $retriedEfterFel) {
+        Logga "Full återställning och nytt försök (högst ett omförsök per uppgift och försök)."
+        $retriedEfterFel = $true
+        Invoke-FullAtstallning $modell
+        continue
     }
-    Start-Sleep -Seconds 60
+
+    Skriv-LokalStopp "Lokal körning stannade efter omförsök." $fel
+    Logga "Omförsök misslyckades — vilar $VilaEfterStoppMin minuter innan nästa uppgift."
+    Start-Sleep -Seconds (60 * $VilaEfterStoppMin)
+    $retriedEfterFel = $false
 }
 
 Logga "Loopen avslutad ($korda uppgifter körda)."
