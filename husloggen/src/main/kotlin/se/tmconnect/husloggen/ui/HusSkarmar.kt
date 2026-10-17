@@ -184,6 +184,8 @@ fun HusStartSkarm(
                     locale = locale,
                     visaSkatteInfo = visaSkatteInfo,
                     modifier = Modifier.padding(innerPadding),
+                    onExportPdf = onExportHistorikPdf,
+                    onExportCsv = onExportHistorikCsv,
                 )
             }
         }

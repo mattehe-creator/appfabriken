@@ -98,6 +98,13 @@ class SammanstallningSkarmTest {
             onNodeWithText(nej).assertExists()
             scrollable.performScrollToNode(hasText(ja))
             onNodeWithText(ja).assertExists()
+            
+            val pdfKnapp = context.getString(R.string.export_hus_historik_pdf)
+            val csvKnapp = context.getString(R.string.export_hus_historik_csv)
+            scrollable.performScrollToNode(hasText(pdfKnapp))
+            onNodeWithText(pdfKnapp).assertExists()
+            scrollable.performScrollToNode(hasText(csvKnapp))
+            onNodeWithText(csvKnapp).assertExists()
         }
     }
 }

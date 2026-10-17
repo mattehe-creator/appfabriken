@@ -45,6 +45,8 @@ fun SammanstallningSkarm(
     locale: Locale,
     visaSkatteInfo: Boolean,
     modifier: Modifier = Modifier,
+    onExportPdf: () -> Unit = {},
+    onExportCsv: () -> Unit = {},
 ) {
     val grupperadePoster = grupperaPerAr(poster)
     val summeringar = summeraPerAr(poster)
@@ -90,6 +92,30 @@ fun SammanstallningSkarm(
                             modifier = Modifier.tryckyta48(),
                         )
                     }
+                }
+            }
+        }
+
+        item(key = "export-buttons") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                OutlinedButton(
+                    onClick = onExportPdf,
+                    modifier = Modifier
+                        .weight(1f)
+                        .tryckyta48(),
+                ) {
+                    Text(text = stringResource(R.string.export_hus_historik_pdf))
+                }
+                OutlinedButton(
+                    onClick = onExportCsv,
+                    modifier = Modifier
+                        .weight(1f)
+                        .tryckyta48(),
+                ) {
+                    Text(text = stringResource(R.string.export_hus_historik_csv))
                 }
             }
         }

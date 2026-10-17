@@ -30,3 +30,5 @@ gradle :husloggen:testDebugUnitTest --tests "*SammanstallningSkarmTest"
 ## Gör inte
 - Implementera själva filskrivningen (finns i Cursor-delens `HusViewModel` och `export/`).
 - Nya behörigheter.
+
+utfall: godkänd 2026-10-17 (performScrollToNode för exportknappar i SammanstallningSkarmTest)
