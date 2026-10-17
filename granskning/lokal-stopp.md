@@ -21,3 +21,4 @@ Rader skrivs av `verktyg/kor-alla.ps1` när den lokala körningen stannat upprep
 2026-10-17T17:05:45 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
 2026-10-17T17:11:48 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
 2026-10-17T17:14:13 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
+2026-10-17T17:17:53 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
