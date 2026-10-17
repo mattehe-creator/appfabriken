@@ -1,17 +1,22 @@
 package se.tmconnect.husloggen.export
 
 import java.time.LocalDate
+import se.tmconnect.husloggen.data.Avlasning
+import se.tmconnect.husloggen.data.Matare
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.PostTyp
 import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.husloggen.regler.formateraBilder
 import se.tmconnect.husloggen.regler.tolkaBilder
 
-const val HUSLOGGEN_SAKERHETSKOPIA_VERSION = 1
+const val HUSLOGGEN_SAKERHETSKOPIA_VERSION = 2
+const val HUSLOGGEN_SAKERHETSKOPIA_MIN_VERSION = 1
 const val HUSLOGGEN_LOGG_JSON = "logg.json"
 const val HUSLOGGEN_BILDER_MAPP = "bilder/"
 const val HUSLOGGEN_SAKERHETSKOPIA_MAX_UPPGIFTER = 5_000
 const val HUSLOGGEN_SAKERHETSKOPIA_MAX_POSTER = 5_000
+const val HUSLOGGEN_SAKERHETSKOPIA_MAX_MATARE = 500
+const val HUSLOGGEN_SAKERHETSKOPIA_MAX_AVLASNINGAR = 50_000
 const val HUSLOGGEN_SAKERHETSKOPIA_MAX_FIL_BYTES = 20 * 1024 * 1024
 const val HUSLOGGEN_AUTO_FILPREFIX = "husloggen-auto-"
 
@@ -35,11 +40,25 @@ data class SakerhetskopiaPost(
     val bilder: List<String> = emptyList(),
 )
 
+data class SakerhetskopiaMatare(
+    val namn: String,
+    val enhet: String,
+    val anteckning: String? = null,
+)
+
+data class SakerhetskopiaAvlasning(
+    val matareIndex: Int,
+    val datum: LocalDate,
+    val vardeTusendel: Long,
+)
+
 data class SakerhetskopiaInnehall(
     val version: Int,
     val skapad: String,
     val uppgifter: List<SakerhetskopiaUppgift>,
     val poster: List<SakerhetskopiaPost>,
+    val matare: List<SakerhetskopiaMatare> = emptyList(),
+    val avlasningar: List<SakerhetskopiaAvlasning> = emptyList(),
 )
 
 data class SakerhetskopiaImportResultat(
@@ -175,3 +194,37 @@ fun arSakerhetskopiaPostDubblett(
         )
     return arSakerhetskopiaPostNyckelLik(exportNyckel, befintligNyckel)
 }
+
+fun matareTillSakerhetskopia(matare: Matare): SakerhetskopiaMatare =
+    SakerhetskopiaMatare(
+        namn = matare.namn,
+        enhet = matare.enhet,
+        anteckning = matare.anteckning,
+    )
+
+fun sakerhetskopiaMatareTillMatare(export: SakerhetskopiaMatare): Matare =
+    Matare(
+        namn = export.namn.trim(),
+        enhet = export.enhet.trim(),
+        anteckning = export.anteckning?.trim()?.takeIf { it.isNotEmpty() },
+    )
+
+fun avlasningTillSakerhetskopia(avlasning: Avlasning, matareIdTillIndex: Map<Long, Int>): SakerhetskopiaAvlasning =
+    SakerhetskopiaAvlasning(
+        matareIndex = matareIdTillIndex.getValue(avlasning.matareId),
+        datum = avlasning.datum,
+        vardeTusendel = avlasning.varde,
+    )
+
+fun sakerhetskopiaAvlasningTillAvlasning(export: SakerhetskopiaAvlasning, matareId: Long): Avlasning =
+    Avlasning(
+        matareId = matareId,
+        datum = export.datum,
+        varde = export.vardeTusendel,
+    )
+
+fun arSakerhetskopiaMatareLik(a: SakerhetskopiaMatare, b: SakerhetskopiaMatare): Boolean =
+    a.namn == b.namn && a.enhet == b.enhet && a.anteckning == b.anteckning
+
+fun arSakerhetskopiaAvlasningLik(a: SakerhetskopiaAvlasning, b: SakerhetskopiaAvlasning): Boolean =
+    a.matareIndex == b.matareIndex && a.datum == b.datum && a.vardeTusendel == b.vardeTusendel

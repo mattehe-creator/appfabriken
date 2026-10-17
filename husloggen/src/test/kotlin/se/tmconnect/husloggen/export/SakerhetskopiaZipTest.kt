@@ -47,7 +47,7 @@ class SakerhetskopiaZipTest {
             )
         val zipBytes =
             ByteArrayOutputStream().use { ut ->
-                Sakerhetskopia.skriv(ut, listOf(uppgift), listOf(post), bildLager)
+                Sakerhetskopia.skriv(ut, listOf(uppgift), listOf(post), emptyList(), emptyList(), bildLager)
                 ut.toByteArray()
             }
         val las = ByteArrayInputStream(zipBytes).use { Sakerhetskopia.lasIn(it) }

@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
@@ -53,24 +54,28 @@ import androidx.compose.ui.unit.dp
 import java.util.Locale
 import se.tmconnect.husloggen.BuildConfig
 import se.tmconnect.husloggen.R
+import se.tmconnect.husloggen.data.Matare
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.husloggen.regler.grupperaPerAr
 import se.tmconnect.karna.format.formateraPrisKr
 import se.tmconnect.karna.tema.TemaLage
 
-enum class HusFlik { ATT_GORA, LOGG, SAMMANSTALLNING }
+enum class HusFlik { ATT_GORA, LOGG, MATARE, SAMMANSTALLNING }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HusStartSkarm(
     uppgifter: List<Uppgift>,
     poster: List<Post>,
+    matare: List<Matare>,
     onInstallningar: () -> Unit,
     onNyUppgift: () -> Unit,
     onNyPost: () -> Unit,
+    onNyMatare: () -> Unit,
     onOppnaUppgift: (Long) -> Unit,
     onOppnaPost: (Long) -> Unit,
+    onOppnaMatare: (Long) -> Unit,
     onMarkeraGjord: (Long) -> Unit,
     oppnaAttGora: Boolean = false,
     paminnelserPa: Boolean = false,
@@ -124,6 +129,17 @@ fun HusStartSkarm(
                     label = { Text(text = stringResource(R.string.flik_logg)) },
                 )
                 NavigationBarItem(
+                    selected = valdFlik == HusFlik.MATARE.ordinal,
+                    onClick = { valdFlik = HusFlik.MATARE.ordinal },
+                    icon = {
+                        Icon(
+                            Icons.Filled.CheckCircle,
+                            contentDescription = stringResource(R.string.flik_matare),
+                        )
+                    },
+                    label = { Text(text = stringResource(R.string.flik_matare)) },
+                )
+                NavigationBarItem(
                     selected = valdFlik == HusFlik.SAMMANSTALLNING.ordinal,
                     onClick = { valdFlik = HusFlik.SAMMANSTALLNING.ordinal },
                     icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
@@ -159,6 +175,19 @@ fun HusStartSkarm(
                         modifier = Modifier.tryckyta48(),
                     )
                 }
+                HusFlik.MATARE -> {
+                    ExtendedFloatingActionButton(
+                        onClick = onNyMatare,
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Filled.Add,
+                                contentDescription = stringResource(R.string.fab_ny_matare),
+                            )
+                        },
+                        text = { Text(text = stringResource(R.string.fab_ny_matare)) },
+                        modifier = Modifier.tryckyta48(),
+                    )
+                }
                 HusFlik.SAMMANSTALLNING -> {
                     // Inget flytande knapp för sammanställningsfliken
                 }
@@ -184,6 +213,12 @@ fun HusStartSkarm(
                 onOppnaPost = onOppnaPost,
                 arPro = arPro,
                 onVisaProDialog = onVisaProDialog,
+            )
+            HusFlik.MATARE -> MatareFlik(
+                matare = matare,
+                contentPadding = innerPadding,
+                onNyMatare = onNyMatare,
+                onOppnaMatare = onOppnaMatare,
             )
             HusFlik.SAMMANSTALLNING -> {
                 SammanstallningSkarm(

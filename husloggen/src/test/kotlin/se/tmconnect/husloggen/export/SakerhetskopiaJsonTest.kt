@@ -100,9 +100,39 @@ class SakerhetskopiaJsonTest {
     }
 
     @Test
-    fun version2Avvisas() {
-        val json = """{"version":2,"skapad":"2026-10-16","uppgifter":[],"poster":[]}"""
+    fun version3Avvisas() {
+        val json = """{"version":3,"skapad":"2026-10-16","uppgifter":[],"poster":[]}"""
         assertTrue(lasSakerhetskopiaJson(json) is SakerhetskopiaJsonLasResult.Fel.OkandVersion)
+    }
+
+    @Test
+    fun version1UtanMatareImporteras() {
+        val json = """{"version":1,"skapad":"2026-10-16","uppgifter":[],"poster":[]}"""
+        val las = lasSakerhetskopiaJson(json) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals(emptyList<SakerhetskopiaMatare>(), las.innehall.matare)
+        assertEquals(emptyList<SakerhetskopiaAvlasning>(), las.innehall.avlasningar)
+    }
+
+    @Test
+    fun matareRundturSkrivLas() {
+        val innehall =
+            SakerhetskopiaInnehall(
+                version = 2,
+                skapad = "2026-10-17",
+                uppgifter = emptyList(),
+                poster = emptyList(),
+                matare = listOf(SakerhetskopiaMatare(namn = "El", enhet = "kWh")),
+                avlasningar =
+                    listOf(
+                        SakerhetskopiaAvlasning(
+                            matareIndex = 0,
+                            datum = LocalDate.of(2026, 1, 1),
+                            vardeTusendel = 1_000_000,
+                        ),
+                    ),
+            )
+        val las = lasSakerhetskopiaJson(skrivSakerhetskopiaJson(innehall)) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals(innehall, las.innehall)
     }
 
     @Test

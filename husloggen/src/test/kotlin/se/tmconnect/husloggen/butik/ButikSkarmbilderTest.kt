@@ -165,11 +165,14 @@ abstract class ButikSkarmbilderBas {
             HusStartSkarm(
                 uppgifter = exempelUppgifter(),
                 poster = exempelPoster(),
+                matare = emptyList(),
                 onInstallningar = noOp,
                 onNyUppgift = noOp,
                 onNyPost = noOp,
+                onNyMatare = noOp,
                 onOppnaUppgift = {},
                 onOppnaPost = {},
+                onOppnaMatare = {},
                 onMarkeraGjord = {},
                 startFlik = HusFlik.ATT_GORA,
             )
@@ -182,11 +185,14 @@ abstract class ButikSkarmbilderBas {
             HusStartSkarm(
                 uppgifter = exempelUppgifter(),
                 poster = exempelPoster(),
+                matare = emptyList(),
                 onInstallningar = noOp,
                 onNyUppgift = noOp,
                 onNyPost = noOp,
+                onNyMatare = noOp,
                 onOppnaUppgift = {},
                 onOppnaPost = {},
+                onOppnaMatare = {},
                 onMarkeraGjord = {},
                 startFlik = HusFlik.LOGG,
             )
@@ -242,11 +248,14 @@ abstract class ButikSkarmbilderBas {
             HusStartSkarm(
                 uppgifter = exempelUppgifter(),
                 poster = exempelPoster(),
+                matare = emptyList(),
                 onInstallningar = noOp,
                 onNyUppgift = noOp,
                 onNyPost = noOp,
+                onNyMatare = noOp,
                 onOppnaUppgift = {},
                 onOppnaPost = {},
+                onOppnaMatare = {},
                 onMarkeraGjord = {},
                 startFlik = HusFlik.LOGG,
             )

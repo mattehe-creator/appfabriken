@@ -89,7 +89,7 @@ class HusDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .allowMainThreadQueries()
             .build()
 
@@ -97,6 +97,89 @@ class HusDatabasMigrationTest {
         assertEquals("Målning", post!!.vad)
         assertEquals(500_000L, post.beloppOre)
         assertNull(post.rotRutAvdragOre)
+
+        databas.close()
+        context.deleteDatabase(TEST_DB)
+    }
+
+    @Test
+    fun migration2Till3SkaparMatareTabeller() = runTest {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        context.deleteDatabase(TEST_DB)
+
+        val config = SupportSQLiteOpenHelper.Configuration.builder(context)
+            .name(TEST_DB)
+            .callback(
+                object : SupportSQLiteOpenHelper.Callback(2) {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        db.execSQL(
+                            """
+                            CREATE TABLE IF NOT EXISTS uppgift (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                namn TEXT NOT NULL,
+                                intervall_manader INTEGER NOT NULL,
+                                start_datum INTEGER NOT NULL,
+                                senast_gjord INTEGER,
+                                paminnelse INTEGER NOT NULL,
+                                anteckning TEXT,
+                                skapad INTEGER NOT NULL
+                            )
+                            """.trimIndent(),
+                        )
+                        db.execSQL(
+                            """
+                            CREATE TABLE IF NOT EXISTS post (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                datum INTEGER NOT NULL,
+                                vad TEXT NOT NULL,
+                                typ TEXT NOT NULL,
+                                belopp_ore INTEGER,
+                                rot_rut_avdrag_ore INTEGER,
+                                utforare TEXT,
+                                anteckning TEXT,
+                                kvitto_fil TEXT,
+                                bilder TEXT,
+                                uppgift_id INTEGER,
+                                skapad INTEGER NOT NULL,
+                                FOREIGN KEY(uppgift_id) REFERENCES uppgift(id) ON UPDATE NO ACTION ON DELETE SET NULL
+                            )
+                            """.trimIndent(),
+                        )
+                        db.execSQL(
+                            "CREATE INDEX IF NOT EXISTS index_post_uppgift_id ON post (uppgift_id)",
+                        )
+                    }
+
+                    override fun onUpgrade(
+                        db: SupportSQLiteDatabase,
+                        oldVersion: Int,
+                        newVersion: Int,
+                    ) = Unit
+                },
+            )
+            .build()
+        val openHelper = FrameworkSQLiteOpenHelperFactory().create(config)
+        openHelper.writableDatabase.close()
+        openHelper.close()
+
+        val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .allowMainThreadQueries()
+            .build()
+
+        val matareId =
+            databas.husDao().infogaMatare(
+                Matare(namn = "Vatten", enhet = "m³"),
+            )
+        databas.husDao().infogaAvlasning(
+            Avlasning(
+                matareId = matareId,
+                datum = LocalDate.of(2026, 1, 1),
+                varde = 1000,
+            ),
+        )
+        assertEquals(1, databas.husDao().antalMatare())
+        assertEquals(1, databas.husDao().avlasningarForMatare(matareId).size)
 
         databas.close()
         context.deleteDatabase(TEST_DB)

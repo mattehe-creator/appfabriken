@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import se.tmconnect.karna.tema.TemaLage
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -42,11 +44,22 @@ import se.tmconnect.husloggen.regler.kanLaggaTillPost
 import se.tmconnect.karna.pro.ProKalla
 import se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand
 import se.tmconnect.husloggen.regler.formateraBilder
+import se.tmconnect.husloggen.data.Avlasning
+import se.tmconnect.husloggen.data.Matare
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.PostTyp
 import se.tmconnect.husloggen.data.Uppgift
+import se.tmconnect.husloggen.export.AvlasningCsvTexter
+import se.tmconnect.husloggen.export.avlasningCsv
+import se.tmconnect.husloggen.regler.AvlasningFel
+import se.tmconnect.husloggen.regler.MatareFel
 import se.tmconnect.husloggen.regler.PostFel
 import se.tmconnect.husloggen.regler.UppgiftFel
+import se.tmconnect.husloggen.regler.beraknaAvlasningarMedForbrukning
+import se.tmconnect.husloggen.regler.foregaendeAvlasning
+import se.tmconnect.husloggen.regler.tolkaMatareVardeTillTusendel
+import se.tmconnect.husloggen.regler.valideraAvlasning
+import se.tmconnect.husloggen.regler.valideraMatare
 import se.tmconnect.husloggen.regler.beloppOreTillFaltText
 import se.tmconnect.husloggen.regler.sorteraUppgifter
 import se.tmconnect.husloggen.regler.tolkaBeloppTillOre
@@ -66,6 +79,23 @@ data class UppgiftFormularTillstand(
     val paminnelse: Boolean = true,
     val anteckning: String = "",
     val valideringsFel: UppgiftFel? = null,
+)
+
+data class MatareFormularTillstand(
+    val redigerarId: Long = 0L,
+    val namn: String = "",
+    val enhet: String = "",
+    val anteckning: String = "",
+    val valideringsFel: MatareFel? = null,
+)
+
+data class AvlasningFormularTillstand(
+    val matareId: Long,
+    val redigerarId: Long = 0L,
+    val datum: LocalDate = LocalDate.now(),
+    val vardeText: String = "",
+    val valideringsFel: AvlasningFel? = null,
+    val visarLagreVardeBekraftelse: Boolean = false,
 )
 
 data class PostFormularTillstand(
@@ -94,6 +124,10 @@ sealed class HusUiMeddelande {
     data object HistorikCsvSparad : HusUiMeddelande()
 
     data object HistorikCsvMisslyckades : HusUiMeddelande()
+
+    data object AvlasningCsvSparad : HusUiMeddelande()
+
+    data object AvlasningCsvMisslyckades : HusUiMeddelande()
     
     data object SakerhetskopiaSparad : HusUiMeddelande()
 
@@ -157,6 +191,9 @@ class HusViewModel(
     val poster: StateFlow<List<Post>> = repository.poster
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    val matare: StateFlow<List<Matare>> = repository.matare
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
     private val _forsaljningsAr = MutableStateFlow(standardForsaljningsar(idag))
     val forsaljningsAr: StateFlow<Int> = _forsaljningsAr.asStateFlow()
 
@@ -193,6 +230,21 @@ class HusViewModel(
 
     private val _postDetaljId = MutableStateFlow<Long?>(null)
     val postDetaljId: StateFlow<Long?> = _postDetaljId.asStateFlow()
+
+    private val _matareDetaljId = MutableStateFlow<Long?>(null)
+    val matareDetaljId: StateFlow<Long?> = _matareDetaljId.asStateFlow()
+
+    private val _matareFormular = MutableStateFlow<MatareFormularTillstand?>(null)
+    val matareFormular: StateFlow<MatareFormularTillstand?> = _matareFormular.asStateFlow()
+
+    private val _avlasningFormular = MutableStateFlow<AvlasningFormularTillstand?>(null)
+    val avlasningFormular: StateFlow<AvlasningFormularTillstand?> = _avlasningFormular.asStateFlow()
+
+    val valdMatareAvlasningar: StateFlow<List<Avlasning>> =
+        _matareDetaljId
+            .flatMapLatest { id ->
+                if (id == null) flowOf(emptyList()) else repository.avlasningarForMatare(id)
+            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _meddelanden = MutableSharedFlow<HusUiMeddelande>()
     val meddelanden: SharedFlow<HusUiMeddelande> = _meddelanden.asSharedFlow()
@@ -613,11 +665,13 @@ class HusViewModel(
                 withContext(Dispatchers.IO) {
                     val uppgifter = repository.allaUppgifter()
                     val poster = repository.allaPoster()
+                    val matare = repository.allaMatare()
+                    val avlasningar = repository.allaAvlasningar()
                     val bildLager = skapaHusBildLager(appContext)
                     val outputStream = appContext.contentResolver.openOutputStream(uri)
                         ?: throw java.io.IOException()
                     outputStream.use {
-                        Sakerhetskopia.skriv(it, uppgifter, poster, bildLager)
+                        Sakerhetskopia.skriv(it, uppgifter, poster, matare, avlasningar, bildLager)
                     }
                 }
                 _meddelanden.emit(HusUiMeddelande.SakerhetskopiaSparad)
@@ -724,6 +778,189 @@ class HusViewModel(
                 _meddelanden.emit(HusUiMeddelande.HistorikCsvMisslyckades)
             }
         }
+    }
+
+    fun visaMatareDetalj(matareId: Long) {
+        _matareFormular.value = null
+        _avlasningFormular.value = null
+        _matareDetaljId.value = matareId
+    }
+
+    fun stangMatareDetalj() {
+        _matareDetaljId.value = null
+    }
+
+    fun visaNyMatare() {
+        _matareDetaljId.value = null
+        _matareFormular.value = MatareFormularTillstand()
+    }
+
+    fun stangMatareFormular() {
+        _matareFormular.value = null
+    }
+
+    fun uppdateraMatareNamn(namn: String) {
+        uppdateraMatareFormular { it.copy(namn = namn, valideringsFel = null) }
+    }
+
+    fun uppdateraMatareEnhet(enhet: String) {
+        uppdateraMatareFormular { it.copy(enhet = enhet, valideringsFel = null) }
+    }
+
+    fun uppdateraMatareAnteckning(text: String) {
+        uppdateraMatareFormular { it.copy(anteckning = text) }
+    }
+
+    fun appliceraMatareForslag(namn: String, enhet: String) {
+        uppdateraMatareFormular {
+            it.copy(namn = namn, enhet = enhet, valideringsFel = null)
+        }
+    }
+
+    fun sparaMatareFormular() {
+        val tillstand = _matareFormular.value ?: return
+        val fel = valideraMatare(tillstand.namn, tillstand.enhet)
+        if (fel != null) {
+            _matareFormular.value = tillstand.copy(valideringsFel = fel)
+            return
+        }
+        viewModelScope.launch {
+            val befintlig =
+                if (tillstand.redigerarId != 0L) repository.hamtaMatare(tillstand.redigerarId) else null
+            repository.sparaMatare(
+                Matare(
+                    id = tillstand.redigerarId,
+                    namn = tillstand.namn.trim(),
+                    enhet = tillstand.enhet.trim(),
+                    anteckning = tillstand.anteckning.trim().ifEmpty { null },
+                    skapad = befintlig?.skapad ?: System.currentTimeMillis(),
+                ),
+            )
+            _matareFormular.value = null
+        }
+    }
+
+    fun taBortMatareFormular() {
+        val tillstand = _matareFormular.value ?: return
+        if (tillstand.redigerarId == 0L) return
+        viewModelScope.launch {
+            repository.hamtaMatare(tillstand.redigerarId)?.let { repository.taBortMatare(it) }
+            _matareFormular.value = null
+            stangMatareDetalj()
+        }
+    }
+
+    fun taBortMatare(matareId: Long) {
+        viewModelScope.launch {
+            repository.hamtaMatare(matareId)?.let { repository.taBortMatare(it) }
+            stangMatareDetalj()
+        }
+    }
+
+    fun visaNyAvlasning(matareId: Long) {
+        _avlasningFormular.value =
+            AvlasningFormularTillstand(matareId = matareId, datum = idag)
+    }
+
+    fun stangAvlasningFormular() {
+        _avlasningFormular.value = null
+    }
+
+    fun uppdateraAvlasningDatum(datum: LocalDate) {
+        uppdateraAvlasningFormular { it.copy(datum = datum) }
+    }
+
+    fun uppdateraAvlasningVarde(text: String) {
+        uppdateraAvlasningFormular { it.copy(vardeText = text, valideringsFel = null) }
+    }
+
+    fun avbrytLagreVardeBekraftelse() {
+        uppdateraAvlasningFormular { it.copy(visarLagreVardeBekraftelse = false) }
+    }
+
+    fun sparaAvlasningFormular(bekraftatLagreVarde: Boolean = false) {
+        val tillstand = _avlasningFormular.value ?: return
+        viewModelScope.launch {
+            val befintliga = repository.avlasningarForMatareLista(tillstand.matareId)
+            val fel =
+                valideraAvlasning(
+                    tillstand.vardeText,
+                    tillstand.datum,
+                    befintliga,
+                    tillstand.redigerarId,
+                )
+            if (fel != null) {
+                _avlasningFormular.value = tillstand.copy(valideringsFel = fel)
+                return@launch
+            }
+            val varde = tolkaMatareVardeTillTusendel(tillstand.vardeText)!!
+            val foregaende =
+                foregaendeAvlasning(tillstand.datum, befintliga, tillstand.redigerarId)
+            if (!bekraftatLagreVarde &&
+                foregaende != null &&
+                varde < foregaende.varde
+            ) {
+                _avlasningFormular.value = tillstand.copy(visarLagreVardeBekraftelse = true)
+                return@launch
+            }
+            val befintlig =
+                if (tillstand.redigerarId != 0L) {
+                    befintliga.find { it.id == tillstand.redigerarId }
+                } else {
+                    null
+                }
+            repository.sparaAvlasning(
+                Avlasning(
+                    id = tillstand.redigerarId,
+                    matareId = tillstand.matareId,
+                    datum = tillstand.datum,
+                    varde = varde,
+                    skapad = befintlig?.skapad ?: System.currentTimeMillis(),
+                ),
+            )
+            _avlasningFormular.value = null
+        }
+    }
+
+    fun sparaAvlasningCsv(
+        uri: Uri,
+        matareId: Long,
+        texter: AvlasningCsvTexter,
+        locale: Locale,
+    ) {
+        viewModelScope.launch {
+            try {
+                val matare = repository.hamtaMatare(matareId) ?: return@launch
+                val avlasningar = repository.avlasningarForMatareLista(matareId)
+                val rader = beraknaAvlasningarMedForbrukning(avlasningar)
+                val csv =
+                    avlasningCsv(
+                        matareNamn = matare.namn,
+                        enhet = matare.enhet,
+                        rader = rader,
+                        texter = texter,
+                        datumEtikett = { rad ->
+                            se.tmconnect.karna.format.formateraDatum(rad.avlasning.datum, locale)
+                        },
+                    )
+                withContext(Dispatchers.IO) {
+                    val stream = appContext.contentResolver.openOutputStream(uri)
+                        ?: throw java.io.IOException()
+                    stream.use { skrivCsvMedBom(it, csv) }
+                }
+                _meddelanden.emit(HusUiMeddelande.AvlasningCsvSparad)
+            } catch (_: Exception) {
+                _meddelanden.emit(HusUiMeddelande.AvlasningCsvMisslyckades)
+            }
+        }
+    }
+
+    private fun uppdateraMatareFormular(block: (MatareFormularTillstand) -> MatareFormularTillstand) {
+        _matareFormular.value = _matareFormular.value?.let(block)
+    }
+
+    private fun uppdateraAvlasningFormular(block: (AvlasningFormularTillstand) -> AvlasningFormularTillstand) {
+        _avlasningFormular.value = _avlasningFormular.value?.let(block)
     }
 
     private suspend fun importeraSakerhetskopia(resultat: SakerhetskopiaLasResult.Ok) {
