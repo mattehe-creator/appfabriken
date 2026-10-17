@@ -21,7 +21,7 @@ import kotlinx.coroutines.withContext
 import se.tmconnect.husloggen.data.HusDatabas
 import se.tmconnect.husloggen.data.InstallningarLager
 import se.tmconnect.husloggen.data.HusRepository
-import se.tmconnect.husloggen.data.skapaHusBildLager
+import se.tmconnect.husloggen.data.skapaHusRepository
 import se.tmconnect.karna.sakerhetskopia.arSakerhetskopiaDags
 import se.tmconnect.karna.sakerhetskopia.kopiera
 
@@ -68,12 +68,14 @@ internal suspend fun korSakerhetskopiaJobb(
             try {
                 val databas = HusDatabas.hamta(context)
                 val dao = databas.husDao()
-                val bildLager = skapaHusBildLager(context)
-                val repository = HusRepository(databas, dao, bildLager)
+                val repository = skapaHusRepository(context, databas)
                 val uppgifter = repository.allaUppgifter()
                 val poster = repository.allaPoster()
                 val matare = repository.allaMatare()
                 val avlasningar = repository.allaAvlasningar()
+                val dokument = repository.allaDokument()
+                val bildLager = se.tmconnect.husloggen.data.skapaHusBildLager(context)
+                val dokumentLager = se.tmconnect.husloggen.data.skapaHusDokumentLager(context)
                 val lagring =
                     SakerhetskopiaWorker.testMappLagring
                         ?: SafMapp(context, Uri.parse(mapp))
@@ -82,7 +84,16 @@ internal suspend fun korSakerhetskopiaJobb(
                     filPrefix = HUSLOGGEN_AUTO_FILPREFIX,
                     skrivZip = {
                             ut ->
-                        Sakerhetskopia.skriv(ut, uppgifter, poster, matare, avlasningar, bildLager)
+                        Sakerhetskopia.skriv(
+                            ut,
+                            uppgifter,
+                            poster,
+                            matare,
+                            avlasningar,
+                            dokument,
+                            bildLager,
+                            dokumentLager,
+                        )
                     },
                     idag = idag,
                 )

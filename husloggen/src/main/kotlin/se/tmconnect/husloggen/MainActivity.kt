@@ -31,9 +31,8 @@ import java.time.LocalDate
 import se.tmconnect.husloggen.ProKonfig
 import se.tmconnect.husloggen.data.HusDatabas
 import se.tmconnect.husloggen.pro.ProKallaSkapare
-import se.tmconnect.husloggen.data.HusRepository
 import se.tmconnect.husloggen.data.InstallningarLager
-import se.tmconnect.husloggen.data.skapaHusBildLager
+import se.tmconnect.husloggen.data.skapaHusRepository
 import se.tmconnect.husloggen.paminnelse.HusPaminnelseKalla
 import se.tmconnect.husloggen.paminnelse.PaminnelseWorker
 import se.tmconnect.karna.paminnelse.PaminnelseInstallningarLager
@@ -79,13 +78,12 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: HusViewModel by viewModels {
         val databas = HusDatabas.hamta(applicationContext)
-        val bildLager = skapaHusBildLager(applicationContext)
         val paminnelseInstallningar = PaminnelseInstallningarLager(
             applicationContext,
             HusPaminnelseKalla.DATASTORE_NAMN,
         )
         HusViewModelFactory(
-            HusRepository(databas, databas.husDao(), bildLager),
+            skapaHusRepository(applicationContext, databas),
             paminnelseInstallningar,
             installningarLager,
             applicationContext,
@@ -169,6 +167,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private val valjDokumentContract = registerForActivityResult(
+        ActivityResultContracts.OpenDocument(),
+    ) { uri: Uri? ->
+        if (uri != null) {
+            viewModel.valjDokumentFil(uri)
+        }
+    }
+
     private val createHistorikPdfContract = registerForActivityResult(
         ActivityResultContracts.CreateDocument("application/pdf"),
     ) { uri: Uri? ->
@@ -235,6 +241,9 @@ class MainActivity : ComponentActivity() {
                 val uppgifter by viewModel.uppgifter.collectAsState()
                 val poster by viewModel.poster.collectAsState()
                 val matare by viewModel.matare.collectAsState()
+                val dokument by viewModel.dokument.collectAsState()
+                val dokumentDetaljId by viewModel.dokumentDetaljId.collectAsState()
+                val dokumentFormular by viewModel.dokumentFormular.collectAsState()
                 val matareDetaljId by viewModel.matareDetaljId.collectAsState()
                 val matareFormular by viewModel.matareFormular.collectAsState()
                 val avlasningFormular by viewModel.avlasningFormular.collectAsState()
@@ -258,6 +267,9 @@ class MainActivity : ComponentActivity() {
                 val historikCsvFelText = stringResource(R.string.export_csv_misslyckades)
                 val avlasningCsvSparadText = stringResource(R.string.export_csv_sparad)
                 val avlasningCsvFelText = stringResource(R.string.export_csv_misslyckades)
+                val dokumentForStortText = stringResource(R.string.dokument_for_stort)
+                val dokumentOgiltigTypText = stringResource(R.string.dokument_ogiltig_typ)
+                val dokumentKundeInteLaggasTillText = stringResource(R.string.dokument_kunde_inte_laggas_till)
                 val idag = LocalDate.now()
                 val snackbarHostState = remember { SnackbarHostState() }
 
@@ -280,6 +292,9 @@ class MainActivity : ComponentActivity() {
                             HusUiMeddelande.HistorikCsvMisslyckades -> historikCsvFelText
                             HusUiMeddelande.AvlasningCsvSparad -> avlasningCsvSparadText
                             HusUiMeddelande.AvlasningCsvMisslyckades -> avlasningCsvFelText
+                            HusUiMeddelande.DokumentForStort -> dokumentForStortText
+                            HusUiMeddelande.DokumentOgiltigTyp -> dokumentOgiltigTypText
+                            HusUiMeddelande.DokumentKundeInteLaggasTill -> dokumentKundeInteLaggasTillText
                         }
                         snackbarHostState.showSnackbar(text)
                     }
@@ -315,6 +330,43 @@ class MainActivity : ComponentActivity() {
                             } else {
                                 LaunchedEffect(tillstand.matareId) {
                                     viewModel.stangAvlasningFormular()
+                                }
+                            }
+                        }
+                        dokumentFormular != null -> {
+                            val tillstand = dokumentFormular!!
+                            val locale = resources.configuration.locales[0]
+                            se.tmconnect.husloggen.ui.DokumentFormularSkarm(
+                                tillstand = tillstand,
+                                locale = locale,
+                                idag = idag,
+                                onTitelAndras = viewModel::uppdateraDokumentTitel,
+                                onKategoriAndras = viewModel::uppdateraDokumentKategori,
+                                onAnteckningAndras = viewModel::uppdateraDokumentAnteckning,
+                                onValjFil = {
+                                    valjDokumentContract.launch(
+                                        arrayOf("application/pdf", "image/*"),
+                                    )
+                                },
+                                onSpara = viewModel::sparaDokumentFormular,
+                                onStang = viewModel::stangDokumentFormular,
+                            )
+                        }
+                        dokumentDetaljId != null -> {
+                            val dokumentRad = dokument.find { it.id == dokumentDetaljId }
+                            if (dokumentRad != null) {
+                                val locale = resources.configuration.locales[0]
+                                se.tmconnect.husloggen.ui.DokumentDetaljSkarm(
+                                    dokument = dokumentRad,
+                                    locale = locale,
+                                    onTillbaka = viewModel::stangDokumentDetalj,
+                                    onOppnaFil = { oppnaDokument(dokumentRad.mimeTyp, dokumentRad.filnamn) },
+                                    onAndra = { viewModel.visaAndraDokument(dokumentRad.id) },
+                                    onTaBort = { viewModel.taBortDokument(dokumentRad.id) },
+                                )
+                            } else {
+                                LaunchedEffect(dokumentDetaljId) {
+                                    viewModel.stangDokumentDetalj()
                                 }
                             }
                         }
@@ -467,9 +519,11 @@ class MainActivity : ComponentActivity() {
                                 uppgifter = uppgifter,
                                 poster = poster,
                                 matare = matare,
+                                dokument = dokument,
                                 onInstallningar = { visaInstallningar = true },
                                 onNyUppgift = viewModel::visaNyUppgift,
                                 onNyMatare = viewModel::visaNyMatare,
+                                onNyttDokument = viewModel::visaNyttDokument,
                                 onNyPost = {
                                     if (viewModel.kanLaggaTillNyPost()) {
                                         viewModel.visaNyPost()
@@ -480,6 +534,7 @@ class MainActivity : ComponentActivity() {
                                 onOppnaUppgift = viewModel::visaAndraUppgift,
                                 onOppnaPost = viewModel::visaPostDetalj,
                                 onOppnaMatare = viewModel::visaMatareDetalj,
+                                onOppnaDokument = viewModel::visaDokumentDetalj,
                                 onMarkeraGjord = viewModel::markeraSomGjord,
                                 oppnaAttGora = oppnaAttGora,
                                 paminnelserPa = paminnelserPa,
@@ -525,6 +580,16 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         hanteraPaminnelseIntent(intent)
+    }
+
+    private fun oppnaDokument(mimeTyp: String, filnamn: String) {
+        val uri = viewModel.dokumentUri(filnamn)
+        val intent =
+            Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, mimeTyp)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+        startActivity(Intent.createChooser(intent, null))
     }
 
     private fun hanteraPaminnelseIntent(intent: Intent?) {

@@ -29,7 +29,7 @@ class HusRepositoryImportTest {
             Room.inMemoryDatabaseBuilder(context, HusDatabas::class.java)
                 .allowMainThreadQueries()
                 .build()
-        repository = HusRepository(databas, databas.husDao(), skapaHusBildLager(context))
+        repository = skapaHusRepository(context, databas)
     }
 
     @After

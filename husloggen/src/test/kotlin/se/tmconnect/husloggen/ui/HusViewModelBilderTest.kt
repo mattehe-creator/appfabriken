@@ -34,7 +34,7 @@ import se.tmconnect.husloggen.data.InstallningarLager
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.PostTyp
 import se.tmconnect.husloggen.data.SparaPostResult
-import se.tmconnect.husloggen.data.skapaHusBildLager
+import se.tmconnect.husloggen.data.skapaHusRepository
 import se.tmconnect.husloggen.paminnelse.HusPaminnelseKalla
 import se.tmconnect.karna.paminnelse.PaminnelseInstallningarLager
 import se.tmconnect.karna.pro.FakeProKalla
@@ -58,7 +58,7 @@ class HusViewModelBilderTest {
             Room.inMemoryDatabaseBuilder(context, HusDatabas::class.java)
                 .allowMainThreadQueries()
                 .build()
-        repository = HusRepository(databas, databas.husDao(), skapaHusBildLager(context))
+        repository = skapaHusRepository(context, databas)
         val paminnelseInstallningar = PaminnelseInstallningarLager(
             context,
             HusPaminnelseKalla.DATASTORE_NAMN + "_test_bilder",

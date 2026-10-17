@@ -3,6 +3,9 @@
     <files-path
         name="bilder"
         path="bilder/" />
+    <files-path
+        name="dokument"
+        path="dokument/" />
     <cache-path
         name="kamera"
         path="kamera/" />

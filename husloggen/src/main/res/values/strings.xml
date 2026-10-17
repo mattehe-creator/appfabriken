@@ -215,4 +215,35 @@
     <string name="valkommen_integritet">No account, no ads and no cloud. Free for up to 15 log entries.</string>
     <string name="valkommen_lagg_till">Add my first task</string>
     <string name="valkommen_titta">Look around first</string>
+
+    <!-- Documents -->
+    <string name="flik_dokument">Documents</string>
+    <string name="fab_nytt_dokument">New document</string>
+    <string name="tom_dokument">No documents yet. Add manuals, drawings and inspection reports for your home.</string>
+    <string name="nytt_dokument_rubrik">New document</string>
+    <string name="andra_dokument_rubrik">Edit document</string>
+    <string name="falt_dokument_titel">Title</string>
+    <string name="dokument_kategori_vald">Category: %1$s</string>
+    <string name="dokument_kategori_saknas">No category</string>
+    <string name="dokument_kategori_manual">Manual</string>
+    <string name="dokument_kategori_ritning">Drawing</string>
+    <string name="dokument_kategori_besiktning">Inspection</string>
+    <string name="dokument_kategori_garanti">Warranty</string>
+    <string name="dokument_kategori_avtal">Contract</string>
+    <string name="dokument_kategori_ovrigt">Other</string>
+    <string name="dokument_kategori_etikett">Category: %1$s</string>
+    <string name="dokument_tillagd_etikett">Added: %1$s</string>
+    <string name="dokument_tillagd_info">Will be saved with today\'s date (%1$s).</string>
+    <string name="dokument_valj_fil">Choose file (PDF or image)</string>
+    <string name="dokument_fil_vald">Change file</string>
+    <string name="dokument_fil_oforandrad">The file cannot be changed when editing. Add a new document instead.</string>
+    <string name="dokument_oppna_fil">Open file</string>
+    <string name="ta_bort_dokument">Delete document</string>
+    <string name="bekrafta_ta_bort_dokument_titel">Delete document?</string>
+    <string name="bekrafta_ta_bort_dokument_text">The document and its file will be deleted permanently.</string>
+    <string name="fel_dokument_titel_saknas">Enter a title</string>
+    <string name="fel_dokument_fil_saknas">Choose a file</string>
+    <string name="dokument_for_stort">The file is too large. Maximum size is 25 MB.</string>
+    <string name="dokument_ogiltig_typ">Only PDF files and images are supported.</string>
+    <string name="dokument_kunde_inte_laggas_till">Could not add the document.</string>
 </resources>

@@ -2,6 +2,8 @@ package se.tmconnect.husloggen.export
 
 import java.time.LocalDate
 import se.tmconnect.husloggen.data.Avlasning
+import se.tmconnect.husloggen.data.Dokument
+import se.tmconnect.husloggen.data.DokumentKategori
 import se.tmconnect.husloggen.data.Matare
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.PostTyp
@@ -9,15 +11,17 @@ import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.husloggen.regler.formateraBilder
 import se.tmconnect.husloggen.regler.tolkaBilder
 
-const val HUSLOGGEN_SAKERHETSKOPIA_VERSION = 2
+const val HUSLOGGEN_SAKERHETSKOPIA_VERSION = 3
 const val HUSLOGGEN_SAKERHETSKOPIA_MIN_VERSION = 1
 const val HUSLOGGEN_LOGG_JSON = "logg.json"
 const val HUSLOGGEN_BILDER_MAPP = "bilder/"
+const val HUSLOGGEN_DOKUMENT_MAPP = "dokument/"
 const val HUSLOGGEN_SAKERHETSKOPIA_MAX_UPPGIFTER = 5_000
 const val HUSLOGGEN_SAKERHETSKOPIA_MAX_POSTER = 5_000
 const val HUSLOGGEN_SAKERHETSKOPIA_MAX_MATARE = 500
 const val HUSLOGGEN_SAKERHETSKOPIA_MAX_AVLASNINGAR = 50_000
-const val HUSLOGGEN_SAKERHETSKOPIA_MAX_FIL_BYTES = 20 * 1024 * 1024
+const val HUSLOGGEN_SAKERHETSKOPIA_MAX_DOKUMENT = 5_000
+const val HUSLOGGEN_SAKERHETSKOPIA_MAX_FIL_BYTES = 25 * 1024 * 1024
 const val HUSLOGGEN_AUTO_FILPREFIX = "husloggen-auto-"
 
 data class SakerhetskopiaUppgift(
@@ -52,6 +56,15 @@ data class SakerhetskopiaAvlasning(
     val vardeTusendel: Long,
 )
 
+data class SakerhetskopiaDokument(
+    val titel: String,
+    val kategori: String? = null,
+    val anteckning: String? = null,
+    val filnamn: String,
+    val mimeTyp: String,
+    val tillagd: LocalDate,
+)
+
 data class SakerhetskopiaInnehall(
     val version: Int,
     val skapad: String,
@@ -59,6 +72,7 @@ data class SakerhetskopiaInnehall(
     val poster: List<SakerhetskopiaPost>,
     val matare: List<SakerhetskopiaMatare> = emptyList(),
     val avlasningar: List<SakerhetskopiaAvlasning> = emptyList(),
+    val dokument: List<SakerhetskopiaDokument> = emptyList(),
 )
 
 data class SakerhetskopiaImportResultat(
@@ -228,3 +242,23 @@ fun arSakerhetskopiaMatareLik(a: SakerhetskopiaMatare, b: SakerhetskopiaMatare):
 
 fun arSakerhetskopiaAvlasningLik(a: SakerhetskopiaAvlasning, b: SakerhetskopiaAvlasning): Boolean =
     a.matareIndex == b.matareIndex && a.datum == b.datum && a.vardeTusendel == b.vardeTusendel
+
+fun dokumentTillSakerhetskopia(dokument: Dokument): SakerhetskopiaDokument =
+    SakerhetskopiaDokument(
+        titel = dokument.titel,
+        kategori = dokument.kategori?.name,
+        anteckning = dokument.anteckning,
+        filnamn = dokument.filnamn,
+        mimeTyp = dokument.mimeTyp,
+        tillagd = dokument.tillagd,
+    )
+
+fun sakerhetskopiaDokumentTillDokument(export: SakerhetskopiaDokument, filnamn: String): Dokument =
+    Dokument(
+        titel = export.titel.trim(),
+        kategori = export.kategori?.let { runCatching { DokumentKategori.valueOf(it) }.getOrNull() },
+        anteckning = export.anteckning?.trim()?.takeIf { it.isNotEmpty() },
+        filnamn = filnamn,
+        mimeTyp = export.mimeTyp,
+        tillagd = export.tillagd,
+    )

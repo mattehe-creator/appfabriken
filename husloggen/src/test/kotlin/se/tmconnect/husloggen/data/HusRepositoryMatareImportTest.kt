@@ -31,7 +31,7 @@ class HusRepositoryMatareImportTest {
             Room.inMemoryDatabaseBuilder(context, HusDatabas::class.java)
                 .allowMainThreadQueries()
                 .build()
-        repository = HusRepository(databas, databas.husDao(), skapaHusBildLager(context))
+        repository = skapaHusRepository(context, databas)
     }
 
     @Test
@@ -54,7 +54,9 @@ class HusRepositoryMatareImportTest {
                     emptyList(),
                     matare,
                     avlasningar,
-                    repository.let { skapaHusBildLager(ApplicationProvider.getApplicationContext()) },
+                    emptyList(),
+                    skapaHusBildLager(ApplicationProvider.getApplicationContext()),
+                    skapaHusDokumentLager(ApplicationProvider.getApplicationContext()),
                 )
                 ut.toByteArray()
             }
@@ -65,10 +67,11 @@ class HusRepositoryMatareImportTest {
             Room.inMemoryDatabaseBuilder(context, HusDatabas::class.java)
                 .allowMainThreadQueries()
                 .build()
-        val repo2 = HusRepository(databas2, databas2.husDao(), skapaHusBildLager(context))
+        val repo2 = skapaHusRepository(context, databas2)
         repo2.importeraSakerhetskopia(
             (las as SakerhetskopiaLasResult.Ok).innehall,
             las.bildFiler,
+            las.dokumentFiler,
         )
         val efterMatare = repo2.allaMatare()
         val efterAvlasningar = repo2.allaAvlasningar()
