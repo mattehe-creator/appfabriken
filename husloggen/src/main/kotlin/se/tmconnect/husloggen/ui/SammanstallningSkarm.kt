@@ -82,8 +82,6 @@ fun SammanstallningSkarm(
                     style = MaterialTheme.typography.titleMedium,
                 )
                 
-                val forsaljningsArValel = remember { mutableIntStateOf(forsaljningsAr) }
-                
                 // Dropdown meny för försäljningsår
                 var expanderad by remember { mutableStateOf(false) }
                 val ar = (forsaljningsAr - 5)..(forsaljningsAr + 5)
@@ -103,7 +101,6 @@ fun SammanstallningSkarm(
                         DropdownMenuItem(
                             text = { Text(text = ar.toString()) },
                             onClick = {
-                                forsaljningsArValel.intValue = ar
                                 onForsaljningsArAndras(ar)
                                 expanderad = false
                             },
