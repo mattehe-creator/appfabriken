@@ -113,4 +113,4 @@ Inte i 1.0: flera bostäder, mätarställningar, dokument (manualer, ritningar),
 
 1. A Garantivalvet (funktionsfryst, väntar på Google Play)
 2. G Husloggen (påbörjad 2026-10-16)
-3. Väljs när A har varit ute i 90 dagar. B som egen app faller bort; mätarställningar kan bli en funktion i G.
+3. Väljs när Mattias vill, utan väntetid efter publicering. B som egen app faller bort; mätarställningar kan bli en funktion i G.

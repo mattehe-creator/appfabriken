@@ -37,5 +37,5 @@ Val och omfång i IDEURVAL.md (omprövning 2026-10-16), regler i `husloggen/APP.
 ## Senare
 
 - Husloggen efter 1.0: mätarställningar, flera bostäder, dokument (manualer, ritningar), plan för framtida kostnader.
-- App 3 väljs när Garantivalvet har varit ute i 90 dagar (IDEURVAL.md).
+- App 3 väljs när Mattias vill (IDEURVAL.md). Ingen väntetid efter publicering.
 - Mätaren i panelen (`release.json`) följer Garantivalvet tills den är publicerad. Claude uppdaterar den när ett steg ändras.
