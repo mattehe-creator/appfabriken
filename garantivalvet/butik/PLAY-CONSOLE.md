@@ -59,5 +59,5 @@ För Mattias (CLAUDE.md punkt 9: allt i Play Console är ditt). Texter och bilde
 
 ## 6. Efter publicering
 
-- Svara på recensioner själv (CLAUDE.md punkt 9). Följ betyg och konvertering enligt punkt 1: under 1 % köpkonvertering eller under 3,5 i betyg efter 90 dagar betyder att inga nya funktioner byggs.
+- Svara på recensioner själv (CLAUDE.md punkt 9). Följ betyg och konvertering enligt punkt 1. Apparna underhålls och förbättras vidare även när siffrorna är låga.
 - Ladda upp `mapping-<sha>.txt` för varje release så att kraschrapporter blir läsbara.
