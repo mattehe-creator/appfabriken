@@ -51,3 +51,5 @@ gradle :husloggen:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-17 (engelska historik_pdf_skatt_text)
