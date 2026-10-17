@@ -13,7 +13,7 @@ Håller ordning på husets underhåll: återkommande uppgifter med påminnelser,
 
 ## Regler
 
-- Gratisgränsen är 15 poster. Uppgifter, påminnelser och mätare med avläsningar är obegränsade. "Markera som gjord" flyttar alltid nästa datum; när gränsen är nådd sparas ingen ny post utan Pro. Gränsen ligger på ett ställe i `regler/`.
+- Gratisgränsen är 15 poster. Uppgifter, påminnelser, mätare med avläsningar och dokument (manualer, ritningar m.m.) är obegränsade. "Markera som gjord" flyttar alltid nästa datum; när gränsen är nådd sparas ingen ny post utan Pro. Gränsen ligger på ett ställe i `regler/`.
 - Belopp lagras i öre (`Long`), datum som `LocalDate`, flera bildfiler som kommaseparerade filnamn, typer som enum-namn. Som i Garantivalvet.
 - Skatteregler (förbättringsutgifter vid försäljning) visas som information, aldrig som råd, med lagrum, och bara för Sverige. Siffrorna ligger på ett ställe i `regler/` och kontrolleras mot Skatteverket och inkomstskattelagen (45 kap. för fastighet, 46 kap. för bostadsrätt) innan uppdraget skrivs. I andra länder visar appen bara summor per år och typ.
 
@@ -40,6 +40,13 @@ Vid vinstberäkning vid försäljning räknas bara den del av utgiften som ägar
 - Regler för avläsningar (lägre värde, unikt datum, förbrukning) ligger i `regler/`.
 - Ingår i säkerhetskopia och kan exporteras som CSV per mätare.
 
+## Dokument
+
+- Manualer, ritningar, besiktningsprotokoll och liknande sparas som PDF eller bild via systemets filväljare, utan extra behörigheter.
+- Varje dokument har titel, valfri kategori (Manual, Ritning, Besiktning, Garanti, Avtal, Övrigt), valfri anteckning och tillagt datum.
+- Filer lagras i appens privata lagring; högst 25 MB per fil. Öppnas med systemets visare via `FileProvider`.
+- Ingår i säkerhetskopia (metadata och filer). Äldre säkerhetskopior utan dokument kan fortfarande importeras.
+
 ## Inte i 1.0
 
-Flera bostäder, dokument (manualer, ritningar), plan för framtida kostnader, delning, widgets.
+Flera bostäder, plan för framtida kostnader, delning, widgets.

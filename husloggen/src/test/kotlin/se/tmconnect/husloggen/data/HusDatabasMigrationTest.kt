@@ -89,7 +89,7 @@ class HusDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .allowMainThreadQueries()
             .build()
 
@@ -163,7 +163,7 @@ class HusDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .allowMainThreadQueries()
             .build()
 
@@ -180,6 +180,89 @@ class HusDatabasMigrationTest {
         )
         assertEquals(1, databas.husDao().antalMatare())
         assertEquals(1, databas.husDao().avlasningarForMatare(matareId).size)
+
+        databas.close()
+        context.deleteDatabase(TEST_DB)
+    }
+
+    @Test
+    fun migration3Till4SkaparDokumentTabell() = runTest {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        context.deleteDatabase(TEST_DB)
+
+        val config = SupportSQLiteOpenHelper.Configuration.builder(context)
+            .name(TEST_DB)
+            .callback(
+                object : SupportSQLiteOpenHelper.Callback(3) {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        db.execSQL(
+                            """
+                            CREATE TABLE IF NOT EXISTS uppgift (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                namn TEXT NOT NULL,
+                                intervall_manader INTEGER NOT NULL,
+                                start_datum INTEGER NOT NULL,
+                                senast_gjord INTEGER,
+                                paminnelse INTEGER NOT NULL,
+                                anteckning TEXT,
+                                skapad INTEGER NOT NULL
+                            )
+                            """.trimIndent(),
+                        )
+                        db.execSQL(
+                            """
+                            CREATE TABLE IF NOT EXISTS post (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                datum INTEGER NOT NULL,
+                                vad TEXT NOT NULL,
+                                typ TEXT NOT NULL,
+                                belopp_ore INTEGER,
+                                rot_rut_avdrag_ore INTEGER,
+                                utforare TEXT,
+                                anteckning TEXT,
+                                kvitto_fil TEXT,
+                                bilder TEXT,
+                                uppgift_id INTEGER,
+                                skapad INTEGER NOT NULL,
+                                FOREIGN KEY(uppgift_id) REFERENCES uppgift(id) ON UPDATE NO ACTION ON DELETE SET NULL
+                            )
+                            """.trimIndent(),
+                        )
+                        db.execSQL(
+                            "CREATE INDEX IF NOT EXISTS index_post_uppgift_id ON post (uppgift_id)",
+                        )
+                        MIGRATION_2_3.migrate(db)
+                    }
+
+                    override fun onUpgrade(
+                        db: SupportSQLiteDatabase,
+                        oldVersion: Int,
+                        newVersion: Int,
+                    ) = Unit
+                },
+            )
+            .build()
+        val openHelper = FrameworkSQLiteOpenHelperFactory().create(config)
+        openHelper.writableDatabase.close()
+        openHelper.close()
+
+        val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
+            .addMigrations(MIGRATION_3_4)
+            .allowMainThreadQueries()
+            .build()
+
+        val id =
+            databas.husDao().infogaDokument(
+                Dokument(
+                    titel = "Manual diskmaskin",
+                    kategori = DokumentKategori.MANUAL,
+                    filnamn = "test.pdf",
+                    mimeTyp = "application/pdf",
+                    tillagd = LocalDate.of(2026, 10, 1),
+                ),
+            )
+        assertEquals(1, databas.husDao().allaDokument().size)
+        assertEquals("Manual diskmaskin", databas.husDao().hamtaDokument(id)!!.titel)
 
         databas.close()
         context.deleteDatabase(TEST_DB)

@@ -40,3 +40,23 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
         )
     }
 }
+
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS dokument (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                titel TEXT NOT NULL,
+                kategori TEXT,
+                anteckning TEXT,
+                filnamn TEXT NOT NULL,
+                mime_typ TEXT NOT NULL,
+                tillagd INTEGER NOT NULL
+            )
+            """.trimIndent(),
+        )
+        db.execSQL("CREATE INDEX IF NOT EXISTS index_dokument_kategori ON dokument (kategori)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS index_dokument_titel ON dokument (titel)")
+    }
+}

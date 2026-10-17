@@ -19,17 +19,19 @@ import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.PostTyp
 import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.husloggen.data.skapaHusBildLager
+import se.tmconnect.husloggen.data.skapaHusDokumentLager
 import se.tmconnect.husloggen.regler.formateraBilder
 import se.tmconnect.karna.bild.BildLager
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28])
 class SakerhetskopiaZipTest {
+    private lateinit var context: Context
     private lateinit var bildLager: BildLager
 
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
+        context = ApplicationProvider.getApplicationContext()
         bildLager = skapaHusBildLager(context)
     }
 
@@ -47,7 +49,16 @@ class SakerhetskopiaZipTest {
             )
         val zipBytes =
             ByteArrayOutputStream().use { ut ->
-                Sakerhetskopia.skriv(ut, listOf(uppgift), listOf(post), emptyList(), emptyList(), bildLager)
+                Sakerhetskopia.skriv(
+                    ut,
+                    listOf(uppgift),
+                    listOf(post),
+                    emptyList(),
+                    emptyList(),
+                    emptyList(),
+                    bildLager,
+                    skapaHusDokumentLager(context),
+                )
                 ut.toByteArray()
             }
         val las = ByteArrayInputStream(zipBytes).use { Sakerhetskopia.lasIn(it) }
