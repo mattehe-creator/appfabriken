@@ -543,6 +543,8 @@ function Wait-KorUppgift {
         "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $skript
     )
     $script:aktivKorUppgiftPid = $proc.Id
+    # Läs Handle direkt: annars kan ExitCode bli null när processen hunnit avsluta, och det blir felkod 1.
+    $null = $proc.Handle
     Logga "kor-uppgift startad (PID $($proc.Id))."
     $dodad = $false
     $dodsOrsak = ""
@@ -578,7 +580,8 @@ function Wait-KorUppgift {
         return @{ kod = 4; avbrott = $true; orsak = $dodsOrsak }
     }
     $script:aktivKorUppgiftPid = $null
-    $kod = if ($proc.HasExited) { $proc.ExitCode } else { 1 }
+    $proc.WaitForExit()
+    $kod = $proc.ExitCode
     if ($null -eq $kod) { $kod = 1 }
     if ($kod -ne 0) {
         $tmpFel = Get-Felbeskrivning $kod @{ avbrott = $false; orsak = "" }
