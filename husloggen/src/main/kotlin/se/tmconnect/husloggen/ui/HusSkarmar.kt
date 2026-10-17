@@ -47,7 +47,6 @@ import se.tmconnect.husloggen.BuildConfig
 import se.tmconnect.husloggen.R
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.Uppgift
-import se.tmconnect.husloggen.regler.arSverigeForSkatteInfo
 import se.tmconnect.husloggen.regler.grupperaPerAr
 import se.tmconnect.karna.format.formateraPrisKr
 
@@ -83,7 +82,7 @@ fun HusStartSkarm(
         }
     }
     val locale = LocalConfiguration.current.locales[0]
-    val visaSkatteInfo = arSverigeForSkatteInfo(locale.country)
+    val visaSkatteInfo = locale.country.equals("SE", ignoreCase = true)
 
     Scaffold(
         modifier = modifier,

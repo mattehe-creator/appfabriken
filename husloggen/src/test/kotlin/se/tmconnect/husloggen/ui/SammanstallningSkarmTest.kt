@@ -107,4 +107,65 @@ class SammanstallningSkarmTest {
             onNodeWithText(csvKnapp).assertExists()
         }
     }
+
+    @Test
+    fun sammanstallningVisarInteSkatteinfoFörUs() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val poster = listOf(
+            Post(
+                id = 1,
+                datum = java.time.LocalDate.of(2021, 6, 1),
+                vad = "Reparation",
+                typ = PostTyp.REPARATION,
+                beloppOre = 50_000L,
+                utforare = null,
+                anteckning = null,
+                kvittoFil = null,
+                bilder = null,
+                uppgiftId = null,
+                skapad = System.currentTimeMillis(),
+            ),
+        )
+
+        AndroidComposeUiTestEnvironment<ComponentActivity>(
+            activityProvider = {
+                Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
+            },
+        ).runTest {
+            setContent {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    SammanstallningSkarm(
+                        poster = poster,
+                        forsaljningsAr = 2026,
+                        onForsaljningsArAndras = {},
+                        locale = Locale.US,
+                        visaSkatteInfo = false,
+                    )
+                }
+            }
+            waitForIdle()
+            
+            // Kontrollera att skatteinformation inte visas
+            val bedomning = context.getString(R.string.sammanstallning_forbattring_bedomning)
+            val nej = context.getString(R.string.sammanstallning_forbattring_nej)
+            val ja = context.getString(R.string.sammanstallning_forbattring_ja)
+            val gransAr = context.getString(R.string.sammanstallning_grans_ar)
+            val gransArEj = context.getString(R.string.sammanstallning_grans_ar_ej)
+            val skatteInfoRubrik = context.getString(R.string.sammanstallning_skatte_info_rubrik)
+            
+            // Dessa texter ska inte finnas
+            onNodeWithText(bedomning).assertDoesNotExist()
+            onNodeWithText(nej).assertDoesNotExist()
+            onNodeWithText(ja).assertDoesNotExist()
+            onNodeWithText(gransAr).assertDoesNotExist()
+            onNodeWithText(gransArEj).assertDoesNotExist()
+            onNodeWithText(skatteInfoRubrik).assertDoesNotExist()
+            
+            // PDF och CSV knappar ska fortfarande finnas
+            val pdfKnapp = context.getString(R.string.export_hus_historik_pdf)
+            val csvKnapp = context.getString(R.string.export_hus_historik_csv)
+            onNodeWithText(pdfKnapp).assertExists()
+            onNodeWithText(csvKnapp).assertExists()
+        }
+    }
 }

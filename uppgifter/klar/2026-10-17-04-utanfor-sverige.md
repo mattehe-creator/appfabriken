@@ -27,3 +27,5 @@ gradle :husloggen:testDebugUnitTest --tests "*SammanstallningSkarmTest"
 ## Gör inte
 - Ändra `regler/` eller export-PDF (Cursor sätter redan `inkluderaSkatteAvsnitt` från ViewModel).
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-17 (oanvänd import borttagen)
