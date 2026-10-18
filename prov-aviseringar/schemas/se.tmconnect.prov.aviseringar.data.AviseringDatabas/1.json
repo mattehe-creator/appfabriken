@@ -1,0 +1,167 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "4e7683d3f0ee2e672efc4ebbd56c7dfc",
+    "entities": [
+      {
+        "tableName": "avisering_logg",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `loggadTid` INTEGER NOT NULL, `postTime` INTEGER NOT NULL, `nyckel` TEXT NOT NULL, `paketNamn` TEXT NOT NULL, `appNamn` TEXT NOT NULL, `kanalId` TEXT, `title` TEXT, `text` TEXT, `bigText` TEXT, `subText` TEXT, `textLines` TEXT, `conversationTitle` TEXT, `messages` TEXT, `innehallHash` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "loggadTid",
+            "columnName": "loggadTid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "postTime",
+            "columnName": "postTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nyckel",
+            "columnName": "nyckel",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "paketNamn",
+            "columnName": "paketNamn",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appNamn",
+            "columnName": "appNamn",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kanalId",
+            "columnName": "kanalId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "text",
+            "columnName": "text",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "bigText",
+            "columnName": "bigText",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "subText",
+            "columnName": "subText",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "textLines",
+            "columnName": "textLines",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "conversationTitle",
+            "columnName": "conversationTitle",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "messages",
+            "columnName": "messages",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "innehallHash",
+            "columnName": "innehallHash",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_avisering_logg_nyckel_innehallHash",
+            "unique": true,
+            "columnNames": [
+              "nyckel",
+              "innehallHash"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_avisering_logg_nyckel_innehallHash` ON `${TABLE_NAME}` (`nyckel`, `innehallHash`)"
+          },
+          {
+            "name": "index_avisering_logg_paketNamn",
+            "unique": false,
+            "columnNames": [
+              "paketNamn"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_avisering_logg_paketNamn` ON `${TABLE_NAME}` (`paketNamn`)"
+          },
+          {
+            "name": "index_avisering_logg_loggadTid",
+            "unique": false,
+            "columnNames": [
+              "loggadTid"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_avisering_logg_loggadTid` ON `${TABLE_NAME}` (`loggadTid`)"
+          }
+        ]
+      },
+      {
+        "tableName": "paket_statistik",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`paketNamn` TEXT NOT NULL, `appNamn` TEXT NOT NULL, `antal` INTEGER NOT NULL, PRIMARY KEY(`paketNamn`))",
+        "fields": [
+          {
+            "fieldPath": "paketNamn",
+            "columnName": "paketNamn",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appNamn",
+            "columnName": "appNamn",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "antal",
+            "columnName": "antal",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "paketNamn"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4e7683d3f0ee2e672efc4ebbd56c7dfc')"
+    ]
+  }
+}

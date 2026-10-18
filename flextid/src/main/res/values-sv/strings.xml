@@ -49,6 +49,7 @@
     <string name="export_ar">År</string>
     <string name="export_manad">Månad</string>
     <string name="exportera_csv">Exportera CSV för månad</string>
+    <string name="exportera_pdf">Exportera PDF för månad</string>
     <string name="exportera_sakerhetskopia">Säkerhetskopia till JSON</string>
     <string name="importera_sakerhetskopia">Återställ från JSON</string>
     <string name="csv_datum">Datum</string>
@@ -58,6 +59,19 @@
     <string name="csv_arbetad">Arbetad tid</string>
     <string name="csv_utfall">Utfall</string>
     <string name="csv_typ">Typ</string>
+    <string name="pdf_inga_dagar">Inga registrerade dagar</string>
+    <string name="pdf_summa_arbetad">Summa arbetad tid</string>
+    <string name="pdf_summa_utfall">Summa utfall</string>
+    <string name="pdf_saldo_manadsslut">Saldo vid månadens slut</string>
+    <string name="pdf_kolumn_datum">Datum</string>
+    <string name="pdf_kolumn_veckodag">Veckodag</string>
+    <string name="pdf_kolumn_start">Start</string>
+    <string name="pdf_kolumn_slut">Slut</string>
+    <string name="pdf_kolumn_rast">Rast</string>
+    <string name="pdf_kolumn_arbetad">Arbetad</string>
+    <string name="pdf_kolumn_utfall">Utfall</string>
+    <string name="pdf_kolumn_typ">Typ</string>
+    <string name="pdf_saknas">-</string>
     <string name="meddelande_sparat">Sparat</string>
     <string name="meddelande_borttaget">Borttaget</string>
     <string name="meddelande_exporterat">Exporterat</string>

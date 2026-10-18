@@ -31,6 +31,9 @@ import se.tmconnect.flextid.data.UiInstallningarLager
 import se.tmconnect.flextid.data.skapaFlextidRepository
 import se.tmconnect.flextid.export.ManadsCsvTexter
 import se.tmconnect.flextid.export.manadsCsvFilnamn
+import se.tmconnect.flextid.export.manadsPdfFilnamn
+import se.tmconnect.flextid.export.manadsRapportTexter
+import se.tmconnect.flextid.export.skrivManadsPdf
 import se.tmconnect.flextid.paminnelse.FlextidPaminnelseInstallningarLager
 import se.tmconnect.flextid.paminnelse.PaminnelseWorker
 import se.tmconnect.flextid.pro.ProKallaSkapare
@@ -104,6 +107,19 @@ class MainActivity : ComponentActivity() {
                         )
                     val csv = viewModel.skapaManadsCsv(texter, locale)
                     skrivCsvMedBom(out, csv)
+                }
+            }
+        }
+
+    private val skapaPdfContract =
+        registerForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
+            if (uri != null) {
+                viewModel.skrivTillUri(uri) { out ->
+                    val locale = Locale.getDefault()
+                    val arManad = viewModel.exportArManad.value
+                    val texter = manadsRapportTexter(this, arManad, locale)
+                    val rapport = viewModel.skapaManadsRapport(texter, locale)
+                    skrivManadsPdf(rapport, texter, out)
                 }
             }
         }
@@ -199,6 +215,10 @@ class MainActivity : ComponentActivity() {
                             onExporteraCsv = {
                                 val arManad = viewModel.exportArManad.value
                                 skapaCsvContract.launch(manadsCsvFilnamn(arManad))
+                            },
+                            onExporteraPdf = {
+                                val arManad = viewModel.exportArManad.value
+                                skapaPdfContract.launch(manadsPdfFilnamn(arManad))
                             },
                             onExporteraSakerhetskopia = {
                                 skapaJsonContract.launch("flextid-sakerhetskopia.json")

@@ -118,3 +118,31 @@ Inte i 1.0: flera bostäder, mätarställningar, dokument (manualer, ritningar),
 ## Potentiella idéer (inte beslutade)
 
 - 2026-10-18: **Djurloggen** (arbetsnamn), journal och kostnadslogg för hund och katt: vaccinationer, avmaskning, veterinärbesök med kvitto, påminnelser, kostnad per år efter försäkringens ersättning. 37 poäng i molnsessionens prövning av tio idéer; logg för bilen tvåa med 36, i praktiken lika. Argument: stor målgrupp, mest återanvändning av Husloggen, försäkringsvillkor kan kräva vaccinationer enligt rekommendation. Invändningar: språket är ingen vallgrav mot engelska gratisappar, försäkringsbolagen kan bygga samma sak, låg betalvilja för djurappar, risk för Googles policy om repetitivt innehåll om apparna blir för lika. Siffrorna i underlaget är inte kontrollerade. Startas inte förrän de gemensamma delarna ligger i `:karna`.
+
+## Idéurval 2 (2026-10-18): efter research
+
+Underlag: sju research-områden i claude.ai-projektet (`research/01`–`04`, `06`–`08`; 05 struket tills vidare). Resultaten ligger i projektet, inte i repot.
+
+### Vad researchen säger
+- En ny konsumentapp når 650 000 kr/år med under 5 % sannolikhet. Android med freemium är den svagaste kombinationen (0,9 % konvertering mot 10,7 % med hård betalvägg). Garantivalvet och Husloggen räknas därför som övning och portfölj, inte som vägen till målet.
+- B2B når målet med 40–200 kunder. Hindret är försäljning och förtroende, inte kod.
+- Billig kod är ingen fördel längre. Fördelen måste vara domänkunskap, ett tvång hos kunden (regel, tidsfrist) eller en kanal.
+- De bästa luckorna finns där användaren inte är köparen (skolplattformar) eller där en regel kräver omdöme som plattformarna saknar.
+- Alla områden rekommenderar samma metod: testa manuellt (Claude gör tjänsten för hand) eller med en landningssida innan något byggs.
+
+### Kortlista
+
+| # | Idé | Kund | Varför | Största risk | Test före bygge |
+|---|---|---|---|---|---|
+| 1 | Styrelserummet: K3-assistent som ingång, sedan AI-sekreterare (protokoll, kallelser, frågor mot stadgarna) | Självförvaltade brf och samfälligheter (30 000 + 40 000) | K3 tvingande, första årsredovisningen våren 2027; ingen svensk AI-produkt för styrelser; AI gör jobbet | Boappa (2 000+ föreningar) lägger till AI; revisorn gör K3; andel självförvaltade okänd | Landningssida och Google-annonser nov 2026–feb 2027; manuellt protokolltest med 5–10 styrelser |
+| 2 | Bevispaket för NIS2-leverantörer: intervju ger policy, riskanalys, incidentrutin och svar på kunders säkerhetsformulär | Företag med 5–49 anställda som levererar till verksamheter under cybersäkerhetslagen | Mattias kunskap; kunden har ett tvång; 70–80 % av frågorna överlappar | EU minskar kedjekraven; Cyberday är billigt; förtroende säljer | 10 intervjuer, sedan erbjud 5 företag ett manuellt paket för 2 500 kr. Tre betalande av fem = gå vidare |
+| 3 | Skolinkorgen: en inkorg och kalender för förskola, skola och fritid ur aviseringar på telefonen | Föräldrar i Sverige | Plattformarna har usla betyg; Öppna skolplattformen visar betalvilja; allt kan tolkas lokalt | Plattformarna ändrar sig; Play-policy för notisavläsning; bara Android | Teknisk logg av aviseringar på Mattias telefon i två veckor |
+| 4 | Röstfångst: säg det, så hamnar det i kalender, uppgifter eller svar | Mattias först, sedan yrkesgrupper | Mattias egen smärta; Gemini svag på påminnelser 2026 | Systemassistenterna blir bra inom 12–24 mån; trångt | Minsta Android-version, Mattias använder den 30 dagar |
+
+Ändrat 2026-10-19: nr 2 (NIS2) avförd, konkurrerar med Mattias arbete. Nr 4 (röstfångst) är inte längre en produktkandidat; provappen byggs som Mattias eget verktyg och för att tolkningsdelen kan återanvändas i Styrelserummets protokoll.
+
+Parkerade: reparationsstöd i Garantivalvet 1.1 (när svensk lag finns), sekretessäker offline-anteckning, upphandlingsdata för agenter (MCP), Lens-ersättare, budget utan bank, röst till ÄTA för hantverkare (mättat enligt område 06), lönekartläggning, Djurloggen. Avförda: säkerhetsskyddsstöd (för nära Mattias anställning), sprutjournal och idrottsmedlemssystem (gratis alternativ finns).
+
+### Gränser
+- Inga kunder där Mattias arbetsgivare har tillsyn eller avtal, och inget som rör säkerhetsskyddsklassade uppgifter.
+- Tekniska vägval från område 08 (funktioner med tydliga in- och utdata, lokal AI först med moln som reserv, persondata lokalt) gäller när en idé går till bygge.

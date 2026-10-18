@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Klocka / avisering i temats primärfärg -->
+    <path
+        android:fillColor="#1F5F5B"
+        android:pathData="M54,24 A22,22 0 1,1 54,68 A22,22 0 1,1 54,24 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,34 V54 H68" />
+    <path
+        android:fillColor="#1F5F5B"
+        android:pathData="M38,72 L44,78 H64 L70,72 Z" />
+</vector>
