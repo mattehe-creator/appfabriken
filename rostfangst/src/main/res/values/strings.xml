@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Say it</string>
+    <string name="flik_start">Speak</string>
+    <string name="flik_att_gora">To-do</string>
+    <string name="flik_anteckningar">Notes</string>
+    <string name="flik_historik">History</string>
+    <string name="flik_installningar">Settings</string>
+    <string name="sag_det_knapp">Say it</string>
+    <string name="lyssnar">Listening…</string>
+    <string name="forslag_rubrik">Suggestion</string>
+    <string name="falt_titel">Title</string>
+    <string name="utfor">Do it</string>
+    <string name="offline_sparad">Saved offline. You can interpret later when you have network.</string>
+    <string name="tolka_om">Interpret again</string>
+    <string name="api_nyckel">API key</string>
+    <string name="modell">Model</string>
+    <string name="spara">Save</string>
+    <string name="exportera_csv">Export history as CSV</string>
+    <string name="fangster_per_dag_rubrik">Captures per day (last 30 days)</string>
+    <string name="fangster_per_dag_rad">%1$s: %2$d</string>
+    <string name="typ_kalender">Calendar</string>
+    <string name="typ_paminnelse">Reminder</string>
+    <string name="typ_att_gora">To-do</string>
+    <string name="typ_anteckning">Note</string>
+    <string name="typ_fraga">Question</string>
+    <string name="svar_rubrik">Answer</string>
+    <string name="fel_tom_inspelning">Nothing was heard.</string>
+    <string name="utfor_klar">Done.</string>
+    <string name="utfor_kalender">Opening calendar…</string>
+    <string name="fel_saknar_tid">Missing time for this action.</string>
+    <string name="installningar_sparade">Settings saved.</string>
+    <string name="paminnelse_notis_titel">Reminder</string>
+    <string name="paminnelse_kanal_namn">Reminders</string>
+    <string name="shortcut_sag_det">Say it</string>
+    <string name="shortcut_sag_det_lang">Start voice capture</string>
+    <string name="tile_label">Say it</string>
+</resources>
