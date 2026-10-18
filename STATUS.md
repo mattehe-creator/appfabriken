@@ -39,7 +39,7 @@ Val och omfång i IDEURVAL.md (omprövning 2026-10-16), regler i `husloggen/APP.
 - Skolinkorgen: `2026-10-19-prov-aviseringar`, provapp som loggar aviseringar från Tempus och InfoMentor. Mattias installerar och låter den gå i två veckor, exporterar sedan.
 - Röstfångst: `2026-10-19-rostfangst-prov`, minsta version. Mattias skapar en API-nyckel hos Anthropic, lägger in den i appen och använder den i 30 dagar.
 - Styrelserummet: landningssida för K3-stöd, självbetjäning utan samtal. Skrivs av Claude.
-- NIS2-paketet: vilande. Kräver kundsamtal som ingen i bolaget tar nu.
+- NIS2-paketet: avfört (konkurrerar med Mattias arbete).
 
 ## Senare
 

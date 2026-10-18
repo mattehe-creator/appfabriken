@@ -139,6 +139,8 @@ Underlag: sju research-områden i claude.ai-projektet (`research/01`–`04`, `06
 | 3 | Skolinkorgen: en inkorg och kalender för förskola, skola och fritid ur aviseringar på telefonen | Föräldrar i Sverige | Plattformarna har usla betyg; Öppna skolplattformen visar betalvilja; allt kan tolkas lokalt | Plattformarna ändrar sig; Play-policy för notisavläsning; bara Android | Teknisk logg av aviseringar på Mattias telefon i två veckor |
 | 4 | Röstfångst: säg det, så hamnar det i kalender, uppgifter eller svar | Mattias först, sedan yrkesgrupper | Mattias egen smärta; Gemini svag på påminnelser 2026 | Systemassistenterna blir bra inom 12–24 mån; trångt | Minsta Android-version, Mattias använder den 30 dagar |
 
+Ändrat 2026-10-19: nr 2 (NIS2) avförd, konkurrerar med Mattias arbete. Nr 4 (röstfångst) är inte längre en produktkandidat; provappen byggs som Mattias eget verktyg och för att tolkningsdelen kan återanvändas i Styrelserummets protokoll.
+
 Parkerade: reparationsstöd i Garantivalvet 1.1 (när svensk lag finns), sekretessäker offline-anteckning, upphandlingsdata för agenter (MCP), Lens-ersättare, budget utan bank, röst till ÄTA för hantverkare (mättat enligt område 06), lönekartläggning, Djurloggen. Avförda: säkerhetsskyddsstöd (för nära Mattias anställning), sprutjournal och idrottsmedlemssystem (gratis alternativ finns).
 
 ### Gränser
