@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Aviseringslogg</string>
+    <string name="skarm_hem">Start</string>
+    <string name="skarm_installningar">Inställningar</string>
+    <string name="atkomst_pa">Aviseringsåtkomst är på</string>
+    <string name="atkomst_av">Aviseringsåtkomst är av</string>
+    <string name="atkomst_hjalp">Slå på åtkomst för appen i systeminställningarna och välj sedan vilka appar som ska loggas.</string>
+    <string name="oppna_atkomst">Öppna aviseringsåtkomst</string>
+    <string name="exportera">Exportera</string>
+    <string name="rensa">Rensa</string>
+    <string name="avbryt">Avbryt</string>
+    <string name="rensa_bekrafta_titel">Rensa sparade aviseringar?</string>
+    <string name="rensa_bekrafta_text">Allt loggat aviseringsinnehåll tas bort från telefonen. Paketräknaren behålls.</string>
+    <string name="rensa_klar">Loggen är rensad</string>
+    <string name="export_klar">Export sparad</string>
+    <string name="export_misslyckades">Kunde inte spara export</string>
+    <string name="antal_per_app_rubrik">Sparade aviseringar per app</string>
+    <string name="antal_per_app_rad">%1$s: %2$d</string>
+    <string name="inga_sparade">Inga sparade aviseringar ännu.</string>
+    <string name="senaste_rubrik">Senaste 50</string>
+    <string name="inga_senaste">Inget loggat ännu.</string>
+    <string name="valj_appar_hjalp">Appar som skickat aviseringar visas här. Kryssa i de vars innehåll ska sparas (t.ex. Tempus, InfoMentor).</string>
+    <string name="inga_paket">Inga aviseringar mottagna ännu.</string>
+    <string name="paket_antal">%1$s · %2$d aviseringar</string>
+    <string name="tillbaka">Tillbaka</string>
+</resources>

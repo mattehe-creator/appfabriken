@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Notification log</string>
+    <string name="skarm_hem">Home</string>
+    <string name="skarm_installningar">Settings</string>
+    <string name="atkomst_pa">Notification access is on</string>
+    <string name="atkomst_av">Notification access is off</string>
+    <string name="atkomst_hjalp">Turn on access for this app in system settings, then choose which apps to log.</string>
+    <string name="oppna_atkomst">Open notification access</string>
+    <string name="exportera">Export</string>
+    <string name="rensa">Clear</string>
+    <string name="avbryt">Cancel</string>
+    <string name="rensa_bekrafta_titel">Clear saved notifications?</string>
+    <string name="rensa_bekrafta_text">All logged notification content will be removed from this phone. Package counts stay.</string>
+    <string name="rensa_klar">Log cleared</string>
+    <string name="export_klar">Export saved</string>
+    <string name="export_misslyckades">Could not save export</string>
+    <string name="antal_per_app_rubrik">Saved notifications per app</string>
+    <string name="antal_per_app_rad">%1$s: %2$d</string>
+    <string name="inga_sparade">No saved notifications yet.</string>
+    <string name="senaste_rubrik">Latest 50</string>
+    <string name="inga_senaste">Nothing logged yet.</string>
+    <string name="valj_appar_hjalp">Apps that have sent notifications appear here. Check the ones whose content should be saved (e.g. Tempus, InfoMentor).</string>
+    <string name="inga_paket">No notifications received yet.</string>
+    <string name="paket_antal">%1$s · %2$d notifications</string>
+    <string name="tillbaka">Back</string>
+</resources>
