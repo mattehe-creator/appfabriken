@@ -1,6 +1,6 @@
 # Status
 
-Uppdaterad 2026-10-17.
+Uppdaterad 2026-10-19.
 
 ## Klart: Grundplattan (2026-10-08–09)
 
@@ -34,8 +34,15 @@ Val och omfång i IDEURVAL.md (omprövning 2026-10-16), regler i `husloggen/APP.
 9. Mörkt läge, välkomstskärm, butiksmaterial, skärmbilder, Data safety och integritetspolicy. Nästa att skriva.
 10. Mattias provar på telefon.
 
+## Nu: tester från Idéurval 2 (IDEURVAL.md)
+
+- Skolinkorgen: `2026-10-19-prov-aviseringar`, provapp som loggar aviseringar från Tempus och InfoMentor. Mattias installerar och låter den gå i två veckor, exporterar sedan.
+- Röstfångst: `2026-10-19-rostfangst-prov`, minsta version. Mattias skapar en API-nyckel hos Anthropic, lägger in den i appen och använder den i 30 dagar.
+- Styrelserummet: landningssida för K3-stöd, självbetjäning utan samtal. Skrivs av Claude.
+- NIS2-paketet: avfört (konkurrerar med Mattias arbete).
+
 ## Senare
 
 - Husloggen efter 1.0: mätarställningar, flera bostäder, dokument (manualer, ritningar), plan för framtida kostnader.
-- App 3 väljs när Mattias vill (IDEURVAL.md). Ingen väntetid efter publicering.
+- App 3 väljs efter testerna i Idéurval 2.
 - Mätaren i panelen (`release.json`) följer Garantivalvet tills den är publicerad. Claude uppdaterar den när ett steg ändras.
