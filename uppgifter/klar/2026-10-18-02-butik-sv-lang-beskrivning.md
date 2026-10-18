@@ -34,3 +34,5 @@ gradle :flextid:testDebugUnitTest --tests "*ButikTexterTest"
 - Ändra titel, kort beskrivning eller engelska filer.
 - Lägga till beroenden.
 - Ändra appkod eller manifest.
+
+utfall: godkänd 2026-10-18 (fullbordade avklippt lang.txt)

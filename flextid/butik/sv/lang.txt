@@ -1,1 +1,11 @@
-Preliminär lång beskrivning för Google Play. Den slutliga svenska texten skrivs i uppgift 2026-10-18-02 av den lokala modellen. Appen Flextid (arbetsnamn) registrerar flextid offline utan konton.
+Flextid registrerar din flextid offline utan konton. Stämpla in och ut per dag, ange rast i minuter och ange din egen normaltid. Appen visar saldo mot din normaltid och en veckovy med arbetsdagar och lediga dagar.
+
+Påminnelser hjälper dig att inte glömma stämpla in eller ut. En påminnelse kommer kl. 08:00 på arbetsdagar om du inte startat dagen, och en påminnelse efter normaltid om du inte stämplat ut. Påminnelser är valfria och kan stängas av i inställningar.
+
+Du kan exportera dina dagar som CSV för vald månad via systemets filväljare. Du kan även säkerhetskopiera din data som JSON med versionsnummer. Export och säkerhetskopia är alltid gratis, oavsett om du har Pro eller inte.
+
+Flextid kräver ingen internetanslutning. Appen har ingen `INTERNET`-behörighet, inga konton, ingen reklam och ingen analys. All data stannar på din telefon tills du väljer att exportera den.
+
+Appen är gratis upp till 15 dagposter. Pro (engångsköp) tar bort gränsen på dagposter. Befintlig data raderas aldrig.
+
+Flextid antar inget kollektivavtal och ger ingen rådgivning om vad avtal eller lag tillåter. Appen hjälper dig bara att hålla koll på din egen tid.
