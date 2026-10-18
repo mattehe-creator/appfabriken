@@ -10,6 +10,47 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HusDao {
+    @Query("SELECT * FROM bostad ORDER BY id")
+    fun allaBostaderFlow(): Flow<List<Bostad>>
+
+    @Query("SELECT * FROM bostad ORDER BY id")
+    suspend fun allaBostader(): List<Bostad>
+
+    @Query("SELECT * FROM bostad WHERE id = :id")
+    suspend fun hamtaBostad(id: Long): Bostad?
+
+    @Insert
+    suspend fun infogaBostad(bostad: Bostad): Long
+
+    @Update
+    suspend fun uppdateraBostad(bostad: Bostad)
+
+    @Delete
+    suspend fun taBortBostad(bostad: Bostad)
+
+    @Query("SELECT COUNT(*) FROM bostad")
+    suspend fun antalBostader(): Int
+
+    @Query(
+        """
+        SELECT COUNT(*) FROM (
+            SELECT id FROM post WHERE bostad_id = :bostadId
+            UNION ALL
+            SELECT id FROM uppgift WHERE bostad_id = :bostadId
+            UNION ALL
+            SELECT id FROM matare WHERE bostad_id = :bostadId
+            UNION ALL
+            SELECT id FROM dokument WHERE bostad_id = :bostadId
+            UNION ALL
+            SELECT id FROM planerad_kostnad WHERE bostad_id = :bostadId
+        )
+        """,
+    )
+    suspend fun antalPosterISammanhangForBostad(bostadId: Long): Int
+
+    @Query("SELECT * FROM uppgift WHERE bostad_id = :bostadId")
+    fun uppgifterForBostadFlow(bostadId: Long): Flow<List<Uppgift>>
+
     @Query("SELECT * FROM uppgift")
     fun allaUppgifterFlow(): Flow<List<Uppgift>>
 
@@ -27,6 +68,9 @@ interface HusDao {
 
     @Delete
     suspend fun taBortUppgift(uppgift: Uppgift)
+
+    @Query("SELECT * FROM post WHERE bostad_id = :bostadId ORDER BY datum DESC, skapad DESC")
+    fun posterForBostadFlow(bostadId: Long): Flow<List<Post>>
 
     @Query("SELECT * FROM post ORDER BY datum DESC, skapad DESC")
     fun allaPosterFlow(): Flow<List<Post>>
@@ -49,6 +93,9 @@ interface HusDao {
     @Query("SELECT COUNT(*) FROM post")
     suspend fun antalPoster(): Int
 
+    @Query("SELECT COUNT(*) FROM post")
+    fun antalPosterFlow(): Flow<Int>
+
     @Query("SELECT COUNT(*) FROM uppgift")
     suspend fun antalUppgifter(): Int
 
@@ -57,6 +104,9 @@ interface HusDao {
         uppdateraUppgift(uppdateradUppgift)
         infogaPost(nyPost)
     }
+
+    @Query("SELECT * FROM matare WHERE bostad_id = :bostadId ORDER BY namn COLLATE NOCASE, id")
+    fun matareForBostadFlow(bostadId: Long): Flow<List<Matare>>
 
     @Query("SELECT * FROM matare ORDER BY namn COLLATE NOCASE, id")
     fun allaMatareFlow(): Flow<List<Matare>>
@@ -100,6 +150,19 @@ interface HusDao {
     @Query(
         """
         SELECT * FROM dokument
+        WHERE bostad_id = :bostadId
+        ORDER BY
+            CASE WHEN kategori IS NULL THEN 1 ELSE 0 END,
+            kategori COLLATE NOCASE,
+            titel COLLATE NOCASE,
+            id
+        """,
+    )
+    fun dokumentForBostadFlow(bostadId: Long): Flow<List<Dokument>>
+
+    @Query(
+        """
+        SELECT * FROM dokument
         ORDER BY
             CASE WHEN kategori IS NULL THEN 1 ELSE 0 END,
             kategori COLLATE NOCASE,
@@ -127,10 +190,11 @@ interface HusDao {
     @Query(
         """
         SELECT * FROM planerad_kostnad
+        WHERE bostad_id = :bostadId
         ORDER BY planerat_ar, titel COLLATE NOCASE, id
         """,
     )
-    fun allaPlaneradeKostnaderFlow(): Flow<List<PlaneradKostnad>>
+    fun planeradeKostnaderForBostadFlow(bostadId: Long): Flow<List<PlaneradKostnad>>
 
     @Query("SELECT * FROM planerad_kostnad ORDER BY id")
     suspend fun allaPlaneradeKostnader(): List<PlaneradKostnad>

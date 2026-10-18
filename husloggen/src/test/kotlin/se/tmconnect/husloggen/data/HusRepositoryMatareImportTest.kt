@@ -27,10 +27,7 @@ class HusRepositoryMatareImportTest {
     @Before
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val databas =
-            Room.inMemoryDatabaseBuilder(context, HusDatabas::class.java)
-                .allowMainThreadQueries()
-                .build()
+        val databas = skapaTestHusDatabas(context)
         repository = skapaHusRepository(context, databas)
     }
 
@@ -50,10 +47,12 @@ class HusRepositoryMatareImportTest {
             ByteArrayOutputStream().use { ut ->
                 Sakerhetskopia.skriv(
                     ut,
+                    repository.allaBostader(),
                     emptyList(),
                     emptyList(),
                     matare,
                     avlasningar,
+                    emptyList(),
                     emptyList(),
                     skapaHusBildLager(ApplicationProvider.getApplicationContext()),
                     skapaHusDokumentLager(ApplicationProvider.getApplicationContext()),
@@ -63,10 +62,7 @@ class HusRepositoryMatareImportTest {
         val las = ByteArrayInputStream(zipBytes).use { Sakerhetskopia.lasIn(it) }
         assertEquals(true, las is SakerhetskopiaLasResult.Ok)
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val databas2 =
-            Room.inMemoryDatabaseBuilder(context, HusDatabas::class.java)
-                .allowMainThreadQueries()
-                .build()
+        val databas2 = skapaTestHusDatabas(context)
         val repo2 = skapaHusRepository(context, databas2)
         repo2.importeraSakerhetskopia(
             (las as SakerhetskopiaLasResult.Ok).innehall,

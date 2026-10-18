@@ -2,7 +2,8 @@
 
 ## 2026-10-18
 
-- Husloggen: plan för framtida kostnader — tabell `planerad_kostnad`, databas version 5, egen flik Plan (sex flikar i bottennavigeringen), obegränsat i gratisversionen, Genomförd → loggpost, säkerhetskopia version 4 med valfritt fält `planeradeKostnader`. (Cursor, uppdrag plan för framtida kostnader)
+- Husloggen: flera bostäder på main med planerade kostnader, databas version 6 (migration 5→6, `bostad_id` även på `planerad_kostnad`), säkerhetskopia JSON version 5 med bostäder och planerade kostnader. Gratis upp till 3 bostäder och 15 loggposter totalt. (Cursor, uppdrag omstart v6)
+- Husloggen: flera bostäder, databas version 5 (tabell `bostad`, `bostad_id` på övriga tabeller), gratis upp till 3 bostäder och 15 loggposter totalt, säkerhetskopia version 4 med bostäder. (Cursor, uppdrag flera bostäder — ersatt av omstart v6)
 
 ## 2026-10-17
 
