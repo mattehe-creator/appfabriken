@@ -42,6 +42,11 @@ fun skrivSakerhetskopiaJson(innehall: SakerhetskopiaInnehall): String =
             if (index > 0) append(',')
             append(skrivAvlasningObjekt(avlasning))
         }
+        append("],\"dokument\":[")
+        innehall.dokument.forEachIndexed { index, dokument ->
+            if (index > 0) append(',')
+            append(skrivDokumentObjekt(dokument))
+        }
         append("]}")
     }
 
@@ -97,6 +102,24 @@ private fun skrivMatareObjekt(matare: SakerhetskopiaMatare): String =
         laggTillFalt("namn", jsonStrang(matare.namn))
         laggTillFalt("enhet", jsonStrang(matare.enhet))
         matare.anteckning?.let { laggTillFalt("anteckning", jsonStrang(it)) }
+        append('}')
+    }
+
+private fun skrivDokumentObjekt(dokument: SakerhetskopiaDokument): String =
+    buildString {
+        append('{')
+        var forsta = true
+        fun laggTillFalt(namn: String, varde: String) {
+            if (!forsta) append(',')
+            forsta = false
+            append('"').append(namn).append("\":").append(varde)
+        }
+        laggTillFalt("titel", jsonStrang(dokument.titel))
+        dokument.kategori?.let { laggTillFalt("kategori", jsonStrang(it)) }
+        dokument.anteckning?.let { laggTillFalt("anteckning", jsonStrang(it)) }
+        laggTillFalt("filnamn", jsonStrang(dokument.filnamn))
+        laggTillFalt("mimeTyp", jsonStrang(dokument.mimeTyp))
+        laggTillFalt("tillagd", jsonStrang(dokument.tillagd.toString()))
         append('}')
     }
 
@@ -193,6 +216,19 @@ fun lasSakerhetskopiaJson(text: String): SakerhetskopiaJsonLasResult {
         if (matare.size != rawMatare.size || avlasningar.size != rawAvlasningar.size) {
             return SakerhetskopiaJsonLasResult.Fel.TrasigJson
         }
+        val rawDokument = rot["dokument"] as? List<*> ?: emptyList<Any>()
+        if (rawDokument.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_DOKUMENT) {
+            return SakerhetskopiaJsonLasResult.Fel.TrasigJson
+        }
+        val dokument =
+            rawDokument.mapNotNull { element ->
+                val falt = element as? Map<*, *> ?: return@mapNotNull null
+                @Suppress("UNCHECKED_CAST")
+                lasDokumentObjekt(falt as Map<String, Any?>)
+            }
+        if (dokument.size != rawDokument.size) {
+            return SakerhetskopiaJsonLasResult.Fel.TrasigJson
+        }
         SakerhetskopiaJsonLasResult.Ok(
             SakerhetskopiaInnehall(
                 version = version.toInt(),
@@ -201,6 +237,7 @@ fun lasSakerhetskopiaJson(text: String): SakerhetskopiaJsonLasResult {
                 poster = poster,
                 matare = matare,
                 avlasningar = avlasningar,
+                dokument = dokument,
             ),
         )
     } catch (_: Exception) {
@@ -237,6 +274,21 @@ private fun lasMatareObjekt(falt: Map<String, Any?>): SakerhetskopiaMatare? {
         namn = namn,
         enhet = enhet,
         anteckning = falt["anteckning"] as? String,
+    )
+}
+
+private fun lasDokumentObjekt(falt: Map<String, Any?>): SakerhetskopiaDokument? {
+    val titel = falt["titel"] as? String ?: return null
+    val filnamn = falt["filnamn"] as? String ?: return null
+    val mimeTyp = falt["mimeTyp"] as? String ?: return null
+    val tillagd = lasDatum(falt["tillagd"]) ?: return null
+    return SakerhetskopiaDokument(
+        titel = titel,
+        kategori = falt["kategori"] as? String,
+        anteckning = falt["anteckning"] as? String,
+        filnamn = filnamn,
+        mimeTyp = mimeTyp,
+        tillagd = tillagd,
     )
 }
 

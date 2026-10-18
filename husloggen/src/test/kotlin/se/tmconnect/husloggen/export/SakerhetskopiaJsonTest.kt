@@ -100,8 +100,8 @@ class SakerhetskopiaJsonTest {
     }
 
     @Test
-    fun version3Avvisas() {
-        val json = """{"version":3,"skapad":"2026-10-16","uppgifter":[],"poster":[]}"""
+    fun version4Avvisas() {
+        val json = """{"version":4,"skapad":"2026-10-16","uppgifter":[],"poster":[]}"""
         assertTrue(lasSakerhetskopiaJson(json) is SakerhetskopiaJsonLasResult.Fel.OkandVersion)
     }
 
@@ -111,6 +111,37 @@ class SakerhetskopiaJsonTest {
         val las = lasSakerhetskopiaJson(json) as SakerhetskopiaJsonLasResult.Ok
         assertEquals(emptyList<SakerhetskopiaMatare>(), las.innehall.matare)
         assertEquals(emptyList<SakerhetskopiaAvlasning>(), las.innehall.avlasningar)
+        assertEquals(emptyList<SakerhetskopiaDokument>(), las.innehall.dokument)
+    }
+
+    @Test
+    fun version2UtanDokumentImporteras() {
+        val json = """{"version":2,"skapad":"2026-10-17","uppgifter":[],"poster":[]}"""
+        val las = lasSakerhetskopiaJson(json) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals(emptyList<SakerhetskopiaDokument>(), las.innehall.dokument)
+    }
+
+    @Test
+    fun dokumentRundturSkrivLas() {
+        val innehall =
+            SakerhetskopiaInnehall(
+                version = 3,
+                skapad = "2026-10-17",
+                uppgifter = emptyList(),
+                poster = emptyList(),
+                dokument =
+                    listOf(
+                        SakerhetskopiaDokument(
+                            titel = "Manual diskmaskin",
+                            kategori = se.tmconnect.husloggen.data.DokumentKategori.MANUAL.name,
+                            filnamn = "a.pdf",
+                            mimeTyp = "application/pdf",
+                            tillagd = LocalDate.of(2026, 10, 1),
+                        ),
+                    ),
+            )
+        val las = lasSakerhetskopiaJson(skrivSakerhetskopiaJson(innehall)) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals(innehall, las.innehall)
     }
 
     @Test

@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.room.withTransaction
 import java.time.LocalDate
 import kotlinx.coroutines.flow.Flow
+import se.tmconnect.husloggen.export.sakerhetskopiaDokumentTillDokument
 import se.tmconnect.husloggen.export.SakerhetskopiaImportResultat
 import se.tmconnect.husloggen.export.SakerhetskopiaInnehall
 import se.tmconnect.husloggen.export.SakerhetskopiaPost
@@ -40,10 +41,12 @@ class HusRepository(
     private val databas: HusDatabas,
     private val dao: HusDao,
     private val bildLager: BildLager,
+    private val dokumentLager: DokumentLager,
 ) {
     val uppgifter: Flow<List<Uppgift>> = dao.allaUppgifterFlow()
     val poster: Flow<List<Post>> = dao.allaPosterFlow()
     val matare: Flow<List<Matare>> = dao.allaMatareFlow()
+    val dokument: Flow<List<Dokument>> = dao.allaDokumentFlow()
 
     fun avlasningarForMatare(matareId: Long): Flow<List<Avlasning>> =
         dao.avlasningarForMatareFlow(matareId)
@@ -163,9 +166,36 @@ class HusRepository(
 
     suspend fun allaPoster(): List<Post> = dao.allaPoster()
 
+    suspend fun allaDokument(): List<Dokument> = dao.allaDokument()
+
+    suspend fun hamtaDokument(id: Long): Dokument? = dao.hamtaDokument(id)
+
+    suspend fun sparaDokument(dokument: Dokument): Long =
+        if (dokument.id == 0L) {
+            dao.infogaDokument(dokument)
+        } else {
+            dao.uppdateraDokument(dokument)
+            dokument.id
+        }
+
+    suspend fun taBortDokument(dokument: Dokument) {
+        dokumentLager.taBort(dokument.filnamn)
+        dao.taBortDokument(dokument)
+    }
+
+    fun kopieraDokumentFranUri(kallaUri: Uri): KopieraDokumentResult =
+        dokumentLager.kopieraFranUri(kallaUri)
+
+    fun taBortDokumentfil(filnamn: String) = dokumentLager.taBort(filnamn)
+
+    fun dokumentUri(filnamn: String) = dokumentLager.innehallUriForFilnamn(filnamn)
+
+    fun dokumentfilFinns(filnamn: String) = dokumentLager.filFinns(filnamn)
+
     suspend fun importeraSakerhetskopia(
         innehall: SakerhetskopiaInnehall,
         bildFiler: Map<String, ByteArray>,
+        dokumentFiler: Map<String, ByteArray> = emptyMap(),
     ): SakerhetskopiaImportResultat {
         val befintligaUppgifter = dao.allaUppgifter()
         val befintligaPoster = dao.allaPoster()
@@ -233,6 +263,19 @@ class HusRepository(
                 val matareId = matareIndexTillId[export.matareIndex] ?: continue
                 dao.infogaAvlasning(sakerhetskopiaAvlasningTillAvlasning(export, matareId))
             }
+            for (export in innehall.dokument) {
+                export.filnamn.let { filnamn ->
+                    if (filnamn !in dokumentFiler) {
+                        error("Saknad dokumentfil i säkerhetskopia: $filnamn")
+                    }
+                }
+                val nyttFilnamn =
+                    dokumentLager.sparaFranBytes(
+                        dokumentFiler.getValue(export.filnamn),
+                        export.filnamn,
+                    )
+                dao.infogaDokument(sakerhetskopiaDokumentTillDokument(export, nyttFilnamn))
+            }
         }
         return SakerhetskopiaImportResultat(tillagda = tillagda, hoppadeOver = hoppadeOver)
     }
@@ -251,3 +294,11 @@ class HusRepository(
         const val MAX_BILDER_PER_POST = se.tmconnect.husloggen.regler.MAX_BILDER_PER_POST
     }
 }
+
+fun skapaHusRepository(context: android.content.Context, databas: HusDatabas): HusRepository =
+    HusRepository(
+        databas = databas,
+        dao = databas.husDao(),
+        bildLager = skapaHusBildLager(context),
+        dokumentLager = skapaHusDokumentLager(context),
+    )

@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.RadioButton
@@ -54,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import java.util.Locale
 import se.tmconnect.husloggen.BuildConfig
 import se.tmconnect.husloggen.R
+import se.tmconnect.husloggen.data.Dokument
 import se.tmconnect.husloggen.data.Matare
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.Uppgift
@@ -61,7 +63,7 @@ import se.tmconnect.husloggen.regler.grupperaPerAr
 import se.tmconnect.karna.format.formateraPrisKr
 import se.tmconnect.karna.tema.TemaLage
 
-enum class HusFlik { ATT_GORA, LOGG, MATARE, SAMMANSTALLNING }
+enum class HusFlik { ATT_GORA, LOGG, MATARE, DOKUMENT, SAMMANSTALLNING }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,13 +71,16 @@ fun HusStartSkarm(
     uppgifter: List<Uppgift>,
     poster: List<Post>,
     matare: List<Matare>,
+    dokument: List<Dokument>,
     onInstallningar: () -> Unit,
     onNyUppgift: () -> Unit,
     onNyPost: () -> Unit,
     onNyMatare: () -> Unit,
+    onNyttDokument: () -> Unit,
     onOppnaUppgift: (Long) -> Unit,
     onOppnaPost: (Long) -> Unit,
     onOppnaMatare: (Long) -> Unit,
+    onOppnaDokument: (Long) -> Unit,
     onMarkeraGjord: (Long) -> Unit,
     oppnaAttGora: Boolean = false,
     paminnelserPa: Boolean = false,
@@ -140,6 +145,17 @@ fun HusStartSkarm(
                     label = { Text(text = stringResource(R.string.flik_matare)) },
                 )
                 NavigationBarItem(
+                    selected = valdFlik == HusFlik.DOKUMENT.ordinal,
+                    onClick = { valdFlik = HusFlik.DOKUMENT.ordinal },
+                    icon = {
+                        Icon(
+                            Icons.Filled.Menu,
+                            contentDescription = stringResource(R.string.flik_dokument),
+                        )
+                    },
+                    label = { Text(text = stringResource(R.string.flik_dokument)) },
+                )
+                NavigationBarItem(
                     selected = valdFlik == HusFlik.SAMMANSTALLNING.ordinal,
                     onClick = { valdFlik = HusFlik.SAMMANSTALLNING.ordinal },
                     icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
@@ -188,6 +204,19 @@ fun HusStartSkarm(
                         modifier = Modifier.tryckyta48(),
                     )
                 }
+                HusFlik.DOKUMENT -> {
+                    ExtendedFloatingActionButton(
+                        onClick = onNyttDokument,
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Filled.Add,
+                                contentDescription = stringResource(R.string.fab_nytt_dokument),
+                            )
+                        },
+                        text = { Text(text = stringResource(R.string.fab_nytt_dokument)) },
+                        modifier = Modifier.tryckyta48(),
+                    )
+                }
                 HusFlik.SAMMANSTALLNING -> {
                     // Inget flytande knapp för sammanställningsfliken
                 }
@@ -220,6 +249,16 @@ fun HusStartSkarm(
                 onNyMatare = onNyMatare,
                 onOppnaMatare = onOppnaMatare,
             )
+            HusFlik.DOKUMENT -> {
+                val locale = LocalConfiguration.current.locales[0]
+                DokumentFlik(
+                    dokument = dokument,
+                    locale = locale,
+                    contentPadding = innerPadding,
+                    onNyttDokument = onNyttDokument,
+                    onOppnaDokument = onOppnaDokument,
+                )
+            }
             HusFlik.SAMMANSTALLNING -> {
                 SammanstallningSkarm(
                     poster = poster,

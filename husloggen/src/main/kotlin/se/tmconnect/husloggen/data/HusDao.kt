@@ -97,6 +97,33 @@ interface HusDao {
     @Query("SELECT COUNT(*) FROM matare")
     suspend fun antalMatare(): Int
 
+    @Query(
+        """
+        SELECT * FROM dokument
+        ORDER BY
+            CASE WHEN kategori IS NULL THEN 1 ELSE 0 END,
+            kategori COLLATE NOCASE,
+            titel COLLATE NOCASE,
+            id
+        """,
+    )
+    fun allaDokumentFlow(): Flow<List<Dokument>>
+
+    @Query("SELECT * FROM dokument ORDER BY id")
+    suspend fun allaDokument(): List<Dokument>
+
+    @Query("SELECT * FROM dokument WHERE id = :id")
+    suspend fun hamtaDokument(id: Long): Dokument?
+
+    @Insert
+    suspend fun infogaDokument(dokument: Dokument): Long
+
+    @Update
+    suspend fun uppdateraDokument(dokument: Dokument)
+
+    @Delete
+    suspend fun taBortDokument(dokument: Dokument)
+
     @Transaction
     suspend fun importeraSakerhetskopiaData(uppgifter: List<Uppgift>, poster: List<Post>) {
         uppgifter.forEach { infogaUppgift(it) }

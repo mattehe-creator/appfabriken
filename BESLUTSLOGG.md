@@ -1,5 +1,9 @@
 # Beslutslogg
 
+## 2026-10-17
+
+- Husloggen: dokument (manualer, ritningar m.m.) i egen flik, databas version 4, filer via SAF utan nya behörigheter, högst 25 MB per fil, ingår i säkerhetskopia (version 3). Gratis och räknas inte som loggposter. (Cursor, uppdrag `2026-10-17-husloggen-dokument`)
+
 ## 2026-10-08
 
 - Projektet bygger en portfölj av appar för Google Play. Roller: Mattias beslutar, Claude projektleder och kontrollerar direktiven, Cursor delar upp och granskar, lokal modell skriver koden. (Mattias)

@@ -69,7 +69,13 @@ import se.tmconnect.husloggen.paminnelse.HusPaminnelseKalla
 import se.tmconnect.husloggen.paminnelse.PaminnelseWorker
 import se.tmconnect.karna.paminnelse.PaminnelseInstallningarLager
 import se.tmconnect.karna.paminnelse.PaminnelsePlanerare
+import se.tmconnect.husloggen.data.Dokument
+import se.tmconnect.husloggen.data.DokumentKategori
+import se.tmconnect.husloggen.data.KopieraDokumentResult
 import se.tmconnect.husloggen.data.skapaHusBildLager
+import se.tmconnect.husloggen.data.skapaHusDokumentLager
+import se.tmconnect.husloggen.regler.DokumentFel
+import se.tmconnect.husloggen.regler.valideraDokument
 
 data class UppgiftFormularTillstand(
     val redigerarId: Long = 0L,
@@ -96,6 +102,16 @@ data class AvlasningFormularTillstand(
     val vardeText: String = "",
     val valideringsFel: AvlasningFel? = null,
     val visarLagreVardeBekraftelse: Boolean = false,
+)
+
+data class DokumentFormularTillstand(
+    val redigerarId: Long = 0L,
+    val titel: String = "",
+    val kategori: DokumentKategori? = null,
+    val anteckning: String = "",
+    val filnamn: String? = null,
+    val mimeTyp: String? = null,
+    val valideringsFel: DokumentFel? = null,
 )
 
 data class PostFormularTillstand(
@@ -136,6 +152,12 @@ sealed class HusUiMeddelande {
     data object SakerhetskopiaNyareVersion : HusUiMeddelande()
 
     data class SakerhetskopiaImporterad(val tillagda: Int, val hoppadeOver: Int) : HusUiMeddelande()
+
+    data object DokumentForStort : HusUiMeddelande()
+
+    data object DokumentOgiltigTyp : HusUiMeddelande()
+
+    data object DokumentKundeInteLaggasTill : HusUiMeddelande()
 }
 
 class HusViewModel(
@@ -194,6 +216,9 @@ class HusViewModel(
     val matare: StateFlow<List<Matare>> = repository.matare
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    val dokument: StateFlow<List<Dokument>> = repository.dokument
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
     private val _forsaljningsAr = MutableStateFlow(standardForsaljningsar(idag))
     val forsaljningsAr: StateFlow<Int> = _forsaljningsAr.asStateFlow()
 
@@ -233,6 +258,12 @@ class HusViewModel(
 
     private val _matareDetaljId = MutableStateFlow<Long?>(null)
     val matareDetaljId: StateFlow<Long?> = _matareDetaljId.asStateFlow()
+
+    private val _dokumentDetaljId = MutableStateFlow<Long?>(null)
+    val dokumentDetaljId: StateFlow<Long?> = _dokumentDetaljId.asStateFlow()
+
+    private val _dokumentFormular = MutableStateFlow<DokumentFormularTillstand?>(null)
+    val dokumentFormular: StateFlow<DokumentFormularTillstand?> = _dokumentFormular.asStateFlow()
 
     private val _matareFormular = MutableStateFlow<MatareFormularTillstand?>(null)
     val matareFormular: StateFlow<MatareFormularTillstand?> = _matareFormular.asStateFlow()
@@ -667,11 +698,22 @@ class HusViewModel(
                     val poster = repository.allaPoster()
                     val matare = repository.allaMatare()
                     val avlasningar = repository.allaAvlasningar()
+                    val dokumentLista = repository.allaDokument()
                     val bildLager = skapaHusBildLager(appContext)
+                    val dokumentLager = skapaHusDokumentLager(appContext)
                     val outputStream = appContext.contentResolver.openOutputStream(uri)
                         ?: throw java.io.IOException()
                     outputStream.use {
-                        Sakerhetskopia.skriv(it, uppgifter, poster, matare, avlasningar, bildLager)
+                        Sakerhetskopia.skriv(
+                            it,
+                            uppgifter,
+                            poster,
+                            matare,
+                            avlasningar,
+                            dokumentLista,
+                            bildLager,
+                            dokumentLager,
+                        )
                     }
                 }
                 _meddelanden.emit(HusUiMeddelande.SakerhetskopiaSparad)
@@ -959,6 +1001,130 @@ class HusViewModel(
         _matareFormular.value = _matareFormular.value?.let(block)
     }
 
+    fun visaNyttDokument() {
+        _dokumentDetaljId.value = null
+        _dokumentFormular.value = DokumentFormularTillstand()
+    }
+
+    fun stangDokumentFormular() {
+        val tillstand = _dokumentFormular.value
+        if (tillstand?.redigerarId == 0L) {
+            tillstand.filnamn?.let { repository.taBortDokumentfil(it) }
+        }
+        _dokumentFormular.value = null
+    }
+
+    fun visaDokumentDetalj(dokumentId: Long) {
+        _dokumentFormular.value = null
+        _dokumentDetaljId.value = dokumentId
+    }
+
+    fun stangDokumentDetalj() {
+        _dokumentDetaljId.value = null
+    }
+
+    fun visaAndraDokument(dokumentId: Long) {
+        viewModelScope.launch {
+            val rad = repository.hamtaDokument(dokumentId) ?: return@launch
+            _dokumentDetaljId.value = null
+            _dokumentFormular.value =
+                DokumentFormularTillstand(
+                    redigerarId = rad.id,
+                    titel = rad.titel,
+                    kategori = rad.kategori,
+                    anteckning = rad.anteckning.orEmpty(),
+                    filnamn = rad.filnamn,
+                    mimeTyp = rad.mimeTyp,
+                )
+        }
+    }
+
+    fun uppdateraDokumentTitel(titel: String) {
+        uppdateraDokumentFormular { it.copy(titel = titel, valideringsFel = null) }
+    }
+
+    fun uppdateraDokumentKategori(kategori: DokumentKategori?) {
+        uppdateraDokumentFormular { it.copy(kategori = kategori) }
+    }
+
+    fun uppdateraDokumentAnteckning(text: String) {
+        uppdateraDokumentFormular { it.copy(anteckning = text) }
+    }
+
+    fun valjDokumentFil(uri: Uri) {
+        viewModelScope.launch {
+            val tillstand = _dokumentFormular.value ?: return@launch
+            if (tillstand.redigerarId != 0L) {
+                return@launch
+            }
+            tillstand.filnamn?.let { repository.taBortDokumentfil(it) }
+            when (val resultat = withContext(Dispatchers.IO) { repository.kopieraDokumentFranUri(uri) }) {
+                is KopieraDokumentResult.Ok ->
+                    _dokumentFormular.value =
+                        tillstand.copy(
+                            filnamn = resultat.filnamn,
+                            mimeTyp = resultat.mimeTyp,
+                            valideringsFel = null,
+                        )
+                KopieraDokumentResult.ForStor -> {
+                    _meddelanden.emit(HusUiMeddelande.DokumentForStort)
+                }
+                KopieraDokumentResult.OgiltigTyp -> {
+                    _meddelanden.emit(HusUiMeddelande.DokumentOgiltigTyp)
+                }
+                KopieraDokumentResult.Misslyckades -> {
+                    _meddelanden.emit(HusUiMeddelande.DokumentKundeInteLaggasTill)
+                }
+            }
+        }
+    }
+
+    fun sparaDokumentFormular() {
+        val tillstand = _dokumentFormular.value ?: return
+        val fel = valideraDokument(tillstand.titel, tillstand.filnamn != null)
+        if (fel != null) {
+            _dokumentFormular.value = tillstand.copy(valideringsFel = fel)
+            return
+        }
+        viewModelScope.launch {
+            if (tillstand.redigerarId == 0L) {
+                repository.sparaDokument(
+                    Dokument(
+                        titel = tillstand.titel.trim(),
+                        kategori = tillstand.kategori,
+                        anteckning = tillstand.anteckning.trim().takeIf { it.isNotEmpty() },
+                        filnamn = tillstand.filnamn!!,
+                        mimeTyp = tillstand.mimeTyp!!,
+                        tillagd = idag,
+                    ),
+                )
+            } else {
+                val befintlig = repository.hamtaDokument(tillstand.redigerarId) ?: return@launch
+                repository.sparaDokument(
+                    befintlig.copy(
+                        titel = tillstand.titel.trim(),
+                        kategori = tillstand.kategori,
+                        anteckning = tillstand.anteckning.trim().takeIf { it.isNotEmpty() },
+                    ),
+                )
+            }
+            _dokumentFormular.value = null
+        }
+    }
+
+    fun taBortDokument(dokumentId: Long) {
+        viewModelScope.launch {
+            repository.hamtaDokument(dokumentId)?.let { repository.taBortDokument(it) }
+            stangDokumentDetalj()
+        }
+    }
+
+    fun dokumentUri(filnamn: String): Uri = repository.dokumentUri(filnamn)
+
+    private fun uppdateraDokumentFormular(block: (DokumentFormularTillstand) -> DokumentFormularTillstand) {
+        _dokumentFormular.value = _dokumentFormular.value?.let(block)
+    }
+
     private fun uppdateraAvlasningFormular(block: (AvlasningFormularTillstand) -> AvlasningFormularTillstand) {
         _avlasningFormular.value = _avlasningFormular.value?.let(block)
     }
@@ -969,6 +1135,7 @@ class HusViewModel(
                 repository.importeraSakerhetskopia(
                     resultat.innehall,
                     resultat.bildFiler,
+                    resultat.dokumentFiler,
                 )
             }
             if (paminnelseInstallningar.paminnelserPa.first()) {

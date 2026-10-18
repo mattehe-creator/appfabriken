@@ -15,4 +15,11 @@ class Konverterare {
 
     @TypeConverter
     fun tillPostTyp(typ: PostTyp?): String? = typ?.name
+
+    @TypeConverter
+    fun franDokumentKategori(value: String?): DokumentKategori? =
+        value?.let { DokumentKategori.valueOf(it) }
+
+    @TypeConverter
+    fun tillDokumentKategori(kategori: DokumentKategori?): String? = kategori?.name
 }

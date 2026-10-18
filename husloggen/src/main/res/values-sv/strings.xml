@@ -212,4 +212,34 @@
     <string name="valkommen_integritet">Inget konto, ingen reklam och ingen molntjänst. Gratis upp till 15 poster i loggen.</string>
     <string name="valkommen_lagg_till">Lägg till min första uppgift</string>
     <string name="valkommen_titta">Titta runt först</string>
+
+    <string name="flik_dokument">Dokument</string>
+    <string name="fab_nytt_dokument">Nytt dokument</string>
+    <string name="tom_dokument">Inga dokument än. Lägg till manualer, ritningar och besiktningsprotokoll för huset.</string>
+    <string name="nytt_dokument_rubrik">Nytt dokument</string>
+    <string name="andra_dokument_rubrik">Ändra dokument</string>
+    <string name="falt_dokument_titel">Titel</string>
+    <string name="dokument_kategori_vald">Kategori: %1$s</string>
+    <string name="dokument_kategori_saknas">Ingen kategori</string>
+    <string name="dokument_kategori_manual">Manual</string>
+    <string name="dokument_kategori_ritning">Ritning</string>
+    <string name="dokument_kategori_besiktning">Besiktning</string>
+    <string name="dokument_kategori_garanti">Garanti</string>
+    <string name="dokument_kategori_avtal">Avtal</string>
+    <string name="dokument_kategori_ovrigt">Övrigt</string>
+    <string name="dokument_kategori_etikett">Kategori: %1$s</string>
+    <string name="dokument_tillagd_etikett">Tillagd: %1$s</string>
+    <string name="dokument_tillagd_info">Sparas med dagens datum (%1$s).</string>
+    <string name="dokument_valj_fil">Välj fil (PDF eller bild)</string>
+    <string name="dokument_fil_vald">Byt fil</string>
+    <string name="dokument_fil_oforandrad">Filen kan inte bytas vid redigering. Lägg till ett nytt dokument i stället.</string>
+    <string name="dokument_oppna_fil">Öppna fil</string>
+    <string name="ta_bort_dokument">Ta bort dokument</string>
+    <string name="bekrafta_ta_bort_dokument_titel">Ta bort dokument?</string>
+    <string name="bekrafta_ta_bort_dokument_text">Dokumentet och filen tas bort permanent.</string>
+    <string name="fel_dokument_titel_saknas">Ange en titel</string>
+    <string name="fel_dokument_fil_saknas">Välj en fil</string>
+    <string name="dokument_for_stort">Filen är för stor. Högst 25 MB.</string>
+    <string name="dokument_ogiltig_typ">Endast PDF-filer och bilder stöds.</string>
+    <string name="dokument_kunde_inte_laggas_till">Kunde inte lägga till dokumentet.</string>
 </resources>
