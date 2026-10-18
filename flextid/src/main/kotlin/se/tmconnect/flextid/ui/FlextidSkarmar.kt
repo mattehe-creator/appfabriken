@@ -79,6 +79,7 @@ fun FlextidStartSkarm(
     onStamplaUtPaminnelse: (Boolean) -> Unit,
     onStamplaInPaminnelse: (Boolean) -> Unit,
     onExporteraCsv: () -> Unit,
+    onExporteraPdf: () -> Unit,
     onExporteraSakerhetskopia: () -> Unit,
     onImporteraSakerhetskopia: () -> Unit,
     locale: Locale,
@@ -193,6 +194,7 @@ fun FlextidStartSkarm(
                         onTema = viewModel::sattTemaLage,
                         onExportManad = viewModel::sattExportArManad,
                         onExporteraCsv = onExporteraCsv,
+                        onExporteraPdf = onExporteraPdf,
                         onExporteraJson = onExporteraSakerhetskopia,
                         onImporteraJson = onImporteraSakerhetskopia,
                     )
@@ -368,6 +370,7 @@ internal fun InstallningarInnehall(
     onTema: (TemaLage) -> Unit,
     onExportManad: (YearMonth) -> Unit,
     onExporteraCsv: () -> Unit,
+    onExporteraPdf: () -> Unit,
     onExporteraJson: () -> Unit,
     onImporteraJson: () -> Unit,
 ) {
@@ -520,14 +523,25 @@ internal fun InstallningarInnehall(
                     modifier = Modifier.weight(1f),
                 )
             }
-            Button(
-                onClick = {
-                    onExportManad(YearMonth.of(exportAr, exportManad.coerceIn(1, 12)))
-                    onExporteraCsv()
-                },
-                modifier = Modifier.tryckyta48(),
-            ) {
-                Text(stringResource(R.string.exportera_csv))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = {
+                        onExportManad(YearMonth.of(exportAr, exportManad.coerceIn(1, 12)))
+                        onExporteraCsv()
+                    },
+                    modifier = Modifier.tryckyta48().weight(1f),
+                ) {
+                    Text(stringResource(R.string.exportera_csv))
+                }
+                Button(
+                    onClick = {
+                        onExportManad(YearMonth.of(exportAr, exportManad.coerceIn(1, 12)))
+                        onExporteraPdf()
+                    },
+                    modifier = Modifier.tryckyta48().weight(1f),
+                ) {
+                    Text(stringResource(R.string.exportera_pdf))
+                }
             }
             OutlinedButton(onClick = onExporteraJson, modifier = Modifier.tryckyta48()) {
                 Text(stringResource(R.string.exportera_sakerhetskopia))

@@ -30,6 +30,9 @@ import se.tmconnect.flextid.export.ManadsCsvTexter
 import se.tmconnect.flextid.export.SakerhetskopiaInnehall
 import se.tmconnect.flextid.export.SakerhetskopiaJsonLasResult
 import se.tmconnect.flextid.export.byggManadsCsv
+import se.tmconnect.flextid.regler.ManadsRapportData
+import se.tmconnect.flextid.regler.ManadsRapportTexter
+import se.tmconnect.flextid.regler.byggManadsRapport
 import se.tmconnect.flextid.export.dagTillSakerhetskopia
 import se.tmconnect.flextid.export.installningTillSakerhetskopia
 import se.tmconnect.flextid.export.lasSakerhetskopiaJson
@@ -449,6 +452,13 @@ class FlextidViewModel(
         val inst = repository.hamtaInstallning()
         val arManad = exportArManad.value
         return byggManadsCsv(dagar, inst, arManad, texter, locale)
+    }
+
+    suspend fun skapaManadsRapport(texter: ManadsRapportTexter, locale: Locale): ManadsRapportData {
+        val dagar = repository.hamtaAllaDagar()
+        val inst = repository.hamtaInstallning()
+        val arManad = exportArManad.value
+        return byggManadsRapport(dagar, inst, arManad, texter, locale)
     }
 
     fun skrivTillUri(uri: Uri, skriv: suspend (java.io.OutputStream) -> Unit) {
