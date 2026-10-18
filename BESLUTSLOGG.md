@@ -2,7 +2,7 @@
 
 ## 2026-10-17
 
-- Husloggen: dokument (manualer, ritningar m.m.) i egen flik, databas version 4, filer via SAF utan nya behörigheter, högst 25 MB per fil, ingår i säkerhetskopia (version 3). Gratis och räknas inte som loggposter. (Cursor, uppdrag `2026-10-17-husloggen-dokument`)
+- Husloggen: dokument (manualer, ritningar m.m.) i egen flik, databas version 4, filer via SAF utan nya behörigheter, högst 25 MB per fil, ingår i säkerhetskopia (version 3). Gratis och räknas inte som loggposter. (Cursor, uppdrag `2026-10-18-husloggen-dokument`)
 
 ## 2026-10-08
 

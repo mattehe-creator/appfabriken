@@ -1,6 +1,6 @@
 # Status
 
-Uppdaterad 2026-10-17.
+Uppdaterad 2026-10-18.
 
 ## Klart: Grundplattan (2026-10-08–09)
 
@@ -32,10 +32,11 @@ Val och omfång i IDEURVAL.md (omprövning 2026-10-16), regler i `husloggen/APP.
 7. Sammanställning per år och typ, underlag för förbättringsutgifter vid försäljning, PDF "Husets historik" och CSV. Skattereglerna kontrollerade mot Skatteverket 2026-10-17 (5 000 kr per år, femårsregeln för reparation och underhåll). `2026-10-17-husloggen-sammanstallning`, skickat 2026-10-17. Kapitelnumren i APP.md (46 kap. för bostadsrätt kan vara fel, troligen 47 kap.) verifierar Cursor.
 8. Säkerhetskopia, import och automatisk säkerhetskopia. Cursor lyfter dem till `:karna`. `2026-10-16-husloggen-sakerhetskopia`, skickat 2026-10-16.
 9. Mörkt läge, välkomstskärm, butiksmaterial, skärmbilder, Data safety och integritetspolicy. Nästa att skriva.
-10. Mattias provar på telefon.
+10. Mätarställningar och dokument (manualer, ritningar). `2026-10-17-husloggen-matarstallningar` och `2026-10-18-husloggen-dokument`, Cursor-implementering mergas.
+11. Mattias provar på telefon.
 
 ## Senare
 
-- Husloggen efter 1.0: mätarställningar, flera bostäder, dokument (manualer, ritningar), plan för framtida kostnader.
+- Husloggen efter 1.0: flera bostäder, plan för framtida kostnader.
 - App 3 väljs när Mattias vill (IDEURVAL.md). Ingen väntetid efter publicering.
 - Mätaren i panelen (`release.json`) följer Garantivalvet tills den är publicerad. Claude uppdaterar den när ett steg ändras.
