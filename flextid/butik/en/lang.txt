@@ -4,7 +4,7 @@ Reminders help you remember to stamp in or out. A reminder will come at 08:00 on
 
 You can export your days as CSV for a selected month via the system file picker. You can also backup your data as JSON with version number. Export and backup are always free, regardless of whether you have Pro or not.
 
-Flextime requires no internet connection. The app has no `INTERNET` permission, no accounts, no ads, and no analytics. All data stays on your phone until you choose to export it.
+Flextime requires no internet connection. The app has no internet permission, no accounts, no ads, and no analytics. All data stays on your phone until you choose to export it.
 
 The app is free up to 15 day entries. Pro (one-time purchase) removes the limit on day entries. Existing data is never deleted.
 

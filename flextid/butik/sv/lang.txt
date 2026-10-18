@@ -4,7 +4,7 @@ Påminnelser hjälper dig att inte glömma stämpla in eller ut. En påminnelse 
 
 Du kan exportera dina dagar som CSV för vald månad via systemets filväljare. Du kan även säkerhetskopiera din data som JSON med versionsnummer. Export och säkerhetskopia är alltid gratis, oavsett om du har Pro eller inte.
 
-Flextid kräver ingen internetanslutning. Appen har ingen `INTERNET`-behörighet, inga konton, ingen reklam och ingen analys. All data stannar på din telefon tills du väljer att exportera den.
+Flextid kräver ingen internetanslutning. Appen har ingen internetbehörighet, inga konton, ingen reklam och ingen analys. All data stannar på din telefon tills du väljer att exportera den.
 
 Appen är gratis upp till 15 dagposter. Pro (engångsköp) tar bort gränsen på dagposter. Befintlig data raderas aldrig.
 
