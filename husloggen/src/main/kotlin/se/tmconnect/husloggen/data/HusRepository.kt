@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.room.withTransaction
 import java.time.LocalDate
 import kotlinx.coroutines.flow.Flow
+import se.tmconnect.husloggen.export.sakerhetskopiaBostadTillBostad
 import se.tmconnect.husloggen.export.sakerhetskopiaDokumentTillDokument
 import se.tmconnect.husloggen.export.SakerhetskopiaImportResultat
 import se.tmconnect.husloggen.export.SakerhetskopiaInnehall
@@ -11,16 +12,17 @@ import se.tmconnect.husloggen.export.SakerhetskopiaPost
 import se.tmconnect.husloggen.export.SakerhetskopiaUppgift
 import se.tmconnect.husloggen.export.sakerhetskopiaAvlasningTillAvlasning
 import se.tmconnect.husloggen.export.sakerhetskopiaMatareTillMatare
+import se.tmconnect.husloggen.export.sakerhetskopiaPlaneradKostnadTillPlaneradKostnad
 import se.tmconnect.husloggen.export.arSakerhetskopiaPostDubblett
 import se.tmconnect.husloggen.export.arSakerhetskopiaPostNyckelLik
 import se.tmconnect.husloggen.export.arSakerhetskopiaUppgiftDubblett
 import se.tmconnect.husloggen.export.arSakerhetskopiaUppgiftLik
 import se.tmconnect.husloggen.export.sakerhetskopiaPostNyckel
-import se.tmconnect.husloggen.export.sakerhetskopiaPlaneradKostnadTillPlaneradKostnad
 import se.tmconnect.husloggen.export.sakerhetskopiaPostTillPost
 import se.tmconnect.husloggen.export.sakerhetskopiaUppgiftTillUppgift
 import se.tmconnect.husloggen.export.uppgiftTillSakerhetskopia
 import se.tmconnect.husloggen.regler.formateraBilder
+import se.tmconnect.husloggen.regler.kanLaggaTillBostad
 import se.tmconnect.husloggen.regler.kanLaggaTillPost
 import se.tmconnect.husloggen.regler.tolkaBilder
 import se.tmconnect.karna.bild.BildLager
@@ -38,17 +40,88 @@ sealed class MarkeraGjordResult {
     data object UtanPostGransNadd : MarkeraGjordResult()
 }
 
+sealed class SparaBostadResult {
+    data class Sparad(val id: Long) : SparaBostadResult()
+
+    data object GransBostaderUtanPro : SparaBostadResult()
+}
+
+sealed class TaBortBostadResult {
+    data object Borttagen : TaBortBostadResult()
+
+    /** Minst en bostad måste finnas kvar. */
+    data object SistaBostaden : TaBortBostadResult()
+}
+
+data class BostadRaderingInfo(
+    val antalPoster: Int,
+)
+
 class HusRepository(
     private val databas: HusDatabas,
     private val dao: HusDao,
     private val bildLager: BildLager,
     private val dokumentLager: DokumentLager,
 ) {
-    val uppgifter: Flow<List<Uppgift>> = dao.allaUppgifterFlow()
-    val poster: Flow<List<Post>> = dao.allaPosterFlow()
-    val matare: Flow<List<Matare>> = dao.allaMatareFlow()
-    val dokument: Flow<List<Dokument>> = dao.allaDokumentFlow()
-    val planeradeKostnader: Flow<List<PlaneradKostnad>> = dao.allaPlaneradeKostnaderFlow()
+    val bostader: Flow<List<Bostad>> = dao.allaBostaderFlow()
+
+    fun uppgifterForBostad(bostadId: Long): Flow<List<Uppgift>> = dao.uppgifterForBostadFlow(bostadId)
+
+    fun posterForBostad(bostadId: Long): Flow<List<Post>> = dao.posterForBostadFlow(bostadId)
+
+    fun matareForBostad(bostadId: Long): Flow<List<Matare>> = dao.matareForBostadFlow(bostadId)
+
+    fun dokumentForBostad(bostadId: Long): Flow<List<Dokument>> = dao.dokumentForBostadFlow(bostadId)
+
+    fun planeradeKostnaderForBostad(bostadId: Long): Flow<List<PlaneradKostnad>> =
+        dao.planeradeKostnaderForBostadFlow(bostadId)
+
+    suspend fun hamtaBostad(id: Long): Bostad? = dao.hamtaBostad(id)
+
+    suspend fun allaBostader(): List<Bostad> = dao.allaBostader()
+
+    suspend fun antalBostader(): Int = dao.antalBostader()
+
+    suspend fun hamtaForvaldBostadId(): Long {
+        val lista = dao.allaBostader()
+        return lista.firstOrNull()?.id ?: error("Ingen bostad i databasen")
+    }
+
+    suspend fun sparaBostad(bostad: Bostad, arPro: Boolean): SparaBostadResult {
+        if (bostad.id == 0L) {
+            if (!kanLaggaTillBostad(dao.antalBostader(), arPro)) {
+                return SparaBostadResult.GransBostaderUtanPro
+            }
+            return SparaBostadResult.Sparad(
+                dao.infogaBostad(
+                    bostad.copy(
+                        namn = bostad.namn.trim(),
+                        adress = bostad.adress?.trim()?.takeIf { it.isNotEmpty() },
+                        anteckning = bostad.anteckning?.trim()?.takeIf { it.isNotEmpty() },
+                    ),
+                ),
+            )
+        }
+        dao.uppdateraBostad(
+            bostad.copy(
+                namn = bostad.namn.trim(),
+                adress = bostad.adress?.trim()?.takeIf { it.isNotEmpty() },
+                anteckning = bostad.anteckning?.trim()?.takeIf { it.isNotEmpty() },
+            ),
+        )
+        return SparaBostadResult.Sparad(bostad.id)
+    }
+
+    suspend fun bostadRaderingInfo(bostadId: Long): BostadRaderingInfo =
+        BostadRaderingInfo(antalPoster = dao.antalPosterISammanhangForBostad(bostadId))
+
+    suspend fun taBortBostad(bostad: Bostad): TaBortBostadResult {
+        if (dao.antalBostader() <= 1) {
+            return TaBortBostadResult.SistaBostaden
+        }
+        dao.taBortBostad(bostad)
+        return TaBortBostadResult.Borttagen
+    }
 
     fun avlasningarForMatare(matareId: Long): Flow<List<Avlasning>> =
         dao.avlasningarForMatareFlow(matareId)
@@ -74,6 +147,7 @@ class HusRepository(
             return MarkeraGjordResult.UtanPostGransNadd
         }
         val post = Post(
+            bostadId = uppgift.bostadId,
             datum = idag,
             vad = uppgift.namn,
             typ = PostTyp.UNDERHALL,
@@ -131,6 +205,8 @@ class HusRepository(
     }
 
     suspend fun antalPoster(): Int = dao.antalPoster()
+
+    fun totaltAntalPosterFlow(): Flow<Int> = dao.antalPosterFlow()
 
     suspend fun harData(): Boolean =
         dao.antalPoster() > 0 || dao.antalUppgifter() > 0 || dao.antalMatare() > 0
@@ -248,7 +324,20 @@ class HusRepository(
         }
 
         var tillagda = 0
+        val forvaldBostadId = hamtaForvaldBostadId()
         databas.withTransaction {
+            val bostadIndexTillId = mutableMapOf<Int, Long>()
+            if (innehall.bostader.isEmpty()) {
+                bostadIndexTillId[0] = forvaldBostadId
+            } else {
+                innehall.bostader.forEachIndexed { index, export ->
+                    val nyttId = dao.infogaBostad(sakerhetskopiaBostadTillBostad(export))
+                    bostadIndexTillId[index] = nyttId
+                }
+            }
+            fun bostadIdForIndex(index: Int): Long =
+                bostadIndexTillId[index] ?: bostadIndexTillId[0] ?: forvaldBostadId
+
             val indexTillUppgiftId = mutableMapOf<Int, Long>()
             innehall.uppgifter.forEachIndexed { index, export ->
                 befintligaUppgifter.firstOrNull { arSakerhetskopiaUppgiftDubblett(export, it) }?.let {
@@ -263,17 +352,30 @@ class HusRepository(
                     indexTillUppgiftId[index] = indexTillUppgiftId[tidigareIndex]!!
                     return@forEachIndexed
                 }
-                val nyttId = dao.infogaUppgift(sakerhetskopiaUppgiftTillUppgift(export))
+                val nyttId =
+                    dao.infogaUppgift(
+                        sakerhetskopiaUppgiftTillUppgift(export, bostadIdForIndex(export.bostadIndex)),
+                    )
                 indexTillUppgiftId[index] = nyttId
             }
             for ((export, nyaBilder) in posterAttInfoga) {
                 val uppgiftId = export.uppgiftIndex?.let { indexTillUppgiftId[it] }
-                dao.infogaPost(sakerhetskopiaPostTillPost(export, uppgiftId, nyaBilder))
+                dao.infogaPost(
+                    sakerhetskopiaPostTillPost(
+                        export,
+                        uppgiftId,
+                        nyaBilder,
+                        bostadIdForIndex(export.bostadIndex),
+                    ),
+                )
                 tillagda++
             }
             val matareIndexTillId = mutableMapOf<Int, Long>()
             innehall.matare.forEachIndexed { index, export ->
-                val nyttId = dao.infogaMatare(sakerhetskopiaMatareTillMatare(export))
+                val nyttId =
+                    dao.infogaMatare(
+                        sakerhetskopiaMatareTillMatare(export, bostadIdForIndex(export.bostadIndex)),
+                    )
                 matareIndexTillId[index] = nyttId
             }
             for (export in innehall.avlasningar) {
@@ -291,10 +393,21 @@ class HusRepository(
                         dokumentFiler.getValue(export.filnamn),
                         export.filnamn,
                     )
-                dao.infogaDokument(sakerhetskopiaDokumentTillDokument(export, nyttFilnamn))
+                dao.infogaDokument(
+                    sakerhetskopiaDokumentTillDokument(
+                        export,
+                        nyttFilnamn,
+                        bostadIdForIndex(export.bostadIndex),
+                    ),
+                )
             }
             for (export in innehall.planeradeKostnader) {
-                dao.infogaPlaneradKostnad(sakerhetskopiaPlaneradKostnadTillPlaneradKostnad(export))
+                dao.infogaPlaneradKostnad(
+                    sakerhetskopiaPlaneradKostnadTillPlaneradKostnad(
+                        export,
+                        bostadIdForIndex(export.bostadIndex),
+                    ),
+                )
             }
         }
         return SakerhetskopiaImportResultat(tillagda = tillagda, hoppadeOver = hoppadeOver)

@@ -1,8 +1,6 @@
 package se.tmconnect.husloggen.data
 
 import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlinx.coroutines.test.runTest
@@ -12,53 +10,49 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import androidx.test.core.app.ApplicationProvider
 import se.tmconnect.husloggen.export.Sakerhetskopia
 import se.tmconnect.husloggen.export.SakerhetskopiaInnehall
 import se.tmconnect.husloggen.export.SakerhetskopiaLasResult
-import se.tmconnect.husloggen.export.SakerhetskopiaPlaneradKostnad
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28])
 class HusRepositoryPlanImportTest {
     private lateinit var repository: HusRepository
+    private lateinit var context: Context
 
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val databas =
-            Room.inMemoryDatabaseBuilder(context, HusDatabas::class.java)
-                .allowMainThreadQueries()
-                .build()
+        context = ApplicationProvider.getApplicationContext()
+        val databas = skapaTestHusDatabas(context)
         repository = skapaHusRepository(context, databas)
     }
 
     @Test
     fun exportImportPlaneradeKostnader() = runTest {
+        val bostadId = repository.hamtaForvaldBostadId()
         repository.sparaPlaneradKostnad(
-            PlaneradKostnad(titel = "Tak", beloppOre = 4_000_000L, planeratAr = 2028),
+            PlaneradKostnad(bostadId = bostadId, titel = "Tak", beloppOre = 4_000_000L, planeratAr = 2028),
         )
         val plan = repository.allaPlaneradeKostnader()
-        val context = ApplicationProvider.getApplicationContext<Context>()
         val zipBytes =
             ByteArrayOutputStream().use { ut ->
                 Sakerhetskopia.skriv(
                     ut,
+                    repository.allaBostader(),
                     emptyList(),
                     emptyList(),
                     emptyList(),
                     emptyList(),
                     emptyList(),
+                    plan,
                     skapaHusBildLager(context),
                     skapaHusDokumentLager(context),
-                    plan,
                 )
                 ut.toByteArray()
             }
         val las = ByteArrayInputStream(zipBytes).use { Sakerhetskopia.lasIn(it) }
-        val databas2 =
-            Room.inMemoryDatabaseBuilder(context, HusDatabas::class.java)
-                .allowMainThreadQueries()
-                .build()
+        val databas2 = skapaTestHusDatabas(context)
         val repo2 = skapaHusRepository(context, databas2)
         repo2.importeraSakerhetskopia(
             (las as SakerhetskopiaLasResult.Ok).innehall,
@@ -87,18 +81,25 @@ class HusRepositoryPlanImportTest {
 
     @Test
     fun genomfordBehallerPlanVidGrans() = runTest {
+        val bostadId = repository.hamtaForvaldBostadId()
         repeat(15) { i ->
             repository.sparaPost(
-                Post(datum = java.time.LocalDate.of(2026, 1, 1), vad = "P$i", typ = PostTyp.UNDERHALL),
+                Post(
+                    bostadId = bostadId,
+                    datum = java.time.LocalDate.of(2026, 1, 1),
+                    vad = "P$i",
+                    typ = PostTyp.UNDERHALL,
+                ),
                 arPro = false,
             )
         }
         val planId =
             repository.sparaPlaneradKostnad(
-                PlaneradKostnad(titel = "Tak", beloppOre = 5_000_000L, planeratAr = 2028),
+                PlaneradKostnad(bostadId = bostadId, titel = "Tak", beloppOre = 5_000_000L, planeratAr = 2028),
             )
         val nyPost =
             Post(
+                bostadId = bostadId,
                 datum = java.time.LocalDate.of(2026, 6, 1),
                 vad = "Tak",
                 typ = PostTyp.REPARATION,

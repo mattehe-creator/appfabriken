@@ -8,6 +8,7 @@ import androidx.room.TypeConverters
 
 @Database(
     entities = [
+        Bostad::class,
         Uppgift::class,
         Post::class,
         Matare::class,
@@ -15,7 +16,7 @@ import androidx.room.TypeConverters
         Dokument::class,
         PlaneradKostnad::class,
     ],
-    version = 5,
+    version = 6,
     exportSchema = true,
 )
 @TypeConverters(Konverterare::class)
@@ -30,12 +31,20 @@ abstract class HusDatabas : RoomDatabase() {
 
         fun hamta(context: Context): HusDatabas =
             instans ?: synchronized(this) {
+                val appContext = context.applicationContext
                 instans ?: Room.databaseBuilder(
-                    context.applicationContext,
+                    appContext,
                     HusDatabas::class.java,
                     FILNAMN,
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                    .addMigrations(
+                        MIGRATION_1_2,
+                        MIGRATION_2_3,
+                        MIGRATION_3_4,
+                        MIGRATION_4_5,
+                        skapaMigration5Till6(appContext),
+                    )
+                    .addCallback(skapaBostadSeedCallback(appContext))
                     .build().also { instans = it }
             }
     }

@@ -13,7 +13,8 @@ Håller ordning på husets underhåll: återkommande uppgifter med påminnelser,
 
 ## Regler
 
-- Gratisgränsen är 15 poster. Uppgifter, påminnelser, mätare med avläsningar, dokument (manualer, ritningar m.m.) och planerade framtida kostnader är obegränsade. "Markera som gjord" flyttar alltid nästa datum; när gränsen är nådd sparas ingen ny post utan Pro. Gränsen ligger på ett ställe i `regler/`.
+- Gratisgränsen är 15 poster i loggen, räknade över alla bostäder tillsammans. Uppgifter, påminnelser, mätare med avläsningar och dokument (manualer, ritningar m.m.) är obegränsade per bostad. "Markera som gjord" flyttar alltid nästa datum; när gränsen är nådd sparas ingen ny post utan Pro. Gränsen ligger på ett ställe i `regler/`.
+- Flera bostäder: upp till 3 utan Pro, fler kräver Pro. Vald bostad styr vad som visas i flikarna; planerade kostnader filtreras per bostad. Säkerhetskopia och import inkluderar bostäder och kopplingar (JSON version 5). Äldre säkerhetskopior utan bostäder importeras till den förvalda bostaden. Regler i `regler/BostadGrans.kt`, databas version 6.
 - Belopp lagras i öre (`Long`), datum som `LocalDate`, flera bildfiler som kommaseparerade filnamn, typer som enum-namn. Som i Garantivalvet.
 - Skatteregler (förbättringsutgifter vid försäljning) visas som information, aldrig som råd, med lagrum, och bara för Sverige. Siffrorna ligger på ett ställe i `regler/` och kontrolleras mot Skatteverket och inkomstskattelagen (45 kap. för fastighet, 46 kap. för bostadsrätt) innan uppdraget skrivs. I andra länder visar appen bara summor per år och typ.
 
@@ -40,13 +41,6 @@ Vid vinstberäkning vid försäljning räknas bara den del av utgiften som ägar
 - Regler för avläsningar (lägre värde, unikt datum, förbrukning) ligger i `regler/`.
 - Ingår i säkerhetskopia och kan exporteras som CSV per mätare.
 
-## Planerade kostnader
-
-- Varje rad har titel, uppskattat belopp i öre, planerat år (inte före innevarande år) och valfri anteckning.
-- Listan grupperas per år med summa per år. Lägg till, ändra och ta bort i fliken Plan.
-- **Genomförd** öppnar loggformuläret med titel och belopp ifyllda och tar bort den planerade raden först när posten sparats. Når gratisgränsen (15 poster) visas Pro-dialogen och den planerade raden finns kvar.
-- Ingår i säkerhetskopia (JSON version 4). Äldre säkerhetskopior utan planerade kostnader kan fortfarande importeras. Räknas inte som loggposter.
-
 ## Dokument
 
 - Manualer, ritningar, besiktningsprotokoll och liknande sparas som PDF eller bild via systemets filväljare, utan extra behörigheter.
@@ -56,4 +50,4 @@ Vid vinstberäkning vid försäljning räknas bara den del av utgiften som ägar
 
 ## Inte i 1.0
 
-Flera bostäder, delning, widgets.
+Plan för framtida kostnader, delning, widgets.

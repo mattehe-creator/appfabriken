@@ -256,6 +256,10 @@ class MainActivity : ComponentActivity() {
                 val paminnelserPa by viewModel.paminnelserPa.collectAsState()
                 val arPro by viewModel.arPro.collectAsState()
                 val proDialogSynlig by viewModel.proDialogSynlig.collectAsState()
+                val proDialogVisaBostadsGrans by viewModel.proDialogVisaBostadsGrans.collectAsState()
+                val bostader by viewModel.bostader.collectAsState()
+                val valdBostad by viewModel.valdBostad.collectAsState()
+                val valdBostadId by viewModel.valdBostadId.collectAsState()
                 val autoBackup by viewModel.autoBackup.collectAsState()
                 val forsaljningsAr by viewModel.forsaljningsAr.collectAsState()
                 val markeradGjordText = stringResource(R.string.uppgift_markerad_gjord)
@@ -500,6 +504,15 @@ class MainActivity : ComponentActivity() {
                         visaInstallningar -> {
                             InstallningarSkarm(
                                 onTillbaka = { visaInstallningar = false },
+                                bostader = bostader,
+                                valdBostadId = valdBostadId,
+                                onValjBostad = viewModel::valjBostad,
+                                onSparaNyBostad = viewModel::sparaNyBostad,
+                                onUppdateraBostad = viewModel::uppdateraBostad,
+                                onTaBortBostad = viewModel::taBortBostad,
+                                hamtaRaderingInfo = { id ->
+                                    viewModel.bostadRaderingInfo(id).antalPoster
+                                },
                                 temaLage = temaLage,
                                 onTemaLage = viewModel::sattTemaLage,
                                 autoBackup = autoBackup,
@@ -537,6 +550,9 @@ class MainActivity : ComponentActivity() {
                                 matare = matare,
                                 dokument = dokument,
                                 planeradeKostnader = planeradeKostnader,
+                                bostader = bostader,
+                                valdBostad = valdBostad,
+                                onValjBostad = viewModel::valjBostad,
                                 onInstallningar = { visaInstallningar = true },
                                 onNyUppgift = viewModel::visaNyUppgift,
                                 onNyMatare = viewModel::visaNyMatare,
@@ -590,6 +606,7 @@ class MainActivity : ComponentActivity() {
                     ProDialog(
                         onDismiss = viewModel::stangProDialog,
                         onKopPro = viewModel::kopPro,
+                        visaBostadsGrans = proDialogVisaBostadsGrans,
                     )
                 }
             }
@@ -623,7 +640,7 @@ class MainActivity : ComponentActivity() {
         val locale = resources.configuration.locales[0]
         viewModel.sparaHusHistorikPdf(
             uri = uri,
-            texter = historikTexter(locale),
+            texter = historikTexter(locale, viewModel.valdBostad.value?.namn),
             locale = locale,
             typEtikett = { typ -> getString(typTillResId(typ)) },
             forbattringEtikett = { mojlighet -> getString(forbattringTillResId(mojlighet)) },
@@ -636,7 +653,7 @@ class MainActivity : ComponentActivity() {
         val locale = resources.configuration.locales[0]
         viewModel.sparaHusHistorikCsv(
             uri = uri,
-            texter = historikTexter(locale),
+            texter = historikTexter(locale, viewModel.valdBostad.value?.namn),
             locale = locale,
             typEtikett = { typ -> getString(typTillResId(typ)) },
             forbattringEtikett = { mojlighet -> getString(forbattringTillResId(mojlighet)) },
@@ -654,9 +671,16 @@ class MainActivity : ComponentActivity() {
             kolumnEnhetKort = getString(R.string.falt_enhet),
         )
 
-    private fun historikTexter(@Suppress("UNUSED_PARAMETER") locale: Locale): HusHistorikTexter =
-        HusHistorikTexter(
-            rubrik = getString(R.string.historik_pdf_rubrik),
+    private fun historikTexter(
+        @Suppress("UNUSED_PARAMETER") locale: Locale,
+        bostadNamn: String?,
+    ): HusHistorikTexter {
+        val basRubrik = getString(R.string.historik_pdf_rubrik)
+        val rubrik =
+            bostadNamn?.let { getString(R.string.historik_rubrik_med_bostad, basRubrik, it) }
+                ?: basRubrik
+        return HusHistorikTexter(
+            rubrik = rubrik,
             kolumnDatum = getString(R.string.falt_datum),
             kolumnBeskrivning = getString(R.string.falt_vad),
             kolumnTyp = getString(R.string.falt_typ),
@@ -672,6 +696,7 @@ class MainActivity : ComponentActivity() {
             kallorRubrik = getString(R.string.sammanstallning_skatte_info_rubrik),
             kallorText = skatteKallorText(),
         )
+    }
 
     private fun typTillResId(typ: se.tmconnect.husloggen.data.PostTyp): Int =
         when (typ) {
