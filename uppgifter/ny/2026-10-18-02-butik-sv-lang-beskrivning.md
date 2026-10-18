@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-18-flextid-butik-mork-valkomst.md
 försök: 1
-beror-på: 2026-10-18-01-butik-sv-titel-kort.md
+beror-på: 2026-10-18-01-butik-sv-titel-kort-f2.md
 
 ## Ändra bara dessa filer
 - flextid/butik/sv/lang.txt

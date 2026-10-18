@@ -34,3 +34,5 @@ gradle :flextid:testDebugUnitTest --tests "*ButikTexterTest"
 - Ändra andra filer (inklusive engelska texter och `lang.txt`).
 - Lägga till beroenden.
 - Ändra appkod, manifest eller databasschema.
+
+utfall: underkänd 2026-10-18 av Cursor (PR #265). Ersatt av 2026-10-18-01-butik-sv-titel-kort-f2.md
