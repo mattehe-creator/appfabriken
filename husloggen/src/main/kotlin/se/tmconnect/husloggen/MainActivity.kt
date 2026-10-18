@@ -242,6 +242,8 @@ class MainActivity : ComponentActivity() {
                 val poster by viewModel.poster.collectAsState()
                 val matare by viewModel.matare.collectAsState()
                 val dokument by viewModel.dokument.collectAsState()
+                val planeradeKostnader by viewModel.planeradeKostnader.collectAsState()
+                val planFormular by viewModel.planFormular.collectAsState()
                 val dokumentDetaljId by viewModel.dokumentDetaljId.collectAsState()
                 val dokumentFormular by viewModel.dokumentFormular.collectAsState()
                 val matareDetaljId by viewModel.matareDetaljId.collectAsState()
@@ -332,6 +334,20 @@ class MainActivity : ComponentActivity() {
                                     viewModel.stangAvlasningFormular()
                                 }
                             }
+                        }
+                        planFormular != null -> {
+                            val tillstand = planFormular!!
+                            se.tmconnect.husloggen.ui.PlanFormularSkarm(
+                                tillstand = tillstand,
+                                innevarandeAr = idag.year,
+                                onTitelAndras = viewModel::uppdateraPlanTitel,
+                                onBeloppAndras = viewModel::uppdateraPlanBelopp,
+                                onPlaneratArAndras = viewModel::uppdateraPlaneratAr,
+                                onAnteckningAndras = viewModel::uppdateraPlanAnteckning,
+                                onSpara = viewModel::sparaPlanFormular,
+                                onTaBort = viewModel::taBortPlanFormular,
+                                onStang = viewModel::stangPlanFormular,
+                            )
                         }
                         dokumentFormular != null -> {
                             val tillstand = dokumentFormular!!
@@ -520,10 +536,14 @@ class MainActivity : ComponentActivity() {
                                 poster = poster,
                                 matare = matare,
                                 dokument = dokument,
+                                planeradeKostnader = planeradeKostnader,
                                 onInstallningar = { visaInstallningar = true },
                                 onNyUppgift = viewModel::visaNyUppgift,
                                 onNyMatare = viewModel::visaNyMatare,
                                 onNyttDokument = viewModel::visaNyttDokument,
+                                onNyPlaneradKostnad = viewModel::visaNyPlaneradKostnad,
+                                onAndraPlaneradKostnad = viewModel::visaAndraPlaneradKostnad,
+                                onGenomfordPlaneradKostnad = viewModel::genomforPlaneradKostnad,
                                 onNyPost = {
                                     if (viewModel.kanLaggaTillNyPost()) {
                                         viewModel.visaNyPost()

@@ -74,6 +74,7 @@ internal suspend fun korSakerhetskopiaJobb(
                 val matare = repository.allaMatare()
                 val avlasningar = repository.allaAvlasningar()
                 val dokument = repository.allaDokument()
+                val planerade = repository.allaPlaneradeKostnader()
                 val bildLager = se.tmconnect.husloggen.data.skapaHusBildLager(context)
                 val dokumentLager = se.tmconnect.husloggen.data.skapaHusDokumentLager(context)
                 val lagring =
@@ -93,6 +94,7 @@ internal suspend fun korSakerhetskopiaJobb(
                             dokument,
                             bildLager,
                             dokumentLager,
+                            planerade,
                         )
                     },
                     idag = idag,

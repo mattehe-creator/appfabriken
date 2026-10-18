@@ -5,6 +5,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import se.tmconnect.husloggen.data.PostTyp
+import se.tmconnect.husloggen.export.SakerhetskopiaPlaneradKostnad
 import java.time.LocalDate
 
 class SakerhetskopiaJsonTest {
@@ -100,9 +101,37 @@ class SakerhetskopiaJsonTest {
     }
 
     @Test
-    fun version4Avvisas() {
-        val json = """{"version":4,"skapad":"2026-10-16","uppgifter":[],"poster":[]}"""
+    fun version5Avvisas() {
+        val json = """{"version":5,"skapad":"2026-10-16","uppgifter":[],"poster":[]}"""
         assertTrue(lasSakerhetskopiaJson(json) is SakerhetskopiaJsonLasResult.Fel.OkandVersion)
+    }
+
+    @Test
+    fun version3UtanPlaneradeKostnaderImporteras() {
+        val json = """{"version":3,"skapad":"2026-10-17","uppgifter":[],"poster":[]}"""
+        val las = lasSakerhetskopiaJson(json) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals(emptyList<SakerhetskopiaPlaneradKostnad>(), las.innehall.planeradeKostnader)
+    }
+
+    @Test
+    fun planeradeKostnaderRundturSkrivLas() {
+        val innehall =
+            SakerhetskopiaInnehall(
+                version = 4,
+                skapad = "2026-10-18",
+                uppgifter = emptyList(),
+                poster = emptyList(),
+                planeradeKostnader =
+                    listOf(
+                        SakerhetskopiaPlaneradKostnad(
+                            titel = "Ny panna",
+                            beloppOre = 1_500_000L,
+                            planeratAr = 2028,
+                        ),
+                    ),
+            )
+        val las = lasSakerhetskopiaJson(skrivSakerhetskopiaJson(innehall)) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals(innehall, las.innehall)
     }
 
     @Test

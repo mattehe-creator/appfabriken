@@ -3,6 +3,7 @@
     <string name="app_name">Husloggen</string>
     <string name="flik_att_gora">Att göra</string>
     <string name="flik_logg">Logg</string>
+    <string name="flik_plan">Plan</string>
     <string name="flik_matare">Mätare</string>
     <string name="tom_uppgifter">Inga uppgifter än. Här visas återkommande underhåll.</string>
     <string name="tom_logg">Ingen logg än. Här visas utfört arbete och utgifter.</string>
@@ -212,6 +213,19 @@
     <string name="valkommen_integritet">Inget konto, ingen reklam och ingen molntjänst. Gratis upp till 15 poster i loggen.</string>
     <string name="valkommen_lagg_till">Lägg till min första uppgift</string>
     <string name="valkommen_titta">Titta runt först</string>
+
+    <string name="fab_ny_planerad_kostnad">Planerad kostnad</string>
+    <string name="tom_plan">Inga planerade kostnader ännu. Lägg till sådant du räknar med att betala, till exempel nytt tak eller panna, grupperat per år.</string>
+    <string name="plan_ar_summa">Summa: %1$s</string>
+    <string name="plan_genomford">Genomförd</string>
+    <string name="ny_planerad_kostnad_rubrik">Planerad kostnad</string>
+    <string name="andra_planerad_kostnad_rubrik">Ändra planerad kostnad</string>
+    <string name="falt_plan_titel">Titel</string>
+    <string name="falt_planerat_ar">Planerat år</string>
+    <string name="falt_planerat_ar_hjalp">Från och med %1$d</string>
+    <string name="fel_plan_titel_saknas">Ange en titel</string>
+    <string name="fel_plan_belopp">Ange ett belopp större än noll</string>
+    <string name="fel_plan_ar">Året måste vara %1$d eller senare</string>
 
     <string name="flik_dokument">Dokument</string>
     <string name="fab_nytt_dokument">Nytt dokument</string>

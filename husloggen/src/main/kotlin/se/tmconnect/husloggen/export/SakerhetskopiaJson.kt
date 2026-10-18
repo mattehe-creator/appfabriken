@@ -47,6 +47,11 @@ fun skrivSakerhetskopiaJson(innehall: SakerhetskopiaInnehall): String =
             if (index > 0) append(',')
             append(skrivDokumentObjekt(dokument))
         }
+        append("],\"planeradeKostnader\":[")
+        innehall.planeradeKostnader.forEachIndexed { index, plan ->
+            if (index > 0) append(',')
+            append(skrivPlaneradKostnadObjekt(plan))
+        }
         append("]}")
     }
 
@@ -120,6 +125,22 @@ private fun skrivDokumentObjekt(dokument: SakerhetskopiaDokument): String =
         laggTillFalt("filnamn", jsonStrang(dokument.filnamn))
         laggTillFalt("mimeTyp", jsonStrang(dokument.mimeTyp))
         laggTillFalt("tillagd", jsonStrang(dokument.tillagd.toString()))
+        append('}')
+    }
+
+private fun skrivPlaneradKostnadObjekt(plan: SakerhetskopiaPlaneradKostnad): String =
+    buildString {
+        append('{')
+        var forsta = true
+        fun laggTillFalt(namn: String, varde: String) {
+            if (!forsta) append(',')
+            forsta = false
+            append('"').append(namn).append("\":").append(varde)
+        }
+        laggTillFalt("titel", jsonStrang(plan.titel))
+        laggTillFalt("beloppOre", plan.beloppOre.toString())
+        laggTillFalt("planeratAr", plan.planeratAr.toString())
+        plan.anteckning?.let { laggTillFalt("anteckning", jsonStrang(it)) }
         append('}')
     }
 
@@ -229,6 +250,19 @@ fun lasSakerhetskopiaJson(text: String): SakerhetskopiaJsonLasResult {
         if (dokument.size != rawDokument.size) {
             return SakerhetskopiaJsonLasResult.Fel.TrasigJson
         }
+        val rawPlanerade = rot["planeradeKostnader"] as? List<*> ?: emptyList<Any>()
+        if (rawPlanerade.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_PLANERADE_KOSTNADER) {
+            return SakerhetskopiaJsonLasResult.Fel.TrasigJson
+        }
+        val planeradeKostnader =
+            rawPlanerade.mapNotNull { element ->
+                val falt = element as? Map<*, *> ?: return@mapNotNull null
+                @Suppress("UNCHECKED_CAST")
+                lasPlaneradKostnadObjekt(falt as Map<String, Any?>)
+            }
+        if (planeradeKostnader.size != rawPlanerade.size) {
+            return SakerhetskopiaJsonLasResult.Fel.TrasigJson
+        }
         SakerhetskopiaJsonLasResult.Ok(
             SakerhetskopiaInnehall(
                 version = version.toInt(),
@@ -238,6 +272,7 @@ fun lasSakerhetskopiaJson(text: String): SakerhetskopiaJsonLasResult {
                 matare = matare,
                 avlasningar = avlasningar,
                 dokument = dokument,
+                planeradeKostnader = planeradeKostnader,
             ),
         )
     } catch (_: Exception) {
@@ -273,6 +308,26 @@ private fun lasMatareObjekt(falt: Map<String, Any?>): SakerhetskopiaMatare? {
     return SakerhetskopiaMatare(
         namn = namn,
         enhet = enhet,
+        anteckning = falt["anteckning"] as? String,
+    )
+}
+
+private fun lasPlaneradKostnadObjekt(falt: Map<String, Any?>): SakerhetskopiaPlaneradKostnad? {
+    val titel = falt["titel"] as? String ?: return null
+    val belopp =
+        when (val p = falt["beloppOre"]) {
+            is Number -> p.toLong()
+            else -> return null
+        }
+    val ar =
+        when (val p = falt["planeratAr"]) {
+            is Number -> p.toInt()
+            else -> return null
+        }
+    return SakerhetskopiaPlaneradKostnad(
+        titel = titel,
+        beloppOre = belopp,
+        planeratAr = ar,
         anteckning = falt["anteckning"] as? String,
     )
 }

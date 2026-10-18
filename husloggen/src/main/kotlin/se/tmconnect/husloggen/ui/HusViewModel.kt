@@ -46,6 +46,7 @@ import se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand
 import se.tmconnect.husloggen.regler.formateraBilder
 import se.tmconnect.husloggen.data.Avlasning
 import se.tmconnect.husloggen.data.Matare
+import se.tmconnect.husloggen.data.PlaneradKostnad
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.PostTyp
 import se.tmconnect.husloggen.data.Uppgift
@@ -75,7 +76,9 @@ import se.tmconnect.husloggen.data.KopieraDokumentResult
 import se.tmconnect.husloggen.data.skapaHusBildLager
 import se.tmconnect.husloggen.data.skapaHusDokumentLager
 import se.tmconnect.husloggen.regler.DokumentFel
+import se.tmconnect.husloggen.regler.PlaneradKostnadFel
 import se.tmconnect.husloggen.regler.valideraDokument
+import se.tmconnect.husloggen.regler.valideraPlaneradKostnad
 
 data class UppgiftFormularTillstand(
     val redigerarId: Long = 0L,
@@ -126,6 +129,17 @@ data class PostFormularTillstand(
     val anteckning: String = "",
     val bildFilnamn: List<String> = emptyList(),
     val valideringsFel: PostFel? = null,
+    /** Planerad kostnad tas bort först när posten sparats. */
+    val planeradKostnadIdEfterSparad: Long? = null,
+)
+
+data class PlanFormularTillstand(
+    val redigerarId: Long = 0L,
+    val titel: String = "",
+    val beloppText: String = "",
+    val planeratArText: String = "",
+    val anteckning: String = "",
+    val valideringsFel: PlaneradKostnadFel? = null,
 )
 
 sealed class HusUiMeddelande {
@@ -219,6 +233,9 @@ class HusViewModel(
     val dokument: StateFlow<List<Dokument>> = repository.dokument
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    val planeradeKostnader: StateFlow<List<PlaneradKostnad>> = repository.planeradeKostnader
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
     private val _forsaljningsAr = MutableStateFlow(standardForsaljningsar(idag))
     val forsaljningsAr: StateFlow<Int> = _forsaljningsAr.asStateFlow()
 
@@ -270,6 +287,9 @@ class HusViewModel(
 
     private val _avlasningFormular = MutableStateFlow<AvlasningFormularTillstand?>(null)
     val avlasningFormular: StateFlow<AvlasningFormularTillstand?> = _avlasningFormular.asStateFlow()
+
+    private val _planFormular = MutableStateFlow<PlanFormularTillstand?>(null)
+    val planFormular: StateFlow<PlanFormularTillstand?> = _planFormular.asStateFlow()
 
     val valdMatareAvlasningar: StateFlow<List<Avlasning>> =
         _matareDetaljId
@@ -551,8 +571,14 @@ class HusViewModel(
                 skapad = befintlig?.skapad ?: System.currentTimeMillis(),
             )
             when (repository.sparaPost(post, proKalla.arPro.value)) {
-                SparaPostResult.GransNadd -> return@launch
+                SparaPostResult.GransNadd -> {
+                    _proDialogSynlig.value = true
+                    return@launch
+                }
                 is SparaPostResult.Sparad -> {
+                    tillstand.planeradKostnadIdEfterSparad?.let { planId ->
+                        repository.hamtaPlaneradKostnad(planId)?.let { repository.taBortPlaneradKostnad(it) }
+                    }
                     bilderTillagdaISession = emptySet()
                     _postFormular.value = null
                 }
@@ -699,6 +725,7 @@ class HusViewModel(
                     val matare = repository.allaMatare()
                     val avlasningar = repository.allaAvlasningar()
                     val dokumentLista = repository.allaDokument()
+                    val planLista = repository.allaPlaneradeKostnader()
                     val bildLager = skapaHusBildLager(appContext)
                     val dokumentLager = skapaHusDokumentLager(appContext)
                     val outputStream = appContext.contentResolver.openOutputStream(uri)
@@ -713,6 +740,7 @@ class HusViewModel(
                             dokumentLista,
                             bildLager,
                             dokumentLager,
+                            planLista,
                         )
                     }
                 }
@@ -1127,6 +1155,98 @@ class HusViewModel(
 
     private fun uppdateraAvlasningFormular(block: (AvlasningFormularTillstand) -> AvlasningFormularTillstand) {
         _avlasningFormular.value = _avlasningFormular.value?.let(block)
+    }
+
+    fun visaNyPlaneradKostnad() {
+        _planFormular.value =
+            PlanFormularTillstand(planeratArText = idag.year.toString())
+    }
+
+    fun stangPlanFormular() {
+        _planFormular.value = null
+    }
+
+    fun visaAndraPlaneradKostnad(id: Long) {
+        viewModelScope.launch {
+            val plan = repository.hamtaPlaneradKostnad(id) ?: return@launch
+            _planFormular.value =
+                PlanFormularTillstand(
+                    redigerarId = plan.id,
+                    titel = plan.titel,
+                    beloppText = beloppOreTillFaltText(plan.beloppOre),
+                    planeratArText = plan.planeratAr.toString(),
+                    anteckning = plan.anteckning.orEmpty(),
+                )
+        }
+    }
+
+    fun genomforPlaneradKostnad(id: Long) {
+        viewModelScope.launch {
+            val plan = repository.hamtaPlaneradKostnad(id) ?: return@launch
+            nollstallBildSession(emptyList())
+            _postDetaljId.value = null
+            _postFormular.value =
+                PostFormularTillstand(
+                    vad = plan.titel,
+                    datum = idag,
+                    typ = PostTyp.REPARATION,
+                    beloppText = beloppOreTillFaltText(plan.beloppOre),
+                    anteckning = plan.anteckning.orEmpty(),
+                    planeradKostnadIdEfterSparad = plan.id,
+                )
+        }
+    }
+
+    fun uppdateraPlanTitel(text: String) {
+        uppdateraPlanFormular { it.copy(titel = text, valideringsFel = null) }
+    }
+
+    fun uppdateraPlanBelopp(text: String) {
+        uppdateraPlanFormular { it.copy(beloppText = text, valideringsFel = null) }
+    }
+
+    fun uppdateraPlaneratAr(text: String) {
+        uppdateraPlanFormular { it.copy(planeratArText = text, valideringsFel = null) }
+    }
+
+    fun uppdateraPlanAnteckning(text: String) {
+        uppdateraPlanFormular { it.copy(anteckning = text) }
+    }
+
+    fun sparaPlanFormular() {
+        val tillstand = _planFormular.value ?: return
+        val beloppOre = tillstand.beloppText.trim().takeIf { it.isNotEmpty() }?.let { tolkaBeloppTillOre(it) }
+        val planeratAr = tillstand.planeratArText.trim().toIntOrNull()
+        val fel = valideraPlaneradKostnad(tillstand.titel, beloppOre, planeratAr, idag.year)
+        if (fel != null) {
+            _planFormular.value = tillstand.copy(valideringsFel = fel)
+            return
+        }
+        viewModelScope.launch {
+            repository.sparaPlaneradKostnad(
+                PlaneradKostnad(
+                    id = tillstand.redigerarId,
+                    titel = tillstand.titel.trim(),
+                    beloppOre = beloppOre!!,
+                    planeratAr = planeratAr!!,
+                    anteckning = tillstand.anteckning.trim().ifEmpty { null },
+                ),
+            )
+            _planFormular.value = null
+        }
+    }
+
+    fun taBortPlanFormular() {
+        val tillstand = _planFormular.value ?: return
+        if (tillstand.redigerarId == 0L) return
+        viewModelScope.launch {
+            repository.hamtaPlaneradKostnad(tillstand.redigerarId)?.let { repository.taBortPlaneradKostnad(it) }
+            _planFormular.value = null
+        }
+    }
+
+    private fun uppdateraPlanFormular(block: (PlanFormularTillstand) -> PlanFormularTillstand) {
+        _planFormular.value = _planFormular.value?.let(block)
     }
 
     private suspend fun importeraSakerhetskopia(resultat: SakerhetskopiaLasResult.Ok) {

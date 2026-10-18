@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.CheckCircle
@@ -57,13 +58,14 @@ import se.tmconnect.husloggen.BuildConfig
 import se.tmconnect.husloggen.R
 import se.tmconnect.husloggen.data.Dokument
 import se.tmconnect.husloggen.data.Matare
+import se.tmconnect.husloggen.data.PlaneradKostnad
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.husloggen.regler.grupperaPerAr
 import se.tmconnect.karna.format.formateraPrisKr
 import se.tmconnect.karna.tema.TemaLage
 
-enum class HusFlik { ATT_GORA, LOGG, MATARE, DOKUMENT, SAMMANSTALLNING }
+enum class HusFlik { ATT_GORA, LOGG, PLAN, MATARE, DOKUMENT, SAMMANSTALLNING }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,11 +74,15 @@ fun HusStartSkarm(
     poster: List<Post>,
     matare: List<Matare>,
     dokument: List<Dokument>,
+    planeradeKostnader: List<PlaneradKostnad>,
     onInstallningar: () -> Unit,
     onNyUppgift: () -> Unit,
     onNyPost: () -> Unit,
     onNyMatare: () -> Unit,
     onNyttDokument: () -> Unit,
+    onNyPlaneradKostnad: () -> Unit,
+    onAndraPlaneradKostnad: (Long) -> Unit,
+    onGenomfordPlaneradKostnad: (Long) -> Unit,
     onOppnaUppgift: (Long) -> Unit,
     onOppnaPost: (Long) -> Unit,
     onOppnaMatare: (Long) -> Unit,
@@ -132,6 +138,17 @@ fun HusStartSkarm(
                     onClick = { valdFlik = HusFlik.LOGG.ordinal },
                     icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
                     label = { Text(text = stringResource(R.string.flik_logg)) },
+                )
+                NavigationBarItem(
+                    selected = valdFlik == HusFlik.PLAN.ordinal,
+                    onClick = { valdFlik = HusFlik.PLAN.ordinal },
+                    icon = {
+                        Icon(
+                            Icons.Filled.DateRange,
+                            contentDescription = stringResource(R.string.flik_plan),
+                        )
+                    },
+                    label = { Text(text = stringResource(R.string.flik_plan)) },
                 )
                 NavigationBarItem(
                     selected = valdFlik == HusFlik.MATARE.ordinal,
@@ -191,6 +208,19 @@ fun HusStartSkarm(
                         modifier = Modifier.tryckyta48(),
                     )
                 }
+                HusFlik.PLAN -> {
+                    ExtendedFloatingActionButton(
+                        onClick = onNyPlaneradKostnad,
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Filled.Add,
+                                contentDescription = stringResource(R.string.fab_ny_planerad_kostnad),
+                            )
+                        },
+                        text = { Text(text = stringResource(R.string.fab_ny_planerad_kostnad)) },
+                        modifier = Modifier.tryckyta48(),
+                    )
+                }
                 HusFlik.MATARE -> {
                     ExtendedFloatingActionButton(
                         onClick = onNyMatare,
@@ -242,6 +272,14 @@ fun HusStartSkarm(
                 onOppnaPost = onOppnaPost,
                 arPro = arPro,
                 onVisaProDialog = onVisaProDialog,
+            )
+            HusFlik.PLAN -> PlanFlik(
+                kostnader = planeradeKostnader,
+                locale = locale,
+                contentPadding = innerPadding,
+                onNyPlaneradKostnad = onNyPlaneradKostnad,
+                onAndraPlaneradKostnad = onAndraPlaneradKostnad,
+                onGenomford = onGenomfordPlaneradKostnad,
             )
             HusFlik.MATARE -> MatareFlik(
                 matare = matare,

@@ -3,6 +3,7 @@
     <string name="app_name">House Log</string>
     <string name="flik_att_gora">To do</string>
     <string name="flik_logg">Log</string>
+    <string name="flik_plan">Plan</string>
     <string name="flik_matare">Meters</string>
     <string name="tom_uppgifter">No tasks yet. Recurring maintenance will show here.</string>
     <string name="tom_logg">No log entries yet. Work and expenses will show here.</string>
@@ -215,6 +216,20 @@
     <string name="valkommen_integritet">No account, no ads and no cloud. Free for up to 15 log entries.</string>
     <string name="valkommen_lagg_till">Add my first task</string>
     <string name="valkommen_titta">Look around first</string>
+
+    <!-- Planned costs -->
+    <string name="fab_ny_planerad_kostnad">Planned cost</string>
+    <string name="tom_plan">No planned costs yet. Add things you expect to pay for, such as a new roof or boiler, grouped by year.</string>
+    <string name="plan_ar_summa">Total: %1$s</string>
+    <string name="plan_genomford">Done</string>
+    <string name="ny_planerad_kostnad_rubrik">Planned cost</string>
+    <string name="andra_planerad_kostnad_rubrik">Edit planned cost</string>
+    <string name="falt_plan_titel">Title</string>
+    <string name="falt_planerat_ar">Planned year</string>
+    <string name="falt_planerat_ar_hjalp">From %1$d and later</string>
+    <string name="fel_plan_titel_saknas">Enter a title</string>
+    <string name="fel_plan_belopp">Enter an amount greater than zero</string>
+    <string name="fel_plan_ar">The year must be %1$d or later</string>
 
     <!-- Documents -->
     <string name="flik_dokument">Documents</string>

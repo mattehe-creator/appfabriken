@@ -1,5 +1,9 @@
 # Beslutslogg
 
+## 2026-10-18
+
+- Husloggen: plan för framtida kostnader — tabell `planerad_kostnad`, databas version 5, egen flik Plan (sex flikar i bottennavigeringen), obegränsat i gratisversionen, Genomförd → loggpost, säkerhetskopia version 4 med valfritt fält `planeradeKostnader`. (Cursor, uppdrag plan för framtida kostnader)
+
 ## 2026-10-17
 
 - Husloggen: dokument (manualer, ritningar m.m.) i egen flik, databas version 4, filer via SAF utan nya behörigheter, högst 25 MB per fil, ingår i säkerhetskopia (version 3). Gratis och räknas inte som loggposter. (Cursor, uppdrag `2026-10-17-husloggen-dokument`)

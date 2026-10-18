@@ -10,6 +10,7 @@ import java.util.zip.ZipOutputStream
 import se.tmconnect.husloggen.data.Avlasning
 import se.tmconnect.husloggen.data.Dokument
 import se.tmconnect.husloggen.data.Matare
+import se.tmconnect.husloggen.data.PlaneradKostnad
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.husloggen.data.DokumentLager
@@ -41,13 +42,15 @@ object Sakerhetskopia {
         dokument: List<Dokument>,
         bildLager: BildLager,
         dokumentLager: DokumentLager,
+        planeradeKostnader: List<PlaneradKostnad> = emptyList(),
         skapad: String = Instant.now().toString(),
     ) {
         if (uppgifter.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_UPPGIFTER ||
             poster.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_POSTER ||
             matare.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_MATARE ||
             avlasningar.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_AVLASNINGAR ||
-            dokument.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_DOKUMENT
+            dokument.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_DOKUMENT ||
+            planeradeKostnader.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_PLANERADE_KOSTNADER
         ) {
             error("För många rader för säkerhetskopia")
         }
@@ -72,6 +75,8 @@ object Sakerhetskopia {
                 .sortedBy { it.id }
                 .map { avlasningTillSakerhetskopia(it, matareIdTillIndex) }
         val exportDokument = dokument.sortedBy { it.id }.map { dokumentTillSakerhetskopia(it) }
+        val exportPlanerade =
+            planeradeKostnader.sortedBy { it.id }.map { planeradKostnadTillSakerhetskopia(it) }
         val innehall =
             SakerhetskopiaInnehall(
                 version = HUSLOGGEN_SAKERHETSKOPIA_VERSION,
@@ -81,6 +86,7 @@ object Sakerhetskopia {
                 matare = exportMatare,
                 avlasningar = exportAvlasningar,
                 dokument = exportDokument,
+                planeradeKostnader = exportPlanerade,
             )
         val json = skrivSakerhetskopiaJson(innehall)
         val bilderAttSkriva = exportPoster.flatMap { it.bilder }.distinct()
