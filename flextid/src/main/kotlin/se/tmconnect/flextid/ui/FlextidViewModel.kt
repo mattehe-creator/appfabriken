@@ -105,6 +105,9 @@ class FlextidViewModel(
     private val _proDialogSynlig = MutableStateFlow(false)
     val proDialogSynlig = _proDialogSynlig.asStateFlow()
 
+    private val _visaValkommen = MutableStateFlow(false)
+    val visaValkommen = _visaValkommen.asStateFlow()
+
     val arPro = proKalla.arPro
 
     val stamplaUtPaminnelsePa =
@@ -183,6 +186,20 @@ class FlextidViewModel(
             proKalla.kontrollera()
             synkaPaminnelseJobb()
         }
+        viewModelScope.launch {
+            if (!uiInstallningarLager.valkommenVisad.first()) {
+                if (repository.observeraAntalDagar().first() > 0) {
+                    uiInstallningarLager.sattValkommenVisad()
+                } else {
+                    _visaValkommen.value = true
+                }
+            }
+        }
+    }
+
+    fun avslutaValkommen() {
+        _visaValkommen.value = false
+        viewModelScope.launch { uiInstallningarLager.sattValkommenVisad() }
     }
 
     fun sattTemaLage(lage: TemaLage) {

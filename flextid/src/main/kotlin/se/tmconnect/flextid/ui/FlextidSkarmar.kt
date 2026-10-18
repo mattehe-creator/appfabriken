@@ -204,7 +204,7 @@ fun FlextidStartSkarm(
 }
 
 @Composable
-private fun IdagInnehall(
+internal fun IdagInnehall(
     saldo: Int,
     dag: se.tmconnect.flextid.data.Dag?,
     standardRast: Int,
@@ -261,7 +261,7 @@ private fun IdagInnehall(
 }
 
 @Composable
-private fun VeckaInnehall(
+internal fun VeckaInnehall(
     veckaAnkar: LocalDate,
     rader: List<VeckaDagRad>,
     locale: Locale,
@@ -340,7 +340,7 @@ private fun VeckaRad(rad: VeckaDagRad, locale: Locale, onClick: () -> Unit) {
 }
 
 @Composable
-private fun InstallningarInnehall(
+internal fun InstallningarInnehall(
     installning: se.tmconnect.flextid.data.Installning,
     exportArManad: YearMonth,
     temaLage: TemaLage,
@@ -523,7 +523,7 @@ private fun InstallningarInnehall(
 }
 
 @Composable
-private fun DagFormularDialog(
+internal fun DagFormularDialog(
     tillstand: DagFormularTillstand,
     locale: Locale,
     onAndra: (DagFormularTillstand) -> Unit,

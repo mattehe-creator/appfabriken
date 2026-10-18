@@ -3,6 +3,7 @@ package se.tmconnect.flextid.data
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -16,6 +17,13 @@ private val Context.flextidUiDataStore: DataStore<Preferences> by preferencesDat
 )
 
 class UiInstallningarLager(private val context: Context) {
+    val valkommenVisad: Flow<Boolean> =
+        context.flextidUiDataStore.data.map { prefs -> prefs[VALKOMMEN_VISAD] ?: false }
+
+    suspend fun sattValkommenVisad() {
+        context.flextidUiDataStore.edit { prefs -> prefs[VALKOMMEN_VISAD] = true }
+    }
+
     val temaLage: Flow<String?> =
         context.flextidUiDataStore.data.map { prefs -> prefs[TEMA_LAGE] }
 
@@ -36,6 +44,7 @@ class UiInstallningarLager(private val context: Context) {
     }
 
     companion object {
+        private val VALKOMMEN_VISAD = booleanPreferencesKey("valkommen_visad")
         private val TEMA_LAGE = stringPreferencesKey("tema_lage")
         private val EXPORT_AR_MANAD = stringPreferencesKey("export_ar_manad")
     }
