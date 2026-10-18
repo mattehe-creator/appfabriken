@@ -14,7 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -107,7 +107,7 @@ fun FlextidStartSkarm(
                     onClick = { flik = FlextidFlik.VECKA },
                     icon = {
                         Icon(
-                            Icons.Default.List,
+                            Icons.AutoMirrored.Filled.List,
                             contentDescription = stringResource(R.string.flik_vecka),
                         )
                     },
