@@ -43,3 +43,5 @@ gradle :flextid:testDebugUnitTest --tests "*ButikTexterTest"
 - Ändra andra filer (inklusive engelska texter och `lang.txt`, samt uppgiftsfiler).
 - Lägga till beroenden.
 - Ändra appkod, manifest eller databasschema.
+
+utfall: godkänd 2026-10-18 (skrev om flextid/butik/sv/kort.txt; titel.txt fanns redan korrekt)
