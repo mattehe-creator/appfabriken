@@ -36,3 +36,5 @@ gradle :flextid:testDebugUnitTest --tests "*ButikTexterTest"
 ## Gör inte
 - Ändra svenska filer eller appkod.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-18 inget
