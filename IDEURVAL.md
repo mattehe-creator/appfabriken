@@ -114,3 +114,7 @@ Inte i 1.0: flera bostäder, mätarställningar, dokument (manualer, ritningar),
 1. A Garantivalvet (funktionsfryst, väntar på Google Play)
 2. G Husloggen (påbörjad 2026-10-16)
 3. Väljs när Mattias vill, utan väntetid efter publicering. B som egen app faller bort; mätarställningar kan bli en funktion i G.
+
+## Potentiella idéer (inte beslutade)
+
+- 2026-10-18: **Djurloggen** (arbetsnamn), journal och kostnadslogg för hund och katt: vaccinationer, avmaskning, veterinärbesök med kvitto, påminnelser, kostnad per år efter försäkringens ersättning. 37 poäng i molnsessionens prövning av tio idéer; logg för bilen tvåa med 36, i praktiken lika. Argument: stor målgrupp, mest återanvändning av Husloggen, försäkringsvillkor kan kräva vaccinationer enligt rekommendation. Invändningar: språket är ingen vallgrav mot engelska gratisappar, försäkringsbolagen kan bygga samma sak, låg betalvilja för djurappar, risk för Googles policy om repetitivt innehåll om apparna blir för lika. Siffrorna i underlaget är inte kontrollerade. Startas inte förrän de gemensamma delarna ligger i `:karna`.
