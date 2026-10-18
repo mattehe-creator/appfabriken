@@ -1,0 +1,100 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "6397e21db3031cafb7a3fd1f3f049f26",
+    "entities": [
+      {
+        "tableName": "dag",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`datum` INTEGER NOT NULL, `start` INTEGER, `slut` INTEGER, `rastMin` INTEGER NOT NULL, `typ` TEXT NOT NULL, `anteckning` TEXT, PRIMARY KEY(`datum`))",
+        "fields": [
+          {
+            "fieldPath": "datum",
+            "columnName": "datum",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "start",
+            "columnName": "start",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "slut",
+            "columnName": "slut",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "rastMin",
+            "columnName": "rastMin",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "typ",
+            "columnName": "typ",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "anteckning",
+            "columnName": "anteckning",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "datum"
+          ]
+        }
+      },
+      {
+        "tableName": "installning",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `normaltidMinPerDag` INTEGER NOT NULL, `standardRastMin` INTEGER NOT NULL, `ingangssaldoMin` INTEGER NOT NULL, `arbetsdagarMask` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "normaltidMinPerDag",
+            "columnName": "normaltidMinPerDag",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "standardRastMin",
+            "columnName": "standardRastMin",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ingangssaldoMin",
+            "columnName": "ingangssaldoMin",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "arbetsdagarMask",
+            "columnName": "arbetsdagarMask",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6397e21db3031cafb7a3fd1f3f049f26')"
+    ]
+  }
+}

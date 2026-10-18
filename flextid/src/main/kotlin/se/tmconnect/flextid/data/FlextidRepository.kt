@@ -1,0 +1,83 @@
+package se.tmconnect.flextid.data
+
+import java.time.LocalDate
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import se.tmconnect.flextid.regler.TidValideringFel
+import se.tmconnect.flextid.regler.beraknaSaldo
+import se.tmconnect.flextid.regler.valideraTider
+
+class FlextidRepository(private val dao: FlextidDao) {
+    fun observeraDag(datum: LocalDate): Flow<Dag?> = dao.observeraDag(datum)
+
+    suspend fun hamtaDag(datum: LocalDate): Dag? = dao.hamtaDag(datum)
+
+    fun observeraAllaDagar(): Flow<List<Dag>> = dao.observeraAllaDagar()
+
+    fun observeraDagarMellan(fran: LocalDate, till: LocalDate): Flow<List<Dag>> =
+        dao.observeraDagarMellan(fran, till)
+
+    fun observeraInstallning(): Flow<Installning> =
+        dao.observeraInstallning().map { it ?: Installning() }
+
+    fun observeraSaldo(): Flow<Int> =
+        combine(observeraAllaDagar(), observeraInstallning()) { dagar, inst ->
+            beraknaSaldo(dagar, inst)
+        }
+
+    suspend fun hamtaInstallning(): Installning = dao.hamtaInstallning() ?: Installning()
+
+    suspend fun sparaInstallning(installning: Installning) {
+        dao.sparaInstallning(installning.copy(id = 1))
+    }
+
+    sealed interface SparaDagResult {
+        data object Ok : SparaDagResult
+
+        data class Fel(val fel: TidValideringFel) : SparaDagResult
+    }
+
+    suspend fun sparaDag(dag: Dag): SparaDagResult {
+        val fel = valideraTider(dag.start, dag.slut)
+        if (fel != null) return SparaDagResult.Fel(fel)
+        dao.sparaDag(dag)
+        return SparaDagResult.Ok
+    }
+
+    suspend fun sparaDagUtanValidering(dag: Dag) {
+        dao.sparaDag(dag)
+    }
+
+    suspend fun taBortDag(datum: LocalDate) {
+        dao.taBortDag(datum)
+    }
+
+    suspend fun hamtaAllaDagar(): List<Dag> = dao.hamtaAllaDagar()
+
+    suspend fun ersattAllData(dagar: List<Dag>, installning: Installning) {
+        dao.taBortAllaDagar()
+        dagar.forEach { dao.sparaDag(it) }
+        dao.sparaInstallning(installning.copy(id = 1))
+    }
+
+    suspend fun stamplaIn(datum: LocalDate, tid: java.time.LocalTime, standardRastMin: Int) {
+        val befintlig = dao.hamtaDag(datum)
+        val dag =
+            (befintlig ?: Dag(datum = datum, rastMin = standardRastMin)).copy(
+                start = tid,
+                typ = befintlig?.typ ?: se.tmconnect.flextid.regler.DagTyp.ARBETE,
+            )
+        dao.sparaDag(dag)
+    }
+
+    suspend fun stamplaUt(datum: LocalDate, tid: java.time.LocalTime): SparaDagResult {
+        val befintlig = dao.hamtaDag(datum) ?: Dag(datum = datum)
+        return sparaDag(befintlig.copy(slut = tid))
+    }
+}
+
+fun skapaFlextidRepository(context: android.content.Context): FlextidRepository {
+    val databas = FlextidDatabas.hamta(context)
+    return FlextidRepository(databas.flextidDao())
+}

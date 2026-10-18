@@ -19,3 +19,4 @@ rootProject.name = "appfabriken"
 include(":karna")
 include(":garantivalvet")
 include(":husloggen")
+include(":flextid")

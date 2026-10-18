@@ -2,6 +2,7 @@
 
 ## 2026-10-18
 
+- Flextid (app 3): ny modul `:flextid`, databas version 1 (`dag`, `installning`), skärmar Idag/Vecka/Inställningar, CSV-export per månad, JSON-säkerhetskopia, paket `se.tmconnect.flextid`. Pro och påminnelser ingår inte. (Cursor, uppdrag Flextid grund och dagsregistrering)
 - Husloggen: plan för framtida kostnader — tabell `planerad_kostnad`, databas version 5, egen flik Plan (sex flikar i bottennavigeringen), obegränsat i gratisversionen, Genomförd → loggpost, säkerhetskopia version 4 med valfritt fält `planeradeKostnader`. (Cursor, uppdrag plan för framtida kostnader)
 
 ## 2026-10-17
