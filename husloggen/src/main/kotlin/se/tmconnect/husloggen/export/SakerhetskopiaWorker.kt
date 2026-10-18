@@ -69,6 +69,7 @@ internal suspend fun korSakerhetskopiaJobb(
                 val databas = HusDatabas.hamta(context)
                 val dao = databas.husDao()
                 val repository = skapaHusRepository(context, databas)
+                val bostader = repository.allaBostader()
                 val uppgifter = repository.allaUppgifter()
                 val poster = repository.allaPoster()
                 val matare = repository.allaMatare()
@@ -86,6 +87,7 @@ internal suspend fun korSakerhetskopiaJobb(
                             ut ->
                         Sakerhetskopia.skriv(
                             ut,
+                            bostader,
                             uppgifter,
                             poster,
                             matare,

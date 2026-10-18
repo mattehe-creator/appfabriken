@@ -122,6 +122,7 @@
     <string name="paminnelse_kanal_namn">Task reminders</string>
     <string name="paminnelse_notis_titel">Task due soon</string>
     <string name="paminnelse_notis_text">%1$s is due on %2$s</string>
+    <string name="paminnelse_notis_text_med_bostad">%1$s: %2$s is due on %3$s</string>
     <string name="paminnelse_notis_samlad_titel">Several tasks due soon</string>
     <string name="paminnelse_notis_samlad_text">%1$d tasks are due within a week</string>
     <string name="paminnelse_installning_rubrik">Remind me before tasks are due</string>
@@ -145,7 +146,23 @@
     <string name="pro_du_har">You have Pro</string>
     <string name="pro_kop_misslyckades">The purchase could not be completed. Try again.</string>
     <string name="pro_grans_nadd">Limit reached: 15 entries</string>
+    <string name="pro_grans_bostader">More than 3 homes requires Pro</string>
     <string name="pro_inte_nu">Not now</string>
+
+    <!-- Homes -->
+    <string name="bostad_forvald_namn">My home</string>
+    <string name="bostad_rubrik">Homes</string>
+    <string name="bostad_vald">Selected home: %1$s</string>
+    <string name="bostad_byt">Change home</string>
+    <string name="bostad_lagg_till">Add home</string>
+    <string name="bostad_namn">Name</string>
+    <string name="bostad_adress">Address (optional)</string>
+    <string name="bostad_anteckning">Notes (optional)</string>
+    <string name="bostad_spara">Save</string>
+    <string name="bostad_ta_bort">Remove home</string>
+    <string name="bostad_ta_bort_bekraftelse">Remove %1$s and %2$d items linked to it?</string>
+    <string name="bostad_sista_gar_inte">At least one home must remain</string>
+    <string name="historik_rubrik_med_bostad">%1$s – %2$s</string>
     <string name="uppgift_gjord_post_ej_sparad">Task moved but entry not saved (Pro required)</string>
 
     <!-- Säkerhetskopia -->

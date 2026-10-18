@@ -22,7 +22,12 @@ fun skrivSakerhetskopiaJson(innehall: SakerhetskopiaInnehall): String =
         append("\"skapad\":")
         append(jsonStrang(innehall.skapad))
         append(',')
-        append("\"uppgifter\":[")
+        append("\"bostader\":[")
+        innehall.bostader.forEachIndexed { index, bostad ->
+            if (index > 0) append(',')
+            append(skrivBostadObjekt(bostad))
+        }
+        append("],\"uppgifter\":[")
         innehall.uppgifter.forEachIndexed { index, uppgift ->
             if (index > 0) append(',')
             append(skrivUppgiftObjekt(uppgift))
@@ -50,6 +55,21 @@ fun skrivSakerhetskopiaJson(innehall: SakerhetskopiaInnehall): String =
         append("]}")
     }
 
+private fun skrivBostadObjekt(bostad: SakerhetskopiaBostad): String =
+    buildString {
+        append('{')
+        var forsta = true
+        fun laggTillFalt(namn: String, varde: String) {
+            if (!forsta) append(',')
+            forsta = false
+            append('"').append(namn).append("\":").append(varde)
+        }
+        laggTillFalt("namn", jsonStrang(bostad.namn))
+        bostad.adress?.let { laggTillFalt("adress", jsonStrang(it)) }
+        bostad.anteckning?.let { laggTillFalt("anteckning", jsonStrang(it)) }
+        append('}')
+    }
+
 private fun skrivUppgiftObjekt(uppgift: SakerhetskopiaUppgift): String =
     buildString {
         append('{')
@@ -64,6 +84,7 @@ private fun skrivUppgiftObjekt(uppgift: SakerhetskopiaUppgift): String =
         laggTillFalt("startDatum", jsonStrang(uppgift.startDatum.toString()))
         uppgift.senastGjord?.let { laggTillFalt("senastGjord", jsonStrang(it.toString())) }
         uppgift.anteckning?.let { laggTillFalt("anteckning", jsonStrang(it)) }
+        laggTillFalt("bostadIndex", uppgift.bostadIndex.toString())
         append('}')
     }
 
@@ -87,6 +108,7 @@ private fun skrivPostObjekt(post: SakerhetskopiaPost): String =
         if (post.bilder.isNotEmpty()) {
             laggTillFalt("bilder", post.bilder.joinToString(",", "[", "]") { jsonStrang(it) })
         }
+        laggTillFalt("bostadIndex", post.bostadIndex.toString())
         append('}')
     }
 
@@ -102,6 +124,7 @@ private fun skrivMatareObjekt(matare: SakerhetskopiaMatare): String =
         laggTillFalt("namn", jsonStrang(matare.namn))
         laggTillFalt("enhet", jsonStrang(matare.enhet))
         matare.anteckning?.let { laggTillFalt("anteckning", jsonStrang(it)) }
+        laggTillFalt("bostadIndex", matare.bostadIndex.toString())
         append('}')
     }
 
@@ -120,6 +143,7 @@ private fun skrivDokumentObjekt(dokument: SakerhetskopiaDokument): String =
         laggTillFalt("filnamn", jsonStrang(dokument.filnamn))
         laggTillFalt("mimeTyp", jsonStrang(dokument.mimeTyp))
         laggTillFalt("tillagd", jsonStrang(dokument.tillagd.toString()))
+        laggTillFalt("bostadIndex", dokument.bostadIndex.toString())
         append('}')
     }
 
@@ -172,6 +196,19 @@ fun lasSakerhetskopiaJson(text: String): SakerhetskopiaJsonLasResult {
             return SakerhetskopiaJsonLasResult.Fel.TrasigJson
         }
         val skapad = rot["skapad"] as? String ?: return SakerhetskopiaJsonLasResult.Fel.TrasigJson
+        val rawBostader = rot["bostader"] as? List<*> ?: emptyList<Any>()
+        if (rawBostader.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_BOSTADER) {
+            return SakerhetskopiaJsonLasResult.Fel.TrasigJson
+        }
+        val bostader =
+            rawBostader.mapNotNull { element ->
+                val falt = element as? Map<*, *> ?: return@mapNotNull null
+                @Suppress("UNCHECKED_CAST")
+                lasBostadObjekt(falt as Map<String, Any?>)
+            }
+        if (bostader.size != rawBostader.size && rawBostader.isNotEmpty()) {
+            return SakerhetskopiaJsonLasResult.Fel.TrasigJson
+        }
         val rawUppgifter = rot["uppgifter"] as? List<*> ?: return SakerhetskopiaJsonLasResult.Fel.TrasigJson
         val rawPoster = rot["poster"] as? List<*> ?: return SakerhetskopiaJsonLasResult.Fel.TrasigJson
         if (rawUppgifter.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_UPPGIFTER ||
@@ -233,6 +270,7 @@ fun lasSakerhetskopiaJson(text: String): SakerhetskopiaJsonLasResult {
             SakerhetskopiaInnehall(
                 version = version.toInt(),
                 skapad = skapad,
+                bostader = bostader,
                 uppgifter = uppgifter,
                 poster = poster,
                 matare = matare,
@@ -254,6 +292,22 @@ private fun lasDatum(varde: Any?): LocalDate? =
         }
     }
 
+private fun lasBostadIndex(falt: Map<String, Any?>): Int =
+    when (val v = falt["bostadIndex"]) {
+        null -> 0
+        is Number -> v.toInt()
+        else -> 0
+    }
+
+private fun lasBostadObjekt(falt: Map<String, Any?>): SakerhetskopiaBostad? {
+    val namn = falt["namn"] as? String ?: return null
+    return SakerhetskopiaBostad(
+        namn = namn,
+        adress = falt["adress"] as? String,
+        anteckning = falt["anteckning"] as? String,
+    )
+}
+
 private fun lasUppgiftObjekt(falt: Map<String, Any?>): SakerhetskopiaUppgift? {
     val namn = falt["namn"] as? String ?: return null
     val intervall = falt["intervallManader"] as? Number ?: return null
@@ -264,6 +318,7 @@ private fun lasUppgiftObjekt(falt: Map<String, Any?>): SakerhetskopiaUppgift? {
         startDatum = start,
         senastGjord = lasDatum(falt["senastGjord"]),
         anteckning = falt["anteckning"] as? String,
+        bostadIndex = lasBostadIndex(falt),
     )
 }
 
@@ -274,6 +329,7 @@ private fun lasMatareObjekt(falt: Map<String, Any?>): SakerhetskopiaMatare? {
         namn = namn,
         enhet = enhet,
         anteckning = falt["anteckning"] as? String,
+        bostadIndex = lasBostadIndex(falt),
     )
 }
 
@@ -289,6 +345,7 @@ private fun lasDokumentObjekt(falt: Map<String, Any?>): SakerhetskopiaDokument? 
         filnamn = filnamn,
         mimeTyp = mimeTyp,
         tillagd = tillagd,
+        bostadIndex = lasBostadIndex(falt),
     )
 }
 
@@ -340,6 +397,7 @@ private fun lasPostObjekt(falt: Map<String, Any?>): SakerhetskopiaPost? {
         anteckning = falt["anteckning"] as? String,
         uppgiftIndex = uppgiftIndex,
         bilder = bilder,
+        bostadIndex = lasBostadIndex(falt),
     )
 }
 

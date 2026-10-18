@@ -1,0 +1,509 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 5,
+    "identityHash": "d009b8a9794fd249eba97a72bc7954a4",
+    "entities": [
+      {
+        "tableName": "bostad",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `namn` TEXT NOT NULL, `adress` TEXT, `anteckning` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "namn",
+            "columnName": "namn",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "adress",
+            "columnName": "adress",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "anteckning",
+            "columnName": "anteckning",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "uppgift",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `bostad_id` INTEGER NOT NULL, `namn` TEXT NOT NULL, `intervall_manader` INTEGER NOT NULL, `start_datum` INTEGER NOT NULL, `senast_gjord` INTEGER, `paminnelse` INTEGER NOT NULL, `anteckning` TEXT, `skapad` INTEGER NOT NULL, FOREIGN KEY(`bostad_id`) REFERENCES `bostad`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bostadId",
+            "columnName": "bostad_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "namn",
+            "columnName": "namn",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "intervallManader",
+            "columnName": "intervall_manader",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startDatum",
+            "columnName": "start_datum",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "senastGjord",
+            "columnName": "senast_gjord",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "paminnelse",
+            "columnName": "paminnelse",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "anteckning",
+            "columnName": "anteckning",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "skapad",
+            "columnName": "skapad",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_uppgift_bostad_id",
+            "unique": false,
+            "columnNames": [
+              "bostad_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_uppgift_bostad_id` ON `${TABLE_NAME}` (`bostad_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "bostad",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "bostad_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "post",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `bostad_id` INTEGER NOT NULL, `datum` INTEGER NOT NULL, `vad` TEXT NOT NULL, `typ` TEXT NOT NULL, `belopp_ore` INTEGER, `rot_rut_avdrag_ore` INTEGER, `utforare` TEXT, `anteckning` TEXT, `kvitto_fil` TEXT, `bilder` TEXT, `uppgift_id` INTEGER, `skapad` INTEGER NOT NULL, FOREIGN KEY(`bostad_id`) REFERENCES `bostad`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`uppgift_id`) REFERENCES `uppgift`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bostadId",
+            "columnName": "bostad_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "datum",
+            "columnName": "datum",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vad",
+            "columnName": "vad",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "typ",
+            "columnName": "typ",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "beloppOre",
+            "columnName": "belopp_ore",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "rotRutAvdragOre",
+            "columnName": "rot_rut_avdrag_ore",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "utforare",
+            "columnName": "utforare",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "anteckning",
+            "columnName": "anteckning",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "kvittoFil",
+            "columnName": "kvitto_fil",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "bilder",
+            "columnName": "bilder",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "uppgiftId",
+            "columnName": "uppgift_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "skapad",
+            "columnName": "skapad",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_post_uppgift_id",
+            "unique": false,
+            "columnNames": [
+              "uppgift_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_post_uppgift_id` ON `${TABLE_NAME}` (`uppgift_id`)"
+          },
+          {
+            "name": "index_post_bostad_id",
+            "unique": false,
+            "columnNames": [
+              "bostad_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_post_bostad_id` ON `${TABLE_NAME}` (`bostad_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "bostad",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "bostad_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "uppgift",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "uppgift_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "matare",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `bostad_id` INTEGER NOT NULL, `namn` TEXT NOT NULL, `enhet` TEXT NOT NULL, `anteckning` TEXT, `skapad` INTEGER NOT NULL, FOREIGN KEY(`bostad_id`) REFERENCES `bostad`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bostadId",
+            "columnName": "bostad_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "namn",
+            "columnName": "namn",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "enhet",
+            "columnName": "enhet",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "anteckning",
+            "columnName": "anteckning",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "skapad",
+            "columnName": "skapad",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_matare_bostad_id",
+            "unique": false,
+            "columnNames": [
+              "bostad_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_matare_bostad_id` ON `${TABLE_NAME}` (`bostad_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "bostad",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "bostad_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "avlasning",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `matare_id` INTEGER NOT NULL, `datum` INTEGER NOT NULL, `varde` INTEGER NOT NULL, `skapad` INTEGER NOT NULL, FOREIGN KEY(`matare_id`) REFERENCES `matare`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "matareId",
+            "columnName": "matare_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "datum",
+            "columnName": "datum",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "varde",
+            "columnName": "varde",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "skapad",
+            "columnName": "skapad",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_avlasning_matare_id",
+            "unique": false,
+            "columnNames": [
+              "matare_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_avlasning_matare_id` ON `${TABLE_NAME}` (`matare_id`)"
+          },
+          {
+            "name": "index_avlasning_matare_id_datum",
+            "unique": true,
+            "columnNames": [
+              "matare_id",
+              "datum"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_avlasning_matare_id_datum` ON `${TABLE_NAME}` (`matare_id`, `datum`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "matare",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "matare_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "dokument",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `bostad_id` INTEGER NOT NULL, `titel` TEXT NOT NULL, `kategori` TEXT, `anteckning` TEXT, `filnamn` TEXT NOT NULL, `mime_typ` TEXT NOT NULL, `tillagd` INTEGER NOT NULL, FOREIGN KEY(`bostad_id`) REFERENCES `bostad`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bostadId",
+            "columnName": "bostad_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "titel",
+            "columnName": "titel",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kategori",
+            "columnName": "kategori",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "anteckning",
+            "columnName": "anteckning",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "filnamn",
+            "columnName": "filnamn",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mimeTyp",
+            "columnName": "mime_typ",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tillagd",
+            "columnName": "tillagd",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_dokument_kategori",
+            "unique": false,
+            "columnNames": [
+              "kategori"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_dokument_kategori` ON `${TABLE_NAME}` (`kategori`)"
+          },
+          {
+            "name": "index_dokument_titel",
+            "unique": false,
+            "columnNames": [
+              "titel"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_dokument_titel` ON `${TABLE_NAME}` (`titel`)"
+          },
+          {
+            "name": "index_dokument_bostad_id",
+            "unique": false,
+            "columnNames": [
+              "bostad_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_dokument_bostad_id` ON `${TABLE_NAME}` (`bostad_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "bostad",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "bostad_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd009b8a9794fd249eba97a72bc7954a4')"
+    ]
+  }
+}

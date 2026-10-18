@@ -1,5 +1,9 @@
 # Beslutslogg
 
+## 2026-10-18
+
+- Husloggen: flera bostäder, databas version 5 (tabell `bostad`, `bostad_id` på övriga tabeller), gratis upp till 3 bostäder och 15 loggposter totalt, säkerhetskopia version 4 med bostäder. (Cursor, uppdrag flera bostäder)
+
 ## 2026-10-17
 
 - Husloggen: dokument (manualer, ritningar m.m.) i egen flik, databas version 4, filer via SAF utan nya behörigheter, högst 25 MB per fil, ingår i säkerhetskopia (version 3). Gratis och räknas inte som loggposter. (Cursor, uppdrag `2026-10-17-husloggen-dokument`)

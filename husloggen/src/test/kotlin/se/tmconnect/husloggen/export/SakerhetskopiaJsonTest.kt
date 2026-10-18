@@ -100,9 +100,20 @@ class SakerhetskopiaJsonTest {
     }
 
     @Test
-    fun version4Avvisas() {
-        val json = """{"version":4,"skapad":"2026-10-16","uppgifter":[],"poster":[]}"""
+    fun version5Avvisas() {
+        val json = """{"version":5,"skapad":"2026-10-16","bostader":[],"uppgifter":[],"poster":[]}"""
         assertTrue(lasSakerhetskopiaJson(json) is SakerhetskopiaJsonLasResult.Fel.OkandVersion)
+    }
+
+    @Test
+    fun version4MedBostaderImporteras() {
+        val json =
+            """
+            {"version":4,"skapad":"2026-10-16","bostader":[{"namn":"Stuga"}],
+            "uppgifter":[],"poster":[]}
+            """.trimIndent()
+        val las = lasSakerhetskopiaJson(json) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals("Stuga", las.innehall.bostader.single().namn)
     }
 
     @Test

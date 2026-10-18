@@ -29,6 +29,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLooper
 import se.tmconnect.husloggen.data.HusDatabas
+import se.tmconnect.husloggen.data.skapaTestHusDatabas
 import se.tmconnect.husloggen.data.HusRepository
 import se.tmconnect.husloggen.data.InstallningarLager
 import se.tmconnect.husloggen.data.Post
@@ -54,10 +55,7 @@ class HusViewModelBilderTest {
         Dispatchers.setMain(UnconfinedTestDispatcher())
         context = ApplicationProvider.getApplicationContext()
         nollstallFileProviderCache()
-        databas =
-            Room.inMemoryDatabaseBuilder(context, HusDatabas::class.java)
-                .allowMainThreadQueries()
-                .build()
+        databas = skapaTestHusDatabas(context)
         repository = skapaHusRepository(context, databas)
         val paminnelseInstallningar = PaminnelseInstallningarLager(
             context,
@@ -162,7 +160,7 @@ class HusViewModelBilderTest {
         assertTrue(viewModel.sparaPostFormular())
         vantaPa { viewModel.postFormular.value == null }
 
-        val post = repository.poster.first().first()
+        val post = repository.allaPoster().first()
         val bilder = repository.lasBilder(post)
         assertEquals(listOf(filnamn), bilder)
         assertTrue(repository.bildfilFinns(filnamn))

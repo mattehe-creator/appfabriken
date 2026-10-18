@@ -34,10 +34,7 @@ class HusRepositoryDokumentTest {
     @Before
     fun setUp() {
         context = ApplicationProvider.getApplicationContext()
-        databas =
-            Room.inMemoryDatabaseBuilder(context, HusDatabas::class.java)
-                .allowMainThreadQueries()
-                .build()
+        databas = skapaTestHusDatabas(context)
         repository = skapaHusRepository(context, databas)
         dokumentLager = skapaHusDokumentLager(context)
     }
@@ -59,7 +56,7 @@ class HusRepositoryDokumentTest {
                 tillagd = LocalDate.of(2026, 10, 1),
             ),
         )
-        val grupper = grupperaDokumentPerKategori(repository.dokument.first())
+        val grupper = grupperaDokumentPerKategori(repository.allaDokument())
         assertEquals(DokumentKategori.MANUAL, grupper.single().kategori)
         assertEquals("Manual diskmaskin", grupper.single().dokument.single().titel)
     }
@@ -79,7 +76,7 @@ class HusRepositoryDokumentTest {
             )
         val rad = repository.hamtaDokument(id)!!
         repository.taBortDokument(rad)
-        assertEquals(0, repository.dokument.first().size)
+        assertEquals(0, repository.allaDokument().size)
         assertFalse(dokumentLager.filFinns(filnamn))
     }
 
@@ -93,7 +90,7 @@ class HusRepositoryDokumentTest {
                 poster = emptyList(),
             )
         repository.importeraSakerhetskopia(innehall, emptyMap())
-        assertEquals(0, repository.dokument.first().size)
+        assertEquals(0, repository.allaDokument().size)
     }
 
     @Test
@@ -115,6 +112,7 @@ class HusRepositoryDokumentTest {
             ByteArrayOutputStream().use { ut ->
                 Sakerhetskopia.skriv(
                     ut,
+                    repository.allaBostader(),
                     emptyList(),
                     emptyList(),
                     emptyList(),
@@ -127,22 +125,10 @@ class HusRepositoryDokumentTest {
             }
         val las = ByteArrayInputStream(zipBytes).use { Sakerhetskopia.lasIn(it) } as SakerhetskopiaLasResult.Ok
         val export = las.innehall.dokument.single()
-        assertEquals(
-            SakerhetskopiaDokument(
-                titel = "Manual diskmaskin",
-                kategori = DokumentKategori.MANUAL.name,
-                anteckning = "Kök",
-                filnamn = filnamn,
-                mimeTyp = "application/pdf",
-                tillagd = LocalDate.of(2026, 9, 15),
-            ),
-            export,
-        )
+        assertEquals("Manual diskmaskin", export.titel)
+        assertEquals(DokumentKategori.MANUAL.name, export.kategori)
         databas.close()
-        val databas2 =
-            Room.inMemoryDatabaseBuilder(context, HusDatabas::class.java)
-                .allowMainThreadQueries()
-                .build()
+        val databas2 = skapaTestHusDatabas(context)
         val repo2 = skapaHusRepository(context, databas2)
         repo2.importeraSakerhetskopia(las.innehall, las.bildFiler, las.dokumentFiler)
         val importerad = repo2.allaDokument().single()

@@ -49,6 +49,13 @@ class InstallningarLager(
         context.husInstallningarDataStore.edit { prefs -> prefs[VALKOMMEN_VISAD] = true }
     }
 
+    val valdBostadId: Flow<Long?> =
+        context.husInstallningarDataStore.data.map { prefs -> prefs[VALD_BOSTAD_ID] }
+
+    suspend fun sattValdBostadId(bostadId: Long) {
+        context.husInstallningarDataStore.edit { prefs -> prefs[VALD_BOSTAD_ID] = bostadId }
+    }
+
     suspend fun sattAutoBackupMapp(uri: String?, namn: String?) {
         context.husInstallningarDataStore.edit { prefs ->
             if (uri == null) {
@@ -91,5 +98,6 @@ class InstallningarLager(
         private val AUTO_FEL = booleanPreferencesKey("auto_backup_fel")
         private val TEMA_LAGE = stringPreferencesKey("tema_lage")
         private val VALKOMMEN_VISAD = booleanPreferencesKey("valkommen_visad")
+        private val VALD_BOSTAD_ID = longPreferencesKey("vald_bostad_id")
     }
 }

@@ -8,6 +8,7 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 import se.tmconnect.husloggen.data.Avlasning
+import se.tmconnect.husloggen.data.Bostad
 import se.tmconnect.husloggen.data.Dokument
 import se.tmconnect.husloggen.data.Matare
 import se.tmconnect.husloggen.data.Post
@@ -34,6 +35,7 @@ sealed interface SakerhetskopiaLasResult {
 object Sakerhetskopia {
     fun skriv(
         outputStream: OutputStream,
+        bostader: List<Bostad>,
         uppgifter: List<Uppgift>,
         poster: List<Post>,
         matare: List<Matare>,
@@ -43,7 +45,8 @@ object Sakerhetskopia {
         dokumentLager: DokumentLager,
         skapad: String = Instant.now().toString(),
     ) {
-        if (uppgifter.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_UPPGIFTER ||
+        if (bostader.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_BOSTADER ||
+            uppgifter.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_UPPGIFTER ||
             poster.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_POSTER ||
             matare.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_MATARE ||
             avlasningar.size > HUSLOGGEN_SAKERHETSKOPIA_MAX_AVLASNINGAR ||
@@ -51,12 +54,15 @@ object Sakerhetskopia {
         ) {
             error("För många rader för säkerhetskopia")
         }
+        val sorteradeBostader = bostader.sortedBy { it.id }
+        val bostadIdTillIndex = sorteradeBostader.mapIndexed { index, b -> b.id to index }.toMap()
+        val exportBostader = sorteradeBostader.map { bostadTillSakerhetskopia(it) }
         val sorteradeUppgifter = uppgifter.sortedBy { it.id }
         val uppgiftIdTillIndex = sorteradeUppgifter.mapIndexed { index, u -> u.id to index }.toMap()
-        val exportUppgifter = sorteradeUppgifter.map { uppgiftTillSakerhetskopia(it) }
+        val exportUppgifter = sorteradeUppgifter.map { uppgiftTillSakerhetskopia(it, bostadIdTillIndex) }
         val exportPoster =
             poster.sortedBy { it.id }.map { post ->
-                val export = postTillSakerhetskopia(post, uppgiftIdTillIndex)
+                val export = postTillSakerhetskopia(post, uppgiftIdTillIndex, bostadIdTillIndex)
                 export.copy(
                     bilder = export.bilder.filter { filnamn ->
                         val bytes = bildLager.lasRåBytes(filnamn)
@@ -66,16 +72,17 @@ object Sakerhetskopia {
             }
         val sorteradeMatare = matare.sortedBy { it.id }
         val matareIdTillIndex = sorteradeMatare.mapIndexed { index, m -> m.id to index }.toMap()
-        val exportMatare = sorteradeMatare.map { matareTillSakerhetskopia(it) }
+        val exportMatare = sorteradeMatare.map { matareTillSakerhetskopia(it, bostadIdTillIndex) }
         val exportAvlasningar =
             avlasningar
                 .sortedBy { it.id }
                 .map { avlasningTillSakerhetskopia(it, matareIdTillIndex) }
-        val exportDokument = dokument.sortedBy { it.id }.map { dokumentTillSakerhetskopia(it) }
+        val exportDokument = dokument.sortedBy { it.id }.map { dokumentTillSakerhetskopia(it, bostadIdTillIndex) }
         val innehall =
             SakerhetskopiaInnehall(
                 version = HUSLOGGEN_SAKERHETSKOPIA_VERSION,
                 skapad = skapad,
+                bostader = exportBostader,
                 uppgifter = exportUppgifter,
                 poster = exportPoster,
                 matare = exportMatare,

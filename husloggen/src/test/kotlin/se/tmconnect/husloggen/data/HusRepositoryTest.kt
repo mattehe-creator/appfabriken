@@ -34,9 +34,7 @@ class HusRepositoryTest {
     fun setUp() {
         context = ApplicationProvider.getApplicationContext()
         nollstallFileProviderCache()
-        databas = Room.inMemoryDatabaseBuilder(context, HusDatabas::class.java)
-            .allowMainThreadQueries()
-            .build()
+        databas = skapaTestHusDatabas(context)
         repository = skapaHusRepository(context, databas)
     }
 
@@ -77,7 +75,7 @@ class HusRepositoryTest {
         val uppdaterad = repository.hamtaUppgift(uppgiftId)!!
         assertEquals(idag, uppdaterad.senastGjord)
 
-        val poster = repository.poster.first()
+        val poster = repository.allaPoster()
         assertEquals(1, poster.size)
         assertEquals("Rensa hängrännor", poster[0].vad)
         assertEquals(PostTyp.UNDERHALL, poster[0].typ)
@@ -99,7 +97,7 @@ class HusRepositoryTest {
         )
         repository.markeraSomGjord(repository.hamtaUppgift(uppgiftId)!!, idag, arPro = false)
         assertEquals(idag, repository.hamtaUppgift(uppgiftId)!!.senastGjord)
-        assertEquals(1, repository.poster.first().size)
+        assertEquals(1, repository.allaPoster().size)
     }
 
     @Test
@@ -133,7 +131,7 @@ class HusRepositoryTest {
 
         repository.taBortPost(uppdaterad)
         assertNull(repository.hamtaPost(postId))
-        assertEquals(0, repository.poster.first().size)
+        assertEquals(0, repository.allaPoster().size)
     }
 
     @Test
@@ -239,7 +237,7 @@ class HusRepositoryTest {
         )
         val uppgift = repository.hamtaUppgift(uppgiftId)!!
         repository.markeraSomGjord(uppgift, LocalDate.of(2026, 3, 1), arPro = false)
-        val postId = repository.poster.first().first().id
+        val postId = repository.allaPoster().first().id
 
         repository.taBortUppgift(uppgift)
 
@@ -287,7 +285,7 @@ class HusRepositoryTest {
                 arPro = false,
             )
         }
-        val forsta = repository.poster.first().first()
+        val forsta = repository.allaPoster().first()
         val result = repository.sparaPost(forsta.copy(vad = "Ändrad"), arPro = false)
         assertTrue(result is SparaPostResult.Sparad)
         assertEquals("Ändrad", repository.hamtaPost(forsta.id)!!.vad)

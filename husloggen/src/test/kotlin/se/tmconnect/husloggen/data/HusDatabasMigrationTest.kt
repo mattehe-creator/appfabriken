@@ -89,7 +89,7 @@ class HusDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, skapaMigration4Till5(context))
             .allowMainThreadQueries()
             .build()
 
@@ -163,7 +163,7 @@ class HusDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, skapaMigration4Till5(context))
             .allowMainThreadQueries()
             .build()
 
@@ -247,7 +247,7 @@ class HusDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_3_4)
+            .addMigrations(MIGRATION_3_4, skapaMigration4Till5(context))
             .allowMainThreadQueries()
             .build()
 
@@ -263,6 +263,102 @@ class HusDatabasMigrationTest {
             )
         assertEquals(1, databas.husDao().allaDokument().size)
         assertEquals("Manual diskmaskin", databas.husDao().hamtaDokument(id)!!.titel)
+
+        databas.close()
+        context.deleteDatabase(TEST_DB)
+    }
+
+    @Test
+    fun migration4Till5BevararDataPaForvaldBostad() = runTest {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        context.deleteDatabase(TEST_DB)
+
+        val config = SupportSQLiteOpenHelper.Configuration.builder(context)
+            .name(TEST_DB)
+            .callback(
+                object : SupportSQLiteOpenHelper.Callback(4) {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        db.execSQL(
+                            """
+                            CREATE TABLE IF NOT EXISTS uppgift (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                namn TEXT NOT NULL,
+                                intervall_manader INTEGER NOT NULL,
+                                start_datum INTEGER NOT NULL,
+                                senast_gjord INTEGER,
+                                paminnelse INTEGER NOT NULL,
+                                anteckning TEXT,
+                                skapad INTEGER NOT NULL
+                            )
+                            """.trimIndent(),
+                        )
+                        db.execSQL(
+                            """
+                            CREATE TABLE IF NOT EXISTS post (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                datum INTEGER NOT NULL,
+                                vad TEXT NOT NULL,
+                                typ TEXT NOT NULL,
+                                belopp_ore INTEGER,
+                                rot_rut_avdrag_ore INTEGER,
+                                utforare TEXT,
+                                anteckning TEXT,
+                                kvitto_fil TEXT,
+                                bilder TEXT,
+                                uppgift_id INTEGER,
+                                skapad INTEGER NOT NULL
+                            )
+                            """.trimIndent(),
+                        )
+                        MIGRATION_2_3.migrate(db)
+                        MIGRATION_3_4.migrate(db)
+                    }
+
+                    override fun onUpgrade(
+                        db: SupportSQLiteDatabase,
+                        oldVersion: Int,
+                        newVersion: Int,
+                    ) = Unit
+                },
+            )
+            .build()
+        val openHelper = FrameworkSQLiteOpenHelperFactory().create(config)
+        val datum = LocalDate.of(2026, 5, 1).toEpochDay()
+        openHelper.writableDatabase.apply {
+            execSQL(
+                """
+                INSERT INTO post (id, datum, vad, typ, belopp_ore, skapad)
+                VALUES (1, $datum, 'Fasad', 'UNDERHALL', 100000, 1700000000000)
+                """.trimIndent(),
+            )
+            execSQL(
+                """
+                INSERT INTO matare (id, namn, enhet, skapad)
+                VALUES (1, 'El', 'kWh', 1700000000000)
+                """.trimIndent(),
+            )
+            execSQL(
+                """
+                INSERT INTO dokument (id, titel, filnamn, mime_typ, tillagd)
+                VALUES (1, 'Manual', 'a.pdf', 'application/pdf', $datum)
+                """.trimIndent(),
+            )
+            close()
+        }
+        openHelper.close()
+
+        val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
+            .addMigrations(skapaMigration4Till5(context))
+            .allowMainThreadQueries()
+            .build()
+
+        val dao = databas.husDao()
+        assertEquals(1, dao.antalBostader())
+        val bostadId = dao.allaBostader().single().id
+        assertEquals("Fasad", dao.hamtaPost(1)!!.vad)
+        assertEquals(bostadId, dao.hamtaPost(1)!!.bostadId)
+        assertEquals(bostadId, dao.hamtaMatare(1)!!.bostadId)
+        assertEquals(bostadId, dao.hamtaDokument(1)!!.bostadId)
 
         databas.close()
         context.deleteDatabase(TEST_DB)

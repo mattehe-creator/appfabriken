@@ -15,6 +15,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import se.tmconnect.husloggen.data.Bostad
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.PostTyp
 import se.tmconnect.husloggen.data.Uppgift
@@ -39,9 +40,17 @@ class SakerhetskopiaZipTest {
     fun skrivOchLasMedBild() {
         val bildBytes = byteArrayOf(9, 8, 7)
         val filnamn = bildLager.sparaFranBytes(bildBytes, "test.jpg")
-        val uppgift = Uppgift(namn = "U", intervallManader = 12, startDatum = LocalDate.of(2025, 1, 1))
+        val bostad = Bostad(id = 1, namn = "Test")
+        val uppgift =
+            Uppgift(
+                bostadId = 1,
+                namn = "U",
+                intervallManader = 12,
+                startDatum = LocalDate.of(2025, 1, 1),
+            )
         val post =
             Post(
+                bostadId = 1,
                 datum = LocalDate.of(2026, 2, 2),
                 vad = "Med bild",
                 typ = PostTyp.UNDERHALL,
@@ -51,6 +60,7 @@ class SakerhetskopiaZipTest {
             ByteArrayOutputStream().use { ut ->
                 Sakerhetskopia.skriv(
                     ut,
+                    listOf(bostad),
                     listOf(uppgift),
                     listOf(post),
                     emptyList(),

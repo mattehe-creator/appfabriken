@@ -40,13 +40,17 @@ import se.tmconnect.husloggen.regler.standardForsaljningsar
 import se.tmconnect.karna.export.PdfExportResult
 import se.tmconnect.karna.export.skrivCsvMedBom
 import java.util.Locale
+import se.tmconnect.husloggen.regler.kanLaggaTillBostad
 import se.tmconnect.husloggen.regler.kanLaggaTillPost
 import se.tmconnect.karna.pro.ProKalla
 import se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand
 import se.tmconnect.husloggen.regler.formateraBilder
 import se.tmconnect.husloggen.data.Avlasning
+import se.tmconnect.husloggen.data.Bostad
 import se.tmconnect.husloggen.data.Matare
 import se.tmconnect.husloggen.data.Post
+import se.tmconnect.husloggen.data.SparaBostadResult
+import se.tmconnect.husloggen.data.TaBortBostadResult
 import se.tmconnect.husloggen.data.PostTyp
 import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.husloggen.export.AvlasningCsvTexter
@@ -173,12 +177,18 @@ class HusViewModel(
     private val _proDialogSynlig = MutableStateFlow(false)
     val proDialogSynlig: StateFlow<Boolean> = _proDialogSynlig.asStateFlow()
 
+    private val _proDialogVisaBostadsGrans = MutableStateFlow(false)
+    val proDialogVisaBostadsGrans: StateFlow<Boolean> = _proDialogVisaBostadsGrans.asStateFlow()
+
     private val _visaValkommen = MutableStateFlow(false)
     val visaValkommen: StateFlow<Boolean> = _visaValkommen.asStateFlow()
 
     init {
         viewModelScope.launch {
             proKalla.kontrollera()
+        }
+        viewModelScope.launch {
+            synkaValdBostad()
         }
         viewModelScope.launch {
             if (!installningarLager.valkommenVisad.first()) {
@@ -188,6 +198,16 @@ class HusViewModel(
                     _visaValkommen.value = true
                 }
             }
+        }
+    }
+
+    private suspend fun synkaValdBostad() {
+        val sparad = installningarLager.valdBostadId.first()
+        val bostader = repository.allaBostader()
+        if (bostader.isEmpty()) return
+        val giltig = sparad != null && bostader.any { it.id == sparad }
+        if (!giltig) {
+            installningarLager.sattValdBostadId(bostader.first().id)
         }
     }
 
@@ -206,18 +226,45 @@ class HusViewModel(
     fun sattTemaLage(lage: TemaLage) {
         viewModelScope.launch { installningarLager.sattTemaLage(lage.name) }
     }
-    val uppgifter: StateFlow<List<Uppgift>> = repository.uppgifter
-        .map { sorteraUppgifter(it, idag) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    val bostader: StateFlow<List<Bostad>> =
+        repository.bostader.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    val poster: StateFlow<List<Post>> = repository.poster
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    val valdBostadId: StateFlow<Long?> =
+        installningarLager.valdBostadId.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val matare: StateFlow<List<Matare>> = repository.matare
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    val valdBostad: StateFlow<Bostad?> =
+        combine(bostader, valdBostadId) { lista, id ->
+            id?.let { sokt -> lista.firstOrNull { it.id == sokt } } ?: lista.firstOrNull()
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val dokument: StateFlow<List<Dokument>> = repository.dokument
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    val uppgifter: StateFlow<List<Uppgift>> =
+        valdBostadId
+            .flatMapLatest { id ->
+                if (id == null) flowOf(emptyList()) else repository.uppgifterForBostad(id)
+            }
+            .map { sorteraUppgifter(it, idag) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val poster: StateFlow<List<Post>> =
+        valdBostadId
+            .flatMapLatest { id ->
+                if (id == null) flowOf(emptyList()) else repository.posterForBostad(id)
+            }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val matare: StateFlow<List<Matare>> =
+        valdBostadId
+            .flatMapLatest { id ->
+                if (id == null) flowOf(emptyList()) else repository.matareForBostad(id)
+            }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val dokument: StateFlow<List<Dokument>> =
+        valdBostadId
+            .flatMapLatest { id ->
+                if (id == null) flowOf(emptyList()) else repository.dokumentForBostad(id)
+            }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _forsaljningsAr = MutableStateFlow(standardForsaljningsar(idag))
     val forsaljningsAr: StateFlow<Int> = _forsaljningsAr.asStateFlow()
@@ -352,8 +399,10 @@ class HusViewModel(
             } else {
                 null
             }
+            val bostadId = valdBostadId.value ?: repository.hamtaForvaldBostadId()
             val uppgift = Uppgift(
                 id = tillstand.redigerarId,
+                bostadId = befintlig?.bostadId ?: bostadId,
                 namn = tillstand.namn.trim(),
                 intervallManader = intervall!!,
                 startDatum = tillstand.startDatum,
@@ -418,19 +467,77 @@ class HusViewModel(
         }
     }
 
+    private val totaltAntalPoster: StateFlow<Int> =
+        repository.totaltAntalPosterFlow()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
+
     fun kanLaggaTillNyPost(): Boolean =
-        kanLaggaTillPost(poster.value.size, proKalla.arPro.value)
+        kanLaggaTillPost(totaltAntalPoster.value, proKalla.arPro.value)
 
     suspend fun kanLaggaTillPostNu(): Boolean =
         kanLaggaTillPost(repository.antalPoster(), proKalla.arPro.value)
 
-    fun visaProDialog() {
+    fun visaProDialog(visaBostadsGrans: Boolean = false) {
+        _proDialogVisaBostadsGrans.value = visaBostadsGrans
         _proDialogSynlig.value = true
     }
 
     fun stangProDialog() {
         _proDialogSynlig.value = false
+        _proDialogVisaBostadsGrans.value = false
     }
+
+    fun valjBostad(bostadId: Long) {
+        viewModelScope.launch { installningarLager.sattValdBostadId(bostadId) }
+    }
+
+    fun kanLaggaTillNyBostad(): Boolean =
+        kanLaggaTillBostad(bostader.value.size, proKalla.arPro.value)
+
+    fun sparaNyBostad(namn: String, adress: String, anteckning: String, onResultat: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            when (
+                val resultat =
+                    repository.sparaBostad(
+                        Bostad(
+                            namn = namn,
+                            adress = adress.ifBlank { null },
+                            anteckning = anteckning.ifBlank { null },
+                        ),
+                        proKalla.arPro.value,
+                    )
+            ) {
+                is SparaBostadResult.Sparad -> {
+                    installningarLager.sattValdBostadId(resultat.id)
+                    onResultat(true)
+                }
+                SparaBostadResult.GransBostaderUtanPro -> {
+                    visaProDialog(visaBostadsGrans = true)
+                    onResultat(false)
+                }
+            }
+        }
+    }
+
+    fun uppdateraBostad(bostad: Bostad) {
+        viewModelScope.launch {
+            repository.sparaBostad(bostad, proKalla.arPro.value)
+        }
+    }
+
+    fun taBortBostad(bostad: Bostad, onSista: () -> Unit, onBorttagen: () -> Unit) {
+        viewModelScope.launch {
+            when (repository.taBortBostad(bostad)) {
+                TaBortBostadResult.SistaBostaden -> onSista()
+                TaBortBostadResult.Borttagen -> {
+                    synkaValdBostad()
+                    onBorttagen()
+                }
+            }
+        }
+    }
+
+    suspend fun bostadRaderingInfo(bostadId: Long) = repository.bostadRaderingInfo(bostadId)
 
     fun kopPro(activity: Activity) {
         proKalla.kop(activity)
@@ -536,8 +643,10 @@ class HusViewModel(
             val nyaBilder = tillstand.bildFilnamn
             gamlaBilder.filter { it !in nyaBilder }.forEach { repository.taBortBildfil(it) }
 
+            val bostadId = valdBostadId.value ?: befintlig?.bostadId ?: repository.hamtaForvaldBostadId()
             val post = Post(
                 id = tillstand.redigerarId,
+                bostadId = befintlig?.bostadId ?: bostadId,
                 datum = tillstand.datum,
                 vad = tillstand.vad.trim(),
                 typ = tillstand.typ,
@@ -694,6 +803,7 @@ class HusViewModel(
         viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
+                    val bostaderLista = repository.allaBostader()
                     val uppgifter = repository.allaUppgifter()
                     val poster = repository.allaPoster()
                     val matare = repository.allaMatare()
@@ -706,6 +816,7 @@ class HusViewModel(
                     outputStream.use {
                         Sakerhetskopia.skriv(
                             it,
+                            bostaderLista,
                             uppgifter,
                             poster,
                             matare,
@@ -869,9 +980,11 @@ class HusViewModel(
         viewModelScope.launch {
             val befintlig =
                 if (tillstand.redigerarId != 0L) repository.hamtaMatare(tillstand.redigerarId) else null
+            val bostadId = valdBostadId.value ?: befintlig?.bostadId ?: repository.hamtaForvaldBostadId()
             repository.sparaMatare(
                 Matare(
                     id = tillstand.redigerarId,
+                    bostadId = befintlig?.bostadId ?: bostadId,
                     namn = tillstand.namn.trim(),
                     enhet = tillstand.enhet.trim(),
                     anteckning = tillstand.anteckning.trim().ifEmpty { null },
@@ -1088,8 +1201,10 @@ class HusViewModel(
         }
         viewModelScope.launch {
             if (tillstand.redigerarId == 0L) {
+                val bostadId = valdBostadId.value ?: repository.hamtaForvaldBostadId()
                 repository.sparaDokument(
                     Dokument(
+                        bostadId = bostadId,
                         titel = tillstand.titel.trim(),
                         kategori = tillstand.kategori,
                         anteckning = tillstand.anteckning.trim().takeIf { it.isNotEmpty() },
