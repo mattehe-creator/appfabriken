@@ -124,6 +124,13 @@ class FlextidViewModel(
             false,
         )
 
+    val stamplaInPaminnelseMinEfterMidnatt =
+        paminnelseInstallningar.stamplaInPaminnelseMinEfterMidnatt.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            se.tmconnect.flextid.regler.STANDARD_STAMPLA_IN_PAMINNELSE_MIN_EFTER_MIDNATT,
+        )
+
     val antalDagar =
         repository.observeraAntalDagar().stateIn(
             viewModelScope,
@@ -383,6 +390,13 @@ class FlextidViewModel(
         }
     }
 
+    fun sattStamplaInPaminnelseKlockslag(minEfterMidnatt: Int) {
+        viewModelScope.launch {
+            paminnelseInstallningar.sattStamplaInPaminnelseMinEfterMidnatt(minEfterMidnatt)
+            synkaPaminnelseJobb()
+        }
+    }
+
     fun synkaPaminnelseJobb() {
         viewModelScope.launch {
             val pa = paminnelseInstallningar.nagonPaminnelsePa.first()
@@ -401,11 +415,12 @@ class FlextidViewModel(
     suspend fun skapaSakerhetskopiaJson(): String {
         val dagar = repository.hamtaAllaDagar()
         val inst = repository.hamtaInstallning()
+        val stamplaInMin = paminnelseInstallningar.stamplaInPaminnelseMinEfterMidnatt.first()
         val innehall =
             SakerhetskopiaInnehall(
                 version = se.tmconnect.flextid.export.FLEXTID_SAKERHETSKOPIA_VERSION,
                 skapad = DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.now()),
-                installning = installningTillSakerhetskopia(inst),
+                installning = installningTillSakerhetskopia(inst, stamplaInMin),
                 dagar = dagar.map { dagTillSakerhetskopia(it) },
             )
         return skrivSakerhetskopiaJson(innehall)
@@ -418,6 +433,9 @@ class FlextidViewModel(
                     repository.ersattAllData(
                         las.innehall.dagar.map { sakerhetskopiaDagTillDag(it) },
                         sakerhetskopiaInstallningTillInstallning(las.innehall.installning),
+                    )
+                    paminnelseInstallningar.sattStamplaInPaminnelseMinEfterMidnatt(
+                        las.innehall.installning.stamplaInPaminnelseMinEfterMidnatt,
                     )
                     _meddelanden.emit(FlextidMeddelande.Importerat)
                 }

@@ -39,6 +39,29 @@ class PaminnelseReglerTest {
     }
 
     @Test
+    fun stamplaInPaminnelseRespekterarValtKlockslag() {
+        val idag = LocalDate.of(2026, 10, 12)
+        assertFalse(
+            skaPaminnelseStamplaIn(
+                dag = null,
+                installning = installning,
+                idag = idag,
+                nu = LocalTime.of(6, 29),
+                stamplaInPaminnelseMinEfterMidnatt = 6 * 60 + 30,
+            ),
+        )
+        assertTrue(
+            skaPaminnelseStamplaIn(
+                dag = null,
+                installning = installning,
+                idag = idag,
+                nu = LocalTime.of(6, 30),
+                stamplaInPaminnelseMinEfterMidnatt = 6 * 60 + 30,
+            ),
+        )
+    }
+
+    @Test
     fun stamplaUtPaminnelseNarStartUtanSlutOchTidPasserad() {
         val dag =
             Dag(

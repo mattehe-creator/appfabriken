@@ -20,6 +20,7 @@ class SakerhetskopiaJsonTest {
                         standardRastMin = 30,
                         ingangssaldoMin = -120,
                         arbetsdagarMask = 31,
+                        stamplaInPaminnelseMinEfterMidnatt = 390,
                     ),
                 dagar =
                     listOf(
@@ -47,6 +48,26 @@ class SakerhetskopiaJsonTest {
         val las = lasSakerhetskopiaJson(json) as SakerhetskopiaJsonLasResult.Ok
         assertEquals(480, las.innehall.installning.normaltidMinPerDag)
         assertEquals(1, las.innehall.dagar.size)
+    }
+
+    @Test
+    fun saknadStamplaInPaminnelseMinGer0800() {
+        val json =
+            """
+            {"version":1,"skapad":"2026-01-01","installning":{"normaltidMinPerDag":480,"standardRastMin":30,"ingangssaldoMin":0,"arbetsdagarMask":31},"dagar":[]}
+            """.trimIndent()
+        val las = lasSakerhetskopiaJson(json) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals(480, las.innehall.installning.stamplaInPaminnelseMinEfterMidnatt)
+    }
+
+    @Test
+    fun ogiltigStamplaInPaminnelseMinGer0800() {
+        val json =
+            """
+            {"version":1,"skapad":"2026-01-01","installning":{"normaltidMinPerDag":480,"standardRastMin":30,"ingangssaldoMin":0,"arbetsdagarMask":31,"stamplaInPaminnelseMinEfterMidnatt":90},"dagar":[]}
+            """.trimIndent()
+        val las = lasSakerhetskopiaJson(json) as SakerhetskopiaJsonLasResult.Ok
+        assertEquals(480, las.innehall.installning.stamplaInPaminnelseMinEfterMidnatt)
     }
 
     @Test

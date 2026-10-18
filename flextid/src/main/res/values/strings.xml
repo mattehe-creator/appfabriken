@@ -78,7 +78,8 @@
     <string name="paminnelse_stampla_ut_rubrik">Remind me to clock out</string>
     <string name="paminnelse_stampla_ut_beskrivning">After your normal hours when you clocked in but have not clocked out</string>
     <string name="paminnelse_stampla_in_rubrik">Remind me to clock in</string>
-    <string name="paminnelse_stampla_in_beskrivning">On workdays from 08:00 if you have not clocked in</string>
+    <string name="paminnelse_stampla_in_beskrivning">On workdays at your chosen time if you have not clocked in</string>
+    <string name="paminnelse_stampla_in_klockslag_val">Clock-in reminder time: %1$s</string>
     <string name="paminnelse_stampla_ut_titel">Clock out?</string>
     <string name="paminnelse_stampla_ut_text">You clocked in but have not clocked out yet.</string>
     <string name="paminnelse_stampla_in_titel">Clock in?</string>
