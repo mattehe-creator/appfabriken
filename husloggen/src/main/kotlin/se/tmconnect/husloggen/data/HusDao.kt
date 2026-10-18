@@ -124,6 +124,29 @@ interface HusDao {
     @Delete
     suspend fun taBortDokument(dokument: Dokument)
 
+    @Query(
+        """
+        SELECT * FROM planerad_kostnad
+        ORDER BY planerat_ar, titel COLLATE NOCASE, id
+        """,
+    )
+    fun allaPlaneradeKostnaderFlow(): Flow<List<PlaneradKostnad>>
+
+    @Query("SELECT * FROM planerad_kostnad ORDER BY id")
+    suspend fun allaPlaneradeKostnader(): List<PlaneradKostnad>
+
+    @Query("SELECT * FROM planerad_kostnad WHERE id = :id")
+    suspend fun hamtaPlaneradKostnad(id: Long): PlaneradKostnad?
+
+    @Insert
+    suspend fun infogaPlaneradKostnad(planeradKostnad: PlaneradKostnad): Long
+
+    @Update
+    suspend fun uppdateraPlaneradKostnad(planeradKostnad: PlaneradKostnad)
+
+    @Delete
+    suspend fun taBortPlaneradKostnad(planeradKostnad: PlaneradKostnad)
+
     @Transaction
     suspend fun importeraSakerhetskopiaData(uppgifter: List<Uppgift>, poster: List<Post>) {
         uppgifter.forEach { infogaUppgift(it) }

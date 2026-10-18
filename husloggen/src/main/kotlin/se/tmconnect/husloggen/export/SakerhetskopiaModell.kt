@@ -5,13 +5,14 @@ import se.tmconnect.husloggen.data.Avlasning
 import se.tmconnect.husloggen.data.Dokument
 import se.tmconnect.husloggen.data.DokumentKategori
 import se.tmconnect.husloggen.data.Matare
+import se.tmconnect.husloggen.data.PlaneradKostnad
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.PostTyp
 import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.husloggen.regler.formateraBilder
 import se.tmconnect.husloggen.regler.tolkaBilder
 
-const val HUSLOGGEN_SAKERHETSKOPIA_VERSION = 3
+const val HUSLOGGEN_SAKERHETSKOPIA_VERSION = 4
 const val HUSLOGGEN_SAKERHETSKOPIA_MIN_VERSION = 1
 const val HUSLOGGEN_LOGG_JSON = "logg.json"
 const val HUSLOGGEN_BILDER_MAPP = "bilder/"
@@ -21,6 +22,7 @@ const val HUSLOGGEN_SAKERHETSKOPIA_MAX_POSTER = 5_000
 const val HUSLOGGEN_SAKERHETSKOPIA_MAX_MATARE = 500
 const val HUSLOGGEN_SAKERHETSKOPIA_MAX_AVLASNINGAR = 50_000
 const val HUSLOGGEN_SAKERHETSKOPIA_MAX_DOKUMENT = 5_000
+const val HUSLOGGEN_SAKERHETSKOPIA_MAX_PLANERADE_KOSTNADER = 5_000
 const val HUSLOGGEN_SAKERHETSKOPIA_MAX_FIL_BYTES = 25 * 1024 * 1024
 const val HUSLOGGEN_AUTO_FILPREFIX = "husloggen-auto-"
 
@@ -65,6 +67,13 @@ data class SakerhetskopiaDokument(
     val tillagd: LocalDate,
 )
 
+data class SakerhetskopiaPlaneradKostnad(
+    val titel: String,
+    val beloppOre: Long,
+    val planeratAr: Int,
+    val anteckning: String? = null,
+)
+
 data class SakerhetskopiaInnehall(
     val version: Int,
     val skapad: String,
@@ -73,6 +82,7 @@ data class SakerhetskopiaInnehall(
     val matare: List<SakerhetskopiaMatare> = emptyList(),
     val avlasningar: List<SakerhetskopiaAvlasning> = emptyList(),
     val dokument: List<SakerhetskopiaDokument> = emptyList(),
+    val planeradeKostnader: List<SakerhetskopiaPlaneradKostnad> = emptyList(),
 )
 
 data class SakerhetskopiaImportResultat(
@@ -261,4 +271,22 @@ fun sakerhetskopiaDokumentTillDokument(export: SakerhetskopiaDokument, filnamn: 
         filnamn = filnamn,
         mimeTyp = export.mimeTyp,
         tillagd = export.tillagd,
+    )
+
+fun planeradKostnadTillSakerhetskopia(planeradKostnad: PlaneradKostnad): SakerhetskopiaPlaneradKostnad =
+    SakerhetskopiaPlaneradKostnad(
+        titel = planeradKostnad.titel,
+        beloppOre = planeradKostnad.beloppOre,
+        planeratAr = planeradKostnad.planeratAr,
+        anteckning = planeradKostnad.anteckning,
+    )
+
+fun sakerhetskopiaPlaneradKostnadTillPlaneradKostnad(
+    export: SakerhetskopiaPlaneradKostnad,
+): PlaneradKostnad =
+    PlaneradKostnad(
+        titel = export.titel.trim(),
+        beloppOre = export.beloppOre,
+        planeratAr = export.planeratAr,
+        anteckning = export.anteckning?.trim()?.takeIf { it.isNotEmpty() },
     )

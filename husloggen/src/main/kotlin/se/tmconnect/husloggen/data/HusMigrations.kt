@@ -60,3 +60,22 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
         db.execSQL("CREATE INDEX IF NOT EXISTS index_dokument_titel ON dokument (titel)")
     }
 }
+
+val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS planerad_kostnad (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                titel TEXT NOT NULL,
+                belopp_ore INTEGER NOT NULL,
+                planerat_ar INTEGER NOT NULL,
+                anteckning TEXT
+            )
+            """.trimIndent(),
+        )
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS index_planerad_kostnad_planerat_ar ON planerad_kostnad (planerat_ar)",
+        )
+    }
+}

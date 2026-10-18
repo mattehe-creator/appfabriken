@@ -7,8 +7,15 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 @Database(
-    entities = [Uppgift::class, Post::class, Matare::class, Avlasning::class, Dokument::class],
-    version = 4,
+    entities = [
+        Uppgift::class,
+        Post::class,
+        Matare::class,
+        Avlasning::class,
+        Dokument::class,
+        PlaneradKostnad::class,
+    ],
+    version = 5,
     exportSchema = true,
 )
 @TypeConverters(Konverterare::class)
@@ -28,7 +35,7 @@ abstract class HusDatabas : RoomDatabase() {
                     HusDatabas::class.java,
                     FILNAMN,
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .build().also { instans = it }
             }
     }

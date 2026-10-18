@@ -16,6 +16,7 @@ import se.tmconnect.husloggen.export.arSakerhetskopiaPostNyckelLik
 import se.tmconnect.husloggen.export.arSakerhetskopiaUppgiftDubblett
 import se.tmconnect.husloggen.export.arSakerhetskopiaUppgiftLik
 import se.tmconnect.husloggen.export.sakerhetskopiaPostNyckel
+import se.tmconnect.husloggen.export.sakerhetskopiaPlaneradKostnadTillPlaneradKostnad
 import se.tmconnect.husloggen.export.sakerhetskopiaPostTillPost
 import se.tmconnect.husloggen.export.sakerhetskopiaUppgiftTillUppgift
 import se.tmconnect.husloggen.export.uppgiftTillSakerhetskopia
@@ -47,6 +48,7 @@ class HusRepository(
     val poster: Flow<List<Post>> = dao.allaPosterFlow()
     val matare: Flow<List<Matare>> = dao.allaMatareFlow()
     val dokument: Flow<List<Dokument>> = dao.allaDokumentFlow()
+    val planeradeKostnader: Flow<List<PlaneradKostnad>> = dao.allaPlaneradeKostnaderFlow()
 
     fun avlasningarForMatare(matareId: Long): Flow<List<Avlasning>> =
         dao.avlasningarForMatareFlow(matareId)
@@ -168,6 +170,21 @@ class HusRepository(
 
     suspend fun allaDokument(): List<Dokument> = dao.allaDokument()
 
+    suspend fun allaPlaneradeKostnader(): List<PlaneradKostnad> = dao.allaPlaneradeKostnader()
+
+    suspend fun hamtaPlaneradKostnad(id: Long): PlaneradKostnad? = dao.hamtaPlaneradKostnad(id)
+
+    suspend fun sparaPlaneradKostnad(planeradKostnad: PlaneradKostnad): Long =
+        if (planeradKostnad.id == 0L) {
+            dao.infogaPlaneradKostnad(planeradKostnad)
+        } else {
+            dao.uppdateraPlaneradKostnad(planeradKostnad)
+            planeradKostnad.id
+        }
+
+    suspend fun taBortPlaneradKostnad(planeradKostnad: PlaneradKostnad) =
+        dao.taBortPlaneradKostnad(planeradKostnad)
+
     suspend fun hamtaDokument(id: Long): Dokument? = dao.hamtaDokument(id)
 
     suspend fun sparaDokument(dokument: Dokument): Long =
@@ -275,6 +292,9 @@ class HusRepository(
                         export.filnamn,
                     )
                 dao.infogaDokument(sakerhetskopiaDokumentTillDokument(export, nyttFilnamn))
+            }
+            for (export in innehall.planeradeKostnader) {
+                dao.infogaPlaneradKostnad(sakerhetskopiaPlaneradKostnadTillPlaneradKostnad(export))
             }
         }
         return SakerhetskopiaImportResultat(tillagda = tillagda, hoppadeOver = hoppadeOver)
