@@ -321,6 +321,7 @@ abstract class ButikSkarmbilderBas {
                     onTema = {},
                     onExportManad = {},
                     onExporteraCsv = noOp,
+                    onExporteraPdf = noOp,
                     onExporteraJson = noOp,
                     onImporteraJson = noOp,
                 )
@@ -352,6 +353,7 @@ abstract class ButikSkarmbilderBas {
                     onTema = {},
                     onExportManad = {},
                     onExporteraCsv = noOp,
+                    onExporteraPdf = noOp,
                     onExporteraJson = noOp,
                     onImporteraJson = noOp,
                 )

@@ -49,6 +49,7 @@
     <string name="export_ar">Year</string>
     <string name="export_manad">Month</string>
     <string name="exportera_csv">Export CSV for month</string>
+    <string name="exportera_pdf">Export PDF for month</string>
     <string name="exportera_sakerhetskopia">Back up to JSON</string>
     <string name="importera_sakerhetskopia">Restore from JSON</string>
     <string name="csv_datum">Date</string>
@@ -58,6 +59,19 @@
     <string name="csv_arbetad">Worked</string>
     <string name="csv_utfall">Balance change</string>
     <string name="csv_typ">Type</string>
+    <string name="pdf_inga_dagar">No registered days</string>
+    <string name="pdf_summa_arbetad">Total worked time</string>
+    <string name="pdf_summa_utfall">Total balance change</string>
+    <string name="pdf_saldo_manadsslut">Balance at month end</string>
+    <string name="pdf_kolumn_datum">Date</string>
+    <string name="pdf_kolumn_veckodag">Weekday</string>
+    <string name="pdf_kolumn_start">Start</string>
+    <string name="pdf_kolumn_slut">End</string>
+    <string name="pdf_kolumn_rast">Break</string>
+    <string name="pdf_kolumn_arbetad">Worked</string>
+    <string name="pdf_kolumn_utfall">Balance</string>
+    <string name="pdf_kolumn_typ">Type</string>
+    <string name="pdf_saknas">-</string>
     <string name="meddelande_sparat">Saved</string>
     <string name="meddelande_borttaget">Deleted</string>
     <string name="meddelande_exporterat">Exported</string>
