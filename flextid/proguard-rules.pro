@@ -4,4 +4,4 @@
 
 -keep class * extends androidx.work.Worker
 -keep class * extends androidx.work.CoroutineWorker
--keep class se.tmconnect.husloggen.paminnelse.PaminnelseWorker { *; }
+-keep class se.tmconnect.flextid.paminnelse.PaminnelseWorker { *; }

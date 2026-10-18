@@ -63,4 +63,27 @@
     <string name="meddelande_exporterat">Exporterat</string>
     <string name="meddelande_importerat">Återställt</string>
     <string name="meddelande_import_fel">Kunde inte läsa säkerhetskopian</string>
+    <!-- Pro -->
+    <string name="pro">Pro</string>
+    <string name="pro_las_upp">Lås upp Pro</string>
+    <string name="pro_forklaring">Gratisversionen sparar upp till 15 dagposter. Pro är ett engångsköp utan prenumeration och tar bort gränsen.</string>
+    <string name="pro_du_har">Du har Pro</string>
+    <string name="pro_grans_nadd">Gräns nådd: 15 dagposter</string>
+    <string name="pro_grans_forklaring">Du har 15 dagposter. Lås upp Pro för att lägga till fler. Export, CSV och säkerhetskopia är alltid gratis.</string>
+    <string name="pro_export_gratis">Export, CSV och säkerhetskopia är alltid gratis.</string>
+    <string name="pro_inte_nu">Inte nu</string>
+    <!-- Påminnelser -->
+    <string name="paminnelse_rubrik">Påminnelser</string>
+    <string name="paminnelse_kanal_namn">Påminnelser om tid</string>
+    <string name="paminnelse_stampla_ut_rubrik">Glöm inte stämpla ut</string>
+    <string name="paminnelse_stampla_ut_beskrivning">Efter normal arbetstid när du stämplat in men inte ut</string>
+    <string name="paminnelse_stampla_in_rubrik">Glöm inte stämpla in</string>
+    <string name="paminnelse_stampla_in_beskrivning">På arbetsdagar från kl. 08:00 om du inte stämplat in</string>
+    <string name="paminnelse_stampla_ut_titel">Stämpla ut?</string>
+    <string name="paminnelse_stampla_ut_text">Du har stämplat in men inte stämplat ut än.</string>
+    <string name="paminnelse_stampla_in_titel">Stämpla in?</string>
+    <string name="paminnelse_stampla_in_text">Kom ihåg att stämpla in för idag.</string>
+    <string name="paminnelse_samlad_titel">Påminnelser om flextid</string>
+    <string name="paminnelse_samlad_text">Du har %1$d påminnelser idag</string>
+    <string name="paminnelse_behorighet_nekad">Notiser är avstängda. Slå på dem i systeminställningarna för att få påminnelser.</string>
 </resources>
