@@ -27,6 +27,7 @@ class FlextidPaminnelseKalla(
         val nu = LocalTime.now()
         val stamplaUtPa = installningar.stamplaUtPa.first()
         val stamplaInPa = installningar.stamplaInPa.first()
+        val stamplaInMin = installningar.stamplaInPaminnelseMinEfterMidnatt.first()
         return paminnelseFristerForDag(
             idag = idag,
             dag = dag,
@@ -34,6 +35,7 @@ class FlextidPaminnelseKalla(
             nu = nu,
             stamplaUtPa = stamplaUtPa,
             stamplaInPa = stamplaInPa,
+            stamplaInPaminnelseMinEfterMidnatt = stamplaInMin,
         )
     }
 

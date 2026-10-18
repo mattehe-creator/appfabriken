@@ -5,6 +5,7 @@ import java.time.LocalTime
 import se.tmconnect.flextid.data.Dag
 import se.tmconnect.flextid.data.Installning
 import se.tmconnect.flextid.regler.DagTyp
+import se.tmconnect.flextid.regler.STANDARD_STAMPLA_IN_PAMINNELSE_MIN_EFTER_MIDNATT
 
 const val FLEXTID_SAKERHETSKOPIA_VERSION = 1
 const val FLEXTID_SAKERHETSKOPIA_MIN_VERSION = 0
@@ -15,6 +16,7 @@ data class SakerhetskopiaInstallning(
     val standardRastMin: Int,
     val ingangssaldoMin: Int,
     val arbetsdagarMask: Int,
+    val stamplaInPaminnelseMinEfterMidnatt: Int = STANDARD_STAMPLA_IN_PAMINNELSE_MIN_EFTER_MIDNATT,
 )
 
 data class SakerhetskopiaDag(
@@ -53,12 +55,16 @@ fun sakerhetskopiaDagTillDag(export: SakerhetskopiaDag): Dag =
         anteckning = export.anteckning?.trim()?.takeIf { it.isNotEmpty() },
     )
 
-fun installningTillSakerhetskopia(installning: Installning): SakerhetskopiaInstallning =
+fun installningTillSakerhetskopia(
+    installning: Installning,
+    stamplaInPaminnelseMinEfterMidnatt: Int,
+): SakerhetskopiaInstallning =
     SakerhetskopiaInstallning(
         normaltidMinPerDag = installning.normaltidMinPerDag,
         standardRastMin = installning.standardRastMin,
         ingangssaldoMin = installning.ingangssaldoMin,
         arbetsdagarMask = installning.arbetsdagarMask,
+        stamplaInPaminnelseMinEfterMidnatt = stamplaInPaminnelseMinEfterMidnatt,
     )
 
 fun sakerhetskopiaInstallningTillInstallning(export: SakerhetskopiaInstallning): Installning =

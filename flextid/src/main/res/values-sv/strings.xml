@@ -78,7 +78,8 @@
     <string name="paminnelse_stampla_ut_rubrik">Glöm inte stämpla ut</string>
     <string name="paminnelse_stampla_ut_beskrivning">Efter normal arbetstid när du stämplat in men inte ut</string>
     <string name="paminnelse_stampla_in_rubrik">Glöm inte stämpla in</string>
-    <string name="paminnelse_stampla_in_beskrivning">På arbetsdagar från kl. 08:00 om du inte stämplat in</string>
+    <string name="paminnelse_stampla_in_beskrivning">På arbetsdagar vid valt klockslag om du inte stämplat in</string>
+    <string name="paminnelse_stampla_in_klockslag_val">Påminnelse stämpla in, klockslag: %1$s</string>
     <string name="paminnelse_stampla_ut_titel">Stämpla ut?</string>
     <string name="paminnelse_stampla_ut_text">Du har stämplat in men inte stämplat ut än.</string>
     <string name="paminnelse_stampla_in_titel">Stämpla in?</string>

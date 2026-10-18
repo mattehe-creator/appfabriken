@@ -5,11 +5,13 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import se.tmconnect.flextid.regler.normaliseraStamplaInPaminnelseMinEfterMidnatt
 import se.tmconnect.karna.paminnelse.PaminnelseInstallningarLager
 
 private val Context.flextidPaminnelseDataStore: DataStore<Preferences> by preferencesDataStore(
@@ -34,6 +36,11 @@ class FlextidPaminnelseInstallningarLager(context: Context) {
             prefs[STAMPLA_IN_PA] ?: false
         }
 
+    val stamplaInPaminnelseMinEfterMidnatt: Flow<Int> =
+        appContext.flextidPaminnelseDataStore.data.map { prefs ->
+            normaliseraStamplaInPaminnelseMinEfterMidnatt(prefs[STAMPLA_IN_PAMINNELSE_MIN])
+        }
+
     val nagonPaminnelsePa: Flow<Boolean> =
         combine(stamplaUtPa, stamplaInPa) { ut, inPa -> ut || inPa }
 
@@ -47,6 +54,13 @@ class FlextidPaminnelseInstallningarLager(context: Context) {
         synkaKarnaPaminnelserPa()
     }
 
+    suspend fun sattStamplaInPaminnelseMinEfterMidnatt(min: Int) {
+        val normaliserad = normaliseraStamplaInPaminnelseMinEfterMidnatt(min)
+        appContext.flextidPaminnelseDataStore.edit { prefs ->
+            prefs[STAMPLA_IN_PAMINNELSE_MIN] = normaliserad
+        }
+    }
+
     private suspend fun synkaKarnaPaminnelserPa() {
         val ut = stamplaUtPa.first()
         val inPa = stamplaInPa.first()
@@ -57,5 +71,6 @@ class FlextidPaminnelseInstallningarLager(context: Context) {
         const val DATASTORE_NAMN = "flextid_paminnelser"
         private val STAMPLA_UT_PA = booleanPreferencesKey("stampla_ut_pa")
         private val STAMPLA_IN_PA = booleanPreferencesKey("stampla_in_pa")
+        private val STAMPLA_IN_PAMINNELSE_MIN = intPreferencesKey("stampla_in_paminnelse_min")
     }
 }

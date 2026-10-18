@@ -5,10 +5,8 @@ import java.time.LocalTime
 import se.tmconnect.flextid.data.Dag
 import se.tmconnect.flextid.data.Installning
 import se.tmconnect.flextid.regler.arArbetsdag
+import se.tmconnect.flextid.regler.stamplaInPaminnelseKlockan
 import se.tmconnect.karna.paminnelse.PaminnelseFrist
-
-/** Klockslag för påminnelse om att stämpla in på arbetsdagar utan registrerad start. */
-val STAMPLA_IN_PAMINNELSE_KLOCKAN: LocalTime = LocalTime.of(8, 0)
 
 /**
  * Tidpunkt för påminnelse om att stämpla ut: instämplad start + normaltid + rast
@@ -37,10 +35,12 @@ fun skaPaminnelseStamplaIn(
     installning: Installning,
     idag: LocalDate,
     nu: LocalTime,
+    stamplaInPaminnelseMinEfterMidnatt: Int,
 ): Boolean {
     if (!arArbetsdag(idag, installning.arbetsdagarMask)) return false
     if (dag?.start != null) return false
-    return !nu.isBefore(STAMPLA_IN_PAMINNELSE_KLOCKAN)
+    val klockslag = stamplaInPaminnelseKlockan(stamplaInPaminnelseMinEfterMidnatt)
+    return !nu.isBefore(klockslag)
 }
 
 fun paminnelseFristerForDag(
@@ -50,6 +50,7 @@ fun paminnelseFristerForDag(
     nu: LocalTime,
     stamplaUtPa: Boolean,
     stamplaInPa: Boolean,
+    stamplaInPaminnelseMinEfterMidnatt: Int,
 ): List<PaminnelseFrist> {
     val frister = mutableListOf<PaminnelseFrist>()
     if (stamplaUtPa && skaPaminnelseStamplaUt(dag, installning, nu)) {
@@ -59,7 +60,7 @@ fun paminnelseFristerForDag(
                 slutdatum = idag,
             )
     }
-    if (stamplaInPa && skaPaminnelseStamplaIn(dag, installning, idag, nu)) {
+    if (stamplaInPa && skaPaminnelseStamplaIn(dag, installning, idag, nu, stamplaInPaminnelseMinEfterMidnatt)) {
         frister +=
             PaminnelseFrist(
                 nyckel = "stampla_in:$idag",

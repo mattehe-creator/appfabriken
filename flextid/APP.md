@@ -20,7 +20,7 @@ Enkel, helt offline flextidsregistrering: stämpla in och ut per dag, rast, och 
 - Dagar utan registrering i det förflutna räknas inte (ingen automatisk minusbokning).
 - Slut före start samma dag tillåts inte; formuläret visar fel.
 - Arbetsdagar styrs av en bitmask (måndag–söndag) i inställningar.
-- Påminnelser (WorkManager, `:karna`): valfri “Glöm inte stämpla ut” efter normaltid när dagen har start men inte slut; valfri “Glöm inte stämpla in” på arbetsdagar från kl. 08:00 om ingen start registrerats. Inställningarna ligger under Inställningar; notiskanal och `POST_NOTIFICATIONS` enligt samma mönster som `:husloggen`.
+- Påminnelser (WorkManager, `:karna`): valfri “Glöm inte stämpla ut” efter normaltid när dagen har start men inte slut; valfri “Glöm inte stämpla in” på arbetsdagar vid valt klockslag (standard 08:00, 05:00–12:00) om ingen start registrerats. Inställningarna ligger under Inställningar; notiskanal och `POST_NOTIFICATIONS` enligt samma mönster som `:husloggen`.
 - Export: CSV för vald månad via systemets filväljare. Säkerhetskopia och återställning som JSON med versionsnummer.
 - Inga nätverksbehörigheter, ingen plats, inga konton.
 

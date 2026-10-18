@@ -2,6 +2,7 @@ package se.tmconnect.flextid.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,8 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -56,7 +59,10 @@ import se.tmconnect.flextid.regler.DagTyp
 import se.tmconnect.flextid.regler.formateraMinuterSomTid
 import se.tmconnect.flextid.regler.formateraSaldoMinuter
 import se.tmconnect.flextid.regler.formateraTid
+import se.tmconnect.flextid.regler.giltigaStamplaInPaminnelseMinEfterMidnatt
+import se.tmconnect.flextid.regler.minuterTillLocalTime
 import se.tmconnect.flextid.regler.veckodagBit
+import se.tmconnect.karna.ui.tryckyta48
 import se.tmconnect.karna.format.formateraDatum
 import se.tmconnect.karna.tema.TemaLage
 
@@ -90,6 +96,7 @@ fun FlextidStartSkarm(
     val antalDagar by viewModel.antalDagar.collectAsState()
     val stamplaUtPaminnelse by viewModel.stamplaUtPaminnelsePa.collectAsState()
     val stamplaInPaminnelse by viewModel.stamplaInPaminnelsePa.collectAsState()
+    val stamplaInPaminnelseMin by viewModel.stamplaInPaminnelseMinEfterMidnatt.collectAsState()
 
     Scaffold(
         modifier = modifier,
@@ -176,10 +183,12 @@ fun FlextidStartSkarm(
                         antalDagar = antalDagar,
                         stamplaUtPaminnelse = stamplaUtPaminnelse,
                         stamplaInPaminnelse = stamplaInPaminnelse,
+                        stamplaInPaminnelseMinEfterMidnatt = stamplaInPaminnelseMin,
                         behorighetNekad = behorighetNekad,
                         onVisaProDialog = viewModel::visaProDialog,
                         onStamplaUtPaminnelse = onStamplaUtPaminnelse,
                         onStamplaInPaminnelse = onStamplaInPaminnelse,
+                        onStamplaInPaminnelseKlockslag = viewModel::sattStamplaInPaminnelseKlockslag,
                         onSpara = viewModel::sparaInstallning,
                         onTema = viewModel::sattTemaLage,
                         onExportManad = viewModel::sattExportArManad,
@@ -349,10 +358,12 @@ internal fun InstallningarInnehall(
     antalDagar: Int,
     stamplaUtPaminnelse: Boolean,
     stamplaInPaminnelse: Boolean,
+    stamplaInPaminnelseMinEfterMidnatt: Int,
     behorighetNekad: Boolean,
     onVisaProDialog: () -> Unit,
     onStamplaUtPaminnelse: (Boolean) -> Unit,
     onStamplaInPaminnelse: (Boolean) -> Unit,
+    onStamplaInPaminnelseKlockslag: (Int) -> Unit,
     onSpara: (String, String, String, Int) -> Unit,
     onTema: (TemaLage) -> Unit,
     onExportManad: (YearMonth) -> Unit,
@@ -406,6 +417,13 @@ internal fun InstallningarInnehall(
                 beskrivning = stringResource(R.string.paminnelse_stampla_in_beskrivning),
                 pa = stamplaInPaminnelse,
                 onAndras = onStamplaInPaminnelse,
+            )
+        }
+        item {
+            StamplaInPaminnelseKlockslagVal(
+                valtMinEfterMidnatt = stamplaInPaminnelseMinEfterMidnatt,
+                locale = locale,
+                onValj = onStamplaInPaminnelseKlockslag,
             )
         }
         if (behorighetNekad) {
@@ -609,6 +627,51 @@ private fun ProInstallningRad(
                 .heightIn(min = 48.dp),
         ) {
             Text(text = stringResource(R.string.pro_las_upp))
+        }
+    }
+}
+
+@Composable
+private fun StamplaInPaminnelseKlockslagVal(
+    valtMinEfterMidnatt: Int,
+    locale: Locale,
+    onValj: (Int) -> Unit,
+) {
+    var expanderad by remember { mutableStateOf(false) }
+    val alternativ = remember { giltigaStamplaInPaminnelseMinEfterMidnatt() }
+    val valdText =
+        formateraTid(minuterTillLocalTime(valtMinEfterMidnatt), locale)
+    Box(modifier = Modifier.fillMaxWidth()) {
+        OutlinedButton(
+            onClick = { expanderad = true },
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp)
+                    .tryckyta48(),
+        ) {
+            Text(
+                text =
+                    stringResource(
+                        R.string.paminnelse_stampla_in_klockslag_val,
+                        valdText,
+                    ),
+            )
+        }
+        DropdownMenu(
+            expanded = expanderad,
+            onDismissRequest = { expanderad = false },
+        ) {
+            alternativ.forEach { min ->
+                DropdownMenuItem(
+                    text = { Text(formateraTid(minuterTillLocalTime(min), locale)) },
+                    onClick = {
+                        onValj(min)
+                        expanderad = false
+                    },
+                    modifier = Modifier.tryckyta48(),
+                )
+            }
         }
     }
 }

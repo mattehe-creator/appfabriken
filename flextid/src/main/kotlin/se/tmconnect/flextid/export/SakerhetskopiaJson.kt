@@ -3,6 +3,7 @@ package se.tmconnect.flextid.export
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeParseException
+import se.tmconnect.flextid.regler.normaliseraStamplaInPaminnelseMinEfterMidnatt
 
 sealed interface SakerhetskopiaJsonLasResult {
     data class Ok(val innehall: SakerhetskopiaInnehall) : SakerhetskopiaJsonLasResult
@@ -55,6 +56,8 @@ fun lasSakerhetskopiaJson(json: String): SakerhetskopiaJsonLasResult {
                     standardRastMin = 30,
                     ingangssaldoMin = 0,
                     arbetsdagarMask = 31,
+                    stamplaInPaminnelseMinEfterMidnatt =
+                        normaliseraStamplaInPaminnelseMinEfterMidnatt(null),
                 )
             }
         val dagarLista = rot.lista("dagar")?.element ?: emptyList()
@@ -83,11 +86,13 @@ private fun lasInstallning(obj: JsonObjekt, version: Int): SakerhetskopiaInstall
     val rast = obj.heltal("standardRastMin") ?: 30
     val ingang = obj.heltal("ingangssaldoMin") ?: 0
     val mask = obj.heltal("arbetsdagarMask") ?: 31
+    val stamplaInMin = obj.heltal("stamplaInPaminnelseMinEfterMidnatt")
     return SakerhetskopiaInstallning(
         normaltidMinPerDag = normaltid,
         standardRastMin = rast,
         ingangssaldoMin = ingang,
         arbetsdagarMask = mask,
+        stamplaInPaminnelseMinEfterMidnatt = normaliseraStamplaInPaminnelseMinEfterMidnatt(stamplaInMin),
     )
 }
 
@@ -122,7 +127,9 @@ private fun skrivInstallningObjekt(installning: SakerhetskopiaInstallning): Stri
         append("\"normaltidMinPerDag\":").append(installning.normaltidMinPerDag).append(',')
         append("\"standardRastMin\":").append(installning.standardRastMin).append(',')
         append("\"ingangssaldoMin\":").append(installning.ingangssaldoMin).append(',')
-        append("\"arbetsdagarMask\":").append(installning.arbetsdagarMask)
+        append("\"arbetsdagarMask\":").append(installning.arbetsdagarMask).append(',')
+        append("\"stamplaInPaminnelseMinEfterMidnatt\":")
+            .append(installning.stamplaInPaminnelseMinEfterMidnatt)
         append('}')
     }
 
