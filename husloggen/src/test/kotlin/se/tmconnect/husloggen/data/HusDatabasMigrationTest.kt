@@ -89,7 +89,8 @@ class HusDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5,
+                        skapaMigration5Till6(context))
             .allowMainThreadQueries()
             .build()
 
@@ -163,7 +164,8 @@ class HusDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5,
+                        skapaMigration5Till6(context))
             .allowMainThreadQueries()
             .build()
 
@@ -247,7 +249,8 @@ class HusDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_3_4, MIGRATION_4_5)
+            .addMigrations(MIGRATION_3_4, MIGRATION_4_5,
+                        skapaMigration5Till6(context))
             .allowMainThreadQueries()
             .build()
 
@@ -269,14 +272,14 @@ class HusDatabasMigrationTest {
     }
 
     @Test
-    fun migration4Till5SkaparPlaneradKostnadTabell() = runTest {
+    fun migration5Till6BevararDataPaForvaldBostad() = runTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         context.deleteDatabase(TEST_DB)
 
         val config = SupportSQLiteOpenHelper.Configuration.builder(context)
             .name(TEST_DB)
             .callback(
-                object : SupportSQLiteOpenHelper.Callback(4) {
+                object : SupportSQLiteOpenHelper.Callback(5) {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         db.execSQL(
                             """
@@ -306,16 +309,13 @@ class HusDatabasMigrationTest {
                                 kvitto_fil TEXT,
                                 bilder TEXT,
                                 uppgift_id INTEGER,
-                                skapad INTEGER NOT NULL,
-                                FOREIGN KEY(uppgift_id) REFERENCES uppgift(id) ON UPDATE NO ACTION ON DELETE SET NULL
+                                skapad INTEGER NOT NULL
                             )
                             """.trimIndent(),
                         )
-                        db.execSQL(
-                            "CREATE INDEX IF NOT EXISTS index_post_uppgift_id ON post (uppgift_id)",
-                        )
                         MIGRATION_2_3.migrate(db)
                         MIGRATION_3_4.migrate(db)
+                        MIGRATION_4_5.migrate(db)
                     }
 
                     override fun onUpgrade(
@@ -327,24 +327,50 @@ class HusDatabasMigrationTest {
             )
             .build()
         val openHelper = FrameworkSQLiteOpenHelperFactory().create(config)
-        openHelper.writableDatabase.close()
+        val datum = LocalDate.of(2026, 5, 1).toEpochDay()
+        openHelper.writableDatabase.apply {
+            execSQL(
+                """
+                INSERT INTO post (id, datum, vad, typ, belopp_ore, skapad)
+                VALUES (1, $datum, 'Fasad', 'UNDERHALL', 100000, 1700000000000)
+                """.trimIndent(),
+            )
+            execSQL(
+                """
+                INSERT INTO matare (id, namn, enhet, skapad)
+                VALUES (1, 'El', 'kWh', 1700000000000)
+                """.trimIndent(),
+            )
+            execSQL(
+                """
+                INSERT INTO dokument (id, titel, filnamn, mime_typ, tillagd)
+                VALUES (1, 'Manual', 'a.pdf', 'application/pdf', $datum)
+                """.trimIndent(),
+            )
+            execSQL(
+                """
+                INSERT INTO planerad_kostnad (id, titel, belopp_ore, planerat_ar, anteckning)
+                VALUES (1, 'Tak', 4000000, 2028, NULL)
+                """.trimIndent(),
+            )
+            close()
+        }
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_4_5)
+            .addMigrations(MIGRATION_4_5, skapaMigration5Till6(context))
             .allowMainThreadQueries()
             .build()
 
-        val id =
-            databas.husDao().infogaPlaneradKostnad(
-                PlaneradKostnad(
-                    titel = "Målning",
-                    beloppOre = 200_000L,
-                    planeratAr = 2029,
-                ),
-            )
-        assertEquals(1, databas.husDao().allaPlaneradeKostnader().size)
-        assertEquals("Målning", databas.husDao().hamtaPlaneradKostnad(id)!!.titel)
+        val dao = databas.husDao()
+        assertEquals(1, dao.antalBostader())
+        val bostadId = dao.allaBostader().single().id
+        assertEquals("Fasad", dao.hamtaPost(1)!!.vad)
+        assertEquals(bostadId, dao.hamtaPost(1)!!.bostadId)
+        assertEquals(bostadId, dao.hamtaMatare(1)!!.bostadId)
+        assertEquals(bostadId, dao.hamtaDokument(1)!!.bostadId)
+        assertEquals("Tak", dao.hamtaPlaneradKostnad(1)!!.titel)
+        assertEquals(bostadId, dao.hamtaPlaneradKostnad(1)!!.bostadId)
 
         databas.close()
         context.deleteDatabase(TEST_DB)

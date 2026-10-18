@@ -3,8 +3,20 @@
     <string name="app_name">Husloggen</string>
     <string name="flik_att_gora">Att göra</string>
     <string name="flik_logg">Logg</string>
-    <string name="flik_plan">Plan</string>
     <string name="flik_matare">Mätare</string>
+    <string name="flik_plan">Plan</string>
+    <string name="fab_ny_planerad_kostnad">Planerad kostnad</string>
+    <string name="tom_plan">Inga planerade kostnader ännu. Lägg till sådant du räknar med att betala, till exempel nytt tak eller panna, grupperat per år.</string>
+    <string name="plan_ar_summa">Summa: %1$s</string>
+    <string name="plan_genomford">Genomförd</string>
+    <string name="ny_planerad_kostnad_rubrik">Planerad kostnad</string>
+    <string name="andra_planerad_kostnad_rubrik">Ändra planerad kostnad</string>
+    <string name="falt_plan_titel">Titel</string>
+    <string name="falt_planerat_ar">Planerat år</string>
+    <string name="falt_planerat_ar_hjalp">Från och med %1$d</string>
+    <string name="fel_plan_titel_saknas">Ange en titel</string>
+    <string name="fel_plan_belopp">Ange ett belopp större än noll</string>
+    <string name="fel_plan_ar">Året måste vara %1$d eller senare</string>
     <string name="tom_uppgifter">Inga uppgifter än. Här visas återkommande underhåll.</string>
     <string name="tom_logg">Ingen logg än. Här visas utfört arbete och utgifter.</string>
     <string name="installningar_rubrik">Inställningar</string>
@@ -123,6 +135,7 @@
     <string name="paminnelse_kanal_namn">Påminnelser om uppgifter</string>
     <string name="paminnelse_notis_titel">Uppgift snart dags</string>
     <string name="paminnelse_notis_text">%1$s ska göras senast %2$s</string>
+    <string name="paminnelse_notis_text_med_bostad">%1$s: %2$s ska göras senast %3$s</string>
     <string name="paminnelse_notis_samlad_titel">Flera uppgifter snart dags</string>
     <string name="paminnelse_notis_samlad_text">%1$d uppgifter ska göras inom en vecka</string>
     <string name="paminnelse_installning_rubrik">Påminn mig innan uppgifter ska göras</string>
@@ -146,7 +159,23 @@
     <string name="pro_du_har">Du har Pro</string>
     <string name="pro_kop_misslyckades">Köpet kunde inte genomföras. Försök igen.</string>
     <string name="pro_grans_nadd">Gränsen är nådd: 15 poster</string>
+    <string name="pro_grans_bostader">Fler än 3 bostäder kräver Pro</string>
     <string name="pro_inte_nu">Inte nu</string>
+
+    <!-- Bostäder -->
+    <string name="bostad_forvald_namn">Min bostad</string>
+    <string name="bostad_rubrik">Bostäder</string>
+    <string name="bostad_vald">Vald bostad: %1$s</string>
+    <string name="bostad_byt">Byt bostad</string>
+    <string name="bostad_lagg_till">Lägg till bostad</string>
+    <string name="bostad_namn">Namn</string>
+    <string name="bostad_adress">Adress (valfritt)</string>
+    <string name="bostad_anteckning">Anteckning (valfritt)</string>
+    <string name="bostad_spara">Spara</string>
+    <string name="bostad_ta_bort">Ta bort bostad</string>
+    <string name="bostad_ta_bort_bekraftelse">Ta bort %1$s och %2$d tillhörande poster?</string>
+    <string name="bostad_sista_gar_inte">Minst en bostad måste finnas kvar</string>
+    <string name="historik_rubrik_med_bostad">%1$s – %2$s</string>
     <string name="uppgift_gjord_post_ej_sparad">Uppgiften flyttades men posten sparades inte (Pro krävs)</string>
 
     <!-- Säkerhetskopia -->
@@ -213,19 +242,6 @@
     <string name="valkommen_integritet">Inget konto, ingen reklam och ingen molntjänst. Gratis upp till 15 poster i loggen.</string>
     <string name="valkommen_lagg_till">Lägg till min första uppgift</string>
     <string name="valkommen_titta">Titta runt först</string>
-
-    <string name="fab_ny_planerad_kostnad">Planerad kostnad</string>
-    <string name="tom_plan">Inga planerade kostnader ännu. Lägg till sådant du räknar med att betala, till exempel nytt tak eller panna, grupperat per år.</string>
-    <string name="plan_ar_summa">Summa: %1$s</string>
-    <string name="plan_genomford">Genomförd</string>
-    <string name="ny_planerad_kostnad_rubrik">Planerad kostnad</string>
-    <string name="andra_planerad_kostnad_rubrik">Ändra planerad kostnad</string>
-    <string name="falt_plan_titel">Titel</string>
-    <string name="falt_planerat_ar">Planerat år</string>
-    <string name="falt_planerat_ar_hjalp">Från och med %1$d</string>
-    <string name="fel_plan_titel_saknas">Ange en titel</string>
-    <string name="fel_plan_belopp">Ange ett belopp större än noll</string>
-    <string name="fel_plan_ar">Året måste vara %1$d eller senare</string>
 
     <string name="flik_dokument">Dokument</string>
     <string name="fab_nytt_dokument">Nytt dokument</string>

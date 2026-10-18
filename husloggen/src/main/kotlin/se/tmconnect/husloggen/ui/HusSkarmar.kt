@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import java.util.Locale
 import se.tmconnect.husloggen.BuildConfig
 import se.tmconnect.husloggen.R
+import se.tmconnect.husloggen.data.Bostad
 import se.tmconnect.husloggen.data.Dokument
 import se.tmconnect.husloggen.data.Matare
 import se.tmconnect.husloggen.data.PlaneradKostnad
@@ -75,6 +76,9 @@ fun HusStartSkarm(
     matare: List<Matare>,
     dokument: List<Dokument>,
     planeradeKostnader: List<PlaneradKostnad>,
+    bostader: List<Bostad> = emptyList(),
+    valdBostad: Bostad? = null,
+    onValjBostad: (Long) -> Unit = {},
     onInstallningar: () -> Unit,
     onNyUppgift: () -> Unit,
     onNyPost: () -> Unit,
@@ -114,7 +118,16 @@ fun HusStartSkarm(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(R.string.app_name)) },
+                title = {
+                    Column {
+                        Text(text = stringResource(R.string.app_name))
+                        BostadValjareRad(
+                            bostader = bostader,
+                            valdBostad = valdBostad,
+                            onValjBostad = onValjBostad,
+                        )
+                    }
+                },
                 actions = {
                     IconButton(onClick = onInstallningar, modifier = Modifier.tryckyta48()) {
                         Icon(
@@ -568,6 +581,13 @@ private fun TomFlikText(
 fun InstallningarSkarm(
     onTillbaka: () -> Unit,
     modifier: Modifier = Modifier,
+    bostader: List<Bostad> = emptyList(),
+    valdBostadId: Long? = null,
+    onValjBostad: (Long) -> Unit = {},
+    onSparaNyBostad: (String, String, String, (Boolean) -> Unit) -> Unit = { _, _, _, _ -> },
+    onUppdateraBostad: (Bostad) -> Unit = {},
+    onTaBortBostad: (Bostad, onSista: () -> Unit, onBorttagen: () -> Unit) -> Unit = { _, _, _ -> },
+    hamtaRaderingInfo: suspend (Long) -> Int = { 0 },
     temaLage: TemaLage = TemaLage.SYSTEM,
     onTemaLage: (TemaLage) -> Unit = {},
     autoBackup: se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand = se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand(),
@@ -604,6 +624,16 @@ fun InstallningarSkarm(
             Text(
                 text = stringResource(R.string.installningar_version, BuildConfig.VERSION_NAME),
                 style = MaterialTheme.typography.bodyLarge,
+            )
+
+            BostaderInstallningSektion(
+                bostader = bostader,
+                valdBostadId = valdBostadId,
+                onValjBostad = onValjBostad,
+                onSparaNyBostad = onSparaNyBostad,
+                onUppdateraBostad = onUppdateraBostad,
+                onTaBortBostad = onTaBortBostad,
+                hamtaRaderingInfo = hamtaRaderingInfo,
             )
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

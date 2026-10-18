@@ -25,9 +25,7 @@ class HusDaoTest {
     @Before
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        databas = Room.inMemoryDatabaseBuilder(context, HusDatabas::class.java)
-            .allowMainThreadQueries()
-            .build()
+        databas = skapaTestHusDatabas(context)
         dao = databas.husDao()
     }
 

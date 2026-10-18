@@ -3,8 +3,20 @@
     <string name="app_name">House Log</string>
     <string name="flik_att_gora">To do</string>
     <string name="flik_logg">Log</string>
-    <string name="flik_plan">Plan</string>
     <string name="flik_matare">Meters</string>
+    <string name="flik_plan">Plan</string>
+    <string name="fab_ny_planerad_kostnad">Planned cost</string>
+    <string name="tom_plan">No planned costs yet. Add things you expect to pay for, such as a new roof or boiler, grouped by year.</string>
+    <string name="plan_ar_summa">Total: %1$s</string>
+    <string name="plan_genomford">Done</string>
+    <string name="ny_planerad_kostnad_rubrik">Planned cost</string>
+    <string name="andra_planerad_kostnad_rubrik">Edit planned cost</string>
+    <string name="falt_plan_titel">Title</string>
+    <string name="falt_planerat_ar">Planned year</string>
+    <string name="falt_planerat_ar_hjalp">From %1$d and later</string>
+    <string name="fel_plan_titel_saknas">Enter a title</string>
+    <string name="fel_plan_belopp">Enter an amount greater than zero</string>
+    <string name="fel_plan_ar">The year must be %1$d or later</string>
     <string name="tom_uppgifter">No tasks yet. Recurring maintenance will show here.</string>
     <string name="tom_logg">No log entries yet. Work and expenses will show here.</string>
     <string name="installningar_rubrik">Settings</string>
@@ -123,6 +135,7 @@
     <string name="paminnelse_kanal_namn">Task reminders</string>
     <string name="paminnelse_notis_titel">Task due soon</string>
     <string name="paminnelse_notis_text">%1$s is due on %2$s</string>
+    <string name="paminnelse_notis_text_med_bostad">%1$s: %2$s is due on %3$s</string>
     <string name="paminnelse_notis_samlad_titel">Several tasks due soon</string>
     <string name="paminnelse_notis_samlad_text">%1$d tasks are due within a week</string>
     <string name="paminnelse_installning_rubrik">Remind me before tasks are due</string>
@@ -146,7 +159,23 @@
     <string name="pro_du_har">You have Pro</string>
     <string name="pro_kop_misslyckades">The purchase could not be completed. Try again.</string>
     <string name="pro_grans_nadd">Limit reached: 15 entries</string>
+    <string name="pro_grans_bostader">More than 3 homes requires Pro</string>
     <string name="pro_inte_nu">Not now</string>
+
+    <!-- Homes -->
+    <string name="bostad_forvald_namn">My home</string>
+    <string name="bostad_rubrik">Homes</string>
+    <string name="bostad_vald">Selected home: %1$s</string>
+    <string name="bostad_byt">Change home</string>
+    <string name="bostad_lagg_till">Add home</string>
+    <string name="bostad_namn">Name</string>
+    <string name="bostad_adress">Address (optional)</string>
+    <string name="bostad_anteckning">Notes (optional)</string>
+    <string name="bostad_spara">Save</string>
+    <string name="bostad_ta_bort">Remove home</string>
+    <string name="bostad_ta_bort_bekraftelse">Remove %1$s and %2$d items linked to it?</string>
+    <string name="bostad_sista_gar_inte">At least one home must remain</string>
+    <string name="historik_rubrik_med_bostad">%1$s – %2$s</string>
     <string name="uppgift_gjord_post_ej_sparad">Task moved but entry not saved (Pro required)</string>
 
     <!-- Säkerhetskopia -->
@@ -216,20 +245,6 @@
     <string name="valkommen_integritet">No account, no ads and no cloud. Free for up to 15 log entries.</string>
     <string name="valkommen_lagg_till">Add my first task</string>
     <string name="valkommen_titta">Look around first</string>
-
-    <!-- Planned costs -->
-    <string name="fab_ny_planerad_kostnad">Planned cost</string>
-    <string name="tom_plan">No planned costs yet. Add things you expect to pay for, such as a new roof or boiler, grouped by year.</string>
-    <string name="plan_ar_summa">Total: %1$s</string>
-    <string name="plan_genomford">Done</string>
-    <string name="ny_planerad_kostnad_rubrik">Planned cost</string>
-    <string name="andra_planerad_kostnad_rubrik">Edit planned cost</string>
-    <string name="falt_plan_titel">Title</string>
-    <string name="falt_planerat_ar">Planned year</string>
-    <string name="falt_planerat_ar_hjalp">From %1$d and later</string>
-    <string name="fel_plan_titel_saknas">Enter a title</string>
-    <string name="fel_plan_belopp">Enter an amount greater than zero</string>
-    <string name="fel_plan_ar">The year must be %1$d or later</string>
 
     <!-- Documents -->
     <string name="flik_dokument">Documents</string>

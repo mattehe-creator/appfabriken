@@ -69,12 +69,13 @@ internal suspend fun korSakerhetskopiaJobb(
                 val databas = HusDatabas.hamta(context)
                 val dao = databas.husDao()
                 val repository = skapaHusRepository(context, databas)
+                val bostader = repository.allaBostader()
                 val uppgifter = repository.allaUppgifter()
                 val poster = repository.allaPoster()
                 val matare = repository.allaMatare()
                 val avlasningar = repository.allaAvlasningar()
                 val dokument = repository.allaDokument()
-                val planerade = repository.allaPlaneradeKostnader()
+                val planeradeKostnader = repository.allaPlaneradeKostnader()
                 val bildLager = se.tmconnect.husloggen.data.skapaHusBildLager(context)
                 val dokumentLager = se.tmconnect.husloggen.data.skapaHusDokumentLager(context)
                 val lagring =
@@ -87,14 +88,15 @@ internal suspend fun korSakerhetskopiaJobb(
                             ut ->
                         Sakerhetskopia.skriv(
                             ut,
+                            bostader,
                             uppgifter,
                             poster,
                             matare,
                             avlasningar,
                             dokument,
+                            planeradeKostnader,
                             bildLager,
                             dokumentLager,
-                            planerade,
                         )
                     },
                     idag = idag,

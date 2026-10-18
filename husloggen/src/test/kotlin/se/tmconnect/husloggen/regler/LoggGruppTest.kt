@@ -10,9 +10,9 @@ class LoggGruppTest {
     @Test
     fun `grupperaPerAr med exempeldata`() {
         val poster = listOf(
-            Post(0, LocalDate.of(2025, 5, 1), "Vad 1", PostTyp.UNDERHALL, 100_000L),
-            Post(0, LocalDate.of(2026, 3, 1), "Vad 2", PostTyp.REPARATION, 50_000L),
-            Post(0, LocalDate.of(2026, 4, 1), "Vad 3", PostTyp.OMBYGGNAD, null)
+            Post(datum = LocalDate.of(2025, 5, 1), vad = "Vad 1", typ = PostTyp.UNDERHALL, beloppOre = 100_000L),
+            Post(datum = LocalDate.of(2026, 3, 1), vad = "Vad 2", typ = PostTyp.REPARATION, beloppOre = 50_000L),
+            Post(datum = LocalDate.of(2026, 4, 1), vad = "Vad 3", typ = PostTyp.OMBYGGNAD, beloppOre = null),
         )
         
         val resultat = grupperaPerAr(poster)
@@ -35,8 +35,8 @@ class LoggGruppTest {
     @Test
     fun `grupperaPerAr med endast poster utan belopp`() {
         val poster = listOf(
-            Post(0, LocalDate.of(2025, 5, 1), "Vad 1", PostTyp.UNDERHALL, null),
-            Post(0, LocalDate.of(2026, 3, 1), "Vad 2", PostTyp.REPARATION, null)
+            Post(datum = LocalDate.of(2025, 5, 1), vad = "Vad 1", typ = PostTyp.UNDERHALL, beloppOre = null),
+            Post(datum = LocalDate.of(2026, 3, 1), vad = "Vad 2", typ = PostTyp.REPARATION, beloppOre = null),
         )
         
         val resultat = grupperaPerAr(poster)

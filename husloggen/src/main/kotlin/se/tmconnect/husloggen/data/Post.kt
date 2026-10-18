@@ -11,17 +11,25 @@ import java.time.LocalDate
     tableName = "post",
     foreignKeys = [
         ForeignKey(
+            entity = Bostad::class,
+            parentColumns = ["id"],
+            childColumns = ["bostad_id"],
+            onDelete = ForeignKey.CASCADE,
+        ),
+        ForeignKey(
             entity = Uppgift::class,
             parentColumns = ["id"],
             childColumns = ["uppgift_id"],
             onDelete = ForeignKey.SET_NULL,
         ),
     ],
-    indices = [Index("uppgift_id")],
+    indices = [Index("uppgift_id"), Index("bostad_id")],
 )
 data class Post(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
+    @ColumnInfo(name = "bostad_id")
+    val bostadId: Long = 1L,
     val datum: LocalDate,
     val vad: String,
     val typ: PostTyp,

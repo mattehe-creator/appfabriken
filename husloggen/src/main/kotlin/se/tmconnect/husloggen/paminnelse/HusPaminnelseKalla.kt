@@ -31,15 +31,31 @@ class HusPaminnelseKalla(
     }
 
     override suspend fun notisForEnFrist(frist: PaminnelseFrist): PaminnelseNotisInnehall {
+        val dao = HusDatabas.hamta(context).husDao()
         val uppgift = uppgiftForFrist(frist)
         val locale = Locale.getDefault()
+        val datumEtikett = formateraDatum(frist.slutdatum, locale)
+        val uppgiftNamn = uppgift?.namn ?: ""
+        val text =
+            if (dao.antalBostader() > 1) {
+                val bostadNamn =
+                    uppgift?.bostadId?.let { dao.hamtaBostad(it)?.namn }.orEmpty()
+                context.getString(
+                    R.string.paminnelse_notis_text_med_bostad,
+                    bostadNamn,
+                    uppgiftNamn,
+                    datumEtikett,
+                )
+            } else {
+                context.getString(
+                    R.string.paminnelse_notis_text,
+                    uppgiftNamn,
+                    datumEtikett,
+                )
+            }
         return PaminnelseNotisInnehall(
             titel = context.getString(R.string.paminnelse_notis_titel),
-            text = context.getString(
-                R.string.paminnelse_notis_text,
-                uppgift?.namn ?: "",
-                formateraDatum(frist.slutdatum, locale),
-            ),
+            text = text,
             notisId = notisIdForFrist(frist),
         )
     }
