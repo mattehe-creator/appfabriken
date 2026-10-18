@@ -1,6 +1,6 @@
 # Status
 
-Uppdaterad 2026-10-17.
+Uppdaterad 2026-10-18.
 
 ## Klart: Grundplattan (2026-10-08–09)
 
@@ -33,6 +33,18 @@ Val och omfång i IDEURVAL.md (omprövning 2026-10-16), regler i `husloggen/APP.
 8. Säkerhetskopia, import och automatisk säkerhetskopia. Cursor lyfter dem till `:karna`. `2026-10-16-husloggen-sakerhetskopia`, skickat 2026-10-16.
 9. Mörkt läge, välkomstskärm, butiksmaterial, skärmbilder, Data safety och integritetspolicy. Nästa att skriva.
 10. Mattias provar på telefon.
+
+## Nu: Ngày giỗ 1.0 (app 4, Vietnam)
+
+Val i IDEURVAL.md (2026-10-18), regler i `ngaygio/APP.md`. Tao granskar vietnamesiskan i `ngaygio/sprak/GRANSKA.md`.
+
+1. `2026-10-18-ngaygio-grund`: modul, omräkning sol- och månkalender, databas version 1, listan med kommande dagar. Skickat 2026-10-18.
+2. Formulär för egna dagar (giỗ, födelsedag efter månkalendern, annat), med datum i sol- eller månkalender.
+3. Högtider: Tết, rằm och mùng 1, Trung thu m.fl., var och en kan slås av.
+4. Påminnelser (mönstret i `:karna`).
+5. Gratisgräns och Pro, säkerhetskopia och delning av listan som fil.
+6. Månadsvy med båda kalendrarna, välkomstskärm, butiksmaterial på vietnamesiska, Taos granskning.
+7. Mattias provar på telefon.
 
 ## Senare
 

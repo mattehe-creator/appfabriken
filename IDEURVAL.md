@@ -114,3 +114,24 @@ Inte i 1.0: flera bostäder, mätarställningar, dokument (manualer, ritningar),
 1. A Garantivalvet (funktionsfryst, väntar på Google Play)
 2. G Husloggen (påbörjad 2026-10-16)
 3. Väljs när Mattias vill, utan väntetid efter publicering. B som egen app faller bort; mätarställningar kan bli en funktion i G.
+
+## Vietnam 2026-10-18: app för Vietnam
+
+Mattias vill ha ett projekt för Vietnam. Tillgång till en TikTok-kanal med cirka 40 000 följare, nästan alla i Vietnam (kanalen handlar om livet i Sverige som vietnames). Tao granskar vietnamesiskan, ett par timmar i veckan.
+
+Förutsättningar: låg betalvilja och låga priser, få betalkort men operatörsbetalning i Google Play (Viettel, Mobifone, Vietnamobile). Spel kräver licens och faller bort. Granskningstiden är liten, så appen ska ha lite text.
+
+| # | Idé | Bygg | Konk. | Betal | Upptäck | Återanv. | Risk | Summa |
+|---|---|---|---|---|---|---|---|---|
+| V1 | **Ngày giỗ** — familjens dödsdagsminnen, högtider, rằm och mùng 1 efter månkalendern, med påminnelser | 4 | 2 | 2 | 4 | 4 | 5 | **34** |
+| V2 | Phong bì-boken — kuvertpengar givna och fått vid bröllop och begravningar | 5 | 3 | 1 | 2 | 3 | 5 | 32 |
+| V3 | Hụi-boken — roterande sparcirkel för den som arrangerar | 4 | 3 | 2 | 2 | 2 | 3 | 28 |
+| V4 | Svenska för vietnamesisktalande | 3 | 4 | 3 | 3 | 1 | 5 | 32 (faller: publiken är i Vietnam, och innehållet kräver mer granskning än Tao har tid med) |
+
+Konkurrens: kalenderappar för lịch âm är många och fulla av reklam; appar med fokus på giỗ finns mest för iOS. Skillnaden blir: hela familjens giỗ på ett ställe, inga annonser, offline, och listan kan delas som fil inom familjen.
+
+## Val app 4: V1, Ngày giỗ (arbetsnamn)
+
+Svagheter: hög konkurrens på ordet "lịch âm", låg betalvilja, och felaktig omräkning av datum vore förödande. Därför är omräkningen testad mot kända datum och granskad av Tao innan appen publiceras. Upptäckten hänger på TikTok-kanalen, inte på sökningar i Play.
+
+Omfång 1.0: se `ngaygio/APP.md`. V2 kan bli en flik i samma app efter 1.0.
