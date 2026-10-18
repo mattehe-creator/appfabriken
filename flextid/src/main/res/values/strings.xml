@@ -86,4 +86,16 @@
     <string name="paminnelse_samlad_titel">Flextime reminders</string>
     <string name="paminnelse_samlad_text">You have %1$d reminders today</string>
     <string name="paminnelse_behorighet_nekad">Notifications are off. Enable them in system settings to get reminders.</string>
+    <!-- Welcome -->
+    <string name="valkommen_rubrik">Welcome to Flextime</string>
+    <string name="valkommen_ingress">Simple flextime tracking on your phone. The app assumes no collective agreement and gives no legal advice.</string>
+    <string name="valkommen_steg1_rubrik">Clock in and out</string>
+    <string name="valkommen_steg1_text">Log start, end and break per day. Balance is calculated against normal hours you set yourself.</string>
+    <string name="valkommen_steg2_rubrik">Week view and export</string>
+    <string name="valkommen_steg2_text">See the week at a glance and export a month as CSV or save a JSON backup.</string>
+    <string name="valkommen_steg3_rubrik">Reminders</string>
+    <string name="valkommen_steg3_text">Optional notifications to clock in or out. Turn them on in Settings when you want.</string>
+    <string name="valkommen_integritet">No account, no ads and no cloud. Free for up to 15 day entries.</string>
+    <string name="valkommen_stampla_in">Clock in for today</string>
+    <string name="valkommen_titta">Look around first</string>
 </resources>

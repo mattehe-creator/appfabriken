@@ -6,7 +6,11 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.DisposableEffect
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -36,10 +40,9 @@ import se.tmconnect.flextid.ui.FlextidStartSkarm
 import se.tmconnect.flextid.ui.FlextidViewModel
 import se.tmconnect.flextid.ui.FlextidViewModelFactory
 import se.tmconnect.flextid.ui.ProDialog
+import se.tmconnect.flextid.ui.ValkommenSkarm
 import se.tmconnect.karna.export.skrivCsvMedBom
 import se.tmconnect.karna.tema.AppfabrikTema
-import se.tmconnect.karna.tema.TemaLage
-
 class MainActivity : ComponentActivity() {
     private var oppnaIdagVidStart = false
     private var behorighetNekad by mutableStateOf(false)
@@ -130,12 +133,23 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val temaLage by viewModel.temaLage.collectAsStateWithLifecycle()
-            val morkt =
-                when (temaLage) {
-                    TemaLage.MORKT -> true
-                    TemaLage.LJUST -> false
-                    TemaLage.SYSTEM -> isSystemInDarkTheme()
-                }
+            val visaValkommen by viewModel.visaValkommen.collectAsStateWithLifecycle()
+            val morkt = temaLage.arMorkt(isSystemInDarkTheme())
+            DisposableEffect(morkt) {
+                enableEdgeToEdge(
+                    statusBarStyle =
+                        SystemBarStyle.auto(
+                            android.graphics.Color.TRANSPARENT,
+                            android.graphics.Color.TRANSPARENT,
+                        ) { morkt },
+                    navigationBarStyle =
+                        SystemBarStyle.auto(
+                            android.graphics.Color.TRANSPARENT,
+                            android.graphics.Color.TRANSPARENT,
+                        ) { morkt },
+                )
+                onDispose {}
+            }
             val snackbarHostState = remember { SnackbarHostState() }
             val proDialogSynlig by viewModel.proDialogSynlig.collectAsStateWithLifecycle()
             val startFlik =
@@ -163,31 +177,44 @@ class MainActivity : ComponentActivity() {
             }
 
             AppfabrikTema(morkt = morkt) {
-                FlextidStartSkarm(
-                    viewModel = viewModel,
-                    snackbarHostState = snackbarHostState,
-                    modifier = Modifier.fillMaxSize(),
-                    startFlik = startFlik,
-                    behorighetNekad = behorighetNekad,
-                    onStamplaUtPaminnelse = { pa -> andraStamplaUtPaminnelse(pa) },
-                    onStamplaInPaminnelse = { pa -> andraStamplaInPaminnelse(pa) },
-                    onExporteraCsv = {
-                        val arManad = viewModel.exportArManad.value
-                        skapaCsvContract.launch(manadsCsvFilnamn(arManad))
-                    },
-                    onExporteraSakerhetskopia = {
-                        skapaJsonContract.launch("flextid-sakerhetskopia.json")
-                    },
-                    onImporteraSakerhetskopia = {
-                        oppnaJsonContract.launch(arrayOf("application/json", "text/plain", "*/*"))
-                    },
-                    locale = Locale.getDefault(),
-                )
-                if (proDialogSynlig) {
-                    ProDialog(
-                        onDismiss = viewModel::stangProDialog,
-                        onKopPro = viewModel::kopPro,
-                    )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    if (visaValkommen) {
+                        ValkommenSkarm(
+                            onStamplaIn = {
+                                viewModel.avslutaValkommen()
+                                viewModel.stamplaIn()
+                            },
+                            onTittaRunt = viewModel::avslutaValkommen,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else {
+                        FlextidStartSkarm(
+                            viewModel = viewModel,
+                            snackbarHostState = snackbarHostState,
+                            modifier = Modifier.fillMaxSize(),
+                            startFlik = startFlik,
+                            behorighetNekad = behorighetNekad,
+                            onStamplaUtPaminnelse = { pa -> andraStamplaUtPaminnelse(pa) },
+                            onStamplaInPaminnelse = { pa -> andraStamplaInPaminnelse(pa) },
+                            onExporteraCsv = {
+                                val arManad = viewModel.exportArManad.value
+                                skapaCsvContract.launch(manadsCsvFilnamn(arManad))
+                            },
+                            onExporteraSakerhetskopia = {
+                                skapaJsonContract.launch("flextid-sakerhetskopia.json")
+                            },
+                            onImporteraSakerhetskopia = {
+                                oppnaJsonContract.launch(arrayOf("application/json", "text/plain", "*/*"))
+                            },
+                            locale = Locale.getDefault(),
+                        )
+                    }
+                    if (proDialogSynlig) {
+                        ProDialog(
+                            onDismiss = viewModel::stangProDialog,
+                            onKopPro = viewModel::kopPro,
+                        )
+                    }
                 }
             }
         }

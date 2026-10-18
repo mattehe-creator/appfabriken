@@ -86,4 +86,16 @@
     <string name="paminnelse_samlad_titel">Påminnelser om flextid</string>
     <string name="paminnelse_samlad_text">Du har %1$d påminnelser idag</string>
     <string name="paminnelse_behorighet_nekad">Notiser är avstängda. Slå på dem i systeminställningarna för att få påminnelser.</string>
+    <!-- Välkommen -->
+    <string name="valkommen_rubrik">Välkommen till Flextid</string>
+    <string name="valkommen_ingress">Enkel flextidsregistrering på telefonen. Appen antar inget kollektivavtal och ger ingen rådgivning.</string>
+    <string name="valkommen_steg1_rubrik">Stämpla in och ut</string>
+    <string name="valkommen_steg1_text">Registrera start, slut och rast per dag. Saldo räknas mot normaltid som du själv anger.</string>
+    <string name="valkommen_steg2_rubrik">Vecka och export</string>
+    <string name="valkommen_steg2_text">Se veckans utfall och exportera en månad som CSV eller spara en säkerhetskopia som JSON.</string>
+    <string name="valkommen_steg3_rubrik">Påminnelser</string>
+    <string name="valkommen_steg3_text">Valfria notiser om att stämpla in eller ut. Slå på dem i Inställningar när du vill.</string>
+    <string name="valkommen_integritet">Inget konto, ingen reklam och ingen molntjänst. Gratis upp till 15 dagposter.</string>
+    <string name="valkommen_stampla_in">Stämpla in för idag</string>
+    <string name="valkommen_titta">Titta runt först</string>
 </resources>
