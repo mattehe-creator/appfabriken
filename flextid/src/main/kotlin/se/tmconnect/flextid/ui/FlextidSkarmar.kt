@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -66,12 +68,16 @@ fun FlextidStartSkarm(
     viewModel: FlextidViewModel,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
+    startFlik: FlextidFlik? = null,
+    behorighetNekad: Boolean = false,
+    onStamplaUtPaminnelse: (Boolean) -> Unit,
+    onStamplaInPaminnelse: (Boolean) -> Unit,
     onExporteraCsv: () -> Unit,
     onExporteraSakerhetskopia: () -> Unit,
     onImporteraSakerhetskopia: () -> Unit,
     locale: Locale,
 ) {
-    var flik by remember { mutableStateOf(FlextidFlik.IDAG) }
+    var flik by remember(startFlik) { mutableStateOf(startFlik ?: FlextidFlik.IDAG) }
     val saldo by viewModel.saldo.collectAsState()
     val installning by viewModel.installning.collectAsState()
     val idagDag by viewModel.idagDag.collectAsState()
@@ -80,6 +86,10 @@ fun FlextidStartSkarm(
     val dagFormular by viewModel.dagFormular.collectAsState()
     val exportArManad by viewModel.exportArManad.collectAsState()
     val temaLage by viewModel.temaLage.collectAsState()
+    val arPro by viewModel.arPro.collectAsState()
+    val antalDagar by viewModel.antalDagar.collectAsState()
+    val stamplaUtPaminnelse by viewModel.stamplaUtPaminnelsePa.collectAsState()
+    val stamplaInPaminnelse by viewModel.stamplaInPaminnelsePa.collectAsState()
 
     Scaffold(
         modifier = modifier,
@@ -162,6 +172,14 @@ fun FlextidStartSkarm(
                         exportArManad = exportArManad,
                         temaLage = temaLage,
                         locale = locale,
+                        arPro = arPro,
+                        antalDagar = antalDagar,
+                        stamplaUtPaminnelse = stamplaUtPaminnelse,
+                        stamplaInPaminnelse = stamplaInPaminnelse,
+                        behorighetNekad = behorighetNekad,
+                        onVisaProDialog = viewModel::visaProDialog,
+                        onStamplaUtPaminnelse = onStamplaUtPaminnelse,
+                        onStamplaInPaminnelse = onStamplaInPaminnelse,
                         onSpara = viewModel::sparaInstallning,
                         onTema = viewModel::sattTemaLage,
                         onExportManad = viewModel::sattExportArManad,
@@ -327,6 +345,14 @@ private fun InstallningarInnehall(
     exportArManad: YearMonth,
     temaLage: TemaLage,
     locale: Locale,
+    arPro: Boolean,
+    antalDagar: Int,
+    stamplaUtPaminnelse: Boolean,
+    stamplaInPaminnelse: Boolean,
+    behorighetNekad: Boolean,
+    onVisaProDialog: () -> Unit,
+    onStamplaUtPaminnelse: (Boolean) -> Unit,
+    onStamplaInPaminnelse: (Boolean) -> Unit,
     onSpara: (String, String, String, Int) -> Unit,
     onTema: (TemaLage) -> Unit,
     onExportManad: (YearMonth) -> Unit,
@@ -350,6 +376,46 @@ private fun InstallningarInnehall(
     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         item {
             Text(stringResource(R.string.installningar_rubrik), style = MaterialTheme.typography.titleLarge)
+        }
+        item {
+            ProInstallningRad(arPro = arPro, onVisaProDialog = onVisaProDialog)
+        }
+        if (!arPro && antalDagar >= se.tmconnect.flextid.regler.GRATIS_MAX_DAGPOSTER) {
+            item {
+                Text(
+                    text = stringResource(R.string.pro_grans_forklaring),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+        }
+        item {
+            Text(stringResource(R.string.paminnelse_rubrik), style = MaterialTheme.typography.titleMedium)
+        }
+        item {
+            PaminnelseReglage(
+                rubrik = stringResource(R.string.paminnelse_stampla_ut_rubrik),
+                beskrivning = stringResource(R.string.paminnelse_stampla_ut_beskrivning),
+                pa = stamplaUtPaminnelse,
+                onAndras = onStamplaUtPaminnelse,
+            )
+        }
+        item {
+            PaminnelseReglage(
+                rubrik = stringResource(R.string.paminnelse_stampla_in_rubrik),
+                beskrivning = stringResource(R.string.paminnelse_stampla_in_beskrivning),
+                pa = stamplaInPaminnelse,
+                onAndras = onStamplaInPaminnelse,
+            )
+        }
+        if (behorighetNekad) {
+            item {
+                Text(
+                    text = stringResource(R.string.paminnelse_behorighet_nekad),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
         }
         item {
             OutlinedTextField(
@@ -522,6 +588,60 @@ private fun DagFormularDialog(
             }
         },
     )
+}
+
+@Composable
+private fun ProInstallningRad(
+    arPro: Boolean,
+    onVisaProDialog: () -> Unit,
+) {
+    if (arPro) {
+        Text(
+            text = stringResource(R.string.pro_du_har),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 8.dp),
+        )
+    } else {
+        TextButton(
+            onClick = onVisaProDialog,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp),
+        ) {
+            Text(text = stringResource(R.string.pro_las_upp))
+        }
+    }
+}
+
+@Composable
+private fun PaminnelseReglage(
+    rubrik: String,
+    beskrivning: String,
+    pa: Boolean,
+    onAndras: (Boolean) -> Unit,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = rubrik, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = beskrivning,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Switch(
+            checked = pa,
+            onCheckedChange = onAndras,
+            modifier = Modifier.tryckyta48(),
+        )
+    }
 }
 
 private fun veckodagStringRes(dag: DayOfWeek): Int =

@@ -25,6 +25,9 @@ interface FlextidDao {
     @Query("SELECT * FROM dag ORDER BY datum")
     suspend fun hamtaAllaDagar(): List<Dag>
 
+    @Query("SELECT COUNT(*) FROM dag")
+    suspend fun antalDagar(): Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun sparaDag(dag: Dag)
 

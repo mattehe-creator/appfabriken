@@ -56,7 +56,7 @@ class FlextidRepositoryImportTest {
                 typ = DagTyp.ARBETE,
                 anteckning = "test",
             )
-        repository.sparaDag(dag)
+        repository.sparaDag(dag, arPro = true)
         val inst = repository.hamtaInstallning().copy(ingangssaldoMin = -120)
         repository.sparaInstallning(inst)
 

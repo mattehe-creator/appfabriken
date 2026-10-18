@@ -63,4 +63,27 @@
     <string name="meddelande_exporterat">Exported</string>
     <string name="meddelande_importerat">Restored</string>
     <string name="meddelande_import_fel">Could not read backup file</string>
+    <!-- Pro -->
+    <string name="pro">Pro</string>
+    <string name="pro_las_upp">Unlock Pro</string>
+    <string name="pro_forklaring">The free version saves up to 15 day entries. Pro is a one-time purchase without subscription and removes the limit.</string>
+    <string name="pro_du_har">You have Pro</string>
+    <string name="pro_grans_nadd">Limit reached: 15 day entries</string>
+    <string name="pro_grans_forklaring">You have 15 day entries. Unlock Pro to add more. Export, CSV and backup are always free.</string>
+    <string name="pro_export_gratis">Export, CSV and backup are always free.</string>
+    <string name="pro_inte_nu">Not now</string>
+    <!-- Reminders -->
+    <string name="paminnelse_rubrik">Reminders</string>
+    <string name="paminnelse_kanal_namn">Time tracking reminders</string>
+    <string name="paminnelse_stampla_ut_rubrik">Remind me to clock out</string>
+    <string name="paminnelse_stampla_ut_beskrivning">After your normal hours when you clocked in but have not clocked out</string>
+    <string name="paminnelse_stampla_in_rubrik">Remind me to clock in</string>
+    <string name="paminnelse_stampla_in_beskrivning">On workdays from 08:00 if you have not clocked in</string>
+    <string name="paminnelse_stampla_ut_titel">Clock out?</string>
+    <string name="paminnelse_stampla_ut_text">You clocked in but have not clocked out yet.</string>
+    <string name="paminnelse_stampla_in_titel">Clock in?</string>
+    <string name="paminnelse_stampla_in_text">Remember to clock in for today.</string>
+    <string name="paminnelse_samlad_titel">Flextime reminders</string>
+    <string name="paminnelse_samlad_text">You have %1$d reminders today</string>
+    <string name="paminnelse_behorighet_nekad">Notifications are off. Enable them in system settings to get reminders.</string>
 </resources>

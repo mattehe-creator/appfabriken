@@ -1,5 +1,8 @@
 package se.tmconnect.flextid
 
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,32 +15,71 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import java.util.Locale
 import se.tmconnect.flextid.data.UiInstallningarLager
 import se.tmconnect.flextid.data.skapaFlextidRepository
 import se.tmconnect.flextid.export.ManadsCsvTexter
 import se.tmconnect.flextid.export.manadsCsvFilnamn
+import se.tmconnect.flextid.paminnelse.FlextidPaminnelseInstallningarLager
+import se.tmconnect.flextid.paminnelse.PaminnelseWorker
+import se.tmconnect.flextid.pro.ProKallaSkapare
+import se.tmconnect.flextid.ui.FlextidFlik
 import se.tmconnect.flextid.ui.FlextidMeddelande
 import se.tmconnect.flextid.ui.FlextidStartSkarm
 import se.tmconnect.flextid.ui.FlextidViewModel
 import se.tmconnect.flextid.ui.FlextidViewModelFactory
+import se.tmconnect.flextid.ui.ProDialog
 import se.tmconnect.karna.export.skrivCsvMedBom
 import se.tmconnect.karna.tema.AppfabrikTema
 import se.tmconnect.karna.tema.TemaLage
 
 class MainActivity : ComponentActivity() {
+    private var oppnaIdagVidStart = false
+    private var behorighetNekad by mutableStateOf(false)
+    private var onPaminnelseGodkand: (() -> Unit)? = null
+
     private val uiInstallningarLager by lazy { UiInstallningarLager(applicationContext) }
+
+    private val paminnelseInstallningar by lazy {
+        FlextidPaminnelseInstallningarLager(applicationContext)
+    }
+
+    private val proKalla by lazy {
+        ProKallaSkapare.skapa(
+            applicationContext,
+            ProKonfig.PRODUKT_ID,
+            lifecycleScope,
+        )
+    }
 
     private val viewModel: FlextidViewModel by viewModels {
         FlextidViewModelFactory(
             skapaFlextidRepository(applicationContext),
             uiInstallningarLager,
+            paminnelseInstallningar,
+            proKalla,
             applicationContext,
         )
     }
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                behorighetNekad = false
+                onPaminnelseGodkand?.invoke()
+                onPaminnelseGodkand = null
+            } else {
+                behorighetNekad = true
+                onPaminnelseGodkand = null
+            }
+        }
 
     private val skapaCsvContract =
         registerForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri ->
@@ -84,6 +126,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        hanteraPaminnelseIntent(intent)
         enableEdgeToEdge()
         setContent {
             val temaLage by viewModel.temaLage.collectAsStateWithLifecycle()
@@ -94,6 +137,14 @@ class MainActivity : ComponentActivity() {
                     TemaLage.SYSTEM -> isSystemInDarkTheme()
                 }
             val snackbarHostState = remember { SnackbarHostState() }
+            val proDialogSynlig by viewModel.proDialogSynlig.collectAsStateWithLifecycle()
+            val startFlik =
+                if (oppnaIdagVidStart) {
+                    oppnaIdagVidStart = false
+                    FlextidFlik.IDAG
+                } else {
+                    null
+                }
 
             LaunchedEffect(Unit) {
                 viewModel.meddelanden.collect { meddelande ->
@@ -105,6 +156,7 @@ class MainActivity : ComponentActivity() {
                             FlextidMeddelande.Importerat -> getString(R.string.meddelande_importerat)
                             FlextidMeddelande.SlutForeStart -> getString(R.string.fel_slut_fore_start)
                             FlextidMeddelande.ImportFel -> getString(R.string.meddelande_import_fel)
+                            FlextidMeddelande.GransUtanPro -> getString(R.string.pro_grans_nadd)
                         }
                     snackbarHostState.showSnackbar(text)
                 }
@@ -115,6 +167,10 @@ class MainActivity : ComponentActivity() {
                     viewModel = viewModel,
                     snackbarHostState = snackbarHostState,
                     modifier = Modifier.fillMaxSize(),
+                    startFlik = startFlik,
+                    behorighetNekad = behorighetNekad,
+                    onStamplaUtPaminnelse = { pa -> andraStamplaUtPaminnelse(pa) },
+                    onStamplaInPaminnelse = { pa -> andraStamplaInPaminnelse(pa) },
                     onExporteraCsv = {
                         val arManad = viewModel.exportArManad.value
                         skapaCsvContract.launch(manadsCsvFilnamn(arManad))
@@ -127,7 +183,66 @@ class MainActivity : ComponentActivity() {
                     },
                     locale = Locale.getDefault(),
                 )
+                if (proDialogSynlig) {
+                    ProDialog(
+                        onDismiss = viewModel::stangProDialog,
+                        onKopPro = viewModel::kopPro,
+                    )
+                }
             }
         }
+        viewModel.synkaPaminnelseJobb()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        hanteraPaminnelseIntent(intent)
+    }
+
+    private fun hanteraPaminnelseIntent(intent: Intent?) {
+        if (intent?.getBooleanExtra(PaminnelseWorker.EXTRA_OPPNA_IDAG, false) == true) {
+            oppnaIdagVidStart = true
+            intent.removeExtra(PaminnelseWorker.EXTRA_OPPNA_IDAG)
+        }
+    }
+
+    private fun andraStamplaUtPaminnelse(pa: Boolean) {
+        if (!pa) {
+            behorighetNekad = false
+            viewModel.sattStamplaUtPaminnelse(false)
+            return
+        }
+        begarNotisBehorighetOmBehovs { viewModel.sattStamplaUtPaminnelse(true) }
+    }
+
+    private fun andraStamplaInPaminnelse(pa: Boolean) {
+        if (!pa) {
+            behorighetNekad = false
+            viewModel.sattStamplaInPaminnelse(false)
+            return
+        }
+        begarNotisBehorighetOmBehovs { viewModel.sattStamplaInPaminnelse(true) }
+    }
+
+    private fun begarNotisBehorighetOmBehovs(onGodkand: () -> Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !harNotisBehorighet()
+        ) {
+            onPaminnelseGodkand = onGodkand
+            requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            onGodkand()
+        }
+    }
+
+    private fun harNotisBehorighet(): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return true
+        }
+        return ContextCompat.checkSelfPermission(
+            this,
+            android.Manifest.permission.POST_NOTIFICATIONS,
+        ) == PackageManager.PERMISSION_GRANTED
     }
 }

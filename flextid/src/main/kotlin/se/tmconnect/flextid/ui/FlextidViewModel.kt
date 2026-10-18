@@ -1,5 +1,6 @@
 package se.tmconnect.flextid.ui
 
+import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -34,14 +36,20 @@ import se.tmconnect.flextid.export.lasSakerhetskopiaJson
 import se.tmconnect.flextid.export.sakerhetskopiaDagTillDag
 import se.tmconnect.flextid.export.sakerhetskopiaInstallningTillInstallning
 import se.tmconnect.flextid.export.skrivSakerhetskopiaJson
+import se.tmconnect.flextid.paminnelse.FlextidPaminnelseInstallningarLager
+import se.tmconnect.flextid.paminnelse.FlextidPaminnelseKalla
+import se.tmconnect.flextid.paminnelse.PaminnelseWorker
 import se.tmconnect.flextid.regler.DagTyp
 import se.tmconnect.flextid.regler.TidValideringFel
 import se.tmconnect.flextid.regler.arbetadeMinuter
 import se.tmconnect.flextid.regler.dagensUtfall
+import se.tmconnect.flextid.regler.kanLaggaTillDagPost
 import se.tmconnect.flextid.regler.mandagISammaVecka
 import se.tmconnect.flextid.regler.sondagISammaVecka
 import se.tmconnect.flextid.regler.tolkaTidText
 import se.tmconnect.karna.export.skrivCsvMedBom
+import se.tmconnect.karna.paminnelse.PaminnelsePlanerare
+import se.tmconnect.karna.pro.ProKalla
 import se.tmconnect.karna.tema.TemaLage
 import java.util.Locale
 
@@ -57,6 +65,8 @@ sealed interface FlextidMeddelande {
     data object SlutForeStart : FlextidMeddelande
 
     data object ImportFel : FlextidMeddelande
+
+    data object GransUtanPro : FlextidMeddelande
 }
 
 data class VeckaDagRad(
@@ -79,6 +89,8 @@ data class DagFormularTillstand(
 class FlextidViewModel(
     private val repository: FlextidRepository,
     private val uiInstallningarLager: UiInstallningarLager,
+    private val paminnelseInstallningar: FlextidPaminnelseInstallningarLager,
+    private val proKalla: ProKalla,
     private val appContext: Context,
 ) : ViewModel() {
     private val _veckaAnkar = MutableStateFlow(mandagISammaVecka(LocalDate.now()))
@@ -89,6 +101,32 @@ class FlextidViewModel(
 
     private val _meddelanden = MutableSharedFlow<FlextidMeddelande>(extraBufferCapacity = 1)
     val meddelanden = _meddelanden.asSharedFlow()
+
+    private val _proDialogSynlig = MutableStateFlow(false)
+    val proDialogSynlig = _proDialogSynlig.asStateFlow()
+
+    val arPro = proKalla.arPro
+
+    val stamplaUtPaminnelsePa =
+        paminnelseInstallningar.stamplaUtPa.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            false,
+        )
+
+    val stamplaInPaminnelsePa =
+        paminnelseInstallningar.stamplaInPa.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            false,
+        )
+
+    val antalDagar =
+        repository.observeraAntalDagar().stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            0,
+        )
 
     val temaLage =
         uiInstallningarLager.temaLage.map { TemaLage.franNamn(it) }.stateIn(
@@ -140,6 +178,13 @@ class FlextidViewModel(
             YearMonth.now(),
         )
 
+    init {
+        viewModelScope.launch {
+            proKalla.kontrollera()
+            synkaPaminnelseJobb()
+        }
+    }
+
     fun sattTemaLage(lage: TemaLage) {
         viewModelScope.launch { uiInstallningarLager.sattTemaLage(lage.name) }
     }
@@ -156,19 +201,45 @@ class FlextidViewModel(
         _veckaAnkar.value = mandagISammaVecka(LocalDate.now())
     }
 
+    fun kanLaggaTillNyDagPost(): Boolean =
+        kanLaggaTillDagPost(antalDagar.value, proKalla.arPro.value)
+
+    fun visaProDialog() {
+        _proDialogSynlig.value = true
+    }
+
+    fun stangProDialog() {
+        _proDialogSynlig.value = false
+    }
+
+    fun kopPro(activity: Activity) {
+        proKalla.kop(activity)
+    }
+
     fun stamplaIn() {
         viewModelScope.launch {
-            val nu = LocalTime.now()
             val inst = installning.value
-            repository.stamplaIn(LocalDate.now(), nu, inst.standardRastMin)
-            _meddelanden.emit(FlextidMeddelande.Sparat)
+            when (
+                repository.stamplaIn(LocalDate.now(), LocalTime.now(), inst.standardRastMin, proKalla.arPro.value)
+            ) {
+                FlextidRepository.SparaDagResult.Ok -> _meddelanden.emit(FlextidMeddelande.Sparat)
+                FlextidRepository.SparaDagResult.GransUtanPro -> {
+                    visaProDialog()
+                    _meddelanden.emit(FlextidMeddelande.GransUtanPro)
+                }
+                is FlextidRepository.SparaDagResult.Fel -> Unit
+            }
         }
     }
 
     fun stamplaUt() {
         viewModelScope.launch {
-            when (repository.stamplaUt(LocalDate.now(), LocalTime.now())) {
+            when (repository.stamplaUt(LocalDate.now(), LocalTime.now(), proKalla.arPro.value)) {
                 FlextidRepository.SparaDagResult.Ok -> _meddelanden.emit(FlextidMeddelande.Sparat)
+                FlextidRepository.SparaDagResult.GransUtanPro -> {
+                    visaProDialog()
+                    _meddelanden.emit(FlextidMeddelande.GransUtanPro)
+                }
                 is FlextidRepository.SparaDagResult.Fel ->
                     _meddelanden.emit(FlextidMeddelande.SlutForeStart)
             }
@@ -180,12 +251,24 @@ class FlextidViewModel(
             val datum = LocalDate.now()
             val befintlig = repository.hamtaDag(datum)
             val dag = (befintlig ?: Dag(datum = datum, rastMin = minuter)).copy(rastMin = minuter)
-            repository.sparaDagUtanValidering(dag)
+            when (repository.sparaDagUtanValidering(dag, proKalla.arPro.value)) {
+                FlextidRepository.SparaDagResult.Ok -> Unit
+                FlextidRepository.SparaDagResult.GransUtanPro -> {
+                    visaProDialog()
+                    _meddelanden.emit(FlextidMeddelande.GransUtanPro)
+                }
+                is FlextidRepository.SparaDagResult.Fel -> Unit
+            }
         }
     }
 
     fun oppnaDagFormular(datum: LocalDate) {
         viewModelScope.launch {
+            if (repository.hamtaDag(datum) == null && !kanLaggaTillDagPost(repository.antalDagar(), proKalla.arPro.value)) {
+                visaProDialog()
+                _meddelanden.emit(FlextidMeddelande.GransUtanPro)
+                return@launch
+            }
             val dag = repository.hamtaDag(datum)
             _dagFormular.value =
                 DagFormularTillstand(
@@ -222,10 +305,14 @@ class FlextidViewModel(
                     typ = form.typ,
                     anteckning = form.anteckning.trim().takeIf { it.isNotEmpty() },
                 )
-            when (repository.sparaDag(dag)) {
+            when (repository.sparaDag(dag, proKalla.arPro.value)) {
                 FlextidRepository.SparaDagResult.Ok -> {
                     _dagFormular.value = null
                     _meddelanden.emit(FlextidMeddelande.Sparat)
+                }
+                FlextidRepository.SparaDagResult.GransUtanPro -> {
+                    visaProDialog()
+                    _meddelanden.emit(FlextidMeddelande.GransUtanPro)
                 }
                 is FlextidRepository.SparaDagResult.Fel -> {
                     _dagFormular.value = form.copy(fel = TidValideringFel.SlutForeStart)
@@ -262,6 +349,31 @@ class FlextidViewModel(
                 ),
             )
             _meddelanden.emit(FlextidMeddelande.Sparat)
+        }
+    }
+
+    fun sattStamplaUtPaminnelse(pa: Boolean) {
+        viewModelScope.launch {
+            paminnelseInstallningar.sattStamplaUtPa(pa)
+            synkaPaminnelseJobb()
+        }
+    }
+
+    fun sattStamplaInPaminnelse(pa: Boolean) {
+        viewModelScope.launch {
+            paminnelseInstallningar.sattStamplaInPa(pa)
+            synkaPaminnelseJobb()
+        }
+    }
+
+    fun synkaPaminnelseJobb() {
+        viewModelScope.launch {
+            val pa = paminnelseInstallningar.nagonPaminnelsePa.first()
+            PaminnelsePlanerare.synka<PaminnelseWorker>(
+                appContext,
+                pa,
+                FlextidPaminnelseKalla.UNIKT_JOBB_NAMN,
+            )
         }
     }
 
@@ -341,12 +453,20 @@ class FlextidViewModel(
 class FlextidViewModelFactory(
     private val repository: FlextidRepository,
     private val uiInstallningarLager: UiInstallningarLager,
+    private val paminnelseInstallningar: FlextidPaminnelseInstallningarLager,
+    private val proKalla: ProKalla,
     private val appContext: Context,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(FlextidViewModel::class.java)) {
-            return FlextidViewModel(repository, uiInstallningarLager, appContext) as T
+            return FlextidViewModel(
+                repository,
+                uiInstallningarLager,
+                paminnelseInstallningar,
+                proKalla,
+                appContext,
+            ) as T
         }
         throw IllegalArgumentException("Okänd ViewModel")
     }
