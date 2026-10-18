@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Säg det</string>
+    <string name="flik_start">Säg</string>
+    <string name="flik_att_gora">Att göra</string>
+    <string name="flik_anteckningar">Anteckningar</string>
+    <string name="flik_historik">Historik</string>
+    <string name="flik_installningar">Inställningar</string>
+    <string name="sag_det_knapp">Säg det</string>
+    <string name="lyssnar">Lyssnar…</string>
+    <string name="forslag_rubrik">Förslag</string>
+    <string name="falt_titel">Titel</string>
+    <string name="utfor">Utför</string>
+    <string name="offline_sparad">Sparat offline. Du kan tolka om när du har nät.</string>
+    <string name="tolka_om">Tolka om</string>
+    <string name="api_nyckel">API-nyckel</string>
+    <string name="modell">Modell</string>
+    <string name="spara">Spara</string>
+    <string name="exportera_csv">Exportera historik som CSV</string>
+    <string name="fangster_per_dag_rubrik">Fångster per dag (senaste 30 dagarna)</string>
+    <string name="fangster_per_dag_rad">%1$s: %2$d</string>
+    <string name="typ_kalender">Kalender</string>
+    <string name="typ_paminnelse">Påminnelse</string>
+    <string name="typ_att_gora">Att göra</string>
+    <string name="typ_anteckning">Anteckning</string>
+    <string name="typ_fraga">Fråga</string>
+    <string name="svar_rubrik">Svar</string>
+    <string name="fel_tom_inspelning">Inget hördes.</string>
+    <string name="utfor_klar">Klart.</string>
+    <string name="utfor_kalender">Öppnar kalendern…</string>
+    <string name="fel_saknar_tid">Saknar tid för den här handlingen.</string>
+    <string name="installningar_sparade">Inställningar sparade.</string>
+    <string name="paminnelse_notis_titel">Påminnelse</string>
+    <string name="paminnelse_kanal_namn">Påminnelser</string>
+    <string name="shortcut_sag_det">Säg det</string>
+    <string name="shortcut_sag_det_lang">Starta röstfångst</string>
+    <string name="tile_label">Säg det</string>
+</resources>

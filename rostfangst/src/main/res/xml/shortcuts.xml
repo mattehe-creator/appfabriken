@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="sag_det"
+        android:enabled="true"
+        android:icon="@drawable/ic_launcher_foreground"
+        android:shortcutShortLabel="@string/shortcut_sag_det"
+        android:shortcutLongLabel="@string/shortcut_sag_det_lang">
+        <intent
+            android:action="se.tmconnect.rostfangst.action.SAG_DET"
+            android:targetPackage="se.tmconnect.rostfangst"
+            android:targetClass="se.tmconnect.rostfangst.MainActivity" />
+    </shortcut>
+</shortcuts>

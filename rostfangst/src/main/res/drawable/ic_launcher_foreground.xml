@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Hus i temats primärfärg (#1F5F5B) -->
+    <path
+        android:fillColor="#1F5F5B"
+        android:pathData="M54,28 L78,46 V78 H62 V58 H46 V78 H30 V46 Z" />
+    <path
+        android:fillColor="#D4E8E6"
+        android:pathData="M48,58 H60 V78 H48 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M52,62 H56 V66 H52 Z M52,70 H56 V74 H52 Z" />
+</vector>

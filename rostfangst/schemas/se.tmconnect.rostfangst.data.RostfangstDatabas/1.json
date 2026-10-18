@@ -1,0 +1,87 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "e6db7917628bba90ea526ecb8f04a676",
+    "entities": [
+      {
+        "tableName": "fangst",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `originalText` TEXT NOT NULL, `typ` TEXT NOT NULL, `titel` TEXT NOT NULL, `startEpochMillis` INTEGER, `slutEpochMillis` INTEGER, `plats` TEXT, `svar` TEXT, `skapadEpochMillis` INTEGER NOT NULL, `klar` INTEGER NOT NULL, `vantarTolkning` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "originalText",
+            "columnName": "originalText",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "typ",
+            "columnName": "typ",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "titel",
+            "columnName": "titel",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startEpochMillis",
+            "columnName": "startEpochMillis",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "slutEpochMillis",
+            "columnName": "slutEpochMillis",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "plats",
+            "columnName": "plats",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "svar",
+            "columnName": "svar",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "skapadEpochMillis",
+            "columnName": "skapadEpochMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "klar",
+            "columnName": "klar",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vantarTolkning",
+            "columnName": "vantarTolkning",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e6db7917628bba90ea526ecb8f04a676')"
+    ]
+  }
+}
