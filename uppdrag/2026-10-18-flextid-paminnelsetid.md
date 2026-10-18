@@ -20,7 +20,7 @@ Flextid (app 3) har grund, Pro-gräns, påminnelser, mörkt läge, välkomstskä
 - Sparat 06:30 och klockan är 06:00 en arbetsdag utan registrerad start: nästa påminnelse idag 06:30.
 - Sparat 06:30 och klockan är 07:00: nästa påminnelse nästa arbetsdag 06:30.
 - Dagen har redan en starttid: ingen påminnelse "stämpla in" den dagen, oavsett klockslag.
-- Säkerhetskopia utan värdet återställs till 08:00; med 90 (01:30)... är ogiltig och ger 08:00 (värden utanför 05:00–12:00 avvisas).
+- Säkerhetskopia utan värdet återställs till 08:00. Ett värde utanför 05:00–12:00 (till exempel 90 minuter, alltså 01:30) är ogiltigt och ger 08:00.
 
 ## Hur Cursor arbetar
 
