@@ -1,1 +1,11 @@
-Preliminary long description for Google Play. Final English text is written in task 2026-10-18-03. Flextime (working title) tracks flextime offline with no accounts.
+Flextime (working title) tracks your flextime offline without accounts. Stamp in and out daily, enter break time in minutes, and set your own normal time. The app shows balance against your normal time and a weekly view with workdays and free days.
+
+Reminders help you remember to stamp in or out. A reminder will come at 08:00 on workdays if you haven't started the day, and a reminder after normal time if you haven't stamped out. Reminders are optional and can be turned off in settings.
+
+You can export your days as CSV for a selected month via the system file picker. You can also backup your data as JSON with version number. Export and backup are always free, regardless of whether you have Pro or not.
+
+Flextime requires no internet connection. The app has no `INTERNET` permission, no accounts, no ads, and no analytics. All data stays on your phone until you choose to export it.
+
+The app is free up to 15 day entries. Pro (one-time purchase) removes the limit on day entries. Existing data is never deleted.
+
+Flextime makes no assumptions about collective agreements and gives no advice on what agreements or laws allow. The app only helps you keep track of your own time.
