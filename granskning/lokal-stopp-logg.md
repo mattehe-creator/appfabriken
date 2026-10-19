@@ -1,95 +1,95 @@
 ﻿# Senaste lokala stopp
 
-2026-10-17T20:07:49 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
+2026-10-20T00:04:40 Lokal körning stannade efter omförsök. Felkod 1, källa: uppgift. Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'
 
 ## Fel
-Felkod 1, källa: okänd.
+Felkod 1, källa: uppgift. Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'
 
 ## Sista rader: kor-alla.log
 
-2026-10-17 20:02:04 Full återställning (Gradle, processer, Ollama).
-2026-10-17 20:02:05 gradlew --stop: No Gradle daemons are running.
-2026-10-17 20:02:05 gradlew --stop lyckades.
-2026-10-17 20:02:05 ollama stop qwen3-coder:30b
-2026-10-17 20:02:05 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
-2026-10-17 20:02:05 kor-uppgift startad (PID 27708).
-2026-10-17 20:02:35 kor-uppgift avslutades: Felkod 1, källa: okänd.
-2026-10-17 20:02:35 Felkod 1, källa: okänd.
-2026-10-17 20:02:35 Skriver lokal-stopp: 2026-10-17T20:02:35 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
-2026-10-17 20:02:36 [main 00c548c] Lokal k├Ârning: stoppnotering
-2026-10-17 20:02:36  2 files changed, 82 insertions(+), 81 deletions(-)
-2026-10-17 20:02:38 To https://github.com/mattehe-creator/appfabriken.git
-2026-10-17 20:02:38    4587752..00c548c  main -> main
-2026-10-17 20:02:38 Omförsök misslyckades — vilar 5 minuter innan nästa uppgift.
-2026-10-17 20:06:45 JAVA_HOME satt till Android Studio jbr.
-2026-10-17 20:06:45 kor-alla startar (HangMinuter=15, MaxUppgiftMinuter=90, VantaTimmar=8).
-2026-10-17 20:06:45 Full återställning (Gradle, processer, Ollama).
-2026-10-17 20:06:46 gradlew --stop: No Gradle daemons are running.
-2026-10-17 20:06:46 gradlew --stop lyckades.
-2026-10-17 20:06:46 ollama stop qwen3-coder:30b
-2026-10-17 20:06:46 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
-2026-10-17 20:06:47 Vaktmästare (workflow_dispatch) anropad.
-2026-10-17 20:06:47 kor-uppgift startad (PID 39940).
-2026-10-17 20:07:17 kor-uppgift avslutades: Felkod 1, källa: okänd.
-2026-10-17 20:07:17 Felkod 1, källa: okänd.
-2026-10-17 20:07:17 Full återställning och nytt försök (högst ett omförsök per uppgift och försök).
-2026-10-17 20:07:17 Full återställning (Gradle, processer, Ollama).
-2026-10-17 20:07:18 gradlew --stop: No Gradle daemons are running.
-2026-10-17 20:07:18 gradlew --stop lyckades.
-2026-10-17 20:07:18 ollama stop qwen3-coder:30b
-2026-10-17 20:07:18 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
-2026-10-17 20:07:18 Full återställning (Gradle, processer, Ollama).
-2026-10-17 20:07:19 gradlew --stop: No Gradle daemons are running.
-2026-10-17 20:07:19 gradlew --stop lyckades.
-2026-10-17 20:07:19 ollama stop qwen3-coder:30b
-2026-10-17 20:07:19 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
-2026-10-17 20:07:19 kor-uppgift startad (PID 39208).
-2026-10-17 20:07:49 kor-uppgift avslutades: Felkod 1, källa: okänd.
-2026-10-17 20:07:49 Felkod 1, källa: okänd.
-2026-10-17 20:07:49 Skriver lokal-stopp: 2026-10-17T20:07:49 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
+2026-10-19 23:54:31 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
+2026-10-19 23:54:32 Vaktmästare (workflow_dispatch) anropad.
+2026-10-19 23:54:32 kor-uppgift startad (PID 41840).
+2026-10-19 23:55:02 kor-uppgift avslutades: Felkod 3, källa: okänd.
+2026-10-19 23:55:02 Kön är tom (inget fel). Väntar 10 minuter och tittar igen.
+2026-10-19 23:55:22 Full återställning (Gradle, processer, Ollama).
+2026-10-19 23:55:22 Full återställning: dödar java/Gradle (PID 29504).
+2026-10-19 23:55:22 gradlew --stop: No Gradle daemons are running.
+2026-10-19 23:55:22 gradlew --stop lyckades.
+2026-10-19 23:55:22 ollama stop qwen3-coder:30b
+2026-10-19 23:55:22 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
+2026-10-19 23:55:22 kor-uppgift startad (PID 18536).
+2026-10-19 23:55:52 kor-uppgift avslutades: Felkod 3, källa: okänd.
+2026-10-19 23:55:52 Kön är tom (inget fel). Väntar 10 minuter och tittar igen.
+2026-10-20 00:03:36 JAVA_HOME satt till Android Studio jbr.
+2026-10-20 00:03:36 kor-alla startar (HangMinuter=15, MaxUppgiftMinuter=90, VantaTimmar=8).
+2026-10-20 00:03:36 Full återställning (Gradle, processer, Ollama).
+2026-10-20 00:03:37 gradlew --stop: No Gradle daemons are running.
+2026-10-20 00:03:37 gradlew --stop lyckades.
+2026-10-20 00:03:37 ollama stop qwen3-coder:30b
+2026-10-20 00:03:37 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
+2026-10-20 00:03:38 Vaktmästare (workflow_dispatch) anropad.
+2026-10-20 00:03:38 kor-uppgift startad (PID 19632).
+2026-10-20 00:04:09 kor-uppgift avslutades: Felkod 1, källa: uppgift. Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'
+2026-10-20 00:04:09 Felkod 1, källa: uppgift. Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'
+2026-10-20 00:04:09 Full återställning och nytt försök (högst ett omförsök per uppgift och försök).
+2026-10-20 00:04:09 Full återställning (Gradle, processer, Ollama).
+2026-10-20 00:04:09 gradlew --stop: No Gradle daemons are running.
+2026-10-20 00:04:09 gradlew --stop lyckades.
+2026-10-20 00:04:09 ollama stop qwen3-coder:30b
+2026-10-20 00:04:09 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
+2026-10-20 00:04:09 Full återställning (Gradle, processer, Ollama).
+2026-10-20 00:04:10 gradlew --stop: No Gradle daemons are running.
+2026-10-20 00:04:10 gradlew --stop lyckades.
+2026-10-20 00:04:10 ollama stop qwen3-coder:30b
+2026-10-20 00:04:10 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
+2026-10-20 00:04:10 kor-uppgift startad (PID 14296).
+2026-10-20 00:04:40 kor-uppgift avslutades: Felkod 1, källa: uppgift. Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'
+2026-10-20 00:04:40 Felkod 1, källa: uppgift. Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'
+2026-10-20 00:04:40 Skriver lokal-stopp: 2026-10-20T00:04:40 Lokal körning stannade efter omförsök. Felkod 1, källa: uppgift. Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'
 
 ## Sista rader: kor-alla.log
 
-2026-10-17 20:02:04 Full återställning (Gradle, processer, Ollama).
-2026-10-17 20:02:05 gradlew --stop: No Gradle daemons are running.
-2026-10-17 20:02:05 gradlew --stop lyckades.
-2026-10-17 20:02:05 ollama stop qwen3-coder:30b
-2026-10-17 20:02:05 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
-2026-10-17 20:02:05 kor-uppgift startad (PID 27708).
-2026-10-17 20:02:35 kor-uppgift avslutades: Felkod 1, källa: okänd.
-2026-10-17 20:02:35 Felkod 1, källa: okänd.
-2026-10-17 20:02:35 Skriver lokal-stopp: 2026-10-17T20:02:35 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
-2026-10-17 20:02:36 [main 00c548c] Lokal k├Ârning: stoppnotering
-2026-10-17 20:02:36  2 files changed, 82 insertions(+), 81 deletions(-)
-2026-10-17 20:02:38 To https://github.com/mattehe-creator/appfabriken.git
-2026-10-17 20:02:38    4587752..00c548c  main -> main
-2026-10-17 20:02:38 Omförsök misslyckades — vilar 5 minuter innan nästa uppgift.
-2026-10-17 20:06:45 JAVA_HOME satt till Android Studio jbr.
-2026-10-17 20:06:45 kor-alla startar (HangMinuter=15, MaxUppgiftMinuter=90, VantaTimmar=8).
-2026-10-17 20:06:45 Full återställning (Gradle, processer, Ollama).
-2026-10-17 20:06:46 gradlew --stop: No Gradle daemons are running.
-2026-10-17 20:06:46 gradlew --stop lyckades.
-2026-10-17 20:06:46 ollama stop qwen3-coder:30b
-2026-10-17 20:06:46 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
-2026-10-17 20:06:47 Vaktmästare (workflow_dispatch) anropad.
-2026-10-17 20:06:47 kor-uppgift startad (PID 39940).
-2026-10-17 20:07:17 kor-uppgift avslutades: Felkod 1, källa: okänd.
-2026-10-17 20:07:17 Felkod 1, källa: okänd.
-2026-10-17 20:07:17 Full återställning och nytt försök (högst ett omförsök per uppgift och försök).
-2026-10-17 20:07:17 Full återställning (Gradle, processer, Ollama).
-2026-10-17 20:07:18 gradlew --stop: No Gradle daemons are running.
-2026-10-17 20:07:18 gradlew --stop lyckades.
-2026-10-17 20:07:18 ollama stop qwen3-coder:30b
-2026-10-17 20:07:18 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
-2026-10-17 20:07:18 Full återställning (Gradle, processer, Ollama).
-2026-10-17 20:07:19 gradlew --stop: No Gradle daemons are running.
-2026-10-17 20:07:19 gradlew --stop lyckades.
-2026-10-17 20:07:19 ollama stop qwen3-coder:30b
-2026-10-17 20:07:19 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
-2026-10-17 20:07:19 kor-uppgift startad (PID 39208).
-2026-10-17 20:07:49 kor-uppgift avslutades: Felkod 1, källa: okänd.
-2026-10-17 20:07:49 Felkod 1, källa: okänd.
-2026-10-17 20:07:49 Skriver lokal-stopp: 2026-10-17T20:07:49 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
+2026-10-19 23:54:31 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
+2026-10-19 23:54:32 Vaktmästare (workflow_dispatch) anropad.
+2026-10-19 23:54:32 kor-uppgift startad (PID 41840).
+2026-10-19 23:55:02 kor-uppgift avslutades: Felkod 3, källa: okänd.
+2026-10-19 23:55:02 Kön är tom (inget fel). Väntar 10 minuter och tittar igen.
+2026-10-19 23:55:22 Full återställning (Gradle, processer, Ollama).
+2026-10-19 23:55:22 Full återställning: dödar java/Gradle (PID 29504).
+2026-10-19 23:55:22 gradlew --stop: No Gradle daemons are running.
+2026-10-19 23:55:22 gradlew --stop lyckades.
+2026-10-19 23:55:22 ollama stop qwen3-coder:30b
+2026-10-19 23:55:22 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
+2026-10-19 23:55:22 kor-uppgift startad (PID 18536).
+2026-10-19 23:55:52 kor-uppgift avslutades: Felkod 3, källa: okänd.
+2026-10-19 23:55:52 Kön är tom (inget fel). Väntar 10 minuter och tittar igen.
+2026-10-20 00:03:36 JAVA_HOME satt till Android Studio jbr.
+2026-10-20 00:03:36 kor-alla startar (HangMinuter=15, MaxUppgiftMinuter=90, VantaTimmar=8).
+2026-10-20 00:03:36 Full återställning (Gradle, processer, Ollama).
+2026-10-20 00:03:37 gradlew --stop: No Gradle daemons are running.
+2026-10-20 00:03:37 gradlew --stop lyckades.
+2026-10-20 00:03:37 ollama stop qwen3-coder:30b
+2026-10-20 00:03:37 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
+2026-10-20 00:03:38 Vaktmästare (workflow_dispatch) anropad.
+2026-10-20 00:03:38 kor-uppgift startad (PID 19632).
+2026-10-20 00:04:09 kor-uppgift avslutades: Felkod 1, källa: uppgift. Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'
+2026-10-20 00:04:09 Felkod 1, källa: uppgift. Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'
+2026-10-20 00:04:09 Full återställning och nytt försök (högst ett omförsök per uppgift och försök).
+2026-10-20 00:04:09 Full återställning (Gradle, processer, Ollama).
+2026-10-20 00:04:09 gradlew --stop: No Gradle daemons are running.
+2026-10-20 00:04:09 gradlew --stop lyckades.
+2026-10-20 00:04:09 ollama stop qwen3-coder:30b
+2026-10-20 00:04:09 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
+2026-10-20 00:04:09 Full återställning (Gradle, processer, Ollama).
+2026-10-20 00:04:10 gradlew --stop: No Gradle daemons are running.
+2026-10-20 00:04:10 gradlew --stop lyckades.
+2026-10-20 00:04:10 ollama stop qwen3-coder:30b
+2026-10-20 00:04:10 ollama: [?2026h[?25l[1G[K[?25h[?2026l[?25l[2K[1G[?25h
+2026-10-20 00:04:10 kor-uppgift startad (PID 14296).
+2026-10-20 00:04:40 kor-uppgift avslutades: Felkod 1, källa: uppgift. Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'
+2026-10-20 00:04:40 Felkod 1, källa: uppgift. Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'
+2026-10-20 00:04:40 Skriver lokal-stopp: 2026-10-20T00:04:40 Lokal körning stannade efter omförsök. Felkod 1, källa: uppgift. Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'
 
 ## Sista rader: aider-senaste.log
 
