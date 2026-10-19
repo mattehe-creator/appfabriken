@@ -1,0 +1,13 @@
+grupp;nyttjandeperiod_intervall_ar;nyttjandeperiod_forslag_ar;standardandel_procent;kalla;osaker
+STOMME;75-120;100;63;FAR Komponentindelning BRF 2025 tabell 1-2 exempel 1 (63 %);nej
+STAMMAR;50;50;6;FAR tabell 2 stamledning VA;nej
+VARME;80;80;6;FAR tabell 2 stamledning värme;nej
+FASAD;40-100;40;5;FAR tabell 1-2 fasad;nej
+FONSTER_DORRAR;40-60;40;3;FAR tabell 1-2 fönster;nej
+TAK;30-60;50;4;FAR tabell 2 yttertak (medel av papp/tegel/plåt);ja
+EL;50;50;6;FAR tabell 2 el;nej
+VENTILATION;20-100;20;2;FAR tabell 2 ventilation från-/tilluft;ja
+HISS;20-40;25;1;FAR tabell 2 hiss (medel);ja
+TVATTSTUGA;25-40;30;1;Branschpraxis tvättstuga/interiör gemensam;ja
+MARK_OCH_GARAGE;0;0;0;Mark särskiljs normalt från byggnad BFN VL 23:1 kommentar 17.4;ja
+OVRIGT;25-50;30;3;FAR tabell 1 balkong+styr/övervakning (3 %+1 %) förenklat;ja
