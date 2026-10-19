@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-19-rostfangst-minsta-version.md
 försök: 1
-beror-på: cursor:rostfangst-minsta-version
+beror-på: cursor:r-stf-ngst-modul-344d
 
 ## Ändra bara dessa filer
 - rostfangst/src/main/kotlin/se/tmconnect/rostfangst/regler/FangsterPerDag.kt
