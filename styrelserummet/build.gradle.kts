@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm")
+    kotlin("plugin.serialization")
 }
 
 java {
@@ -23,5 +24,7 @@ tasks.register("testDebugUnitTest") {
 }
 
 dependencies {
+    implementation("org.apache.pdfbox:pdfbox:3.0.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     testImplementation("junit:junit:4.13.2")
 }
