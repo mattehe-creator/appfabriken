@@ -28,3 +28,5 @@ gradle :styrelserummet:test --tests "*BokfortVardeTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: underkänd 2026-10-19 av Cursor (PR #284). Ersatt av 2026-10-19-styrelserummet-03-bokfort-varde-f2.md
