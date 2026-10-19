@@ -1,0 +1,144 @@
+package se.tmconnect.styrelserummet.underlag
+
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.longOrNull
+import se.tmconnect.styrelserummet.modell.Komponentgrupp
+import se.tmconnect.styrelserummet.modell.Sakerhet
+
+data class ForslagKomponent(
+    val namn: String,
+    val grupp: Komponentgrupp?,
+    val anskaffningsvarde: Long?,
+    val anskaffningsar: Int?,
+    val nyttjandeperiodAr: Int?,
+    val kalla: String,
+    val sakerhet: Sakerhet,
+)
+
+data class ForslagResultat(
+    val komponenter: List<ForslagKomponent>,
+    val anmarkningar: List<String>,
+)
+
+private val json = Json { ignoreUnknownKeys = true }
+
+fun tolkaForslag(jsonText: String, filnamn: String): ForslagResultat {
+    val anmarkningar = mutableListOf<String>()
+    val komponenter = mutableListOf<ForslagKomponent>()
+    val root = try {
+        json.parseToJsonElement(jsonText).jsonObject
+    } catch (_: Exception) {
+        return ForslagResultat(
+            emptyList(),
+            listOf("Ogiltig JSON från tolkningen för $filnamn."),
+        )
+    }
+    root["anmarkningar"]?.jsonArray?.forEach { element ->
+        element.jsonPrimitive.contentOrNull?.takeIf { it.isNotBlank() }?.let(anmarkningar::add)
+    }
+    val lista = root["komponenter"]?.jsonArray
+    if (lista == null) {
+        anmarkningar += "Saknar fältet komponenter i svaret för $filnamn."
+        return ForslagResultat(komponenter, anmarkningar)
+    }
+    lista.forEachIndexed { index, element ->
+        when (val parsed = parseKomponent(element, filnamn, index + 1, anmarkningar)) {
+            is ParseResult.Ok -> komponenter += parsed.komponent
+            is ParseResult.Skip -> anmarkningar += parsed.orsak
+        }
+    }
+    return ForslagResultat(komponenter, anmarkningar)
+}
+
+private sealed class ParseResult {
+    data class Ok(val komponent: ForslagKomponent) : ParseResult()
+    data class Skip(val orsak: String) : ParseResult()
+}
+
+private fun parseKomponent(
+    element: JsonElement,
+    filnamn: String,
+    rad: Int,
+    anmarkningar: MutableList<String>,
+): ParseResult {
+    val obj = try {
+        element.jsonObject
+    } catch (_: Exception) {
+        return ParseResult.Skip("Rad $rad i $filnamn: komponenten är inte ett JSON-objekt.")
+    }
+    val namn = obj.string("namn")
+    if (namn.isNullOrBlank()) {
+        return ParseResult.Skip("Rad $rad i $filnamn: saknar namn.")
+    }
+    var lag = false
+    val grupp = obj.string("grupp")?.let { text ->
+        runCatching { Komponentgrupp.valueOf(text.trim()) }.getOrElse {
+            anmarkningar += "Rad $rad ($namn): okänd grupp \"$text\"."
+            lag = true
+            null
+        }
+    }
+    val anskaffningsvarde = obj.heltalsVarde("anskaffningsvarde", "anskaffningsvarde", rad, namn, anmarkningar) { lag = true }
+    val anskaffningsar = obj.heltalsVarde("anskaffningsar", "anskaffningsår", rad, namn, anmarkningar) { lag = true }?.toInt()
+    val nyttjandeperiod = obj.heltalsVarde("nyttjandeperiodAr", "nyttjandeperiod", rad, namn, anmarkningar) { lag = true }?.toInt()
+    val kalla = obj.string("kalla") ?: "$filnamn, sida okänd"
+    var sakerhet = obj.string("sakerhet")?.let { text ->
+        runCatching { Sakerhet.valueOf(text.trim()) }.getOrElse {
+            anmarkningar += "Rad $rad ($namn): okänd säkerhet."
+            lag = true
+            Sakerhet.LAG
+        }
+    } ?: run {
+        lag = true
+        Sakerhet.LAG
+    }
+    if (lag) sakerhet = Sakerhet.LAG
+    if (grupp == null) {
+        return ParseResult.Skip("Rad $rad ($namn): kunde inte tolka gruppen.")
+    }
+    return ParseResult.Ok(
+        ForslagKomponent(
+            namn = namn,
+            grupp = grupp,
+            anskaffningsvarde = anskaffningsvarde,
+            anskaffningsar = anskaffningsar,
+            nyttjandeperiodAr = nyttjandeperiod,
+            kalla = kalla,
+            sakerhet = sakerhet,
+        ),
+    )
+}
+
+private fun JsonObject.heltalsVarde(
+    nyckel: String,
+    etikett: String,
+    rad: Int,
+    namn: String,
+    anmarkningar: MutableList<String>,
+    markeraLag: () -> Unit,
+): Long? {
+    if (!containsKey(nyckel)) return null
+    val element = get(nyckel) ?: return null
+    if (element is JsonPrimitive && element.contentOrNull == "null") return null
+    val varde = when (element) {
+        is JsonPrimitive -> element.longOrNull ?: element.contentOrNull?.toLongOrNull()
+        else -> null
+    }
+    if (varde == null) {
+        anmarkningar += "Rad $rad ($namn): $etikett är inte ett heltal."
+        markeraLag()
+        return null
+    }
+    return varde
+}
+
+private fun JsonObject.string(nyckel: String): String? =
+    this[nyckel]?.jsonPrimitive?.contentOrNull

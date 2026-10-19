@@ -1,0 +1,8 @@
+Fil: {{FILNAMN}}
+Sidor i utdraget: {{SIDOR}}
+
+Underhållsplan (maskad text):
+{{TEXT}}
+
+Returnera JSON:
+{"komponenter":[{"namn":"text","grupp":"STOMME|FASAD|TAK|FONSTER_DORRAR|STAMMAR|EL|VARME|VENTILATION|HISS|TVATTSTUGA|MARK_OCH_GARAGE|OVRIGT","anskaffningsvarde":null,"anskaffningsar":null,"nyttjandeperiodAr":null,"kalla":"fil, sida","sakerhet":"HOG|MEDEL|LAG"}],"anmarkningar":["text"]}
