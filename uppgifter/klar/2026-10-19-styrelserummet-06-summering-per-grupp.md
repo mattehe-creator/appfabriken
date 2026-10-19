@@ -31,3 +31,5 @@ gradle :styrelserummet:test --tests "*SummeringTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: underkänd 2026-10-19 av Cursor (PR #288). Ersatt av 2026-10-19-styrelserummet-06-summering-per-grupp-f2.md
