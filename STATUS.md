@@ -34,11 +34,18 @@ Val och omfång i IDEURVAL.md (omprövning 2026-10-16), regler i `husloggen/APP.
 9. Mörkt läge, välkomstskärm, butiksmaterial, skärmbilder, Data safety och integritetspolicy. Nästa att skriva.
 10. Mattias provar på telefon.
 
-## Nu: tester från Idéurval 2 (IDEURVAL.md)
+## Nu: Styrelserummet (webbtjänst för bostadsrättsföreningar)
 
-- Skolinkorgen: `2026-10-19-prov-aviseringar`, provapp som loggar aviseringar från Tempus och InfoMentor. Mattias installerar och låter den gå i två veckor, exporterar sedan.
-- Röstfångst: `2026-10-19-rostfangst-prov`, minsta version. Mattias skapar en API-nyckel hos Anthropic, lägger in den i appen och använder den i 30 dagar.
-- Styrelserummet: landningssida för K3-stöd, självbetjäning utan samtal. Skrivs av Claude.
+Mattias 2026-10-19: bygg tjänsten istället för att vänta på landningssidans test. Första produkten är K3-komponentlistan ur underhållsplan och årsredovisning (utkast till revisor). Egna regler i `styrelserummet/APP.md` (webb, INTERNET; CLAUDE.md punkt 5 och 6 gäller Android-apparna). Landningssidan `webb/k3/sida.html` ligger kvar och mäter intresset under tiden.
+
+1. `2026-10-19-styrelserummet-k3-karna`: modul `:styrelserummet` (ren Kotlin/JVM), datamodell, avskrivningsregler, avstämning, CSV. Cursor verifierar K3-reglerna mot BFN:s text. Skickat 2026-10-19.
+2. `uppdrag/vantar/2026-10-19-styrelserummet-underlag`: läsa PDF, maska personuppgifter, tolkning via Anthropic, utkast. Skickas när 1 är mergat.
+3. `uppdrag/vantar/2026-10-19-styrelserummet-webb`: Ktor-server, uppladdning, redigerbar tabell, CSV och utskrift, `/integritet`, Dockerfile. Skickas när 2 är mergat.
+4. Därefter, Mattias: värd (konto), `ANTHROPIC_API_KEY` som hemlighet, betalkonto, domän. Betalning blir eget uppdrag.
+
+## Pausat (Mattias 2026-10-19)
+
+- Skolinkorgen (`:prov-aviseringar`) och Röstfångst (`:rostfangst`): elva uppgifter ligger i `uppgifter/pausad/`. Del A är mergad (PR #273 och #274), modulerna finns kvar. Återupptas genom att flytta tillbaka uppgifterna till `uppgifter/ny/`.
 - NIS2-paketet: avfört (konkurrerar med Mattias arbete).
 
 ## Senare
