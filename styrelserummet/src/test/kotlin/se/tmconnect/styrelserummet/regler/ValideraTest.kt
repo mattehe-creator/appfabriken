@@ -1,7 +1,7 @@
 package se.tmconnect.styrelserummet.regler
 
+import org.junit.Assert.assertEquals
 import org.junit.Test
-import junit.framework.Assert.assertEquals
 import se.tmconnect.styrelserummet.modell.Komponent
 import se.tmconnect.styrelserummet.modell.Komponentgrupp
 import se.tmconnect.styrelserummet.modell.Sakerhet
@@ -51,7 +51,7 @@ class ValideraTest {
             anskaffningsvarde = -100000L,
             anskaffningsar = 2020,
             nyttjandeperiodAr = 20,
-            restvarde = 10000L,
+            restvarde = -150000L,
             kalla = "test",
             sakerhet = Sakerhet.HOG
         )
@@ -129,6 +129,6 @@ class ValideraTest {
         )
         
         val resultat = validera(k, 2025)
-        assertEquals(3, resultat.size)
+        assertEquals(4, resultat.size)
     }
 }

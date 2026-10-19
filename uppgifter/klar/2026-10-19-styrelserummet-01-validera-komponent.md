@@ -39,3 +39,5 @@ gradle :styrelserummet:test --tests "*ValideraTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-19 (testimport, restvärde i negativt-värde-test, antal fel i flera-fel-test)
