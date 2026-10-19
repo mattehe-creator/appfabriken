@@ -299,7 +299,8 @@ Write-Host "Uppgift: $namn" -ForegroundColor Cyan
 $rader = Get-Content -Encoding UTF8 $uppgift.FullName
 $tillatna = Filer (Sektion $rader "Ändra bara dessa filer")
 $forebild = Filer (Sektion $rader "Läs som förebild")
-$testRad = (Sektion $rader "Test som ska gå igenom" | Where-Object { $_ -match '^\s*gradle\s' } | Select-Object -First 1)
+# Kommandot får stå i backticks (`gradle ...`), som i MALL.md. Backticks tas bort före matchningen.
+$testRad = (Sektion $rader "Test som ska gå igenom" | ForEach-Object { ($_ -replace '`', '').Trim() } | Where-Object { $_ -match '^gradle\s' } | Select-Object -First 1)
 if (-not $tillatna) { Avbryt "Uppgiften saknar filer under 'Ändra bara dessa filer'" "uppgift" }
 if (-not $testRad) { Avbryt "Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'" "uppgift" }
 $testCmd = ($testRad.Trim() -replace '^gradle\s', 'call gradlew.bat ')
