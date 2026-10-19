@@ -81,3 +81,4 @@ Rader skrivs av `verktyg/kor-alla.ps1` när den lokala körningen stannat upprep
 2026-10-20T00:10:45 Lokal körning stannade efter omförsök. Felkod 1, källa: uppgift. Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'
 2026-10-20T00:12:59 Lokal körning stannade efter omförsök. Felkod 1, källa: uppgift. Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'
 2026-10-20T00:16:50 Lokal körning stannade efter omförsök. Felkod 1, källa: uppgift. Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'
+2026-10-20T00:19:05 Lokal körning stannade efter omförsök. Felkod 1, källa: uppgift. Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'
