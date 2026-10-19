@@ -36,3 +36,5 @@ Testa uttryckligen alla tre citatfallen (semikolon, citattecken, radbrytning).
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-19 (hela implementationen — lokal modell levererade tomma filer)
