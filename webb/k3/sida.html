@@ -1,0 +1,213 @@
+<title>Styrelserummet K3</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Utkast till komponentlista enligt K3 för bostadsrättsföreningar, ur er underhållsplan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: en smal läskolumn som en styrelsehandling, med en bred tabell (komponentlistan) som bryter ut och ett formulär längst ned. */
+:root {
+  --bg: #f3f5f2;
+  --yta: #ffffff;
+  --text: #1b2629;
+  --dampad: #55636a;
+  --linje: #cfd8d6;
+  --accent: #1d6a66;
+  --accent-text: #ffffff;
+  --stampel: #b8860b;
+  --stampel-bg: #fbf3dc;
+  --fel: #a3322a;
+  --display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --brod: "IBM Plex Sans", "Segoe UI", Roboto, Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121a1c; --yta: #1a2427; --text: #e4ebe9; --dampad: #9aa9ad; --linje: #2e3d41;
+  --accent: #5fb8b1; --accent-text: #0d1517; --stampel: #e2b84a; --stampel-bg: #2a2412; --fel: #ef8a80;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #121a1c; --yta: #1a2427; --text: #e4ebe9; --dampad: #9aa9ad; --linje: #2e3d41;
+  --accent: #5fb8b1; --accent-text: #0d1517; --stampel: #e2b84a; --stampel-bg: #2a2412; --fel: #ef8a80;
+  color-scheme: dark }
+
+body { background: var(--bg); color: var(--text); font-family: var(--brod); font-size: 1.0625rem; line-height: 1.6; }
+.ram { max-width: 46rem; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 2.5rem 4rem; display: grid; gap: 3.5rem; }
+h1, h2 { font-family: var(--display); line-height: 1.12; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 5.5vw, 3.1rem); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 1.5rem; font-weight: 700; }
+p { margin: 0; max-width: 62ch; }
+.etikett { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad); }
+section { display: grid; gap: 1rem; }
+
+.topp { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.marke { font-family: var(--display); font-weight: 700; font-size: 1.05rem; }
+.stampel { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--stampel); background: var(--stampel-bg); border: 1.5px solid var(--stampel); padding: 0.2rem 0.6rem; transform: rotate(-2deg); }
+
+.hjalte { display: grid; gap: 1.25rem; }
+.ingress { font-size: 1.2rem; color: var(--dampad); }
+.knapp { display: inline-block; justify-self: start; background: var(--accent); color: var(--accent-text); font: 600 1rem var(--brod); padding: 0.85rem 1.4rem; border: 0; border-radius: 4px; text-decoration: none; cursor: pointer; }
+.knapp:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--stampel); outline-offset: 2px; }
+
+.tabellram { overflow-x: auto; background: var(--yta); border: 1px solid var(--linje); }
+table { border-collapse: collapse; width: 100%; min-width: 34rem; font-variant-numeric: tabular-nums; }
+caption { text-align: left; padding: 0.9rem 1rem 0.4rem; font-size: 0.9rem; color: var(--dampad); }
+th, td { padding: 0.55rem 1rem; text-align: left; border-top: 1px solid var(--linje); }
+th { font-family: var(--mono); font-weight: 500; font-size: 0.76rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dampad); }
+td.tal { font-family: var(--mono); text-align: right; }
+th.tal { text-align: right; }
+tfoot td { font-weight: 600; }
+
+ol.steg { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.25rem; counter-reset: s; }
+ol.steg li { display: grid; grid-template-columns: 2.5rem 1fr; gap: 0.75rem; counter-increment: s; }
+ol.steg li::before { content: counter(s); font-family: var(--display); font-weight: 700; font-size: 1.6rem; color: var(--accent); line-height: 1.2; }
+ol.steg strong { display: block; }
+
+.villkor { display: grid; gap: 0.6rem; padding-left: 1.1rem; margin: 0; }
+.pris { font-family: var(--display); font-size: 2rem; font-weight: 700; }
+
+form { display: grid; gap: 1.1rem; background: var(--yta); border: 1px solid var(--linje); padding: 1.5rem; }
+.falt { display: grid; gap: 0.35rem; min-width: 0; }
+.rad { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1.1rem; }
+label { font-weight: 500; font-size: 0.95rem; }
+input, select { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--linje); border-radius: 4px; padding: 0.6rem 0.7rem; width: 100%; box-sizing: border-box; }
+.hjalp { font-size: 0.85rem; color: var(--dampad); }
+.svar { font-weight: 500; }
+.svar.fel { color: var(--fel); }
+footer { font-size: 0.85rem; color: var(--dampad); display: grid; gap: 0.4rem; border-top: 1px solid var(--linje); padding-top: 1.25rem; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="ram">
+  <div class="topp">
+    <span class="marke">Styrelserummet</span>
+    <span class="stampel">Öppnar december 2026</span>
+  </div>
+
+  <header class="hjalte">
+    <span class="etikett">För bostadsrättsföreningar</span>
+    <h1>Er första årsredovisning enligt K3 kräver en komponentlista. Den kan ni ta fram ur underhållsplanen.</h1>
+    <p class="ingress">Ladda upp underhållsplanen och senaste årsredovisningen. Ni får ett utkast till komponentindelning med anskaffningsvärden och nyttjandeperioder, färdigt att lämna till er revisor eller ekonomiska förvaltare.</p>
+    <a class="knapp" href="#anmal">Anmäl föreningen</a>
+  </header>
+
+  <section>
+    <span class="etikett">Varför nu</span>
+    <h2>K3 gäller för räkenskapsår som börjar efter den 31 december 2025</h2>
+    <p>Bokföringsnämnden har beslutat att alla bostadsrättsföreningar ska tillämpa K3. För en förening med kalenderår som räkenskapsår blir 2026 det första året, och årsredovisningen görs våren 2027. Byggnaden ska då delas upp i komponenter som skrivs av var för sig. Underlaget finns oftast redan i underhållsplanen, men det behöver ställas om till bokföringens form.</p>
+  </section>
+
+  <section>
+    <span class="etikett">Så ser utkastet ut</span>
+    <div class="tabellram">
+      <table>
+        <caption>Exempel för en förening med 40 lägenheter, byggd 1972. Påhittade siffror.</caption>
+        <thead><tr><th>Komponent</th><th class="tal">Andel av byggnad</th><th class="tal">Belopp, kr</th><th class="tal">Nyttjandeperiod</th></tr></thead>
+        <tbody>
+          <tr><td>Stomme och grund</td><td class="tal">45 %</td><td class="tal">9 900 000</td><td class="tal">100 år</td></tr>
+          <tr><td>Tak</td><td class="tal">8 %</td><td class="tal">1 760 000</td><td class="tal">40 år</td></tr>
+          <tr><td>Fasad och fönster</td><td class="tal">12 %</td><td class="tal">2 640 000</td><td class="tal">50 år</td></tr>
+          <tr><td>Stammar (vatten och avlopp)</td><td class="tal">15 %</td><td class="tal">3 300 000</td><td class="tal">50 år</td></tr>
+          <tr><td>El</td><td class="tal">6 %</td><td class="tal">1 320 000</td><td class="tal">40 år</td></tr>
+          <tr><td>Värme och ventilation</td><td class="tal">9 %</td><td class="tal">1 980 000</td><td class="tal">30 år</td></tr>
+          <tr><td>Hiss</td><td class="tal">5 %</td><td class="tal">1 100 000</td><td class="tal">25 år</td></tr>
+        </tbody>
+        <tfoot><tr><td>Byggnad totalt</td><td class="tal">100 %</td><td class="tal">22 000 000</td><td></td></tr></tfoot>
+      </table>
+    </div>
+    <p class="hjalp">Varje rad har en hänvisning till var i underhållsplanen eller årsredovisningen uppgiften kommer ifrån, så att revisorn kan kontrollera den.</p>
+  </section>
+
+  <section>
+    <span class="etikett">Hur det går till</span>
+    <ol class="steg">
+      <li><div><strong>Ladda upp två PDF:er</strong>Underhållsplanen och den senaste årsredovisningen. Har ni ingen underhållsplan går det att börja från årsredovisningen och byggåret.</div></li>
+      <li><div><strong>Granska utkastet</strong>Ändra komponenter, belopp och nyttjandeperioder där ni vet bättre. Varje ändring sparas.</div></li>
+      <li><div><strong>Lämna till revisorn</strong>Ladda ned komponentlistan som PDF och Excel, med en kort text om övergången som kan användas i förvaltningsberättelsen.</div></li>
+    </ol>
+  </section>
+
+  <section>
+    <span class="etikett">Vad det inte är</span>
+    <p>Utkastet är ett underlag, ingen revision. Styrelsen och revisorn ansvarar för årsredovisningen. Tjänsten sparar er tid och revisorns arvode genom att göra grovarbetet.</p>
+  </section>
+
+  <section>
+    <span class="etikett">Pris</span>
+    <span class="pris">990 kr per förening</span>
+    <ul class="villkor">
+      <li>Engångsbelopp för utkastet och ändringar fram till årsredovisningen.</li>
+      <li>De som anmäler sig nu betalar först när de har sett utkastet och vill ladda ned det.</li>
+    </ul>
+  </section>
+
+  <section id="anmal">
+    <span class="etikett">Anmälan</span>
+    <h2>Få besked när tjänsten öppnar</h2>
+    <form id="formular" novalidate>
+      <div class="falt">
+        <label for="epost">E-post</label>
+        <input id="epost" name="epost" type="email" autocomplete="email" required>
+      </div>
+      <div class="rad">
+        <div class="falt">
+          <label for="lgh">Antal lägenheter</label>
+          <select id="lgh" name="lagenheter"><option value="">Välj</option><option>Färre än 20</option><option>20–49</option><option>50–99</option><option>100 eller fler</option></select>
+        </div>
+        <div class="falt">
+          <label for="forvaltare">Ekonomisk förvaltare</label>
+          <select id="forvaltare" name="forvaltare"><option value="">Välj</option><option>Vi sköter ekonomin själva</option><option>Vi har en förvaltare</option><option>Vet inte</option></select>
+        </div>
+        <div class="falt">
+          <label for="plan">Underhållsplan</label>
+          <select id="plan" name="underhallsplan"><option value="">Välj</option><option>Ja, uppdaterad</option><option>Ja, men gammal</option><option>Nej</option><option>Vet inte</option></select>
+        </div>
+      </div>
+      <button class="knapp" type="submit" id="skicka">Anmäl föreningen</button>
+      <p class="svar" id="svar" role="status" aria-live="polite"></p>
+      <p class="hjalp">E-postadressen används bara för att meddela när tjänsten öppnar. Den lämnas inte vidare.</p>
+    </form>
+  </section>
+
+  <footer>
+    <span>Styrelserummet är en tjänst från TM Connect.</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  // Adress som tar emot anmälningar (t.ex. Formspree). Tom = förhandsvisning, inget skickas.
+  var MOTTAGARE = "";
+  var form = document.getElementById("formular");
+  var svar = document.getElementById("svar");
+  var knapp = document.getElementById("skicka");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    svar.classList.remove("fel");
+    var epost = document.getElementById("epost");
+    if (!epost.value || !epost.checkValidity()) {
+      svar.textContent = "Skriv en giltig e-postadress, till exempel ordforande@brfexempel.se.";
+      svar.classList.add("fel");
+      epost.focus();
+      return;
+    }
+    if (!MOTTAGARE) {
+      svar.textContent = "Förhandsvisning: anmälan skickas inte härifrån.";
+      return;
+    }
+    knapp.disabled = true;
+    var data = {};
+    new FormData(form).forEach(function (v, k) { data[k] = v; });
+    data.sida = "k3";
+    fetch(MOTTAGARE, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(data) })
+      .then(function (r) {
+        if (!r.ok) throw new Error();
+        form.reset();
+        svar.textContent = "Tack. Vi hör av oss när tjänsten öppnar.";
+      })
+      .catch(function () {
+        svar.textContent = "Anmälan kom inte fram. Försök igen om en stund.";
+        svar.classList.add("fel");
+      })
+      .finally(function () { knapp.disabled = false; });
+  });
+})();
+</script>
