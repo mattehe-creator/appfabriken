@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Styrelserummet — K3-komponentlista</title>
+  <link rel="stylesheet" href="/gemensam.css">
+</head>
+<body>
+  <div class="ram">
+    <div class="topp">
+      <span class="marke">Styrelserummet</span>
+      <span class="stampel">Utkast</span>
+    </div>
+    <header class="hjalte">
+      <span class="etikett">För bostadsrättsföreningar</span>
+      <h1>Ta fram ett utkast till K3-komponentlista</h1>
+      <p class="ingress">Ladda upp underhållsplan och årsredovisning som PDF. Ni får en tabell att granska och justera. Allt är ett utkast — förening och revisor beslutar.</p>
+    </header>
+
+    <form id="upload">
+      <div class="falt">
+        <label for="forening">Föreningens namn</label>
+        <input id="forening" name="forening" required autocomplete="organization">
+      </div>
+      <div class="falt">
+        <label for="arsslut">Räkenskapsårets slut (år)</label>
+        <input id="arsslut" name="arsslut" type="number" min="2000" max="2100" required inputmode="numeric">
+      </div>
+      <div class="falt">
+        <label for="filer">PDF-filer (underhållsplan och årsredovisning)</label>
+        <input id="filer" name="filer" type="file" accept="application/pdf" multiple required>
+        <p class="hjalp">Högst 10 filer, 25 MB totalt. Texten ska gå att markera i PDF:en.</p>
+      </div>
+      <button class="knapp" type="submit">Skapa utkast</button>
+      <p id="svar" class="svar" role="status" aria-live="polite"></p>
+      <div id="lank-ruta" class="lank-ruta" hidden>
+        <p><strong>Spara länken.</strong> Den visas bara nu.</p>
+        <p class="mono" id="lank-text"></p>
+        <a class="knapp" id="lank-knapp" href="#">Öppna utkastet</a>
+      </div>
+    </form>
+
+    <footer>
+      <a href="/integritet">Integritet</a>
+      <span>Styrelserummet är en tjänst från TM Connect.</span>
+    </footer>
+  </div>
+  <script src="/index.js"></script>
+</body>
+</html>

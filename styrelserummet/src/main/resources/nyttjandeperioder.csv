@@ -1,0 +1,13 @@
+grupp;intervall_ar;forslag_ar;andel_procent;kalla
+STOMME;80-120;100;45;BFN vägledning brf, typisk fördelning
+TAK;30-50;40;8;Branschpraxis underhållsplaner
+FASAD;40-60;50;7;Branschpraxis
+FONSTER_DORRAR;30-50;40;5;Branschpraxis
+STAMMAR;40-60;50;15;Branschpraxis stambyte
+EL;30-50;40;6;Branschpraxis
+VARME;25-40;30;6;Branschpraxis
+VENTILATION;20-35;25;4;Branschpraxis
+HISS;20-30;25;2;Branschpraxis
+TVATTSTUGA;15-25;20;1;Branschpraxis
+MARK_OCH_GARAGE;30-60;40;1;Osäker, varierar
+OVRIGT;10-30;15;0;Reserv, fylls vid behov
