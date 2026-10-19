@@ -30,3 +30,5 @@ gradle :styrelserummet:test --tests "*AvskrivningTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: underkänd 2026-10-19 av Cursor (PR #282). Ersatt av 2026-10-19-styrelserummet-02-arsavskrivning-f2.md
