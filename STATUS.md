@@ -38,9 +38,9 @@ Val och omfång i IDEURVAL.md (omprövning 2026-10-16), regler i `husloggen/APP.
 
 Mattias 2026-10-19: bygg tjänsten istället för att vänta på landningssidans test. Första produkten är K3-komponentlistan ur underhållsplan och årsredovisning (utkast till revisor). Egna regler i `styrelserummet/APP.md` (webb, INTERNET; CLAUDE.md punkt 5 och 6 gäller Android-apparna). Landningssidan `webb/k3/sida.html` ligger kvar och mäter intresset under tiden.
 
-1. `2026-10-19-styrelserummet-k3-karna`: modul `:styrelserummet` (ren Kotlin/JVM), datamodell, avskrivningsregler, avstämning, CSV. Cursor verifierar K3-reglerna mot BFN:s text. Skickat 2026-10-19.
-2. `uppdrag/vantar/2026-10-19-styrelserummet-underlag`: läsa PDF, maska personuppgifter, tolkning via Anthropic, utkast. Skickas när 1 är mergat.
-3. `uppdrag/vantar/2026-10-19-styrelserummet-webb`: Ktor-server, uppladdning, redigerbar tabell, CSV och utskrift, `/integritet`, Dockerfile. Skickas när 2 är mergat.
+1. `2026-10-19-styrelserummet-k3-karna`: modul `:styrelserummet`, datamodell, K3-regler, standardtabell. Mergad (PR #277, 2026-10-20).
+2. `2026-10-19-styrelserummet-underlag`: PDF till text, maskning, tolkning via Anthropic, `byggUtkast`. Mergad (PR #278). Cursor tog uppdraget direkt, trots `uppdrag/vantar/`, och skrev själv de hjälpfunktioner som uppgifterna 01, 04, 05 och 08-12 gällde; de är flyttade till `uppgifter/klar/`. Kvar för den lokala modellen: 02 årsavskrivning, 03 bokfört värde, 06 summering per grupp, 07 CSV.
+3. `2026-10-19-styrelserummet-webb`: PR #279 (Ktor-server, UI, Dockerfile, DRIFT.md) är byggd mot en egen kopia av kärnan och står som utkast, ommergas inte som den är. När uppgifterna 02, 03, 06 och 07 är klara skickas ett uppdrag om att lägga serverdelen på main mot kärnans verkliga API.
 4. Därefter, Mattias: värd (konto), `ANTHROPIC_API_KEY` som hemlighet, betalkonto, domän. Betalning blir eget uppdrag.
 
 ## Pausat (Mattias 2026-10-19)
