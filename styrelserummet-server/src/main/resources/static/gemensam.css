@@ -1,0 +1,124 @@
+:root {
+  --bg: #f3f5f2;
+  --yta: #ffffff;
+  --text: #1b2629;
+  --dampad: #55636a;
+  --linje: #cfd8d6;
+  --accent: #1d6a66;
+  --accent-text: #ffffff;
+  --stampel: #b8860b;
+  --stampel-bg: #fbf3dc;
+  --fel: #a3322a;
+  --varning: #8a5a00;
+  --display: "Helvetica Neue", Arial, sans-serif;
+  --brod: "Segoe UI", Roboto, Arial, sans-serif;
+  --mono: ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121a1c;
+    --yta: #1a2427;
+    --text: #e4ebe9;
+    --dampad: #9aa9ad;
+    --linje: #2e3d41;
+    --accent: #5fb8b1;
+    --accent-text: #0d1517;
+    --stampel: #e2b84a;
+    --stampel-bg: #2a2412;
+    --fel: #ef8a80;
+    color-scheme: dark;
+  }
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--brod);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  margin: 0;
+}
+.ram {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 2.5rem max(16px, env(safe-area-inset-left)) 4rem max(16px, env(safe-area-inset-right));
+  display: grid;
+  gap: 2rem;
+}
+.ram.bred { max-width: 64rem; }
+h1, h2 { font-family: var(--display); line-height: 1.12; margin: 0; }
+h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; }
+h2 { font-size: 1.25rem; font-weight: 700; }
+.etikett {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dampad);
+}
+.ingress { color: var(--dampad); margin: 0; }
+.topp { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.marke { font-family: var(--display); font-weight: 700; }
+.stampel {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--stampel);
+  background: var(--stampel-bg);
+  border: 1.5px solid var(--stampel);
+  padding: 0.2rem 0.6rem;
+}
+form, .yta {
+  display: grid;
+  gap: 1rem;
+  background: var(--yta);
+  border: 1px solid var(--linje);
+  padding: 1.25rem;
+}
+.falt { display: grid; gap: 0.35rem; }
+label { font-weight: 500; }
+input, select, button {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--linje);
+  border-radius: 4px;
+  padding: 0.6rem 0.7rem;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+.knapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+  border: 0;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0.75rem 1.2rem;
+}
+.knapp.sekundar { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+.knapp.farlig { background: transparent; color: var(--fel); border: 1px solid var(--fel); }
+.knapp:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
+  outline: 3px solid var(--stampel);
+  outline-offset: 2px;
+}
+.hjalp { font-size: 0.85rem; color: var(--dampad); margin: 0; }
+.svar.fel { color: var(--fel); font-weight: 500; }
+.lank-ruta { border: 1px dashed var(--stampel); padding: 1rem; background: var(--stampel-bg); }
+.mono { font-family: var(--mono); word-break: break-all; }
+.tabellram { overflow-x: auto; background: var(--yta); border: 1px solid var(--linje); }
+table { border-collapse: collapse; width: 100%; min-width: 40rem; font-variant-numeric: tabular-nums; }
+th, td { padding: 0.5rem 0.75rem; border-top: 1px solid var(--linje); text-align: left; vertical-align: top; }
+th { font-family: var(--mono); font-size: 0.76rem; text-transform: uppercase; color: var(--dampad); }
+td.tal, th.tal { text-align: right; }
+tr.osaker { background: color-mix(in srgb, var(--stampel-bg) 60%, transparent); }
+tr.uppskattning { background: color-mix(in srgb, var(--stampel-bg) 40%, transparent); }
+.knapp-rad { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
+footer { font-size: 0.85rem; color: var(--dampad); display: grid; gap: 0.4rem; border-top: 1px solid var(--linje); padding-top: 1rem; }
+@media print {
+  .knapp-rad, footer, .topp { display: none; }
+  body { background: white; color: black; }
+}

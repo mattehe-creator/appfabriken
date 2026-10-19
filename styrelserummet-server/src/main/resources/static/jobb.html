@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Utkast — Styrelserummet</title>
+  <link rel="stylesheet" href="/gemensam.css">
+</head>
+<body>
+  <div class="ram bred">
+    <div class="topp">
+      <span class="marke">Styrelserummet</span>
+      <span class="stampel">UTKAST</span>
+    </div>
+    <header>
+      <h1 id="rubrik">Komponentlista</h1>
+      <p id="status" class="ingress" role="status" aria-live="polite"></p>
+    </header>
+
+    <section id="avstamning" class="yta" hidden>
+      <h2>Avstämning mot byggnadens värde</h2>
+      <p id="avstamning-text"></p>
+    </section>
+
+    <section id="anmarkningar-sektion" class="yta" hidden>
+      <h2>Anmärkningar</h2>
+      <ul id="anmarkningar"></ul>
+    </section>
+
+    <section id="tabell-sektion" hidden>
+      <div class="tabellram">
+        <table id="komponent-tabell">
+          <caption>UTKAST. Beslutas av förening och revisor.</caption>
+          <thead>
+            <tr>
+              <th>Komponent</th>
+              <th>Grupp</th>
+              <th class="tal">Belopp, kr</th>
+              <th class="tal">Anskaffningsår</th>
+              <th class="tal">Nyttjandeperiod</th>
+              <th>Källa</th>
+              <th>Säkerhet</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="knapp-rad">
+        <button type="button" class="knapp" id="spara">Spara ändringar</button>
+        <a class="knapp sekundar" id="csv" href="#">Ladda ned CSV</a>
+        <button type="button" class="knapp sekundar" id="skrivUt">Skriv ut / PDF</button>
+        <button type="button" class="knapp farlig" id="radera">Radera allt</button>
+      </div>
+    </section>
+
+    <footer>
+      <a href="/integritet">Integritet</a>
+      <span>Styrelserummet är en tjänst från TM Connect.</span>
+    </footer>
+  </div>
+  <script src="/jobb.js"></script>
+</body>
+</html>
