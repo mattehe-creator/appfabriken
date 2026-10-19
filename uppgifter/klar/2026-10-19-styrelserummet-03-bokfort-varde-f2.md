@@ -36,3 +36,5 @@ Testerna ska använda JUnit 4 (`org.junit.Test`, `org.junit.Assert.assertEquals`
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-19 (hela implementationen — lokal modell försök 2 levererade inga kodfiler)
