@@ -48,15 +48,66 @@ function Avbryt([string]$text, [string]$kalla = "okänd") {
 # Läget skrivs till status.json, som panelen (verktyg/panel.py) visar.
 $statusFil = Join-Path (Split-Path -Parent $loggMapp) "status.json"
 $aktivFil = Join-Path (Split-Path -Parent $loggMapp) "aktiv-uppgift.json"
+$beroendeSparFil = Join-Path (Split-Path -Parent $loggMapp) "cursor-beroende-tid.json"
 $aiderLogg = Join-Path $loggMapp "aider-senaste.log"
 function RensaAktiv() {
     try { if (Test-Path $script:aktivFil) { Remove-Item -Force $script:aktivFil } } catch { }
 }
-function Status([string]$fas, [string]$text = "") {
+function Status([string]$fas, [string]$text = "", [hashtable]$extra = @{}) {
     try {
-        @{ fas = $fas; text = $text; uppgift = $script:namn; modell = $Modell; tid = (Get-Date).ToString("s") } |
-            ConvertTo-Json | Set-Content -Encoding UTF8 $statusFil
+        $obj = @{ fas = $fas; text = $text; uppgift = $script:namn; modell = $Modell; tid = (Get-Date).ToString("s") }
+        foreach ($k in $extra.Keys) { $obj[$k] = $extra[$k] }
+        $obj | ConvertTo-Json | Set-Content -Encoding UTF8 $statusFil
     } catch { }
+}
+
+# cursor:<namn> är klart när PR från cursor/<namn> är mergad, eller en mergad cursor/-PR nämner uppdraget.
+function Test-CursorBeroende([string]$cursorNamn) {
+    $ut = @{ Klar = $false; Forklaring = ""; OppenPr = $null }
+    $exaktGren = "cursor/$cursorNamn"
+    $uppdragFil = "uppdrag/$cursorNamn.md"
+    $exakt = @()
+    try { $exakt = @(gh pr list --head $exaktGren --state merged --json number,title,headRefName 2>$null | ConvertFrom-Json) } catch { }
+    if ($exakt.Count -gt 0) {
+        $ut.Klar = $true
+        $ut.Forklaring = "Mergad PR #$($exakt[0].number) från gren $exaktGren."
+        return $ut
+    }
+    $sok = @()
+    try { $sok = @(gh pr list --state merged --search $cursorNamn --json number,headRefName,title,body --limit 50 2>$null | ConvertFrom-Json) } catch { }
+    foreach ($pr in ($sok | Where-Object { $_.headRefName -like "cursor/*" })) {
+        $blob = "$($pr.title)`n$($pr.body)"
+        if ($blob -match [regex]::Escape($uppdragFil) -or $blob -match [regex]::Escape($cursorNamn)) {
+            $ut.Klar = $true
+            $ut.Forklaring = "Mergad PR #$($pr.number) från $($pr.headRefName) nämner $uppdragFil eller $cursorNamn."
+            return $ut
+        }
+    }
+    $oppna = @()
+    try {
+        $oppna += @(gh pr list --head $exaktGren --state open --json number,title,headRefName 2>$null | ConvertFrom-Json)
+        $oppna += @(gh pr list --state open --search $cursorNamn --json number,title,headRefName --limit 20 2>$null |
+            Where-Object { $_.headRefName -like "cursor/*" })
+    } catch { }
+    $oppna = $oppna | Sort-Object number -Unique
+    if ($oppna.Count -gt 0) { $ut.OppenPr = $oppna[0] }
+    $ut.Forklaring = "Ingen mergad PR från $exaktGren och ingen mergad cursor/-PR som nämner $uppdragFil eller $cursorNamn i titel eller beskrivning."
+    if ($ut.OppenPr) {
+        $p = $ut.OppenPr
+        $ut.Forklaring += " Närmaste öppna PR: #$($p.number) ($($p.headRefName))."
+    }
+    return $ut
+}
+
+function Las-BeroendeSpar {
+    if (-not (Test-Path $beroendeSparFil)) { return @{} }
+    try {
+        $r = Get-Content -Raw -Encoding UTF8 $beroendeSparFil | ConvertFrom-Json
+        if ($r -is [hashtable]) { return $r }
+        $h = @{}
+        $r.PSObject.Properties | ForEach-Object { $h[$_.Name] = $_.Value }
+        return $h
+    } catch { return @{} }
 }
 
 trap {
@@ -264,31 +315,85 @@ KorGit @("reset", "--hard", "origin/main")
 
 # Välj den första uppgiften som inte redan körts (gren finns) och vars beroenden är klara på main.
 $uppgift = $null
+$vaxtarGranskning = $false
+$vaxtarBeroende = $false
+$cursorVarning = $null
+$blockDetaljer = @()
+$beroendeSpar = Las-BeroendeSpar
+$sparAndrad = $false
 foreach ($kandidat in (Get-ChildItem "uppgifter\ny\*.md" -ErrorAction SilentlyContinue | Sort-Object Name)) {
     $g = "lokal/$($kandidat.BaseName)"
-    if (git ls-remote --heads origin $g) { Write-Host "Hoppar över $($kandidat.BaseName): grenen väntar på granskning."; continue }
+    if (git ls-remote --heads origin $g) {
+        $vaxtarGranskning = $true
+        Write-Host "Hoppar över $($kandidat.BaseName): grenen väntar på granskning."
+        continue
+    }
     $beror = (Get-Content -Encoding UTF8 $kandidat.FullName | Where-Object { $_ -match '^beror-på:' } | Select-Object -First 1) -replace '^beror-på:\s*', ''
     $saknade = @()
+    $saknadeDetalj = @()
     if ($beror -and $beror -notmatch '^ingen') {
         foreach ($b in ($beror -split ',')) {
             $b = $b.Trim(); if (-not $b) { continue }
-            if ($b -like "cursor:*") {   # väntar på Cursors kod: klar när PR:en från cursor/<namn> är mergad
-                $cg = "cursor/" + $b.Substring(7).Trim()
-                $mergad = gh pr list --head $cg --state merged --json number --jq ".[0].number" 2>$null
-                if (-not $mergad) { $saknade += $b }
+            if ($b -like "cursor:*") {
+                $cursorNamn = $b.Substring(7).Trim()
+                $st = Test-CursorBeroende $cursorNamn
+                $nyckel = "$($kandidat.BaseName)|$b"
+                if ($st.Klar) {
+                    if ($beroendeSpar.ContainsKey($nyckel)) { $beroendeSpar.Remove($nyckel) | Out-Null; $sparAndrad = $true }
+                    continue
+                }
+                $saknade += $b
+                $vaxtarBeroende = $true
+                $rad = "$b`: $($st.Forklaring)"
+                $saknadeDetalj += $rad
+                $nu = Get-Date
+                if (-not $beroendeSpar.ContainsKey($nyckel)) { $beroendeSpar[$nyckel] = $nu.ToString("s"); $sparAndrad = $true }
+                $start = [datetime]::Parse($beroendeSpar[$nyckel])
+                if (($nu - $start).TotalMinutes -gt 30 -and -not $cursorVarning) {
+                    $cursorVarning = "VARNING: $($kandidat.BaseName) har väntat på $b i över 30 minuter. $($st.Forklaring)"
+                }
                 continue
             }
-            if (-not $b.EndsWith('.md')) { $b = "$b.md" }
-            if (-not (Test-Path "uppgifter\klar\$b")) { $saknade += $b }
+            $fil = if ($b.EndsWith('.md')) { $b } else { "$b.md" }
+            if (-not (Test-Path "uppgifter\klar\$fil")) {
+                $saknade += $b
+                $saknadeDetalj += "$b`: filen uppgifter/klar/$fil saknas."
+            }
         }
     }
-    if ($saknade) { Write-Host "Hoppar över $($kandidat.BaseName): väntar på $($saknade -join ', ')."; continue }
+    if ($saknade) {
+        Write-Host "Hoppar över $($kandidat.BaseName): väntar på $($saknade -join ', ')." -ForegroundColor Yellow
+        foreach ($d in $saknadeDetalj) { Write-Host "  $d" -ForegroundColor DarkYellow; $blockDetaljer += "$($kandidat.BaseName): $d" }
+        continue
+    }
     $uppgift = $kandidat; break
+}
+if ($sparAndrad) {
+    try { $beroendeSpar | ConvertTo-Json | Set-Content -Encoding UTF8 $beroendeSparFil } catch { }
 }
 if (-not $uppgift) {
     $antal = @(Get-ChildItem "uppgifter\ny\*.md" -ErrorAction SilentlyContinue).Count
+    $extra = @{}
+    if ($blockDetaljer) { $extra["beroende"] = ($blockDetaljer -join " | ") }
+    if ($cursorVarning) {
+        $extra["varning"] = $cursorVarning
+        Write-Host $cursorVarning -ForegroundColor Red
+    }
+    if ($vaxtarBeroende) {
+        $orsak = if ($antal -eq 0) { "Kön är tom men cursor-beroenden väntar." } else { "$antal uppgift(er) väntar på beroenden (cursor-kod eller andra uppgifter)." }
+        Status "vilar" $orsak $extra
+        RensaAktiv
+        Write-Host $orsak
+        if ($blockDetaljer) { Write-Host ("Beroenden: " + ($blockDetaljer -join " | ")) -ForegroundColor DarkYellow }
+        Stop-Transcript | Out-Null
+        exit 4
+    }
     $orsak = if ($antal -eq 0) { "Kön är tom. Väntar på att Cursor delar upp nästa uppdrag." } else { "$antal uppgifter väntar på granskning eller på andra uppgifter." }
-    Status "vilar" $orsak; RensaAktiv; Write-Host $orsak; Stop-Transcript | Out-Null; exit 3
+    Status "vilar" $orsak $extra
+    RensaAktiv
+    Write-Host $orsak
+    Stop-Transcript | Out-Null
+    exit 3
 }
 
 $namn = $uppgift.BaseName
@@ -299,7 +404,8 @@ Write-Host "Uppgift: $namn" -ForegroundColor Cyan
 $rader = Get-Content -Encoding UTF8 $uppgift.FullName
 $tillatna = Filer (Sektion $rader "Ändra bara dessa filer")
 $forebild = Filer (Sektion $rader "Läs som förebild")
-$testRad = (Sektion $rader "Test som ska gå igenom" | Where-Object { $_ -match '^\s*gradle\s' } | Select-Object -First 1)
+# Kommandot får stå i backticks (`gradle ...`), som i MALL.md. Backticks tas bort före matchningen.
+$testRad = (Sektion $rader "Test som ska gå igenom" | ForEach-Object { ($_ -replace '`', '').Trim() } | Where-Object { $_ -match '^gradle\s' } | Select-Object -First 1)
 if (-not $tillatna) { Avbryt "Uppgiften saknar filer under 'Ändra bara dessa filer'" "uppgift" }
 if (-not $testRad) { Avbryt "Uppgiften saknar ett gradle-kommando under 'Test som ska gå igenom'" "uppgift" }
 $testCmd = ($testRad.Trim() -replace '^gradle\s', 'call gradlew.bat ')

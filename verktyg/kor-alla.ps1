@@ -1,7 +1,8 @@
 ﻿# Kör uppgifter med kor-uppgift.ps1 i följd, utan att någonsin ge upp av sig själv.
 # Övervakar barnprocessen (tillsyn): dödar hängda körningar, räddar commits, full återställning före varje körning.
 #  - Tom uppgifter/ny/: väntar $TomKoMinuter minuter och tittar igen (exit 3). Loopen avslutas inte.
-#  - Uppgift inte redo (beroenden m.m.): väntar 3 minuter och försöker igen (exit 3).
+#  - Uppgift inte redo (beroenden m.m.): väntar 1 minut och försöker igen (exit 4).
+#  - Ingen uppgift redo (granskning m.m.): väntar 3 minuter och försöker igen (exit 3).
 #  - Fel eller avbrott: full återställning och ett omförsök; därefter stoppnotering + högst 5 min vila.
 #  - Tidsgränsen -VantaTimmar räknas från senaste lyckade uppgift (eller start).
 param(
@@ -610,6 +611,14 @@ while ($korda -lt $Max -and (Get-Date) -lt $slut) {
         $korda++
         $retriedEfterFel = $false
         $slut = (Get-Date).AddHours($VantaTimmar)
+        continue
+    }
+
+    if ($kod -eq 4) {
+        $retriedEfterFel = $false
+        Logga "Ingen uppgift redo (cursor-beroenden). Väntar 60 sekunder."
+        Write-Host "Ingen uppgift redo (beroenden saknas). Försöker igen om 1 minut. Stäng fönstret för att sluta." -ForegroundColor DarkGreen
+        Start-Sleep -Seconds 60
         continue
     }
 
