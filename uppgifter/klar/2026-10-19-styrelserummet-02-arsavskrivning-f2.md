@@ -46,3 +46,5 @@ Skriv minst två `@Test` i `AvskrivningTest` som bygger `Komponent` (se privat `
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-19 inget
