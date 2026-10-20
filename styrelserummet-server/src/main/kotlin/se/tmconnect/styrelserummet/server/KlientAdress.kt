@@ -1,18 +1,19 @@
 package se.tmconnect.styrelserummet.server
 
 /**
- * Klientens IP för gränsräkning. Bakom proxy (när [proxyPaa]) används den sista adressen i
- * `X-Forwarded-For` (den som värdens proxy lade till); annars anslutningens adress och huvudet ignoreras.
- * Detta för att förhindra att användare kan förfalska sin IP-adress och kringgå gränsen på 5 jobb per timme.
+ * Klientens IP för gränsräkning. Bakom proxy (när [proxyPaa]) används den sista icke-tomma adressen i
+ * `X-Forwarded-For`; annars anslutningens adress och huvudet ignoreras.
+ * Detta gör att besökare inte kan förfalska sin IP-adress genom att skicka ett eget huvud,
+ * eftersom värdens proxy lägger till den verkliga adressen sist i listan.
  */
 fun klientAdress(forwardedFor: String?, anslutning: String, proxyPaa: Boolean): String {
     if (proxyPaa && !forwardedFor.isNullOrBlank()) {
         // Dela upp strängen och hitta den sista icke-tomma adressen
-        val adresser = forwardedFor.split(',')
-        for (i in adresser.size - 1 downTo 0) {
-            val trimmadAdress = adresser[i].trim()
-            if (trimmadAdress.isNotEmpty()) {
-                return trimmadAdress
+        val addresses = forwardedFor.split(',')
+        for (i in addresses.size - 1 downTo 0) {
+            val addr = addresses[i].trim()
+            if (addr.isNotEmpty()) {
+                return addr
             }
         }
     }
