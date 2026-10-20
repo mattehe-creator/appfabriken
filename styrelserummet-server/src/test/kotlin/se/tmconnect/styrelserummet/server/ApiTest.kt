@@ -273,4 +273,59 @@ class ApiTest {
             assertEquals(HttpStatusCode.TooManyRequests, over.status)
         }
     }
+
+    @Test
+    fun tomForeningGer400() = runBlocking {
+        val tmp = createTempDirectory("styrelserummet-test")
+        testApplication {
+            application {
+                module(ServerMiljo(tmp, 0, FalskTolkare(), synkronJobb = true))
+            }
+            val client = createClient { }
+            val pdf = pdfMedText("x")
+            val res = client.post("/api/jobb") {
+                setBody(
+                    MultiPartFormDataContent(
+                        formData {
+                            append("forening", "")
+                            append("arsslut", "2025")
+                            append("filer", pdf, Headers.build {
+                                append(HttpHeaders.ContentDisposition, "filename=plan.pdf")
+                            })
+                        },
+                    ),
+                )
+            }
+            assertEquals(HttpStatusCode.BadRequest, res.status)
+            val forvantatFel = valideraForeningsnamn("")!!
+            assertTrue(res.bodyAsText().contains(forvantatFel))
+        }
+    }
+
+    @Test
+    fun pdfFilnamnMenIntePdfBytesGer400() = runBlocking {
+        val tmp = createTempDirectory("styrelserummet-test")
+        testApplication {
+            application {
+                module(ServerMiljo(tmp, 0, FalskTolkare(), synkronJobb = true))
+            }
+            val client = createClient { }
+            val res = client.post("/api/jobb") {
+                setBody(
+                    MultiPartFormDataContent(
+                        formData {
+                            append("forening", "Test brf")
+                            append("arsslut", "2025")
+                            append("filer", "NOTPDF".encodeToByteArray(), Headers.build {
+                                append(HttpHeaders.ContentDisposition, "filename=rapport.pdf")
+                            })
+                        },
+                    ),
+                )
+            }
+            assertEquals(HttpStatusCode.BadRequest, res.status)
+            val fel = json.parseToJsonElement(res.bodyAsText()).jsonObject["fel"]!!.jsonPrimitive.content
+            assertEquals("Bara PDF-filer kan laddas upp.", fel)
+        }
+    }
 }

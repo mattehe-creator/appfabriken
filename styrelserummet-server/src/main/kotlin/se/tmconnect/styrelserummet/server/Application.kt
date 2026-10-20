@@ -35,6 +35,7 @@ import kotlinx.serialization.json.Json
 import se.tmconnect.styrelserummet.tolking.Tolkare
 import se.tmconnect.styrelserummet.tolking.anthropicTolkareFranMiljo
 import java.nio.file.Path
+import java.time.Year
 
 data class ServerMiljo(
     val dataRot: Path,
@@ -115,7 +116,7 @@ fun Application.module(miljo: ServerMiljo) {
                     return@post
                 }
                 var forening = ""
-                var arsslut = 0
+                var arsslutText = ""
                 var filAntal = 0
                 var totalBytes = 0L
                 val id = genereraJobbId()
@@ -135,7 +136,7 @@ fun Application.module(miljo: ServerMiljo) {
                     when (part) {
                         is PartData.FormItem -> when (part.name) {
                             "forening" -> forening = part.value.trim()
-                            "arsslut" -> arsslut = part.value.trim().toIntOrNull() ?: 0
+                            "arsslut" -> arsslutText = part.value.trim()
                         }
                         is PartData.FileItem -> {
                             if (filAntal >= MAX_FILER) {
@@ -150,12 +151,12 @@ fun Application.module(miljo: ServerMiljo) {
                                 throw FelBegaran("Filerna får vara högst 25 MB tillsammans.")
                             }
                             val namn = part.originalFileName ?: "fil.pdf"
-                            if (!namn.lowercase().endsWith(".pdf")) {
+                            if (!arPdf(bytes)) {
                                 part.dispose()
                                 lagring.raderaJobb(id)
                                 throw FelBegaran("Bara PDF-filer kan laddas upp.")
                             }
-                            lagring.sparaFil(id, namn, bytes)
+                            lagring.sparaFil(id, sakertFilnamn(namn), bytes)
                             filAntal++
                         }
                         else -> Unit
@@ -163,21 +164,22 @@ fun Application.module(miljo: ServerMiljo) {
                     part.dispose()
                 }
 
-                if (forening.isBlank()) {
+                valideraForeningsnamn(forening)?.let { fel ->
                     lagring.raderaJobb(id)
-                    throw FelBegaran("Ange föreningens namn.")
+                    throw FelBegaran(fel)
                 }
-                if (arsslut !in 2000..2100) {
-                    lagring.raderaJobb(id)
-                    throw FelBegaran("Ange räkenskapsårets slut (år).")
-                }
+                val ar = valideraArsslut(arsslutText, Year.now().value)
+                    ?: run {
+                        lagring.raderaJobb(id)
+                        throw FelBegaran("Ange räkenskapsårets slut (år).")
+                    }
                 if (filAntal == 0) {
                     lagring.raderaJobb(id)
                     throw FelBegaran("Ladda upp minst en PDF.")
                 }
 
                 lagring.skrivMeta(
-                    meta.copy(forening = forening, arsslut = arsslut, senastAktivMs = System.currentTimeMillis()),
+                    meta.copy(forening = forening, arsslut = ar, senastAktivMs = System.currentTimeMillis()),
                 )
                 ipGrans.registreraJobb(ip)
                 ko.lagTill(id)
