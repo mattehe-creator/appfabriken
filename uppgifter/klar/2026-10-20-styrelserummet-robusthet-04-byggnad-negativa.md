@@ -23,3 +23,5 @@ gradle :styrelserummet:test --tests "*HittaByggnadensVardeTest.hittaByggnadensVa
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: underkänd 2026-10-20 (PR #297). Försök 2 i granskning/2026-10-20-styrelserummet-robusthet-04-byggnad-negativa.md
