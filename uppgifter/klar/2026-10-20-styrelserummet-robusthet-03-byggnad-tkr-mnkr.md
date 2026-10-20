@@ -23,3 +23,5 @@ gradle :styrelserummet:test --tests "*HittaByggnadensVardeTest.hittaByggnadensVa
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: godkänd 2026-10-20 (JUnit-import, mnkr-decimaler, borttagen oanvänd variabel)

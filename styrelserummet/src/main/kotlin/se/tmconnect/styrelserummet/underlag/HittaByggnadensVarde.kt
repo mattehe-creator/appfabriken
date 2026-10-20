@@ -9,6 +9,30 @@ private val rubriker = listOf("Byggnader och mark", "Byggnader")
 
 fun hittaByggnadensVarde(text: String): Belopp? {
     for (rubrik in rubriker) {
+        // Först sök efter tkr eller mnkr
+        val regexTkrMnkr = Regex(
+            """$rubrik[^\d\n]*([\d][\d\s]*(?:,\d+)?)[\s]*(tkr|mnkr)""",
+            RegexOption.IGNORE_CASE,
+        )
+        val matchTkrMnkr = regexTkrMnkr.find(text)
+        
+        if (matchTkrMnkr != null) {
+            val talText = matchTkrMnkr.groupValues[1].trim()
+            val enhet = matchTkrMnkr.groupValues[2].lowercase()
+
+            val iTusen = enhet == "tkr"
+            val finalKronor = if (enhet == "mnkr") {
+                val normaliserat = talText.replace(" ", "").replace(",", ".")
+                val tal = normaliserat.toBigDecimalOrNull() ?: continue
+                tal.multiply(java.math.BigDecimal(1_000_000)).toLong()
+            } else {
+                parseBelopp(talText, iTusentals = true) ?: continue
+            }
+
+            return Belopp(finalKronor, iTusen)
+        }
+        
+        // Fallback till befintlig logik för "tusen kronor"
         val regex = Regex(
             """$rubrik[^\d\n]*([\d][\d\s]*(?:,\d+)?)""",
             RegexOption.IGNORE_CASE,
