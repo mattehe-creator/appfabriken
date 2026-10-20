@@ -42,3 +42,5 @@ gradle :styrelserummet:test --tests "*MaskaPersonuppgifterTest.maskaTelefonOchEp
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-20 (la till `maskaTelefonOchEpost`; maskning fanns redan på main)

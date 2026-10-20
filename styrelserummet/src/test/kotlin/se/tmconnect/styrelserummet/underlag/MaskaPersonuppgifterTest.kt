@@ -5,6 +5,13 @@ import org.junit.Test
 
 class MaskaPersonuppgifterTest {
     @Test
+    fun maskaTelefonOchEpost() {
+        assertEquals("Ring [telefon]", maskaPersonuppgifter("Ring 070 123 45 67"))
+        assertEquals("Mail [e-post]", maskaPersonuppgifter("Mail Styrelse@Min-Brf.se"))
+        assertEquals("769612-3456", maskaPersonuppgifter("769612-3456"))
+    }
+
+    @Test
     fun maskaPersonnummerVarianter() {
         assertEquals("Styrelseledamot [personnummer]", maskaPersonuppgifter("Styrelseledamot 198501011234"))
         assertEquals("Kontakt [personnummer]", maskaPersonuppgifter("Kontakt 650161-1234"))
