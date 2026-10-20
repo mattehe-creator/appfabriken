@@ -1,7 +1,7 @@
 package se.tmconnect.styrelserummet.underlag
 
+import org.junit.Assert.assertEquals
 import org.junit.Test
-import kotlin.test.assertEquals
 
 class HittaByggnadensVardeTest {
     

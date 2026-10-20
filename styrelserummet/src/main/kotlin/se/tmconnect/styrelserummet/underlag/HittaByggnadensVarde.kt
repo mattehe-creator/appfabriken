@@ -19,21 +19,16 @@ fun hittaByggnadensVarde(text: String): Belopp? {
         if (matchTkrMnkr != null) {
             val talText = matchTkrMnkr.groupValues[1].trim()
             val enhet = matchTkrMnkr.groupValues[2].lowercase()
-            val kontext = text.substring(
-                maxOf(0, matchTkrMnkr.range.first),
-                minOf(text.length, matchTkrMnkr.range.last + 60),
-            )
-            
+
             val iTusen = enhet == "tkr"
-            val kronor = parseBelopp(talText, iTusen) ?: continue
-            
-            // Om enheten är mnkr, multiplicera med 1 000 000
             val finalKronor = if (enhet == "mnkr") {
-                kronor * 1_000_000
+                val normaliserat = talText.replace(" ", "").replace(",", ".")
+                val tal = normaliserat.toBigDecimalOrNull() ?: continue
+                tal.multiply(java.math.BigDecimal(1_000_000)).toLong()
             } else {
-                kronor
+                parseBelopp(talText, iTusentals = true) ?: continue
             }
-            
+
             return Belopp(finalKronor, iTusen)
         }
         
