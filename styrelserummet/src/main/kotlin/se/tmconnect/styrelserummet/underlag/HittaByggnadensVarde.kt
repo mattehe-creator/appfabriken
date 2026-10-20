@@ -29,19 +29,22 @@ fun hittaByggnadensVarde(text: String): Belopp? {
 
 internal fun parseBelopp(text: String, iTusentals: Boolean): Long? {
     // Hantera tusentalsavgränsare
-    var normalizedText = text.replace("\u00A0", " ")  // hårt mellanslag
-        .replace("\u2009", " ")  // smalt mellanslag
+    var normalizedText = text
     
-    // För punkter, vi vill ersätta dem med mellanslag för att få en korrekt struktur
-    // men vi måste vara försiktiga med decimaltecken
+    // Ersätt olika typer av mellanslag med vanliga mellanslag
+    normalizedText = normalizedText.replace("\u00A0", " ")  // hårt mellanslag
+    normalizedText = normalizedText.replace("\u2009", " ")  // smalt mellanslag
+    
+    // Ersätt punkter med mellanslag (men vi måste vara försiktiga)
+    // För att hantera "1.234,5" korrekt, ersätter vi punkter med mellanslag först
+    // men vi vill behålla komman som decimaltecken
     val hasComma = normalizedText.contains(",")
     
-    // Om det finns en komma, så är det ett decimaltal
     if (hasComma) {
-        // Ersätt punkter med mellanslag för att få rätt struktur
+        // Om det finns en komma, så är detta ett decimaltal
+        // Vi ersätter punkter med mellanslag för att få rätt struktur
+        // men vi behåller komman som decimaltecken
         normalizedText = normalizedText.replace(".", " ")
-        // Ersätt komman med punkt för att få rätt decimalformat
-        normalizedText = normalizedText.replace(",", ".")
     } else {
         // Om det inte finns komma, ersätt punkter med mellanslag
         normalizedText = normalizedText.replace(".", " ")
@@ -50,7 +53,16 @@ internal fun parseBelopp(text: String, iTusentals: Boolean): Long? {
     // Ta bort alla mellanslag för att få ett rent tal
     val cleanText = normalizedText.replace(" ", "")
     
-    val tal = cleanText.toBigDecimalOrNull() ?: return null
+    // Om vi har en komma i originaltexten, så är det ett decimaltal
+    val tal = if (hasComma) {
+        // Ersätt komman med punkt för att få rätt decimalformat
+        val decimalText = cleanText.replace(",", ".")
+        decimalText.toBigDecimalOrNull()
+    } else {
+        cleanText.toBigDecimalOrNull()
+    }
+    
+    if (tal == null) return null
     
     val kronor = if (iTusentals) {
         tal.multiply(java.math.BigDecimal(1000)).toLong()
