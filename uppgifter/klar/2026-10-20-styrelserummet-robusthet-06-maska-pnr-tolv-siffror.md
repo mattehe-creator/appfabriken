@@ -26,3 +26,5 @@ gradle :styrelserummet:test --tests "*MaskaPersonuppgifterTest.maskaPersonnummer
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-20 av Cursor (PR #300). Ersatt av 2026-10-20-styrelserummet-robusthet-06-maska-pnr-tolv-siffror-f2.md
