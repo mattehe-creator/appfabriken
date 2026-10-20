@@ -23,10 +23,10 @@ fun hittaByggnadensVarde(text: String): Belopp? {
             val iTusen = enhet == "tkr"
             val finalKronor = if (enhet == "mnkr") {
                 val normaliserat = talText.replace(" ", "").replace(",", ".")
-                val tal = normaliserat.toBigDecimalOrNull() ?: continue
+                val tal = normaliserat.toBigDecimalOrNull() ?: return null
                 tal.multiply(java.math.BigDecimal(1_000_000)).toLong()
             } else {
-                parseBelopp(talText, iTusentals = true) ?: continue
+                parseBelopp(talText, iTusentals = true) ?: return null
             }
 
             return Belopp(finalKronor, iTusen)
@@ -41,11 +41,20 @@ fun hittaByggnadensVarde(text: String): Belopp? {
         val talText = match.groupValues[1].trim()
         
         // Kontrollera om det är en rad med två kolumner (årtal)
-        val lineAfterRubrik = text.substring(match.range.last).lines().firstOrNull { it.isNotBlank() }
-        if (lineAfterRubrik != null && 
-            Regex("""^\s*\d{4}\s+\d{4}\s*$""").matches(lineAfterRubrik)) {
-            // Detta är en årtalsrad, fortsätt till nästa match
-            continue
+        val lines = text.lines()
+        val matchLineIndex = lines.indexOfFirst { it.contains(rubrik, ignoreCase = true) }
+        if (matchLineIndex >= 0 && matchLineIndex + 1 < lines.size) {
+            val nextLine = lines[matchLineIndex + 1]
+            // Om nästa rad är en årtalsrad (endast siffror separerade med mellanrum)
+            if (Regex("""^\s*\d{4}\s+\d{4}\s*$""").matches(nextLine)) {
+                // Extrahera första talet från nästa rad
+                val numbers = nextLine.trim().split("\\s+".toRegex()).filter { it.isNotEmpty() }
+                if (numbers.size >= 2) {
+                    val firstNumber = numbers[0]
+                    val kronor = parseBelopp(firstNumber, iTusentals = false) ?: return null
+                    return Belopp(kronor, false)
+                }
+            }
         }
         
         val kontext = text.substring(
@@ -54,7 +63,7 @@ fun hittaByggnadensVarde(text: String): Belopp? {
         )
         val iTusen = kontext.contains("tusen", ignoreCase = true) ||
             kontext.contains("tkr", ignoreCase = true)
-        val kronor = parseBelopp(talText, iTusen) ?: continue
+        val kronor = parseBelopp(talText, iTusen) ?: return null
         return Belopp(kronor, iTusen)
     }
     return null
