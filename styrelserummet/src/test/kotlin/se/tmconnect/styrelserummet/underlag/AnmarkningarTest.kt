@@ -7,55 +7,46 @@ import se.tmconnect.styrelserummet.modell.Forening
 import se.tmconnect.styrelserummet.modell.Komponent
 import se.tmconnect.styrelserummet.modell.Komponentgrupp
 import se.tmconnect.styrelserummet.modell.Sakerhet
-import se.tmconnect.styrelserummet.regler.lasNyttjandeperioderFranResurs
 
 class AnmarkningarTest {
-    private fun komponent(namn: String, anskaffningsar: Int) = Komponent(
-        namn = namn,
-        grupp = Komponentgrupp.STOMME,
-        anskaffningsvarde = 1_000_000L,
-        anskaffningsar = anskaffningsar,
-        nyttjandeperiodAr = 100,
-        kalla = "test",
-        sakerhet = Sakerhet.HOG,
-    )
-
-    private fun utkastMed(vararg komponenter: Komponent) = Utkast(
-        forening = Forening("Testföreningen", 1975),
-        komponenter = komponenter.toList(),
-        byggnadensVarde = null,
-        arsredovisning = ArsredovisningUtdrag(null, null, 1975, null),
-        avstamning = null,
-        anmarkningar = emptyList(),
-    )
+    private fun utkastMedAnskaffningsar(anskaffningsar: Int): Utkast =
+        Utkast(
+            forening = Forening(namn = "Test", byggnadsar = 1975),
+            komponenter = listOf(
+                Komponent(
+                    namn = "Stomme",
+                    grupp = Komponentgrupp.STOMME,
+                    anskaffningsvarde = 1_000_000L,
+                    anskaffningsar = anskaffningsar,
+                    nyttjandeperiodAr = 50,
+                    kalla = "test.pdf, sida 1",
+                    sakerhet = Sakerhet.HOG,
+                ),
+            ),
+            byggnadensVarde = null,
+            arsredovisning = ArsredovisningUtdrag(null, null, null, null),
+            avstamning = null,
+            anmarkningar = emptyList(),
+        )
 
     @Test
-    fun anmarkningAnskaffningsarEfterArsslut() {
-        val tabell = lasNyttjandeperioderFranResurs()
-        val arsslut = 2025
-
-        val efter = anmarkningarFor(
-            utkastMed(komponent("Ny hiss", 2026)),
-            tabell,
-            arsslut,
-        )
+    fun anmarkningAnskaffningsarForeByggnadsar() {
+        val tidigt = anmarkningarFor(utkastMedAnskaffningsar(1970), emptyList())
         assertTrue(
-            efter.any {
-                it.contains("Ny hiss") &&
-                    it.contains("2026") &&
-                    it.contains("räkenskapsårets slut") &&
-                    it.contains("2025")
+            tidigt.any {
+                it.contains("Stomme") &&
+                    it.contains("1970") &&
+                    it.contains("1975") &&
+                    it.contains("före")
             },
         )
 
-        val sammaAr = anmarkningarFor(
-            utkastMed(komponent("Ombyggd fasad", 2025)),
-            tabell,
-            arsslut,
-        )
+        val sammaAr = anmarkningarFor(utkastMedAnskaffningsar(1975), emptyList())
         assertFalse(
             sammaAr.any {
-                it.contains("Ombyggd fasad") && it.contains("räkenskapsårets slut")
+                it.contains("Stomme") &&
+                    it.contains("före") &&
+                    it.contains("byggnadsår")
             },
         )
     }

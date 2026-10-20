@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-20-styrelserummet-robusthet-handlingar.md
 försök: 1
-beror-på: 2026-10-20-styrelserummet-robusthet-19-server-indata-hjalpare.md
+beror-på: 2026-10-20-styrelserummet-robusthet-19-server-indata-hjalpare-f2.md
 
 ## Ändra bara dessa filer
 - styrelserummet-server/src/main/kotlin/se/tmconnect/styrelserummet/server/Application.kt

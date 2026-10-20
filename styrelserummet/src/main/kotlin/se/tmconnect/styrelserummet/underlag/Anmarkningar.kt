@@ -22,8 +22,10 @@ fun anmarkningarFor(utkast: Utkast, tabell: List<NyttjandeperiodRad>, arsslut: I
         if (intervall != null && komponent.nyttjandeperiodAr !in intervall) {
             anmarkningar += "Komponenten \"${komponent.namn}\" har nyttjandeperiod ${komponent.nyttjandeperiodAr} år utanför tabellens intervall ${intervall.first}–${intervall.last} år för ${komponent.grupp.svNamn}."
         }
-        if (komponent.anskaffningsar > arsslut) {
-            anmarkningar += "Komponenten \"${komponent.namn}\" har anskaffningsår ${komponent.anskaffningsar} som ligger efter räkenskapsårets slut (${arsslut})."
+        utkast.forening.byggnadsar?.let { byggnadsar ->
+            if (komponent.anskaffningsar < byggnadsar) {
+                anmarkningar += "Komponenten \"${komponent.namn}\" har anskaffningsår ${komponent.anskaffningsar} som ligger före föreningens byggnadsår ${byggnadsar}."
+            }
         }
     }
     return anmarkningar.distinct()

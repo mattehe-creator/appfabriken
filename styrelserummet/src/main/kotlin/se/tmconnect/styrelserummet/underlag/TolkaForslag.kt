@@ -2,6 +2,7 @@ package se.tmconnect.styrelserummet.underlag
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
@@ -9,7 +10,6 @@ import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.longOrNull
 import se.tmconnect.styrelserummet.modell.Komponentgrupp
 import se.tmconnect.styrelserummet.modell.Sakerhet
 
@@ -28,13 +28,17 @@ data class ForslagResultat(
     val anmarkningar: List<String>,
 )
 
-private val json = Json { ignoreUnknownKeys = true }
+private val json = Json {
+    ignoreUnknownKeys = true
+    allowTrailingComma = true
+}
 
 fun tolkaForslag(jsonText: String, filnamn: String): ForslagResultat {
     val anmarkningar = mutableListOf<String>()
     val komponenter = mutableListOf<ForslagKomponent>()
+    val prepared = forberedJsonText(jsonText)
     val root = try {
-        json.parseToJsonElement(jsonText).jsonObject
+        json.parseToJsonElement(prepared).jsonObject
     } catch (_: Exception) {
         return ForslagResultat(
             emptyList(),
@@ -56,6 +60,41 @@ fun tolkaForslag(jsonText: String, filnamn: String): ForslagResultat {
         }
     }
     return ForslagResultat(komponenter, anmarkningar)
+}
+
+private fun forberedJsonText(raw: String): String {
+    var text = raw.trim()
+    val fence = Regex("```json\\s*", RegexOption.IGNORE_CASE).find(text)
+    if (fence != null) {
+        val innerStart = fence.range.last + 1
+        val rest = text.substring(innerStart)
+        val fenceEnd = rest.indexOf("```")
+        if (fenceEnd >= 0) {
+            text = rest.substring(0, fenceEnd).trim()
+        }
+    }
+    return extraheraJsonObjekt(text)
+}
+
+private fun extraheraJsonObjekt(text: String): String {
+    val start = text.indexOf('{')
+    if (start < 0) return text.trim()
+    var depth = 0
+    var inString = false
+    var escape = false
+    for (i in start until text.length) {
+        when (val c = text[i]) {
+            '\\' -> if (inString) escape = true
+            '"' -> if (!escape) inString = !inString
+            '{' -> if (!inString) depth++
+            '}' -> if (!inString) {
+                depth--
+                if (depth == 0) return text.substring(start, i + 1)
+            }
+        }
+        if (escape) escape = false
+    }
+    return text.substring(start).trim()
 }
 
 private sealed class ParseResult {
@@ -127,9 +166,10 @@ private fun JsonObject.heltalsVarde(
 ): Long? {
     if (!containsKey(nyckel)) return null
     val element = get(nyckel) ?: return null
+    if (element is JsonNull) return null
     if (element is JsonPrimitive && element.contentOrNull == "null") return null
     val varde = when (element) {
-        is JsonPrimitive -> element.longOrNull ?: element.contentOrNull?.toLongOrNull()
+        is JsonPrimitive -> element.contentOrNull?.replace(" ", "")?.toLongOrNull()
         else -> null
     }
     if (varde == null) {
