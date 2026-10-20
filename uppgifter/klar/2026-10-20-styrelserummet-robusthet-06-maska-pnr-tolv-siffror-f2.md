@@ -50,3 +50,5 @@ Använd `org.junit.Test` och `org.junit.Assert.assertEquals`, inte `kotlin.test`
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-20 (hela implementationen — lokal modell levererade ingen kod på PR #310)
