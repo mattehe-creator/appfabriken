@@ -26,3 +26,5 @@ gradle :styrelserummet-server:test --tests "*ApiTest*"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-20 av Cursor (PR #317). Ersatt av 2026-10-20-styrelserummet-robusthet-20-server-koppla-indata-f2.md
