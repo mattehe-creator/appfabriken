@@ -40,3 +40,5 @@ Skriv `IndataTest.kt` med JUnit 4 (`org.junit.Test`, `org.junit.Assert.assertEqu
 - Ändra andra filer.
 - Lägga till beroenden.
 - Lägg filer i repots rot — endast sökvägarna under `styrelserummet-server/` ovan.
+
+utfall: godkänd 2026-10-20 (hela implementationen — lokal modell levererade ingen kod på försök 2)
