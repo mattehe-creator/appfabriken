@@ -10,7 +10,7 @@ private val rubriker = listOf("Byggnader och mark", "Byggnader")
 fun hittaByggnadensVarde(text: String): Belopp? {
     for (rubrik in rubriker) {
         val regex = Regex(
-            """$rubrik[^\d\n]*([\d][\d\s]*(?:,\d+)?)""",
+            """$rubrik[^\d\n]*([\d][\d\s]*(?:,\d+)?)(?:\s*\((\d[\d\s]*(?:,\d+)?)\))?(?:\s*-\s*(\d[\d\s]*(?:,\d+)?))?""",
             RegexOption.IGNORE_CASE,
         )
         val match = regex.find(text) ?: continue
@@ -21,19 +21,26 @@ fun hittaByggnadensVarde(text: String): Belopp? {
         )
         val iTusen = kontext.contains("tusen", ignoreCase = true) ||
             kontext.contains("tkr", ignoreCase = true)
-        val kronor = parseBelopp(talText, iTusen) ?: continue
+        
+        // Kontrollera om det är ett negativt värde
+        val isNegative = text.substring(match.range.first, match.range.last).contains("-", ignoreCase = true) ||
+            text.substring(match.range.first, match.range.last).contains("(", ignoreCase = true)
+        
+        val kronor = parseBelopp(talText, iTusentals = iTusen, isNegative = isNegative) ?: continue
         return Belopp(kronor, iTusen)
     }
     return null
 }
 
-internal fun parseBelopp(text: String, iTusentals: Boolean): Long? {
+internal fun parseBelopp(text: String, iTusentals: Boolean, isNegative: Boolean = false): Long? {
     val normaliserat = text.replace(" ", "").replace(",", ".")
     val tal = normaliserat.toBigDecimalOrNull() ?: return null
+    
     val kronor = if (iTusentals) {
         tal.multiply(java.math.BigDecimal(1000)).toLong()
     } else {
         tal.toLong()
     }
-    return kronor
+    
+    return if (isNegative) -kronor else kronor
 }
