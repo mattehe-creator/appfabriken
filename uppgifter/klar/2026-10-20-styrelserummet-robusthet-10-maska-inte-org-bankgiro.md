@@ -28,3 +28,5 @@ gradle :styrelserummet:test --tests "*MaskaPersonuppgifterTest.maskaInteFalskaTr
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-20 av Cursor (PR #302). Ersatt av 2026-10-20-styrelserummet-robusthet-10-maska-inte-org-bankgiro-f2.md
