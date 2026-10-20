@@ -1,7 +1,7 @@
 package se.tmconnect.styrelserummet.underlag
 
 private val personnummer = Regex(
-    """(?<!\d)(?:\d{6}|\d{8})[\s-]?\d{4}(?!\d)""",
+    """(?<!\d)(?:\d{6}|\d{8})[\s-]?\d{4}\+?(?!\d)""",
 )
 private val ePost = Regex("""[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}""")
 private val telefon = Regex(
@@ -35,5 +35,6 @@ private fun arGiltigtPersonDatum(ymd: String): Boolean {
     }
     val manad = mm.toIntOrNull() ?: return false
     val dag = dd.toIntOrNull() ?: return false
-    return manad in 1..12 && dag in 1..31
+    if (manad !in 1..12) return false
+    return dag in 1..31 || dag in 61..91
 }
