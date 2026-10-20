@@ -9,6 +9,17 @@ fun anmarkningarFor(utkast: Utkast, tabell: List<NyttjandeperiodRad>): List<Stri
         if (!avstamning.stammer) {
             anmarkningar += "Anskaffningsvärdena summerar till ${avstamning.summa} kr men byggnadens redovisade värde är ${utkast.byggnadensVarde ?: "?"} kr (differens ${avstamning.differens} kr)."
         }
+        utkast.byggnadensVarde?.let { byggnadensVarde ->
+            val summa = avstamning.summa
+            if (summa > byggnadensVarde * 150 / 100) {
+                anmarkningar +=
+                    "Komponenternas anskaffningsvärden summerar till $summa kr, vilket överstiger 150 procent av byggnadens redovisade värde ($byggnadensVarde kr)."
+            }
+            if (summa < byggnadensVarde * 50 / 100) {
+                anmarkningar +=
+                    "Komponenternas anskaffningsvärden summerar till $summa kr, vilket understiger 50 procent av byggnadens redovisade värde ($byggnadensVarde kr)."
+            }
+        }
     }
     utkast.komponenter.forEach { komponent ->
         if (komponent.sakerhet == Sakerhet.LAG) {

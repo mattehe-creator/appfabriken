@@ -42,3 +42,5 @@ Bygg minimala `Utkast`-objekt (t.ex. med `Forening`, tom `komponenter`-lista om 
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-20 (hela implementationen — lokal modell levererade tom testfil utan kod)
