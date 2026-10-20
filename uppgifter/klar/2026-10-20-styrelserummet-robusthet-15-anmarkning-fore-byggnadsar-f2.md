@@ -36,3 +36,5 @@ Skapa `AnmarkningarTest.kt` med JUnit 4 (`org.junit.Test`, `org.junit.Assert`), 
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra `Komponent` eller `Forening`.
+
+utfall: godkänd 2026-10-20 (hela uppgiftslösningen — lokal modell levererade ingen kod)
