@@ -55,3 +55,5 @@ Testerna ska använda `org.junit.Test` och `org.junit.Assert.assertEquals` (som 
 - Lägga till beroenden.
 - Ändra databasschemat.
 - Committa tomma filer — kör testkommandot lokalt före push.
+
+utfall: godkänd 2026-10-19 (hela implementationen — lokal modell försök 2 levererade inga kodfiler)
