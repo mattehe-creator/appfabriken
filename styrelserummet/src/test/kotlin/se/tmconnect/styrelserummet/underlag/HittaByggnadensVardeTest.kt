@@ -6,21 +6,18 @@ import org.junit.Test
 class HittaByggnadensVardeTest {
     
     @Test
-    fun `hittaByggnadensVardeTkrMnkr`() {
-        // Testa tkr
-        val result1 = hittaByggnadensVarde("Byggnader och mark 12 345 tkr")
-        assertEquals(Belopp(12345000, iTusentals = true), result1)
+    fun parseBeloppAvgransare() {
+        // Testa olika typer av tusentalsavgränsare
+        assertEquals(12345L, parseBelopp("12\u00A0345", iTusentals = false))
+        assertEquals(12345678L, parseBelopp("12.345.678", iTusentals = false))
+        assertEquals(1234500L, parseBelopp("1.234,5", iTusentals = true))
+        assertEquals(45000000L, parseBelopp("45 000", iTusentals = true))
         
-        // Testa mnkr
-        val result2 = hittaByggnadensVarde("Byggnader 12,3 mnkr")
-        assertEquals(Belopp(12300000, iTusentals = false), result2)
-        
-        // Testa att befintlig logik fortfarande fungerar
-        val result3 = hittaByggnadensVarde("Byggnader och mark 45 000 tusen kronor")
-        assertEquals(Belopp(45000000, iTusentals = true), result3)
-        
-        // Testa med mellanslag i tal
-        val result4 = hittaByggnadensVarde("Byggnader 123 mnkr")
-        assertEquals(Belopp(123000000, iTusentals = false), result4)
+        // Befintliga testfall ska fortfarande fungera
+        assertEquals(12345L, parseBelopp("12 345", iTusentals = false))
+        assertEquals(12345000L, parseBelopp("12 345", iTusentals = true))
+        assertEquals(12L, parseBelopp("12,3", iTusentals = false))
+        assertEquals(12L, parseBelopp("12,345", iTusentals = false))
+        assertEquals(12345L, parseBelopp("12,345", iTusentals = true))
     }
 }

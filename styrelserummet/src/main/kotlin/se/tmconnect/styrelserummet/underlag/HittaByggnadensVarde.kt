@@ -52,12 +52,20 @@ fun hittaByggnadensVarde(text: String): Belopp? {
 }
 
 internal fun parseBelopp(text: String, iTusentals: Boolean): Long? {
-    val normaliserat = text.replace(" ", "").replace(",", ".")
-    val tal = normaliserat.toBigDecimalOrNull() ?: return null
-    val kronor = if (iTusentals) {
+    val normalizedText = text
+        .replace("\u00A0", " ")
+        .replace("\u2009", " ")
+        .replace(".", " ")
+    val cleanText = normalizedText.replace(" ", "")
+    val hasComma = text.contains(',')
+    val tal = if (hasComma) {
+        cleanText.replace(",", ".").toBigDecimalOrNull()
+    } else {
+        cleanText.toBigDecimalOrNull()
+    } ?: return null
+    return if (iTusentals) {
         tal.multiply(java.math.BigDecimal(1000)).toLong()
     } else {
         tal.toLong()
     }
-    return kronor
 }
