@@ -39,3 +39,5 @@ Dessutom ska `gradle :styrelserummet-server:test` fortsätta gå igenom (ApiTest
 - Ändra andra filer (inte heller `ApiTest.kt` eller `DRIFT.md`).
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-20 (inget)
