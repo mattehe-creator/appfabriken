@@ -28,8 +28,16 @@ fun hittaByggnadensVarde(text: String): Belopp? {
 }
 
 internal fun parseBelopp(text: String, iTusentals: Boolean): Long? {
-    val normaliserat = text.replace(" ", "").replace(",", ".")
-    val tal = normaliserat.toBigDecimalOrNull() ?: return null
+    // Ersätt olika typer av mellanslag med vanliga mellanslag
+    val normalizedText = text.replace("\u00A0", " ")  // hårt mellanslag
+        .replace("\u2009", " ")  // smalt mellanslag
+        .replace(".", " ")       // punkt till mellanslag
+    
+    // Hantera decimaltecken (komma) och ta bort eventuella mellanslag före komman
+    val decimalText = normalizedText.replace(" ", "").replace(",", ".")
+    
+    val tal = decimalText.toBigDecimalOrNull() ?: return null
+    
     val kronor = if (iTusentals) {
         tal.multiply(java.math.BigDecimal(1000)).toLong()
     } else {
