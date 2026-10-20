@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-20-styrelserummet-robusthet-handlingar.md
 försök: 1
-beror-på: 2026-10-20-styrelserummet-robusthet-16-anmarkning-efter-arsslut.md
+beror-på: 2026-10-20-styrelserummet-robusthet-16-anmarkning-efter-arsslut-f2.md
 
 ## Ändra bara dessa filer
 - styrelserummet/src/main/kotlin/se/tmconnect/styrelserummet/underlag/Anmarkningar.kt
