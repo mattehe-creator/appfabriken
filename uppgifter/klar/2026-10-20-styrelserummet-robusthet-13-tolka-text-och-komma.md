@@ -31,3 +31,5 @@ gradle :styrelserummet:test --tests "*TolkaForslagTest.tolkaRobustJsonOchTal"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-20 av Cursor (PR #303). Ersatt av 2026-10-20-styrelserummet-robusthet-13-tolka-text-och-komma-f2.md
