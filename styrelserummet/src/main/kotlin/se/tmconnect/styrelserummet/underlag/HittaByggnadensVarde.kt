@@ -39,6 +39,15 @@ fun hittaByggnadensVarde(text: String): Belopp? {
         )
         val match = regex.find(text) ?: continue
         val talText = match.groupValues[1].trim()
+        
+        // Kontrollera om det är en rad med två kolumner (årtal)
+        val lineAfterRubrik = text.substring(match.range.last).lines().firstOrNull { it.isNotBlank() }
+        if (lineAfterRubrik != null && 
+            Regex("""^\s*\d{4}\s+\d{4}\s*$""").matches(lineAfterRubrik)) {
+            // Detta är en årtalsrad, fortsätt till nästa match
+            continue
+        }
+        
         val kontext = text.substring(
             maxOf(0, match.range.first),
             minOf(text.length, match.range.last + 60),

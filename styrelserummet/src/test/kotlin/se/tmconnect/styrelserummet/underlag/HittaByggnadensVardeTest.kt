@@ -20,4 +20,23 @@ class HittaByggnadensVardeTest {
         assertEquals(12L, parseBelopp("12,345", iTusentals = false))
         assertEquals(12345L, parseBelopp("12,345", iTusentals = true))
     }
+    
+    @Test
+    fun hittaByggnadensVardeTvaKolumner() {
+        // Testa två kolumner med årtal
+        val text1 = "Byggnader och mark\n2024 2023\n12 500 000 11 800 000"
+        assertEquals(Belopp(12500000, false), hittaByggnadensVarde(text1))
+        
+        // Testa att årtalsrad inte tolkas som belopp
+        val text2 = "Byggnader och mark 2024 2023"
+        assertEquals(null, hittaByggnadensVarde(text2))
+        
+        // Testa en kolumn (oförändrat beteende)
+        val text3 = "Byggnader 10 000 000"
+        assertEquals(Belopp(10000000, false), hittaByggnadensVarde(text3))
+        
+        // Testa med tkr enhet
+        val text4 = "Byggnader och mark\n2024 2023\n12 500 000 tkr"
+        assertEquals(Belopp(12500000000L, true), hittaByggnadensVarde(text4))
+    }
 }
