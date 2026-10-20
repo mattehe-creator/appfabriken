@@ -37,3 +37,5 @@ gradle :styrelserummet:test --tests "*MaskaPersonuppgifterTest.maskaInteFalskaTr
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-20 (serUtSomTelefon/ISO-datum; behöll maskaPersonnummerVarianter; rensade filer utanför uppgiften)
