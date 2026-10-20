@@ -38,4 +38,23 @@ class HittaByggnadensVardeTest {
             hittaByggnadensVarde("Byggnader och mark (1 234)"),
         )
     }
+
+    @Test
+    fun hittaByggnadensVardeTvaKolumner() {
+        assertEquals(
+            Belopp(12_500_000, iTusentals = false),
+            hittaByggnadensVarde(
+                """
+                Byggnader och mark
+                2024 2023
+                12 500 000 11 800 000
+                """.trimIndent(),
+            ),
+        )
+        assertEquals(null, hittaByggnadensVarde("Byggnader och mark 2024 2023"))
+        assertEquals(
+            Belopp(10_000_000, iTusentals = false),
+            hittaByggnadensVarde("Byggnader 10 000 000"),
+        )
+    }
 }

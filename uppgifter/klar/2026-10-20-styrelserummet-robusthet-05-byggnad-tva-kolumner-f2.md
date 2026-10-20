@@ -43,3 +43,5 @@ Testmetoden ska asserta exakt de tre exemplen ovan (inga extra fall som inte st�
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: godkänd 2026-10-20 (hela implementationen — lokal modell levererade ingen kod)
