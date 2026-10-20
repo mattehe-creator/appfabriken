@@ -30,3 +30,5 @@ gradle :styrelserummet:test --tests "*MaskaPersonuppgifterTest.maskaTelefonOchEp
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-20 av Cursor (PR #301). Ersatt av 2026-10-20-styrelserummet-robusthet-08-maska-telefon-f2.md
