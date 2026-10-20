@@ -16,7 +16,8 @@ class HittaByggnadensVardeTest {
         // Befintliga testfall ska fortfarande fungera
         assertEquals(12345L, parseBelopp("12 345", iTusentals = false))
         assertEquals(12345000L, parseBelopp("12 345", iTusentals = true))
-        assertEquals(12345L, parseBelopp("12,345", iTusentals = false))
+        assertEquals(12L, parseBelopp("12,3", iTusentals = false))
+        assertEquals(12L, parseBelopp("12,345", iTusentals = false))
         assertEquals(12345L, parseBelopp("12,345", iTusentals = true))
     }
 }
