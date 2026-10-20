@@ -41,3 +41,5 @@ Lägg till tester (i samma testklass) som verifierar minst:
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: godkänd 2026-10-20 (hela implementationen; lokal modell levererade ingen kod)

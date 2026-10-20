@@ -20,4 +20,22 @@ class HittaByggnadensVardeTest {
         assertEquals(12L, parseBelopp("12,345", iTusentals = false))
         assertEquals(12345L, parseBelopp("12,345", iTusentals = true))
     }
+
+    @Test
+    fun hittaByggnadensVardeNegativa() {
+        assertEquals(-1234L, parseBelopp("(1 234)", iTusentals = false))
+        assertEquals(-500000L, parseBelopp("-500", iTusentals = true))
+        assertEquals(
+            Belopp(-2500000, iTusentals = true),
+            hittaByggnadensVarde("Byggnader och mark (2 500) tkr"),
+        )
+        assertEquals(
+            Belopp(-500000, iTusentals = true),
+            hittaByggnadensVarde("Byggnader och mark -500 tkr"),
+        )
+        assertEquals(
+            Belopp(-1234, iTusentals = false),
+            hittaByggnadensVarde("Byggnader och mark (1 234)"),
+        )
+    }
 }
