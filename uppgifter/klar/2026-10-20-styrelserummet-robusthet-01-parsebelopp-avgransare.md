@@ -33,3 +33,5 @@ gradle :styrelserummet:test --tests "*HittaByggnadensVardeTest.parseBeloppAvgran
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: godkänd 2026-10-20 (test 12,345 utan tusental; förenklad parseBelopp)
