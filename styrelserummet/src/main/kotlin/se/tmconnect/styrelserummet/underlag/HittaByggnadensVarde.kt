@@ -11,7 +11,7 @@ fun hittaByggnadensVarde(text: String): Belopp? {
     for (rubrik in rubriker) {
         // Först sök efter tkr eller mnkr
         val regexTkrMnkr = Regex(
-            """$rubrik[^\d\n]*([\d][\d\s]*(?:,\d+)?)[\s]*(tkr|mnkr)""",
+            """$rubrik[^\d\n(-]*(\(\s*[\d][\d\s]*(?:,\d+)?\s*\)|-\s*[\d][\d\s]*(?:,\d+)?|[\d][\d\s]*(?:,\d+)?)[\s]*(tkr|mnkr)""",
             RegexOption.IGNORE_CASE,
         )
         val matchTkrMnkr = regexTkrMnkr.find(text)
@@ -22,9 +22,12 @@ fun hittaByggnadensVarde(text: String): Belopp? {
 
             val iTusen = enhet == "tkr"
             val finalKronor = if (enhet == "mnkr") {
-                val normaliserat = talText.replace(" ", "").replace(",", ".")
+                val (talUtanTecken, negativt) = avmarkeraNegativt(talText)
+                val normaliserat = talUtanTecken.replace(" ", "").replace(",", ".")
                 val tal = normaliserat.toBigDecimalOrNull() ?: continue
-                tal.multiply(java.math.BigDecimal(1_000_000)).toLong()
+                var kronor = tal.multiply(java.math.BigDecimal(1_000_000)).toLong()
+                if (negativt) kronor = -kronor
+                kronor
             } else {
                 parseBelopp(talText, iTusentals = true) ?: continue
             }
@@ -34,7 +37,7 @@ fun hittaByggnadensVarde(text: String): Belopp? {
         
         // Fallback till befintlig logik för "tusen kronor"
         val regex = Regex(
-            """$rubrik[^\d\n]*([\d][\d\s]*(?:,\d+)?)""",
+            """$rubrik[^\d\n(-]*(\(\s*[\d][\d\s]*(?:,\d+)?\s*\)|-\s*[\d][\d\s]*(?:,\d+)?|[\d][\d\s]*(?:,\d+)?)""",
             RegexOption.IGNORE_CASE,
         )
         val match = regex.find(text) ?: continue
@@ -51,21 +54,36 @@ fun hittaByggnadensVarde(text: String): Belopp? {
     return null
 }
 
+private fun avmarkeraNegativt(text: String): Pair<String, Boolean> {
+    var raw = text.trim()
+    var negativt = false
+    if (raw.startsWith("(") && raw.endsWith(")")) {
+        negativt = true
+        raw = raw.substring(1, raw.length - 1).trim()
+    } else if (raw.startsWith("-")) {
+        negativt = true
+        raw = raw.substring(1).trim()
+    }
+    return raw to negativt
+}
+
 internal fun parseBelopp(text: String, iTusentals: Boolean): Long? {
-    val normalizedText = text
+    val (talText, negativt) = avmarkeraNegativt(text)
+    val normalizedText = talText
         .replace("\u00A0", " ")
         .replace("\u2009", " ")
         .replace(".", " ")
     val cleanText = normalizedText.replace(" ", "")
-    val hasComma = text.contains(',')
+    val hasComma = talText.contains(',')
     val tal = if (hasComma) {
         cleanText.replace(",", ".").toBigDecimalOrNull()
     } else {
         cleanText.toBigDecimalOrNull()
     } ?: return null
-    return if (iTusentals) {
+    val kronor = if (iTusentals) {
         tal.multiply(java.math.BigDecimal(1000)).toLong()
     } else {
         tal.toLong()
     }
+    return if (negativt) -kronor else kronor
 }
