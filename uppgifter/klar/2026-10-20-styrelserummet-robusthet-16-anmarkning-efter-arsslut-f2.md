@@ -39,3 +39,5 @@ Skriv testet med JUnit 4 (`org.junit.Test`, `org.junit.Assert`), inte `kotlin.te
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra `Komponent` eller `Forening`.
+
+utfall: godkänd 2026-10-20 (hela implementationen — lokal modell levererade ingen kod vid försök 2)
