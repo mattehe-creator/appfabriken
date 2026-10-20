@@ -1,6 +1,6 @@
 package se.tmconnect.styrelserummet.underlag
 
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 
 class HittaByggnadensVardeTest {
