@@ -26,3 +26,5 @@ gradle :styrelserummet:test --tests "*AnmarkningarTest.anmarkningAnskaffningsarF
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra `Komponent` eller `Forening`.
+
+utfall: underkänd 2026-10-20 av Cursor (PR #304). Ersatt av 2026-10-20-styrelserummet-robusthet-15-anmarkning-fore-byggnadsar-f2.md
