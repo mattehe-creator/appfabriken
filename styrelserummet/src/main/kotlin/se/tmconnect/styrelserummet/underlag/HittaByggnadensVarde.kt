@@ -7,6 +7,14 @@ data class Belopp(
 
 private val rubriker = listOf("Byggnader och mark", "Byggnader")
 
+private val arRadRegex = Regex("""^\s*\d{4}\s+\d{4}\s*$""")
+
+private val forstaBeloppPaRadRegex = Regex(
+    """(\(\s*[\d][\d\s]*(?:,\d+)?\s*\)|-\s*(?:\d{1,3}(?: \d{3})+|[\d][\d\s]*(?:,\d+)?)|\d{1,3}(?: \d{3})+(?:,\d+)?)""",
+)
+
+private val enbartTvaArtalRegex = Regex("""^\s*\d{4}\s+\d{4}\s*$""")
+
 fun hittaByggnadensVarde(text: String): Belopp? {
     for (rubrik in rubriker) {
         // Först sök efter tkr eller mnkr
@@ -34,7 +42,34 @@ fun hittaByggnadensVarde(text: String): Belopp? {
 
             return Belopp(finalKronor, iTusen)
         }
-        
+
+        val lines = text.lines()
+        val rubrikLineIndex = lines.indexOfFirst { line ->
+            Regex("(?i)${Regex.escape(rubrik)}").containsMatchIn(line)
+        }
+        if (rubrikLineIndex >= 0) {
+            val rubrikLine = lines[rubrikLineIndex]
+            val efterRubrik = rubrikLine.replace(
+                Regex("(?i)^.*?${Regex.escape(rubrik)}\\s*"),
+                "",
+            ).trim()
+            if (efterRubrik.isNotEmpty() && enbartTvaArtalRegex.matches(efterRubrik)) {
+                return null
+            }
+            if (rubrikLineIndex + 1 < lines.size && arRadRegex.matches(lines[rubrikLineIndex + 1])) {
+                if (rubrikLineIndex + 2 < lines.size) {
+                    val beloppsRad = lines[rubrikLineIndex + 2]
+                    val talMatch = forstaBeloppPaRadRegex.find(beloppsRad) ?: continue
+                    val talText = talMatch.groupValues[1].trim()
+                    val iTusen = beloppsRad.contains("tusen", ignoreCase = true) ||
+                        beloppsRad.contains("tkr", ignoreCase = true)
+                    val kronor = parseBelopp(talText, iTusen) ?: continue
+                    return Belopp(kronor, iTusen)
+                }
+                continue
+            }
+        }
+
         // Fallback till befintlig logik för "tusen kronor"
         val regex = Regex(
             """$rubrik[^\d\n(-]*(\(\s*[\d][\d\s]*(?:,\d+)?\s*\)|-\s*[\d][\d\s]*(?:,\d+)?|[\d][\d\s]*(?:,\d+)?)""",
