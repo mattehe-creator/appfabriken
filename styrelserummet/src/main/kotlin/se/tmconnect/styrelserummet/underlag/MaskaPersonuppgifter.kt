@@ -7,6 +7,7 @@ private val ePost = Regex("""[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}""")
 private val telefon = Regex(
     """(?:\+46\s?(?:\d[\s-]?){8,11}|0\d{1,3}[\s-]?(?:\d[\s-]?){5,10})""",
 )
+private val isoDatum = Regex("""\d{4}-\d{2}-\d{2}""")
 
 fun maskaPersonuppgifter(text: String): String {
     var resultat = text
@@ -14,7 +15,9 @@ fun maskaPersonuppgifter(text: String): String {
         if (serUtSomPersonnummer(match.value)) "[personnummer]" else match.value
     }
     resultat = ePost.replace(resultat, "[e-post]")
-    resultat = telefon.replace(resultat, "[telefon]")
+    resultat = telefon.replace(resultat) { match ->
+        if (serUtSomTelefon(resultat, match.range)) "[telefon]" else match.value
+    }
     return resultat
 }
 
@@ -25,6 +28,20 @@ internal fun serUtSomPersonnummer(text: String): Boolean {
         12 -> arGiltigtPersonDatum(digits.substring(0, 8))
         else -> false
     }
+}
+
+internal fun serUtSomTelefon(fullText: String, range: IntRange): Boolean {
+    if (overlapparIsoDatum(fullText, range)) return false
+    return true
+}
+
+private fun overlapparIsoDatum(fullText: String, range: IntRange): Boolean {
+    for (match in isoDatum.findAll(fullText)) {
+        if (range.first <= match.range.last && range.last >= match.range.first) {
+            return true
+        }
+    }
+    return false
 }
 
 private fun arGiltigtPersonDatum(ymd: String): Boolean {
