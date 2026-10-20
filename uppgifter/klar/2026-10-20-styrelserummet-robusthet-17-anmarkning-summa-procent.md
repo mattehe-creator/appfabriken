@@ -26,3 +26,5 @@ gradle :styrelserummet:test --tests "*AnmarkningarTest.anmarkningSummaProcent"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-20 av Cursor (PR #306). Ersatt av 2026-10-20-styrelserummet-robusthet-17-anmarkning-summa-procent-f2.md
