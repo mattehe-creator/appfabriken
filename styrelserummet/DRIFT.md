@@ -8,7 +8,7 @@
 | `ANTHROPIC_API_KEY` | ja i produktion | API-nyckel för tolkning. Ska inte ligga i repot. |
 | `STYRELSERUMMET_MODELL` | nej | Anthropic-modellnamn; standard enligt `AnthropicTolkare` i `:styrelserummet`. |
 | `PORT` | nej | Standard `8080`. |
-| `STYRELSERUMMET_PROXY` | nej | Sätt till `1` bakom värdens omvända proxy så att klientens IP läses från `X-Forwarded-For` (första adressen). **Ska vara på i produktion** när trafiken går via proxy; annars delar alla besökare samma gräns (5 jobb per timme). |
+| `STYRELSERUMMET_PROXY` | nej | Sätt till `1` bakom värdens omvända proxy så att klientens IP läses från `X-Forwarded-For` (sista adressen, den som värdens proxy lägger till; en förfalskad första adress ignoreras). **Ska vara på i produktion** när trafiken går via proxy; annars delar alla besökare samma gräns (5 jobb per timme). |
 
 ## Lokalt
 
