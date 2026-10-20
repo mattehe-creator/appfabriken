@@ -32,3 +32,5 @@ gradle :styrelserummet-server:test --tests "*IndataTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-20 av Cursor (PR #308). Ersatt av 2026-10-20-styrelserummet-robusthet-19-server-indata-hjalpare-f2.md
