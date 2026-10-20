@@ -8,6 +8,7 @@
 | `ANTHROPIC_API_KEY` | ja i produktion | API-nyckel för tolkning. Ska inte ligga i repot. |
 | `STYRELSERUMMET_MODELL` | nej | Anthropic-modellnamn; standard enligt `AnthropicTolkare` i `:styrelserummet`. |
 | `PORT` | nej | Standard `8080`. |
+| `STYRELSERUMMET_PROXY` | nej | Sätt till `1` bakom värdens omvända proxy så att klientens IP läses från `X-Forwarded-For` (första adressen). **Ska vara på i produktion** när trafiken går via proxy; annars delar alla besökare samma gräns (5 jobb per timme). |
 
 ## Lokalt
 
@@ -43,9 +44,10 @@ docker run --rm -p 8080:8080 \
 1. Skapa konto hos vald värd (Claude beslutar vilken).
 2. Sätt `ANTHROPIC_API_KEY` som hemlighet i miljön (inte i git).
 3. Montera persistent volym på `STYRELSERUMMET_DATA`.
-4. Peka domän till containern (HTTPS av värden).
-5. Prova flödet: ladda upp två PDF:er med markerbar text, spara länken, granska utkast, ladda ned CSV, radera jobbet.
-6. Betalning och pris på landningssidan kommer i eget uppdrag när betalkonto finns.
+4. Peka domän till containern (HTTPS av värden). Sätt `STYRELSERUMMET_PROXY=1` om värden sätter `X-Forwarded-For`.
+5. Kontrollera att `GET /halsa` svarar `ok` (hälsokontroll utan nyckel).
+6. Prova flödet: ladda upp två PDF:er med markerbar text, spara länken, granska utkast, ladda ned CSV, radera jobbet.
+7. Betalning och pris på landningssidan kommer i eget uppdrag när betalkonto finns.
 
 ## Gränser
 

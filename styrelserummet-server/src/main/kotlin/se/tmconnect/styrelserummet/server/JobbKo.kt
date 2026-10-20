@@ -90,8 +90,8 @@ class JobbKo(
                     felmeddelande = null,
                 ),
             )
-        } catch (e: Exception) {
-            fel(id, e.message ?: "Bearbetningen misslyckades.")
+        } catch (_: Exception) {
+            fel(id, "Bearbetningen misslyckades.")
         }
     }
 

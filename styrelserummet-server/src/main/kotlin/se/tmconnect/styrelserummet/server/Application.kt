@@ -8,6 +8,8 @@ import io.ktor.http.content.forEachPart
 import io.ktor.http.content.streamProvider
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.ApplicationCallPipeline
 import io.ktor.server.application.call
 import io.ktor.server.application.install
 import io.ktor.server.cio.CIO
@@ -15,6 +17,7 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.request.path
 import io.ktor.server.request.receive
 import io.ktor.server.request.receiveMultipart
 import io.ktor.server.response.header
@@ -38,6 +41,7 @@ data class ServerMiljo(
     val port: Int,
     val tolkare: Tolkare,
     val synkronJobb: Boolean = false,
+    val proxyPaa: Boolean = proxyPaaFranMiljo(),
 )
 
 fun miljoFranEnv(): ServerMiljo {
@@ -46,6 +50,13 @@ fun miljoFranEnv(): ServerMiljo {
     val tolkare = anthropicTolkareFranMiljo()
     return ServerMiljo(Path.of(data), port, tolkare)
 }
+
+fun ApplicationCall.klientIp(proxyPaa: Boolean): String =
+    klientAdress(
+        request.headers["X-Forwarded-For"],
+        request.local.remoteHost,
+        proxyPaa,
+    )
 
 fun Application.module(miljo: ServerMiljo) {
     val lagring = JobbLagring(miljo.dataRot)
@@ -66,7 +77,17 @@ fun Application.module(miljo: ServerMiljo) {
         }
     }
 
+    intercept(ApplicationCallPipeline.Call) {
+        for ((namn, varde) in svarshuvudenForSokvag(call.request.path())) {
+            call.response.headers.append(namn, varde)
+        }
+    }
+
     routing {
+        get("/halsa") {
+            call.respondText("ok")
+        }
+
         staticResources("/", "static")
 
         get("/j/{id}") {
@@ -85,7 +106,7 @@ fun Application.module(miljo: ServerMiljo) {
 
         route("/api/jobb") {
             post {
-                val ip = call.request.local.remoteHost
+                val ip = call.klientIp(miljo.proxyPaa)
                 if (!ipGrans.farSkapaJobb(ip)) {
                     call.respond(
                         HttpStatusCode.TooManyRequests,
