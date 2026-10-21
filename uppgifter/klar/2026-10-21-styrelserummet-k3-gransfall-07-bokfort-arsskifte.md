@@ -30,3 +30,5 @@ gradle :styrelserummet:test --tests "*BokfortVardeGransfallArsskifteTest"
 ## Gör inte
 - Ändra befintliga testfiler.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #358). Ersatt av 2026-10-21-styrelserummet-k3-gransfall-07-bokfort-arsskifte-f2.md
