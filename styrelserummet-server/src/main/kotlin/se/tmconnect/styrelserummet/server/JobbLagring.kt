@@ -33,6 +33,7 @@ class JobbLagring(
     private val logg: (String) -> Unit = ::println
 ) {
     private val json = Json { prettyPrint = true; ignoreUnknownKeys = true }
+    private val skrivLås = Any()
 
     init {
         rot.createDirectories()
@@ -60,7 +61,10 @@ class JobbLagring(
     }
 
     fun skrivMeta(meta: JobbMeta) {
-        (jobbKatalog(meta.id) / "meta.json").writeText(json.encodeToString(meta))
+        val fil = jobbKatalog(meta.id) / "meta.json"
+        synchronized(skrivLås) {
+            fil.writeText(json.encodeToString(meta))
+        }
     }
 
     fun sparaUtkast(id: String, utkast: UtkastDto) {
