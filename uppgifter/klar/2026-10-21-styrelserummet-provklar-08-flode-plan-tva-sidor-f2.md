@@ -51,3 +51,4 @@ Använd JUnit 4 (`org.junit.Test`, `org.junit.Assert`).
 - Ändra `Komponent`, `Forening` eller produktionskod.
 - Riktiga PDF-filer i repot.
 - kotlin.test eller JUnit Jupiter.
+utfall: godkänd 2026-10-21 (flytt från repots rot till underlag/, Sakerhet-import)
