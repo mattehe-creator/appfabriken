@@ -251,15 +251,13 @@ class MiljoTest {
     }
 
     @Test
-    fun saknadModellGerFel() {
+    fun saknadModellGerIngaFel() {
         val rader = kontrolleraMiljo(
             mapOf(
                 "STYRELSERUMMET_DATA" to "/data",
                 "ANTHROPIC_API_KEY" to "sk-ant-test",
             ),
         ) { true }
-        assertEquals(1, rader.size)
-        assertTrue(rader.single().startsWith("Fel:"))
-        assertTrue(rader.single().contains("STYRELSERUMMET_MODELL"))
+        assertEquals(emptyList<String>(), rader)
     }
 }

@@ -59,13 +59,13 @@ fun kontrolleraMiljo(
     }
     
     val modell = env["STYRELSERUMMET_MODELL"]
-    if (modell.isNullOrEmpty()) {
+    if (modell != null && modell.isEmpty()) {
         return listOf(
             "Fel: Miljövariabeln STYRELSERUMMET_MODELL måste anges.",
         )
     }
-    
-    if (modell !in GILTIGA_MODELLER) {
+
+    if (!modell.isNullOrEmpty() && modell !in GILTIGA_MODELLER) {
         return listOf(
             "Varning: Miljövariabeln STYRELSERUMMET_MODELL har okänt värde \"$modell\", använd en av giltiga modeller: ${GILTIGA_MODELLER.joinToString(", ")}.",
         )
