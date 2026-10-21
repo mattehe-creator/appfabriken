@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-21-styrelserummet-kvalitet-utkast.md
 försök: 1
-beror-på: 2026-10-21-styrelserummet-kvalitet-04-gissa-grupp-hiss-tvatt-mark.md
+beror-på: 2026-10-21-styrelserummet-kvalitet-04-gissa-grupp-hiss-tvatt-mark-f2.md
 
 ## Ändra bara dessa filer
 - styrelserummet/src/main/kotlin/se/tmconnect/styrelserummet/underlag/GrupperaNamn.kt

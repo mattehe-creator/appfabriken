@@ -30,3 +30,5 @@ gradle :styrelserummet:test --tests "*GrupperaNamnTest.gissaGruppHissTvattMark"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #386). Ersatt av 2026-10-21-styrelserummet-kvalitet-04-gissa-grupp-hiss-tvatt-mark-f2.md
