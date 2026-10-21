@@ -24,4 +24,12 @@ class GrupperaNamnTest {
         assertEquals(Komponentgrupp.VENTILATION, gissaGrupp("Från- och tilluft"))
         assertEquals(Komponentgrupp.STAMMAR, gissaGrupp("Vattenledning kök"))
     }
+
+    @Test
+    fun gissaGruppElVarme() {
+        assertEquals(Komponentgrupp.EL, gissaGrupp("Elcentral"))
+        assertEquals(null, gissaGrupp("Elisabeths trädgård"))
+        assertEquals(Komponentgrupp.VARME, gissaGrupp("Fjärrvärme undercentral"))
+        assertEquals(Komponentgrupp.VARME, gissaGrupp("Radiatorer trapphus"))
+    }
 }
