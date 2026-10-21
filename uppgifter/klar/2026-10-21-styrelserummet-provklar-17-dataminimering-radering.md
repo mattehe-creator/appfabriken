@@ -25,3 +25,5 @@ gradle :styrelserummet-server:test --tests "*DataminimeringTest.efterRadera*"
 
 ## Gör inte
 - Ändra raderings-API utöver vad testet kräver.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #434). Ersatt av 2026-10-21-styrelserummet-provklar-17-dataminimering-radering-f2.md
