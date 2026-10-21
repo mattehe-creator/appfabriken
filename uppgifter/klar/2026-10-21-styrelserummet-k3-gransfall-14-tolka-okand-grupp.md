@@ -31,3 +31,5 @@ gradle :styrelserummet:test --tests "*TolkaForslagGransfallOkandGruppTest"
 ## Gör inte
 - Ändra `TolkaForslagTest.kt`.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #367). Ersatt av 2026-10-21-styrelserummet-k3-gransfall-14-tolka-okand-grupp-f2.md
