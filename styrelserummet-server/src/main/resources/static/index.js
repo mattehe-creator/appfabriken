@@ -33,3 +33,13 @@ form.addEventListener("submit", async (e) => {
     svar.classList.add("fel");
   }
 });
+
+fetch("/api/betalning")
+  .then((r) => (r.ok ? r.json() : null))
+  .then((b) => {
+    if (!b || !b.aktiv) return;
+    const el = document.getElementById("pris");
+    el.textContent = `Gratis att skapa och granska utkastet. Ladda ned listan och skriv ut för revisorn: ${b.prisKr} kr per utkast. Betalning med kort hos Stripe, kvitto till er e-post.`;
+    el.hidden = false;
+  })
+  .catch(() => {});
