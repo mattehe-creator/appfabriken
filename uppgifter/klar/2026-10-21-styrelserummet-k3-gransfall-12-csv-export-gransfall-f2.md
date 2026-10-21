@@ -42,3 +42,5 @@ gradle :styrelserummet:test --tests "*CsvExportGransfallTest"
 - Ändra `CsvExportTest.kt`, `GrupperaNamn`, `Formatering`, `Sammanfattning`, `Jamforelse`, `FelHantering`, `Utskrift`.
 - Lägga till beroenden.
 - Lägga filer i repots rot.
+
+utfall: godkänd 2026-10-21 (återställde CsvExportTest.kt; trimEnd i rubrikOchUtkast)
