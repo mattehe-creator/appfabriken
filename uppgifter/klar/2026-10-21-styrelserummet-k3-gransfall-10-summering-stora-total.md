@@ -26,3 +26,5 @@ gradle :styrelserummet:test --tests "*SummeringGransfallStoraBeloppTest"
 ## Gör inte
 - Dela upp i flera testklasser (denna uppgift äger filen ovan).
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #361). Ersatt av 2026-10-21-styrelserummet-k3-gransfall-10-summering-stora-total-f2.md
