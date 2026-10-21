@@ -45,3 +45,5 @@ Befintliga tester för `IngenLasbarText` och `KrypteradPdf` ska fortsätta gå i
 ## Gör inte
 - Ändra andra filer (inklusive `Application.kt`, `Granser.kt`, `uppgifter/`).
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (lokal modell vid försök 2: ingen kod; Cursor implementerade ServerFel.ForStorFil/IntePdf, felTillMeddelande och tester forStorFil/intePdf)
