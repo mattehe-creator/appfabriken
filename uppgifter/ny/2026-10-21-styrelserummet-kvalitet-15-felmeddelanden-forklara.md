@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-21-styrelserummet-kvalitet-utkast.md
 försök: 1
-beror-på: 2026-10-21-styrelserummet-kvalitet-14-felkoder-kartlaggning.md
+beror-på: 2026-10-21-styrelserummet-kvalitet-14-felkoder-kartlaggning-f2.md
 
 ## Ändra bara dessa filer
 - styrelserummet-server/src/main/kotlin/se/tmconnect/styrelserummet/server/Felmeddelanden.kt (ny)
