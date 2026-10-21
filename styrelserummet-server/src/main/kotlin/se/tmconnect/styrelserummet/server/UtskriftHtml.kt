@@ -22,10 +22,6 @@ fun utskriftHtml(forening: String, arsslut: Int, rader: List<UtskriftsRadDto>): 
           <meta charset="utf-8">
           <title>Utskrift — ${htmlEsc(forening)}</title>
           <link rel="stylesheet" href="/gemensam.css">
-          <style>
-            .stampel-rad { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-            .meta { color: var(--dampad); margin: 0 0 1rem; }
-          </style>
         </head>
         <body>
           <div class="ram bred">
@@ -54,7 +50,7 @@ fun utskriftHtml(forening: String, arsslut: Int, rader: List<UtskriftsRadDto>): 
               </table>
             </div>
           </div>
-          <script>window.addEventListener("load", () => window.print());</script>
+          <script src="/utskrift.js"></script>
         </body>
         </html>
         """.trimIndent()

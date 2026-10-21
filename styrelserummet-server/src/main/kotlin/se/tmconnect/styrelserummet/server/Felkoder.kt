@@ -24,6 +24,9 @@ object Felkoder {
     const val BEARBETNING_MISSLYCKADES = "BEARBETNING_MISSLYCKADES"
     const val INTERNT_FEL = "INTERNT_FEL"
     const val FOR_STOR_HANDLING = "FOR_STOR_HANDLING"
+    const val BETALNING_KRAVS = "BETALNING_KRAVS"
+    const val BETALNING_EJ_AKTIV = "BETALNING_EJ_AKTIV"
+    const val BETALNING_MISSLYCKADES = "BETALNING_MISSLYCKADES"
 
     fun allaKoder(): Set<String> = setOf(
         FOR_MANGA_JOBB,
@@ -49,5 +52,8 @@ object Felkoder {
         BEARBETNING_MISSLYCKADES,
         INTERNT_FEL,
         FOR_STOR_HANDLING,
+        BETALNING_KRAVS,
+        BETALNING_EJ_AKTIV,
+        BETALNING_MISSLYCKADES,
     )
 }

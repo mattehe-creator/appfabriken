@@ -32,6 +32,11 @@ object Felmeddelanden {
             Felkoder.BEARBETNING_MISSLYCKADES -> "Bearbetningen misslyckades."
             Felkoder.FOR_STOR_HANDLING ->
                 "Handlingen är för stor för automatisk tolkning. Försök med kortare utdrag eller färre sidor."
+            Felkoder.BETALNING_KRAVS ->
+                "Betala för att ladda ned listan eller skriva ut den. Utkastet går att granska och ändra utan betalning."
+            Felkoder.BETALNING_EJ_AKTIV -> "Betalning är inte påslagen i tjänsten."
+            Felkoder.BETALNING_MISSLYCKADES ->
+                "Betalningen kunde inte bekräftas. Har du betalat, ladda om sidan om en stund. Inget dras två gånger."
             Felkoder.INTERNT_FEL -> "Något gick fel. Försök igen."
             else -> "Något gick fel. Försök igen."
         }
