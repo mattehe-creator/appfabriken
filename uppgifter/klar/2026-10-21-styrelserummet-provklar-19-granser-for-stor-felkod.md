@@ -22,3 +22,5 @@ gradle :styrelserummet-server:test --tests "*FelmeddelandenTest.forStorHandlingM
 
 ## Gör inte
 - Ändra JobbKo ännu.
+
+utfall: godkänd 2026-10-21 (assertTrue med case-insensitive stor/tolkning enligt exempel)
