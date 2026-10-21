@@ -1,11 +1,27 @@
-Flextime (working title) tracks your flextime offline without accounts. Stamp in and out daily, enter break time in minutes, and set your own normal time. The app shows balance against your normal time and a weekly view with workdays and free days.
+Flextime keeps track of your working hours and flextime balance, with no account and no internet.
 
-Reminders help you remember to stamp in or out. A reminder will come at 08:00 on workdays if you haven't started the day, and a reminder after normal time if you haven't stamped out. Reminders are optional and can be turned off in settings.
+Clock in and out
+One tap when you arrive and one when you leave. Your break is filled in automatically and can be changed. Forgot to clock in? Fix the day afterwards.
 
-You can export your days as CSV for a selected month via the system file picker. You can also backup your data as JSON with version number. Export and backup are always free, regardless of whether you have Pro or not.
+When can I go home?
+During the day the app shows when your normal hours are done, and when your balance reaches zero if you are ahead or behind.
 
-Flextime requires no internet connection. The app has no internet permission, no accounts, no ads, and no analytics. All data stays on your phone until you choose to export it.
+Balance and week
+Set your own normal hours and working weekdays. The app calculates your balance and shows the week day by day. Days off, vacation, sick days and holidays are one choice away.
 
-The app is free up to 15 day entries. Pro (one-time purchase) removes the limit on day entries. Existing data is never deleted.
+Swedish public holidays and vacation
+Swedish public holidays are built in and shown in the week, and you get no clock-in reminder on them. Midsummer, Christmas and New Year's Eve can count as days off. The app shows vacation days taken, planned and left in the vacation year.
 
-Flextime makes no assumptions about collective agreements and gives no advice on what agreements or laws allow. The app only helps you keep track of your own time.
+Reminders
+Optional reminders to clock in in the morning and to clock out when your normal hours are done.
+
+Report and export
+Monthly PDF report with the month's normal hours, CSV for your own spreadsheet and a backup you save wherever you like. Export and backup are always free.
+
+Privacy
+No internet permission, no accounts, no ads, no analytics and no location. Everything stays on your phone.
+
+Free and Pro
+The free version has every feature and keeps up to 15 days. Pro is a one-time purchase that removes the limit. Nothing is deleted.
+
+The app calculates from your own settings and gives no advice on what agreements or law allow.

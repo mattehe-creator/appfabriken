@@ -1,12 +1,12 @@
-# Privacy policy — Flextid (Flex Time)
+# Privacy policy — Flextime (Flextid)
 
 Last updated: 2026-10-21
 
-Flextid is developed by TM Connect. Contact: [contact address added at publication].
+Flextime is developed by TM Connect. Contact: [contact address added at publication].
 
 ## Short version
 
-Everything you save in Flextid stays on your phone. We have no server, no account, no ads and no analytics. The app does not request internet permission and therefore cannot send anything by itself. We do not receive, store or share any personal data. The app does not know where you are and does not read your location.
+Everything you save in Flextime stays on your phone. We have no server, no account, no ads and no analytics. The app does not request internet permission and therefore cannot send anything by itself. We do not receive, store or share any personal data. The app does not know where you are and does not read your location.
 
 ## What is stored, and where
 
