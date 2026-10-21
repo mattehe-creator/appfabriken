@@ -11,6 +11,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.createTempDirectory
 import kotlin.io.path.div
+import kotlin.io.path.exists
 import kotlin.io.path.writeText
 
 class JobbLagringTest {
@@ -181,12 +182,13 @@ class JobbLagringTest {
         // Kontrollera att metoder inte kraschar utan returnerar null/tom lista
         assertNull(lagring.lasMeta(jobId))
         
-        // Använd korrekt konstruktion av UtkastDto
         val utkast = UtkastDto(
+            forening = "Testförening",
+            arsslut = 2023,
+            byggnadensVarde = 0,
             komponenter = emptyList(),
-            sakerhet = 0.0,
-            avstamning = 0.0,
-            anmärkningar = emptyList()
+            avstamning = AvstamningDto(0, 0, 0, true),
+            anmarkningar = emptyList(),
         )
         
         lagring.sparaUtkast(jobId, utkast)

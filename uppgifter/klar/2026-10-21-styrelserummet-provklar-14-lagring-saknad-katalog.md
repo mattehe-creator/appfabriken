@@ -26,3 +26,5 @@ gradle :styrelserummet-server:test --tests "*JobbLagringTest.saknadJobbKatalog*"
 
 ## Gör inte
 - Ändra HTTP-lager i denna uppgift.
+
+utfall: godkänd 2026-10-21 (import exists och korrekt UtkastDto i test)
