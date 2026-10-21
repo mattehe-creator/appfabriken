@@ -30,3 +30,5 @@ gradle :styrelserummet:test --tests "*FormateringTest.kronor"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #331). Ersatt av 2026-10-21-styrelserummet-kvalitet-08-formatering-kronor-f2.md
