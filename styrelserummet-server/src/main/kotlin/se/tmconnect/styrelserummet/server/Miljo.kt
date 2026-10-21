@@ -1,5 +1,8 @@
 package se.tmconnect.styrelserummet.server
 
+import java.nio.file.Files
+import java.nio.file.Path
+
 val GILTIGA_MODELLER = setOf(
     "claude-sonnet-5-5",
     "claude-3-5-sonnet",
@@ -72,4 +75,10 @@ fun kontrolleraMiljo(
     }
     
     return emptyList()
+}
+
+fun skrivMiljoRapporter(rader: List<String>, skriv: (String) -> Unit = System.err::println) {
+    rader.forEach { rad ->
+        skriv(rad)
+    }
 }

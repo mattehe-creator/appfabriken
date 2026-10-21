@@ -4,6 +4,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.nio.file.Files
+import java.nio.file.Path
 
 class MiljoTest {
     @Test
@@ -259,5 +261,33 @@ class MiljoTest {
             ),
         ) { true }
         assertEquals(emptyList<String>(), rader)
+    }
+
+    @Test
+    fun skrivMiljoRapporter() {
+        val logg = mutableListOf<String>()
+        val testRader = listOf("Fel: Något gick fel", "Varning: Något är konstigt")
+        
+        skrivMiljoRapporter(testRader) { rad ->
+            logg.add(rad)
+        }
+        
+        assertEquals(2, logg.size)
+        assertEquals("Fel: Något gick fel", logg[0])
+        assertEquals("Varning: Något är konstigt", logg[1])
+    }
+
+    @Test
+    fun skrivMiljoRapporterIngenNyckel() {
+        val logg = mutableListOf<String>()
+        val testRader = listOf("Fel: ANTHROPIC_API_KEY har fel format, börja med \"sk-ant-\".")
+        
+        skrivMiljoRapporter(testRader) { rad ->
+            logg.add(rad)
+        }
+        
+        assertEquals(1, logg.size)
+        assertTrue(logg[0].contains("ANTHROPIC_API_KEY"))
+        assertFalse(logg[0].contains("sk-ant-hemlig"))
     }
 }

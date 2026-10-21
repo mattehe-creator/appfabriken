@@ -286,6 +286,16 @@ private class ServerFelBegaran(val fel: ServerFel) : Exception()
 
 fun main() {
     val miljo = miljoFranEnv()
+    val env = System.getenv()
+    val rader = kontrolleraMiljo(env) { katalog ->
+        val path = Path.of(katalog)
+        if (path.exists()) {
+            Files.isWritable(path)
+        } else {
+            false
+        }
+    }
+    skrivMiljoRapporter(rader)
     embeddedServer(CIO, port = miljo.port) {
         module(miljo)
     }.start(wait = true)
