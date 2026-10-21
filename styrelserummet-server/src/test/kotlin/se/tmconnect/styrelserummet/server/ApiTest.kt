@@ -404,6 +404,15 @@ class ApiTest {
                 )
             }
             assertEquals(HttpStatusCode.TooManyRequests, over.status)
+            val felText =
+                json.parseToJsonElement(over.bodyAsText()).jsonObject["fel"]!!.jsonPrimitive.content
+            val ipGrans = IpGrans(tmp)
+            val forvantat =
+                felTillMeddelande(
+                    ServerFel.ForMangaJobb(ipGrans.nastaForsokEpochMs("10.0.0.1", System.currentTimeMillis())),
+                )
+            assertEquals(forvantat, felText)
+            assertTrue(felText.contains("Försök igen klockan"))
         }
     }
 
@@ -436,7 +445,7 @@ class ApiTest {
     }
 
     @Test
-    fun pdfFilnamnMenIntePdfBytesGer400() = runBlocking {
+    fun pdfFilnamnMenIntePdfBytesGer415() = runBlocking {
         val tmp = createTempDirectory("styrelserummet-test")
         testApplication {
             application {
@@ -456,9 +465,39 @@ class ApiTest {
                     ),
                 )
             }
-            assertEquals(HttpStatusCode.BadRequest, res.status)
+            assertEquals(HttpStatusCode.UnsupportedMediaType, res.status)
             val fel = json.parseToJsonElement(res.bodyAsText()).jsonObject["fel"]!!.jsonPrimitive.content
-            assertEquals("Bara PDF-filer kan laddas upp.", fel)
+            assertEquals(felTillMeddelande(ServerFel.IntePdf), fel)
+        }
+    }
+
+    @Test
+    fun forStorPdfPrefixGer413() = runBlocking {
+        val tmp = createTempDirectory("styrelserummet-test")
+        testApplication {
+            application {
+                module(ServerMiljo(tmp, 0, FalskTolkare(), synkronJobb = true))
+            }
+            val client = createClient { }
+            val prefix = "%PDF-".encodeToByteArray()
+            val bytes = ByteArray(MAX_BYTES_PER_JOBB + 1)
+            prefix.copyInto(bytes)
+            val res = client.post("/api/jobb") {
+                setBody(
+                    MultiPartFormDataContent(
+                        formData {
+                            append("forening", "Test brf")
+                            append("arsslut", "2025")
+                            append("filer", bytes, Headers.build {
+                                append(HttpHeaders.ContentDisposition, "filename=stor.pdf")
+                            })
+                        },
+                    ),
+                )
+            }
+            assertEquals(HttpStatusCode.PayloadTooLarge, res.status)
+            val fel = json.parseToJsonElement(res.bodyAsText()).jsonObject["fel"]!!.jsonPrimitive.content
+            assertEquals(felTillMeddelande(ServerFel.ForStorFil), fel)
         }
     }
 }
