@@ -33,3 +33,5 @@ gradle :styrelserummet:test --tests "*AvskrivningsplanTest"
 - Ändra andra filer.
 - Ändra `planForKomponent`.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (tog bort duplicerade avskrivningFor/bokfortVarde; rättade 1_200_000 i test)

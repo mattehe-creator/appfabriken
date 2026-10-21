@@ -59,7 +59,7 @@ class AvskrivningsplanTest {
 
     @Test
     fun avskrivningsplan_med_komponenter() {
-        val k1 = komponent(200_000, 2010, 40, 0)
+        val k1 = komponent(1_200_000, 2010, 40, 0)
         val k2 = komponent(300_000, 2020, 10, 0)
         
         val result = avskrivningsplan(listOf(k1, k2), 2026, 5)
