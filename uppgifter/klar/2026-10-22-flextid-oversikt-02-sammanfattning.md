@@ -42,3 +42,5 @@ gradle :flextid:testDebugUnitTest --tests "*PeriodSammanfattningTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #465). Ersatt av 2026-10-22-flextid-oversikt-02-sammanfattning-f2.md
