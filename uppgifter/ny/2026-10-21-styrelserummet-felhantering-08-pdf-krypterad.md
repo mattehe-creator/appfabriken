@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-21-styrelserummet-felhantering.md
 försök: 1
-beror-på: ingen
+beror-på: 2026-10-21-styrelserummet-felhantering-05-fel-http-status.md
 
 ## Ändra bara dessa filer
 - styrelserummet/src/main/kotlin/se/tmconnect/styrelserummet/pdf/PdfLasare.kt
