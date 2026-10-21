@@ -1,5 +1,6 @@
 package se.tmconnect.flextid.regler
 
+import java.time.LocalDate
 import java.time.YearMonth
 
 fun arbetsdagarIManad(
@@ -28,3 +29,23 @@ fun normaltidForManadMin(
     uteslutRodaDagar: Boolean,
     uteslutAftnar: Boolean,
 ): Int = arbetsdagarIManad(ar, manad, arbetsdagarMask, uteslutRodaDagar, uteslutAftnar) * normaltidMinPerDag
+
+fun arbetsdagarIIntervall(fran: LocalDate, till: LocalDate, arbetsdagarMask: Int, aftnarLediga: Boolean): Int {
+    if (fran.isAfter(till)) return 0
+    
+    var count = 0
+    var datum = fran
+    
+    while (!datum.isAfter(till)) {
+        if (arArbetsdag(datum, arbetsdagarMask) && !arLedigDag(datum, aftnarLediga)) {
+            count++
+        }
+        datum = datum.plusDays(1)
+    }
+    
+    return count
+}
+
+fun normaltidForIntervallMin(fran: LocalDate, till: LocalDate, arbetsdagarMask: Int, normaltidMinPerDag: Int, aftnarLediga: Boolean): Int {
+    return arbetsdagarIIntervall(fran, till, arbetsdagarMask, aftnarLediga) * normaltidMinPerDag
+}
