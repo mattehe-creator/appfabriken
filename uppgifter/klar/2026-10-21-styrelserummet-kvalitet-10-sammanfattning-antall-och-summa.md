@@ -33,3 +33,5 @@ gradle :styrelserummet:test --tests "*SammanfattningTest.antalOchSumma"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #379). Ersatt av 2026-10-21-styrelserummet-kvalitet-10-sammanfattning-antall-och-summa-f2.md
