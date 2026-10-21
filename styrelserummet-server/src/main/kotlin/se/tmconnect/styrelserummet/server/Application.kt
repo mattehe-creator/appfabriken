@@ -73,6 +73,12 @@ fun Application.module(miljo: ServerMiljo) {
         exception<FelBegaran> { call, cause ->
             call.respond(HttpStatusCode.BadRequest, mapOf("fel" to cause.meddelande))
         }
+        exception<ServerFelBegaran> { call, cause ->
+            call.respond(
+                HttpStatusCode.fromValue(felTillHttpStatus(cause.fel)),
+                mapOf("fel" to felTillMeddelande(cause.fel)),
+            )
+        }
         exception<Throwable> { call, _ ->
             call.respond(HttpStatusCode.InternalServerError, mapOf("fel" to "Något gick fel. Försök igen."))
         }
@@ -108,10 +114,12 @@ fun Application.module(miljo: ServerMiljo) {
         route("/api/jobb") {
             post {
                 val ip = call.klientIp(miljo.proxyPaa)
-                if (!ipGrans.farSkapaJobb(ip)) {
+                val nuMs = System.currentTimeMillis()
+                if (!ipGrans.farSkapaJobb(ip, nuMs)) {
+                    val fel = ServerFel.ForMangaJobb(ipGrans.nastaForsokEpochMs(ip, nuMs))
                     call.respond(
-                        HttpStatusCode.TooManyRequests,
-                        mapOf("fel" to "För många jobb från samma adress. Vänta en timme och försök igen."),
+                        HttpStatusCode.fromValue(felTillHttpStatus(fel)),
+                        mapOf("fel" to felTillMeddelande(fel)),
                     )
                     return@post
                 }
@@ -148,13 +156,13 @@ fun Application.module(miljo: ServerMiljo) {
                             if (totalBytes > MAX_BYTES_PER_JOBB) {
                                 part.dispose()
                                 lagring.raderaJobb(id)
-                                throw FelBegaran("Filerna får vara högst 25 MB tillsammans.")
+                                throw ServerFelBegaran(ServerFel.ForStorFil)
                             }
                             val namn = part.originalFileName ?: "fil.pdf"
                             if (!arPdf(bytes)) {
                                 part.dispose()
                                 lagring.raderaJobb(id)
-                                throw FelBegaran("Bara PDF-filer kan laddas upp.")
+                                throw ServerFelBegaran(ServerFel.IntePdf)
                             }
                             lagring.sparaFil(id, sakertFilnamn(namn), bytes)
                             filAntal++
@@ -239,6 +247,8 @@ fun Application.module(miljo: ServerMiljo) {
 }
 
 class FelBegaran(val meddelande: String) : Exception(meddelande)
+
+private class ServerFelBegaran(val fel: ServerFel) : Exception()
 
 fun main() {
     val miljo = miljoFranEnv()

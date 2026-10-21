@@ -42,4 +42,17 @@ class IpGrans(private val rot: Path) {
         val spara = (tider.filter { nuMs - it < timmeMs } + nuMs).joinToString("\n")
         fil.writeText(spara)
     }
+
+    fun nastaForsokEpochMs(ip: String, nuMs: Long): Long {
+        val fil = rot / "ip-grans" / hashIp(ip)
+        val timmeMs = 60L * 60 * 1000
+        val tider = if (fil.exists()) {
+            fil.readText().lines().mapNotNull { it.toLongOrNull() }
+        } else {
+            emptyList()
+        }
+        val inomTimme = tider.filter { nuMs - it < timmeMs }
+        if (inomTimme.isEmpty()) return nuMs
+        return inomTimme.min() + timmeMs
+    }
 }

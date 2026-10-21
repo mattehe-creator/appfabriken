@@ -53,3 +53,5 @@ gradle :styrelserummet-server:test --tests "*ApiTest*"
 ## Gör inte
 - Ändra andra filer (utom om IpGrans **måste** få mer än en funktion — håll dig inom listan ovan).
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (Cursor implementerade hela uppgiften — lokal modell hade bara «Uppgift startad»)
