@@ -59,3 +59,5 @@ gradle :styrelserummet-server:test --tests "*UtskriftTest.utskriftsRader"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Koppla in i webb eller API.
+
+utfall: godkänd 2026-10-21 (Cursor implementerade hela uppgiften — tomma filer efter försök 2)
