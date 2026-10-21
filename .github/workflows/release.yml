@@ -1,4 +1,4 @@
-# Bygger release-varianten av Garantivalvet (R8 krymper koden) för publicering i Play.
+# Bygger release-varianten av en app (standard Garantivalvet) (R8 krymper koden) för publicering i Play.
 # Körs för hand (Actions > Release > Run workflow). Ändras bara av Claude (CLAUDE.md punkt 11).
 #
 # Ger två saker:
@@ -10,6 +10,13 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      app:
+        description: "Appmodul"
+        required: true
+        default: garantivalvet
+        type: choice
+        options: [garantivalvet, husloggen, flextid]
 
 permissions:
   contents: write
@@ -45,11 +52,11 @@ jobs:
           echo "$DEBUG_KEYSTORE_BASE64" | base64 -d > ~/.android/debug.keystore
 
       - name: Bygg release (APK för test och AAB)
-        run: gradle --no-daemon :garantivalvet:assembleRelease :garantivalvet:bundleRelease -PsigneraMedDebug
+        run: gradle --no-daemon :${{ inputs.app }}:assembleRelease :${{ inputs.app }}:bundleRelease -PsigneraMedDebug
 
       - name: Kontrollera behörigheter i release-APK:n
         run: |
-          apk=$(ls garantivalvet/build/outputs/apk/release/*.apk | head -1)
+          apk=$(ls ${{ inputs.app }}/build/outputs/apk/release/*.apk | head -1)
           aapt2=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 | tail -1)
           "$aapt2" dump permissions "$apk" | tee behorigheter.txt
           if grep -q "INTERNET" behorigheter.txt; then
@@ -66,14 +73,15 @@ jobs:
         run: |
           mkdir -p ut
           kort=${GITHUB_SHA::7}
-          cp garantivalvet/build/outputs/apk/release/*.apk "ut/garantivalvet-release-test-${kort}.apk"
-          cp garantivalvet/build/outputs/bundle/release/*.aab "ut/garantivalvet-${kort}-osignerad.aab"
-          cp garantivalvet/build/outputs/mapping/release/mapping.txt "ut/mapping-${kort}.txt"
+          app=${{ inputs.app }}
+          cp $app/build/outputs/apk/release/*.apk "ut/${app}-release-test-${kort}.apk"
+          cp $app/build/outputs/bundle/release/*.aab "ut/${app}-${kort}-osignerad.aab"
+          cp $app/build/outputs/mapping/release/mapping.txt "ut/${app}-mapping-${kort}.txt"
           ls -la ut
 
       - uses: actions/upload-artifact@v6
         with:
-          name: release-${{ github.sha }}
+          name: release-${{ inputs.app }}-${{ github.sha }}
           path: ut/*
           retention-days: 30
 
