@@ -25,4 +25,14 @@ class GaHemTidTest {
     fun `test gaHemTid with seconds`() {
         assertEquals(LocalTime.of(16, 30), gaHemTid(LocalTime.of(8, 0, 45), 30, 480))
     }
+    
+    @Test
+    fun `test gaHemTidForNollsaldo normal cases`() {
+        assertEquals(LocalTime.of(16, 30), gaHemTidForNollsaldo(LocalTime.of(8, 0), 30, 480, 0))
+        assertEquals(LocalTime.of(15, 30), gaHemTidForNollsaldo(LocalTime.of(8, 0), 30, 480, 60))
+        assertEquals(LocalTime.of(18, 0), gaHemTidForNollsaldo(LocalTime.of(8, 0), 30, 480, -90))
+        assertEquals(LocalTime.of(8, 0), gaHemTidForNollsaldo(LocalTime.of(8, 0), 30, 480, 600))
+        assertEquals(LocalTime.of(8, 0), gaHemTidForNollsaldo(LocalTime.of(8, 0), 30, 480, 480))
+        assertNull(gaHemTidForNollsaldo(LocalTime.of(14, 0), 30, 480, -120))
+    }
 }
