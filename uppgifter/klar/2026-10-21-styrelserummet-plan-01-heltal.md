@@ -48,3 +48,5 @@ gradle :styrelserummet:test
 - Ändra andra filer.
 - Ändra hur sista året räknas.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (inget)
