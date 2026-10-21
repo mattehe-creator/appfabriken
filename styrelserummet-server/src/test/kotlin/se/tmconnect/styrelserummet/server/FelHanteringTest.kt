@@ -57,6 +57,35 @@ class FelHanteringTest {
     }
 
     @Test
+    fun aiTimeoutForklararForseningOchUppmanarForsokIgen() {
+        val meddelande = felTillMeddelande(ServerFel.AiTimeout)
+        assertTrue(
+            meddelande.contains("hann", ignoreCase = true) ||
+                meddelande.contains("svara", ignoreCase = true),
+        )
+        assertTrue(meddelande.contains("Försök igen", ignoreCase = true))
+        assertFalse(meddelande.contains("504"))
+        assertFalse(meddelande.contains("HTTP", ignoreCase = true))
+        assertFalse(meddelande.contains("Exception", ignoreCase = true))
+        assertFalse(meddelande.contains("claude", ignoreCase = true))
+    }
+
+    @Test
+    fun aiOgiltigtSvarForklararKomponenterUnderhallsplanOchForsokIgen() {
+        val meddelande = felTillMeddelande(ServerFel.AiOgiltigtSvar)
+        assertTrue(
+            meddelande.contains("komponent", ignoreCase = true) ||
+                meddelande.contains("förslag", ignoreCase = true),
+        )
+        assertTrue(meddelande.contains("underhållsplan", ignoreCase = true))
+        assertTrue(meddelande.contains("Försök igen", ignoreCase = true))
+        assertFalse(meddelande.contains("502"))
+        assertFalse(meddelande.contains("HTTP", ignoreCase = true))
+        assertFalse(meddelande.contains("JSON", ignoreCase = true))
+        assertFalse(meddelande.contains("Exception", ignoreCase = true))
+    }
+
+    @Test
     fun loggJobbFelIngenLasbarTextInnehallerIdTypUtanMeddelandeEllerFilnamn() {
         val fel = ServerFel.IngenLasbarText
         val rad = loggJobbFel("jobb-1", fel, 0L)

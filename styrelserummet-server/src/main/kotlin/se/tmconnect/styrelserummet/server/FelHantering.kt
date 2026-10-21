@@ -8,6 +8,10 @@ sealed class ServerFel {
     data object ForStorFil : ServerFel()
 
     data object IntePdf : ServerFel()
+
+    data object AiTimeout : ServerFel()
+
+    data object AiOgiltigtSvar : ServerFel()
 }
 
 private val maxMbPerJobb: Int = MAX_BYTES_PER_JOBB / (1024 * 1024)
@@ -23,6 +27,10 @@ fun felTillMeddelande(fel: ServerFel): String =
                 "Prova att ladda upp färre filer eller mindre filer."
         ServerFel.IntePdf ->
             "Bara PDF-filer accepteras. Ladda upp en PDF-fil."
+        ServerFel.AiTimeout ->
+            "Tjänsten hann inte svara i tid. Försök igen om en liten stund."
+        ServerFel.AiOgiltigtSvar ->
+            "Komponentförslagen kunde inte tas fram. Kontrollera underhållsplanen och försök igen."
     }
 
 fun loggJobbFel(jobbId: String, fel: ServerFel, tidMs: Long): String {
@@ -32,6 +40,8 @@ fun loggJobbFel(jobbId: String, fel: ServerFel, tidMs: Long): String {
             ServerFel.KrypteradPdf -> "KrypteradPdf"
             ServerFel.ForStorFil -> "ForStorFil"
             ServerFel.IntePdf -> "IntePdf"
+            ServerFel.AiTimeout -> "AiTimeout"
+            ServerFel.AiOgiltigtSvar -> "AiOgiltigtSvar"
         }
     return "$jobbId $felKod $tidMs"
 }
