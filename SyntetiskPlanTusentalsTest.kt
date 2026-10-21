@@ -100,7 +100,7 @@ class SyntetiskPlanTusentalsTest {
         assertEquals(Sakerhet.MEDEL, resultat.komponenter[2].sakerhet)
         
         // Kontrollera att avstämning är korrekt (byggnadsvärde ska matcha summan av komponentvärden)
-        val totalt = resultat.komponenter.sumOf { itanskaffningsvarde }
+        val totalt = resultat.komponenter.sumOf { it.anSkaffningsvarde }
         assertEquals(4000000L, totalt) // 1_250_000 + 1_300_000 + 1_450_000 = 4_000_000
         
         // Kontrollera att anmärkningar finns (eftersom vi har testat med hårda mellanslag)
