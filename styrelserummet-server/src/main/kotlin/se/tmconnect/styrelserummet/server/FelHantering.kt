@@ -13,3 +13,12 @@ fun felTillMeddelande(fel: ServerFel): String =
         ServerFel.KrypteradPdf ->
             "Filen är lösenordsskyddad. Ladda upp PDF:en olåst, utan lösenord."
     }
+
+fun loggJobbFel(jobbId: String, fel: ServerFel, tidMs: Long): String {
+    val felKod =
+        when (fel) {
+            ServerFel.IngenLasbarText -> "IngenLasbarText"
+            ServerFel.KrypteradPdf -> "KrypteradPdf"
+        }
+    return "$jobbId $felKod $tidMs"
+}
