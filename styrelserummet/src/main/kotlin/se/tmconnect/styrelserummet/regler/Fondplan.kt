@@ -32,3 +32,27 @@ fun jamnAvsattning(atgarder: List<PlaneradAtgard>, franAr: Int, antalAr: Int, in
     // Avrunda uppåt till hel krona: (behov + antalAr - 1) / antalAr
     return (behov + antalAr - 1) / antalAr
 }
+
+data class FondAr(val ar: Int, val avsattning: Long, val uttag: Long, val utgaende: Long)
+
+fun fondUtveckling(
+    atgarder: List<PlaneradAtgard>,
+    franAr: Int,
+    antalAr: Int,
+    arligAvsattning: Long,
+    ingaendeFond: Long,
+): List<FondAr> {
+    if (arligAvsattning < 0) {
+        throw IllegalArgumentException("arligAvsattning får inte vara negativ")
+    }
+    val uttagPerAr = summaPerAr(atgarder, franAr, antalAr)
+    val resultat = mutableListOf<FondAr>()
+    var utgaende = ingaendeFond
+    for (i in 0 until antalAr) {
+        val ar = franAr + i
+        val uttag = uttagPerAr[i]
+        utgaende = utgaende + arligAvsattning - uttag
+        resultat.add(FondAr(ar, arligAvsattning, uttag, utgaende))
+    }
+    return resultat
+}
