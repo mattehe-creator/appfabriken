@@ -14,6 +14,8 @@ class SammanfattningTest {
             listOf(
                 "Listan innehåller 0 komponenter.",
                 "Anskaffningsvärdet är 0 kr sammanlagt.",
+                "0 komponenter (–) har uppskattat värde eller låg säkerhet.",
+                "Byggnadens värde saknas, så avstämning görs inte.",
             ),
             sammanfatta(emptyList(), null, 2025),
         )
@@ -21,6 +23,8 @@ class SammanfattningTest {
             listOf(
                 "Listan innehåller 1 komponenter.",
                 "Anskaffningsvärdet är 1\u00A0000\u00A0000 kr sammanlagt.",
+                "0 komponenter (0,0 %) har uppskattat värde eller låg säkerhet.",
+                "Byggnadens värde saknas, så avstämning görs inte.",
             ),
             sammanfatta(listOf(komponent(1_000_000)), null, 2025),
         )

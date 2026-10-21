@@ -32,3 +32,5 @@ gradle :styrelserummet:test --tests "*SammanfattningTest.osakerOchAvstamning"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: godkänd 2026-10-21 (procent() i stället för String.format; antalOchSumma utökad till fyra meningar)
