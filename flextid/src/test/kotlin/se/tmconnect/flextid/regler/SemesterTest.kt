@@ -1,9 +1,9 @@
 package se.tmconnect.flextid.regler
 
 import java.time.LocalDate
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class SemesterTest {
     
@@ -44,11 +44,11 @@ class SemesterTest {
     
     @Test
     fun `test semesterår med felaktig startmanad`() {
-        assertThrows<IllegalArgumentException> {
+        assertFailsWith<IllegalArgumentException> {
             semesterArFor(LocalDate.of(2026, 10, 21), 13)
         }
         
-        assertThrows<IllegalArgumentException> {
+        assertFailsWith<IllegalArgumentException> {
             semesterArFor(LocalDate.of(2026, 10, 21), 0)
         }
     }
