@@ -1,27 +1,34 @@
 package se.tmconnect.styrelserummet.server
 
-import io.ktor.client.request.forms.FormPart
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
-import io.ktor.client.request.header
+import io.ktor.client.request.get
+import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Headers
 import io.ktor.server.testing.testApplication
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
 import org.apache.pdfbox.pdmodel.font.PDType1Font
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts
-import org.junit.Assert
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.ByteArrayOutputStream
 import java.nio.file.Files
-import java.nio.file.Path
 import kotlin.io.path.createTempDirectory
+import kotlin.io.path.div
+import kotlin.io.path.extension
+import kotlin.io.path.isRegularFile
+import kotlin.io.path.readText
+import kotlin.io.path.walk
 
 class DataminimeringTest {
     private val json = Json { ignoreUnknownKeys = true }
@@ -44,7 +51,9 @@ class DataminimeringTest {
     }
 
     @Test
-    fun efterKlartJobb() = runBlocking {
+    fun efterKlartJobbBaraTillatnaFiler() = runBlocking {
+        val planText = "Underhall tak 500000"
+        val arText = "Byggnader och mark 500 000"
         val tmp = createTempDirectory("styrelserummet-dataminimering-test")
         testApplication {
             application {
@@ -58,10 +67,10 @@ class DataminimeringTest {
                 )
             }
             val client = createClient { }
-            
-            val planBytes = pdfMedText("Underhall tak 500000")
-            val arBytes = pdfMedText("Byggnader och mark 500 000")
-            
+
+            val planBytes = pdfMedText(planText)
+            val arBytes = pdfMedText(arText)
+
             val res = client.post("/api/jobb") {
                 setBody(
                     MultiPartFormDataContent(
@@ -80,12 +89,11 @@ class DataminimeringTest {
                     ),
                 )
             }
-            
-            Assert.assertEquals(200, res.status.value)
+
+            assertEquals(200, res.status.value)
             val body = json.parseToJsonElement(res.bodyAsText()).jsonObject
             val id = body["id"]!!.jsonPrimitive.content
-            
-            // Vänta tills jobbet är klart
+
             var status = "KORAR"
             while (status != "KLAR") {
                 val s = client.get("/api/jobb/$id")
@@ -93,36 +101,39 @@ class DataminimeringTest {
                 val metaObj = json.parseToJsonElement(statusBody).jsonObject["meta"]!!.jsonObject
                 status = metaObj["status"]!!.jsonPrimitive.content
             }
-            
-            // Lista alla filer i jobbkatalogen
-            val jobbKatalog = tmp.resolve(id)
-            val allaFiler: MutableList<Path> = mutableListOf()
-            Files.walk(jobbKatalog)
-                .filter { Files.isRegularFile(it) }
-                .forEach { allaFiler.add(it) }
-            
-            // Kontrollera att endast tillåtna filer finns
-            val tillatnaFiler = setOf("meta.json", "utkast.json")
-            val forvarningar = mutableListOf<String>()
-            
+
+            val jobbKatalog = tmp / "jobb" / id
+            val allaFiler = jobbKatalog.walk().filter { it.isRegularFile() }.toList()
+
+            assertEquals(
+                "Exakt 2 PDF + meta.json + utkast.json",
+                4,
+                allaFiler.size,
+            )
+
+            val tillatnaRotfiler = setOf("meta.json", "utkast.json")
+            val fel = mutableListOf<String>()
+
             for (fil in allaFiler) {
-                val relativSokvag = jobbKatalog.relativize(fil).toString()
-                
-                // Kontrollera att filen är i filer-katalogen eller är en av tillåtna filer
-                if (!relativSokvag.startsWith("filer/") && !tillatnaFiler.contains(relativSokvag)) {
-                    forvarningar.add("Oväntad fil: $relativSokvag")
+                val relativSokvag = jobbKatalog.relativize(fil).toString().replace('\\', '/')
+
+                if (!relativSokvag.startsWith("filer/") && relativSokvag !in tillatnaRotfiler) {
+                    fel.add("Oväntad fil: $relativSokvag")
                 }
-                
-                // Kontrollera att ingen fil innehåller rå text från PDF
-                val innehall = Files.readString(fil)
-                if (innehall.contains("Underhall tak 500000") || innehall.contains("Byggnader och mark 500 000")) {
-                    forvarningar.add("Fil innehåller rå PDF-text: $relativSokvag")
+
+                if (fil.extension.equals("pdf", ignoreCase = true)) {
+                    continue
+                }
+                val innehall = fil.readText()
+                if (innehall.contains(planText) || innehall.contains(arText)) {
+                    fel.add("Fil innehåller rå PDF-text (parallell textkopia): $relativSokvag")
                 }
             }
-            
-            Assert.assertTrue(
-                "Förväntade endast filer i 'filer/', 'meta.json' och 'utkast.json', men hittade: ${allaFiler.joinToString(", ") { jobbKatalog.relativize(it).toString() }}",
-                forvarningar.isEmpty()
+
+            assertTrue(
+                "Förväntade endast filer i 'filer/', 'meta.json' och 'utkast.json', men hittade: " +
+                    allaFiler.joinToString(", ") { jobbKatalog.relativize(it).toString().replace('\\', '/') },
+                fel.isEmpty(),
             )
         }
     }
