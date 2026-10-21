@@ -181,6 +181,7 @@ class JobbLagringTest {
         // Kontrollera att metoder inte kraschar utan returnerar null/tom lista
         assertNull(lagring.lasMeta(jobId))
         
+        // Använd korrekt konstruktion av UtkastDto
         val utkast = UtkastDto(
             komponenter = emptyList(),
             sakerhet = 0.0,
