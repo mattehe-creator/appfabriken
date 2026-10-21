@@ -29,3 +29,5 @@ gradle :styrelserummet:test --tests "*GrupperaNamnTest.gissaGruppElVarme"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #371). Ersatt av 2026-10-21-styrelserummet-kvalitet-03-gissa-grupp-el-varme-f2.md
