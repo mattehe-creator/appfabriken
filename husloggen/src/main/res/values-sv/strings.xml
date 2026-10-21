@@ -123,11 +123,11 @@
     <string name="forslag_service_varmepump">Service av värmepump</string>
     <string name="forslag_service_ventilation">Service av ventilation</string>
     <plurals name="intervall_manader">
-        <item quantity="one">Var %d:e månad</item>
+        <item quantity="one">Varje månad</item>
         <item quantity="other">Var %d:e månad</item>
     </plurals>
     <plurals name="intervall_ar">
-        <item quantity="one">Var %d:e år</item>
+        <item quantity="one">Varje år</item>
         <item quantity="other">Var %d:e år</item>
     </plurals>
     
@@ -272,4 +272,14 @@
     <string name="dokument_for_stort">Filen är för stor. Högst 25 MB.</string>
     <string name="dokument_ogiltig_typ">Endast PDF-filer och bilder stöds.</string>
     <string name="dokument_kunde_inte_laggas_till">Kunde inte lägga till dokumentet.</string>
+    <string name="flik_oversikt">Översikt</string>
+    <string name="flik_mer">Mer</string>
+    <string name="mer_plan_titel">Planerade kostnader</string>
+    <string name="mer_plan_text">Kostnader du räknar med framåt</string>
+    <string name="mer_matare_text">El, vatten och värme</string>
+    <string name="mer_dokument_text">Manualer, ritningar och protokoll</string>
+    <string name="butik_rubrik">Underhåll, kvitton och husets historik</string>
+    <string name="butik_punkt_1">Påminnelser före varje återkommande jobb</string>
+    <string name="butik_punkt_2">Kvitton och kostnader per år, PDF vid försäljning</string>
+    <string name="butik_punkt_3">Offline. Inget konto, ingen reklam</string>
 </resources>

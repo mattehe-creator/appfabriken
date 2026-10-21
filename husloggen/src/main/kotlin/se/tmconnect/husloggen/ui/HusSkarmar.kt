@@ -1,5 +1,6 @@
 package se.tmconnect.husloggen.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.selection.selectableGroup
@@ -15,12 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.RadioButton
@@ -29,8 +25,6 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -66,7 +60,7 @@ import se.tmconnect.husloggen.regler.grupperaPerAr
 import se.tmconnect.karna.format.formateraPrisKr
 import se.tmconnect.karna.tema.TemaLage
 
-enum class HusFlik { ATT_GORA, LOGG, PLAN, MATARE, DOKUMENT, SAMMANSTALLNING }
+enum class HusFlik { ATT_GORA, LOGG, PLAN, MATARE, DOKUMENT, SAMMANSTALLNING, MER }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,6 +105,9 @@ fun HusStartSkarm(
             valdFlik = HusFlik.ATT_GORA.ordinal
         }
     }
+    BackHandler(enabled = HusFlik.entries[valdFlik] in MER_FLIKAR) {
+        valdFlik = HusFlik.MER.ordinal
+    }
     val locale = LocalConfiguration.current.locales[0]
     val visaSkatteInfo = locale.country.equals("SE", ignoreCase = true)
 
@@ -139,59 +136,10 @@ fun HusStartSkarm(
             )
         },
         bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    selected = valdFlik == HusFlik.ATT_GORA.ordinal,
-                    onClick = { valdFlik = HusFlik.ATT_GORA.ordinal },
-                    icon = { Icon(Icons.Filled.Home, contentDescription = null) },
-                    label = { Text(text = stringResource(R.string.flik_att_gora)) },
-                )
-                NavigationBarItem(
-                    selected = valdFlik == HusFlik.LOGG.ordinal,
-                    onClick = { valdFlik = HusFlik.LOGG.ordinal },
-                    icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
-                    label = { Text(text = stringResource(R.string.flik_logg)) },
-                )
-                NavigationBarItem(
-                    selected = valdFlik == HusFlik.PLAN.ordinal,
-                    onClick = { valdFlik = HusFlik.PLAN.ordinal },
-                    icon = {
-                        Icon(
-                            Icons.Filled.DateRange,
-                            contentDescription = stringResource(R.string.flik_plan),
-                        )
-                    },
-                    label = { Text(text = stringResource(R.string.flik_plan)) },
-                )
-                NavigationBarItem(
-                    selected = valdFlik == HusFlik.MATARE.ordinal,
-                    onClick = { valdFlik = HusFlik.MATARE.ordinal },
-                    icon = {
-                        Icon(
-                            Icons.Filled.CheckCircle,
-                            contentDescription = stringResource(R.string.flik_matare),
-                        )
-                    },
-                    label = { Text(text = stringResource(R.string.flik_matare)) },
-                )
-                NavigationBarItem(
-                    selected = valdFlik == HusFlik.DOKUMENT.ordinal,
-                    onClick = { valdFlik = HusFlik.DOKUMENT.ordinal },
-                    icon = {
-                        Icon(
-                            Icons.Filled.Menu,
-                            contentDescription = stringResource(R.string.flik_dokument),
-                        )
-                    },
-                    label = { Text(text = stringResource(R.string.flik_dokument)) },
-                )
-                NavigationBarItem(
-                    selected = valdFlik == HusFlik.SAMMANSTALLNING.ordinal,
-                    onClick = { valdFlik = HusFlik.SAMMANSTALLNING.ordinal },
-                    icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
-                    label = { Text(text = stringResource(R.string.flik_sammanstallning)) },
-                )
-            }
+            HusNavigering(
+                valdFlik = HusFlik.entries[valdFlik],
+                onValjFlik = { valdFlik = it.ordinal },
+            )
         },
         floatingActionButton = {
             when (HusFlik.entries[valdFlik]) {
@@ -260,8 +208,8 @@ fun HusStartSkarm(
                         modifier = Modifier.tryckyta48(),
                     )
                 }
-                HusFlik.SAMMANSTALLNING -> {
-                    // Inget flytande knapp för sammanställningsfliken
+                HusFlik.SAMMANSTALLNING, HusFlik.MER -> {
+                    // Ingen flytande knapp i sammanställningen eller under Mer
                 }
             }
         },
@@ -310,6 +258,13 @@ fun HusStartSkarm(
                     onOppnaDokument = onOppnaDokument,
                 )
             }
+            HusFlik.MER -> MerFlik(
+                antalPlanerade = planeradeKostnader.size,
+                antalMatare = matare.size,
+                antalDokument = dokument.size,
+                contentPadding = innerPadding,
+                onValjFlik = { valdFlik = it.ordinal },
+            )
             HusFlik.SAMMANSTALLNING -> {
                 SammanstallningSkarm(
                     poster = poster,
