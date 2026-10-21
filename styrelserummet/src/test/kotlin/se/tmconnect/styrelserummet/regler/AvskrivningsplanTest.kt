@@ -1,70 +1,59 @@
 package se.tmconnect.styrelserummet.regler
 
-import org.junit.jupiter.api.Test
+import org.junit.Assert.assertEquals
+import org.junit.Test
 import se.tmconnect.styrelserummet.modell.Komponent
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import se.tmconnect.styrelserummet.modell.Komponentgrupp
+import se.tmconnect.styrelserummet.modell.Sakerhet
 
 class AvskrivningsplanTest {
-    
-    @Test
-    fun `test planForKomponent with normal case`() {
-        val k = Komponent(
-            anskaffningsvarde = 300000L,
-            anskaffningsar = 2020,
-            nyttjandeperiodAr = 10,
-            restvarde = 0L
+
+    private fun komponent(varde: Long, anskaffningsar: Int, period: Int, restvarde: Long) =
+        Komponent(
+            namn = "Tak",
+            grupp = Komponentgrupp.TAK,
+            anskaffningsvarde = varde,
+            anskaffningsar = anskaffningsar,
+            nyttjandeperiodAr = period,
+            restvarde = restvarde,
+            kalla = "test",
+            sakerhet = Sakerhet.MEDEL,
         )
-        
+
+    @Test
+    fun planForKomponent_sistaArINyttjandeperiod() {
+        val k = komponent(300_000, 2020, 10, 0)
+
         val result = planForKomponent(k, 2028, 3)
-        
+
         assertEquals(3, result.size)
-        assertEquals(PlanAr(2028, 30000L, 60000L), result[0])
-        assertEquals(PlanAr(2029, 30000L, 0L), result[1])
+        assertEquals(PlanAr(2028, 30_000L, 30_000L), result[0])
+        assertEquals(PlanAr(2029, 30_000L, 0L), result[1])
         assertEquals(PlanAr(2030, 0L, 0L), result[2])
     }
-    
+
     @Test
-    fun `test planForKomponent with years before usage`() {
-        val k = Komponent(
-            anskaffningsvarde = 300000L,
-            anskaffningsar = 2020,
-            nyttjandeperiodAr = 10,
-            restvarde = 0L
-        )
-        
+    fun planForKomponent_foreNyttjandeperiod() {
+        val k = komponent(300_000, 2020, 10, 0)
+
         val result = planForKomponent(k, 2018, 2)
-        
+
         assertEquals(2, result.size)
-        assertEquals(PlanAr(2018, 0L, 300000L), result[0])
-        assertEquals(PlanAr(2019, 0L, 300000L), result[1])
+        assertEquals(PlanAr(2018, 0L, 300_000L), result[0])
+        assertEquals(PlanAr(2019, 0L, 300_000L), result[1])
     }
-    
+
     @Test
-    fun `test planForKomponent with zero years`() {
-        val k = Komponent(
-            anskaffningsvarde = 300000L,
-            anskaffningsar = 2020,
-            nyttjandeperiodAr = 10,
-            restvarde = 0L
-        )
-        
-        val result = planForKomponent(k, 2020, 0)
-        
-        assertEquals(0, result.size)
+    fun planForKomponent_nollAr() {
+        val k = komponent(300_000, 2020, 10, 0)
+
+        assertEquals(emptyList<PlanAr>(), planForKomponent(k, 2020, 0))
     }
-    
-    @Test
-    fun `test planForKomponent with too many years`() {
-        val k = Komponent(
-            anskaffningsvarde = 300000L,
-            anskaffningsar = 2020,
-            nyttjandeperiodAr = 10,
-            restvarde = 0L
-        )
-        
-        assertFailsWith<IllegalArgumentException> {
-            planForKomponent(k, 2020, 101)
-        }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun planForKomponent_flerAn100Ar() {
+        val k = komponent(300_000, 2020, 10, 0)
+
+        planForKomponent(k, 2020, 101)
     }
 }
