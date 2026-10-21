@@ -33,3 +33,5 @@ gradle :styrelserummet:test --tests "*SyntetiskArsredovisningTest"
 ## Gör inte
 - Ändra `HittaByggnadensVarde.kt` om testet går grönt.
 - Riktiga årsredovisningar.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #428). Ersatt av 2026-10-21-styrelserummet-provklar-11-flode-arsredovisning-balans-f2.md
