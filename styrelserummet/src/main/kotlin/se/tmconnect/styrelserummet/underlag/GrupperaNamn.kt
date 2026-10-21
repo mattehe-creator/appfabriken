@@ -21,14 +21,40 @@ private val nyckelord = listOf(
     NyckelordMatch("ftx", Komponentgrupp.VENTILATION),
     NyckelordMatch("frånluft", Komponentgrupp.VENTILATION),
     NyckelordMatch("tilluft", Komponentgrupp.VENTILATION),
+    NyckelordMatch("elcentral", Komponentgrupp.EL),
+    NyckelordMatch("elstammar", Komponentgrupp.EL),
+    NyckelordMatch("värme", Komponentgrupp.VARME),
+    NyckelordMatch("fjärrvärme", Komponentgrupp.VARME),
+    NyckelordMatch("radiator", Komponentgrupp.VARME),
+    NyckelordMatch("undercentral", Komponentgrupp.VARME),
 )
+
+private fun indexSomEgetOrd(text: String, ord: String): Int {
+    var start = 0
+    while (start <= text.length - ord.length) {
+        val index = text.indexOf(ord, start)
+        if (index < 0) return -1
+        val fore = index == 0 || !text[index - 1].isLetter()
+        val efterIndex = index + ord.length
+        val efter = efterIndex >= text.length || !text[efterIndex].isLetter()
+        if (fore && efter) return index
+        start = index + 1
+    }
+    return -1
+}
 
 fun gissaGrupp(namn: String): Komponentgrupp? {
     val lower = namn.lowercase()
-    val basta = nyckelord.mapNotNull { nyckel ->
+    val traeffar = nyckelord.mapNotNull { nyckel ->
         val index = lower.indexOf(nyckel.ord)
         if (index < 0) null else Triple(index, nyckel.ord.length, nyckel.grupp)
-    }.minWithOrNull(compareBy<Triple<Int, Int, Komponentgrupp>>({ it.first }).thenByDescending { it.second })
-        ?: return null
+    }.toMutableList()
+    val elIndex = indexSomEgetOrd(lower, "el")
+    if (elIndex >= 0) {
+        traeffar.add(Triple(elIndex, 2, Komponentgrupp.EL))
+    }
+    val basta = traeffar.minWithOrNull(
+        compareBy<Triple<Int, Int, Komponentgrupp>>({ it.first }).thenByDescending { it.second },
+    ) ?: return null
     return basta.third
 }

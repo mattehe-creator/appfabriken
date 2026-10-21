@@ -40,3 +40,5 @@ gradle :styrelserummet:test --tests "*GrupperaNamnTest.gissaGruppElVarme"
 - Lägga till beroenden.
 - Ändra datamodellen.
 - Lägga filer i repots rot.
+
+utfall: godkänd 2026-10-21 (hel implementation efter försök 2 utan kod från lokala modellen)
