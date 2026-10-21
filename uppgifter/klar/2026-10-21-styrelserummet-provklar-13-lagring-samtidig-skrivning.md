@@ -26,3 +26,5 @@ gradle :styrelserummet-server:test --tests "*JobbLagringTest.samtidigSkrivMetaGe
 ## Gör inte
 - Ändra andra filer.
 - Sänka antal iterationer under 20 utan anledning.
+
+utfall: godkänd 2026-10-21 (inget)
