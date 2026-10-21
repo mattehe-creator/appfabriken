@@ -28,3 +28,5 @@ gradle :styrelserummet:test --tests "*AnmarkningarTest.anmarkningDubblaNamnOchNy
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #320). Ersatt av 2026-10-20-styrelserummet-robusthet-18-anmarkning-dubbla-nyttjande-f2.md
