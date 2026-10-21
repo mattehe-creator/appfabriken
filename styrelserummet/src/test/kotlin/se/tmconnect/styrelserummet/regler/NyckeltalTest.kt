@@ -1,8 +1,8 @@
 package se.tmconnect.styrelserummet.regler
 
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.Test
 
 class NyckeltalTest {
     
