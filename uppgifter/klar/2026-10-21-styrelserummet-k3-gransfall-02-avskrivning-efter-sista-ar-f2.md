@@ -39,3 +39,5 @@ Minst två `@Test`-metoder (t.ex. `langPeriodSistaArOchDagenEfter` och `kortPeri
 - Ändra befintliga testfiler (`AvskrivningTest.kt` m.fl.).
 - Lägga till beroenden.
 - Ändra andra filer än den nya testfilen (och vid behov `Avskrivning.kt`).
+
+utfall: godkänd 2026-10-21 (inget)
