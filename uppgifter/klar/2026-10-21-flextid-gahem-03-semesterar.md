@@ -43,3 +43,5 @@ gradle :flextid:testDebugUnitTest --tests "*SemesterTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (JUnit 4 i SemesterTest i stället för kotlin.test)
