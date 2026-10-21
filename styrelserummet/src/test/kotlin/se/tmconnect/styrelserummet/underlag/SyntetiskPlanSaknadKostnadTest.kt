@@ -1,11 +1,5 @@
 package se.tmconnect.styrelserummet.underlag
 
-import org.apache.pdfbox.pdmodel.PDDocument
-import org.apache.pdfbox.pdmodel.PDPage
-import org.apache.pdfbox.pdmodel.common.PDRectangle
-import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
-import org.apache.pdfbox.pdmodel.font.PDFont
-import org.apache.pdfbox.pdmodel.font.PDType1Font
 import org.junit.Assert.*
 import org.junit.Test
 import se.tmconnect.styrelserummet.modell.Forening
@@ -23,32 +17,6 @@ class SyntetiskPlanSaknadKostnadTest {
         ) = Result.success(json)
     }
     
-    private fun skapaTestPDF(namn: String, kostnad: String?): PDDocument {
-        val document = PDDocument()
-        val page = PDPage(PDRectangle.A4)
-        document.addPage(page)
-        
-        val contentStream = PDPageContentStream(document, page)
-        val font: PDFont = PDType1Font.HELVETICA
-        
-        contentStream.beginText()
-        contentStream.setFont(font, 12f)
-        contentStream.newLineAtOffset(50f, 750f)
-        
-        // Lägg till en rad med åtgärd och kostnad
-        val text = if (kostnad != null) {
-            "$namn: $kostnad tusen kronor"
-        } else {
-            "$namn: Kostnad saknas i planen"
-        }
-        
-        contentStream.showText(text)
-        contentStream.endText()
-        contentStream.close()
-        
-        return document
-    }
-    
     @Test
     fun planSaknadKostnadGerUppskattning() {
         // Skapa en stubb-JSON med en komponent som saknar kostnad
@@ -60,10 +28,6 @@ class SyntetiskPlanSaknadKostnadTest {
         """.trimIndent()
         
         val tolkare = fakeTolkare(json)
-        
-        // Skapa en PDF med två åtgärder
-        val pdfDoc = skapaTestPDF("Stomme", "6300")
-        val pdfDoc2 = skapaTestPDF("Fasad", null)
         
         // Använd en enkel årsredovisning som ger rätt byggnadsvärde
         val ar = "Byggnader 10 000 000"
