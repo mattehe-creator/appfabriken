@@ -148,7 +148,7 @@ class JobbLagringTest {
 
         // Kontrollera att metafilen är giltig
         val meta = lagring.lasMeta(jobId)
-        assertNotNull(meta)
+        assertTrue(meta != null)
         assertEquals(jobId, meta!!.id)
         assertEquals("Testförening", meta.forening)
     }
