@@ -110,6 +110,10 @@ fun Application.module(miljo: ServerMiljo) {
             call.respondText("ok")
         }
 
+        get("/api/betalning") {
+            call.respond(BetalStatus(aktiv = betalKonfig.aktiv, betald = false, prisKr = betalKonfig.prisOre / 100))
+        }
+
         staticResources("/", "static")
 
         get("/j/{id}") {

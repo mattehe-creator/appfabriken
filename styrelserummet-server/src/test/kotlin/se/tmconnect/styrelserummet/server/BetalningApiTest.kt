@@ -165,6 +165,7 @@ class BetalningApiTest {
             val id = json.parseToJsonElement(res.bodyAsText()).jsonObject["id"]!!.jsonPrimitive.content
             assertEquals(HttpStatusCode.OK, client.get("/api/jobb/$id.csv").status)
             assertEquals(HttpStatusCode.Conflict, client.post("/api/jobb/$id/kassa").status)
+            assertTrue(client.get("/api/betalning").bodyAsText().contains("\"aktiv\":false"))
         }
     }
 }
