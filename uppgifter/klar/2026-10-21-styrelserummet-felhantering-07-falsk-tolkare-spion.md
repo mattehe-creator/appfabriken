@@ -29,3 +29,5 @@ gradle :styrelserummet-server:test --tests "*FalskTolkareTest"
 ## Gör inte
 - Ändra produktionskod.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #327). Ersatt av 2026-10-21-styrelserummet-felhantering-07-falsk-tolkare-spion-f2.md
