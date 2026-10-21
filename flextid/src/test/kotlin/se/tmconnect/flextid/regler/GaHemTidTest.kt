@@ -1,7 +1,7 @@
 package se.tmconnect.flextid.regler
 
 import java.time.LocalTime
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
