@@ -3,6 +3,8 @@ package se.tmconnect.styrelserummet.pdf
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
+import org.apache.pdfbox.pdmodel.encryption.AccessPermission
+import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy
 import org.apache.pdfbox.pdmodel.font.PDType1Font
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts
 import org.junit.Assert.assertEquals
@@ -32,6 +34,28 @@ class PdfLasareTest {
         assertEquals(INGEN_LASBAR_TEXT, (result.exceptionOrNull() as IngenLasbarTextException).meddelande)
     }
 
+    @Test
+    fun olastPdfArInteKrypteradMenKrypteradPdfGerKrypteradPdfException() {
+        val olast = pdfMedText(listOf("Hej"))
+        val krypterad = pdfKrypteradMedText("Hej")
+        val lasare = PdfLasare()
+
+        assertFalse(lasare.arKrypterad(olast))
+        assertTrue(lasare.harLasbarText(olast))
+        assertTrue(lasare.lasSomText(olast).isSuccess)
+
+        assertTrue(lasare.arKrypterad(krypterad))
+        assertFalse(lasare.harLasbarText(krypterad))
+
+        val lasPerSidaResult = lasare.lasPerSida(krypterad)
+        assertTrue(lasPerSidaResult.isFailure)
+        assertTrue(lasPerSidaResult.exceptionOrNull() is KrypteradPdfException)
+
+        val lasSomTextResult = lasare.lasSomText(krypterad)
+        assertTrue(lasSomTextResult.isFailure)
+        assertTrue(lasSomTextResult.exceptionOrNull() is KrypteradPdfException)
+    }
+
     private fun pdfMedText(sidor: List<String>): ByteArray {
         PDDocument().use { doc ->
             sidor.forEach { text ->
@@ -47,6 +71,24 @@ class PdfLasareTest {
                     }
                 }
             }
+            return ByteArrayOutputStream().also { doc.save(it) }.toByteArray()
+        }
+    }
+
+    private fun pdfKrypteradMedText(text: String): ByteArray {
+        PDDocument().use { doc ->
+            val page = PDPage()
+            doc.addPage(page)
+            PDPageContentStream(doc, page).use { cs ->
+                cs.beginText()
+                cs.setFont(PDType1Font(Standard14Fonts.FontName.HELVETICA), 12f)
+                cs.newLineAtOffset(50f, 700f)
+                cs.showText(text)
+                cs.endText()
+            }
+            val policy = StandardProtectionPolicy("", "hemligt", AccessPermission())
+            policy.encryptionKeyLength = 128
+            doc.protect(policy)
             return ByteArrayOutputStream().also { doc.save(it) }.toByteArray()
         }
     }

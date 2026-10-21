@@ -1,13 +1,25 @@
 package se.tmconnect.styrelserummet.pdf
 
 import org.apache.pdfbox.Loader
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException
 import org.apache.pdfbox.text.PDFTextStripper
 
 const val INGEN_LASBAR_TEXT =
     "Filen innehåller ingen läsbar text, ladda upp en PDF som går att markera text i"
 
 class PdfLasare {
+    fun arKrypterad(bytes: ByteArray): Boolean {
+        return try {
+            Loader.loadPDF(bytes).use { it.isEncrypted }
+        } catch (_: InvalidPasswordException) {
+            true
+        }
+    }
+
     fun lasPerSida(bytes: ByteArray): Result<List<String>> {
+        if (arKrypterad(bytes)) {
+            return Result.failure(KrypteradPdfException())
+        }
         return runCatching {
             Loader.loadPDF(bytes).use { dokument ->
                 val stripper = PDFTextStripper()
@@ -35,3 +47,5 @@ class PdfLasare {
 }
 
 class IngenLasbarTextException(val meddelande: String) : Exception(meddelande)
+
+class KrypteradPdfException : Exception()
