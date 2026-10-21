@@ -37,6 +37,9 @@ fun dagensUtfall(
     when (dag.typ) {
         DagTyp.LEDIG, DagTyp.SEMESTER, DagTyp.SJUK, DagTyp.HELGDAG -> return 0
         DagTyp.ARBETE -> {
+            // En arbetsdag utan både in- och utstämpling är inte avslutad och räknas inte,
+            // annars visar saldot minus en hel normaltid hela dagen tills man stämplar ut.
+            if (dag.start == null || dag.slut == null) return 0
             val arbetat = arbetadeMinuter(dag.start, dag.slut, dag.rastMin)
             if (!arArbetsdag(dag.datum, arbetsdagarMask)) {
                 return arbetat

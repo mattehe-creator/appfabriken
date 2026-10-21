@@ -234,7 +234,7 @@ abstract class ButikSkarmbilderBas {
         captureSkarm("01-idag.png") {
             FlextidButikRam(flik = FlextidFlik.IDAG, locale = loc) {
                 IdagInnehall(
-                    saldo = 125 - 480,
+                    saldo = 125,
                     dag =
                         Dag(
                             datum = LocalDate.now(),
