@@ -48,3 +48,5 @@ Skriv testmetoden `forandring` med `import org.junit.Test` och `import org.junit
 - Ändra andra filer (inga `uppgifter/`, `BESLUTSLOGG.md`, `STATUS.md`).
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: godkänd 2026-10-21 (ForandringTyp/Forandring i Jamforelse.kt; rättat blandat testfall)
