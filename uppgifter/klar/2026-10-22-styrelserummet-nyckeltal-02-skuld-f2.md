@@ -40,3 +40,5 @@ Lägg till minst ett `@Test` (JUnit 4: `org.junit.Test`, `org.junit.Assert`) som
 ## Gör inte
 - Ändra andra filer eller `avrundaKvot`.
 - Använda flyttal eller `kotlin.test`.
+
+utfall: godkänd 2026-10-22 (hela implementationen i Nyckeltal.kt och NyckeltalTest.kt; Long-literaler i assertEquals)

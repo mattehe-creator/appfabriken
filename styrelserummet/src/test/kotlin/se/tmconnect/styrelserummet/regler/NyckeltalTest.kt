@@ -1,6 +1,7 @@
 package se.tmconnect.styrelserummet.regler
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class NyckeltalTest {
@@ -27,5 +28,32 @@ class NyckeltalTest {
     @Test(expected = IllegalArgumentException::class)
     fun avrundaKvotNegativNamnare() {
         avrundaKvot(5, -2)
+    }
+
+    @Test
+    fun ytaOchSkuldsattningPerKvmExempel() {
+        val u = NyckeltalUnderlag(
+            arsavgifter = 4_200_000,
+            rantebarandeSkulder = 38_000_000,
+            aretsResultat = -350_000,
+            avskrivningar = 1_600_000,
+            utrangeringar = 0,
+            planeratUnderhall = 450_000,
+            justeringar = 0,
+            energikostnad = 1_150_000,
+            rorelseintakter = 4_600_000,
+            kvmBostadsratt = 5_200,
+            kvmHyresratt = 300,
+        )
+        assertEquals(5_500L, totalYta(u))
+        assertEquals(808L, arsavgiftPerKvmBostadsratt(u))
+        assertEquals(6_909L, skuldsattningPerKvm(u))
+        assertEquals(7_308L, skuldsattningPerKvmBostadsratt(u))
+
+        val nollKvm = u.copy(kvmBostadsratt = 0, kvmHyresratt = 0)
+        assertEquals(0L, totalYta(nollKvm))
+        assertNull(arsavgiftPerKvmBostadsratt(nollKvm))
+        assertNull(skuldsattningPerKvm(nollKvm))
+        assertNull(skuldsattningPerKvmBostadsratt(nollKvm))
     }
 }
