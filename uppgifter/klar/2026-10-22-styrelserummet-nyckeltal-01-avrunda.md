@@ -54,3 +54,5 @@ gradle :styrelserummet:test --tests "*NyckeltalTest"
 ## Gör inte
 - Ändra andra filer.
 - Använda flyttal.
+
+utfall: godkänd 2026-10-21 (JUnit 4 och @Test i NyckeltalTest)

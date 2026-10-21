@@ -18,7 +18,7 @@ fun avrundaKvot(taljare: Long, namnare: Long): Long {
     if (namnare <= 0) {
         throw IllegalArgumentException("Namnaren måste vara större än noll")
     }
-    
+
     return if (taljare >= 0) {
         (2 * taljare + namnare) / (2 * namnare)
     } else {
