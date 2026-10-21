@@ -1,7 +1,7 @@
 package se.tmconnect.styrelserummet.server
 
-import se.tmconnect.styrelserummet.modell.Komponent
 import se.tmconnect.styrelserummet.regler.bokfortVarde
+import se.tmconnect.styrelserummet.underlag.UTKAST_RAD
 
 fun tillCsv(komponenter: List<KomponentDto>, arsslut: Int): String {
     val rubriker = listOf(

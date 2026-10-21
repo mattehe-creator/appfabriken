@@ -1,7 +1,9 @@
 package se.tmconnect.styrelserummet.server
 
-import org.junit.Assert
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
+import se.tmconnect.styrelserummet.underlag.UTKAST_RAD
 
 class CsvExportServerTest {
 
@@ -20,19 +22,15 @@ class CsvExportServerTest {
         
         val csv = tillCsv(listOf(komponent), 2025)
         val rader = csv.split("\n")
-        Assert.assertTrue(rader.size >= 2)
-        
-        // Kontrollera att bokfört värde är 120000 för årsslut 2025
-        Assert.assertTrue(rader[1].contains(";120000;"))
-        
-        // Testa årsslut 2019 (bokfört värde ska vara 300000)
+        assertTrue(rader.size >= 2)
+
+        assertTrue(rader[1].contains(";120000;"))
+        assertEquals(UTKAST_RAD, rader.last())
+
         val csv2019 = tillCsv(listOf(komponent), 2019)
-        val rader2019 = csv2019.split("\n")
-        Assert.assertTrue(rader2019[1].contains(";300000;"))
-        
-        // Testa årsslut 2035 (bokfört värde ska vara 0)
+        assertTrue(csv2019.split("\n")[1].contains(";300000;"))
+
         val csv2035 = tillCsv(listOf(komponent), 2035)
-        val rader2035 = csv2035.split("\n")
-        Assert.assertTrue(rader2035[1].contains(";0;"))
+        assertTrue(csv2035.split("\n")[1].contains(";0;"))
     }
 }
