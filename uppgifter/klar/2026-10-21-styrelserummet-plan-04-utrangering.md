@@ -36,3 +36,5 @@ gradle :styrelserummet:test --tests "*UtbyteTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #468). Ersatt av 2026-10-21-styrelserummet-plan-04-utrangering-f2.md
