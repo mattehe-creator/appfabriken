@@ -36,3 +36,5 @@ gradle :styrelserummet:test --tests "*AvskrivningsplanTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (JUnit 4 och Komponent i test; bokfört värde 2028 i test 30 000 enligt bokfortVarde)
