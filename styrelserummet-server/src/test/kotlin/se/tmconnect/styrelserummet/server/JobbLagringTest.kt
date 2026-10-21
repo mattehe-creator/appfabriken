@@ -1,6 +1,7 @@
 package se.tmconnect.styrelserummet.server
 
 import org.junit.After
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -12,6 +13,7 @@ import java.nio.file.Path
 import kotlin.io.path.createTempDirectory
 import kotlin.io.path.div
 import kotlin.io.path.exists
+import kotlin.io.path.readBytes
 import kotlin.io.path.writeText
 
 class JobbLagringTest {
@@ -224,11 +226,11 @@ class JobbLagringTest {
         assertTrue(filerDir.exists())
         
         // Hämta filnamnet som det sparades (det säkra namnet)
-        val savedFiles = filerDir.listDirectoryEntries().toList()
+        val savedFiles = filerDir.toFile().listFiles()?.toList() ?: emptyList()
         assertEquals(1, savedFiles.size)
         
         val savedFile = savedFiles[0]
-        val fileName = savedFile.fileName.toString()
+        val fileName = savedFile.name
         
         // Kontrollera att filnamnet bara innehåller tillåtna tecken
         assertTrue("Filnamn innehåller ogiltiga tecken: $fileName", 
