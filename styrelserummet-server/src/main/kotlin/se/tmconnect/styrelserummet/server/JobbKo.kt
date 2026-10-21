@@ -85,13 +85,12 @@ class JobbKo(
                 return
             }
             
-            // Kontroll för maximal teckenmängd innan tolkning
             val totalTecken = skattaTecken(listOf(underhallsplan, arsredovisning))
             if (totalTecken > MAX_TECKEN_TILL_TOLKNING) {
-                fel(id, ServerFel.ForStorHandling)
+                felForStorHandling(id)
                 return
             }
-            
+
             val utkast = byggUtkast(
                 underhallsplanText = underhallsplan,
                 arsredovisningText = arsredovisning.ifBlank { underhallsplan },
@@ -127,11 +126,24 @@ class JobbKo(
         lagring.skrivMeta(
             meta.copy(
                 status = JobbStatus.FEL.name,
-                felmeddelande = felTillMeddelande(serverFel), // Ändrad från felText till felTillMeddelande
+                felmeddelande = felText(serverFelTillKod(serverFel)),
                 senastAktivMs = tidMs,
             ),
         )
         loggSkriv(loggJobbFel(id, serverFel, tidMs))
+    }
+
+    private fun felForStorHandling(id: String) {
+        val meta = lagring.lasMeta(id) ?: return
+        val tidMs = System.currentTimeMillis()
+        lagring.skrivMeta(
+            meta.copy(
+                status = JobbStatus.FEL.name,
+                felmeddelande = Felmeddelanden.forklara(Felkoder.FOR_STOR_HANDLING),
+                senastAktivMs = tidMs,
+            ),
+        )
+        loggSkriv("$id ${Felkoder.FOR_STOR_HANDLING} $tidMs")
     }
 }
 

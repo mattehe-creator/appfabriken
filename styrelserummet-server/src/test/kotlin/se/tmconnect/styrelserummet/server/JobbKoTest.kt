@@ -13,6 +13,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import se.tmconnect.styrelserummet.tolking.Tolkare
 import java.io.ByteArrayOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
@@ -125,14 +126,13 @@ class JobbKoTest {
         val spionTolkare = SpionTolkare()
         
         // Skapa en PDF med text som överskrider gränsen
-        val forStorText = "x".repeat(MAX_TECKEN_TILL_TOLKNING + 1000)
-        skapaJobbMedPdf(id, pdfMedText(forStorText))
+        skapaJobbMedPdf(id, pdfMedLangText(MAX_TECKEN_TILL_TOLKNING + 1000))
 
         JobbKo(lagring, spionTolkare, scope = scope, synkron = true).lagTill(id)
 
         val metaResult = lagring.lasMeta(id)!!
         assertEquals(JobbStatus.FEL.name, metaResult.status)
-        assertEquals(felText(serverFelTillKod(ServerFel.ForStorHandling)), metaResult.felmeddelande)
+        assertEquals(felText(Felkoder.FOR_STOR_HANDLING), metaResult.felmeddelande)
         assertEquals(0, spionTolkare.antalAnrop)
     }
     
@@ -142,8 +142,7 @@ class JobbKoTest {
         val spionTolkare = SpionTolkare()
         
         // Skapa en PDF med text som är under gränsen
-        val underGransText = "x".repeat(MAX_TECKEN_TILL_TOLKNING - 1000)
-        skapaJobbMedPdf(id, pdfMedText(underGransText))
+        skapaJobbMedPdf(id, pdfMedLangText(MAX_TECKEN_TILL_TOLKNING - 1000))
 
         JobbKo(lagring, spionTolkare, scope = scope, synkron = true).lagTill(id)
 
@@ -171,6 +170,15 @@ class JobbKoTest {
 
     private fun pdfMedText(text: String): ByteArray = pdfMedText(listOf(text))
 
+    private fun pdfMedLangText(tecken: Int): ByteArray {
+        val chunkSize = 2000
+        val sidor =
+            (0 until tecken step chunkSize).map { start ->
+                "x".repeat(minOf(chunkSize, tecken - start))
+            }
+        return pdfMedText(sidor)
+    }
+
     private fun pdfMedText(sidor: List<String>): ByteArray {
         PDDocument().use { doc ->
             sidor.forEach { text ->
@@ -191,16 +199,19 @@ class JobbKoTest {
     }
 }
 
-// Spionklass för att kontrollera antal anrop till Tolkare
-class SpionTolkare : Tolkare {
+private class SpionTolkare(
+    private val jsonSvar: String = """
+        {"komponenter":[{"namn":"Tak","grupp":"TAK","anskaffningsvarde":500000,"anskaffningsar":2010,"nyttjandeperiodAr":40,"kalla":"plan, sida 2","sakerhet":"HOG"}],"anmarkningar":[]}
+    """.trimIndent(),
+) : Tolkare {
     var antalAnrop = 0
-    
-    override fun foreslaKomponenter(underhallsplan: String, arsredovisning: String, forening: Forening): KomponentResultat {
+
+    override fun foreslaKomponenter(
+        underhallsplanUtdrag: String,
+        sidor: List<Int>,
+        filnamn: String,
+    ): Result<String> {
         antalAnrop++
-        // Returnera ett tomt resultat som inte påverkar testet
-        return KomponentResultat(
-            komponenter = emptyList(),
-            anmarkningar = emptyList()
-        )
+        return Result.success(jsonSvar)
     }
 }
