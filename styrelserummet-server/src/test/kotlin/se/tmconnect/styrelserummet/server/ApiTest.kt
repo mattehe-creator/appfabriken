@@ -221,9 +221,7 @@ class ApiTest {
                 }
                 assertEquals("KLAR", status)
                 
-                // Kontrollera att personnummer är maskat i AI-anropet
-                // Vi kan inte direkt kontrollera senasteUtdrag eftersom det inte finns i FalskTolkare
-                // Istället kontrollerar vi att personnumret inte finns i svaret från API:t
+                // Kontrollera att CSV innehåller UTKAST
                 val csv = client.get("/api/jobb/$id.csv")
                 assertEquals(HttpStatusCode.OK, csv.status)
                 assertTrue("CSV ska innehålla UTKAST", csv.bodyAsText().contains("UTKAST"))
