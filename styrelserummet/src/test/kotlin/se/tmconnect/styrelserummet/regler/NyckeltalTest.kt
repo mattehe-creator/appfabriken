@@ -22,18 +22,20 @@ class NyckeltalTest {
     
     @Test
     fun `test avrundaKvot med noll i täljare`() {
-        assertEquals(0, avrundaKvot(0, 1))
-        assertEquals(0, avrundaKvot(0, 100))
+        assertEquals(0, avrundaKvot(0, 5))
     }
     
     @Test
-    fun `test avrundaKvot kastar exception vid noll i nämnare`() {
+    fun `test avrundaKvot med noll i nämnare`() {
         assertThrows<IllegalArgumentException> {
             avrundaKvot(5, 0)
         }
-        
+    }
+    
+    @Test
+    fun `test avrundaKvot med negativ nämnare`() {
         assertThrows<IllegalArgumentException> {
-            avrundaKvot(5, -1)
+            avrundaKvot(5, -2)
         }
     }
 }
