@@ -39,3 +39,5 @@ gradle :flextid:testDebugUnitTest --tests "*NormaltidIntervallTest"
 ## Gör inte
 - Ändra andra filer eller befintliga funktioner.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (testimport kotlin.test → org.junit.Assert)
