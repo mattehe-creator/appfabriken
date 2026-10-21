@@ -24,6 +24,28 @@ class FelHanteringTest {
     }
 
     @Test
+    fun forStorFil() {
+        val meddelande = felTillMeddelande(ServerFel.ForStorFil)
+        assertTrue(meddelande.contains("25"))
+        assertTrue(meddelande.contains("MB") || meddelande.contains("megabyte", ignoreCase = true))
+        assertTrue(
+            meddelande.contains("tillsammans", ignoreCase = true) ||
+                meddelande.contains("total", ignoreCase = true),
+        )
+        assertFalse(meddelande.contains("Exception", ignoreCase = true))
+    }
+
+    @Test
+    fun intePdf() {
+        val meddelande = felTillMeddelande(ServerFel.IntePdf)
+        assertTrue(meddelande.contains("PDF", ignoreCase = true))
+        assertTrue(
+            meddelande.contains("accepteras", ignoreCase = true) ||
+                meddelande.contains("Ladda upp"),
+        )
+    }
+
+    @Test
     fun loggJobbFelKrypteradPdfInnehallerIdTypOchTidUtanAnvandarmeddelande() {
         val fel = ServerFel.KrypteradPdf
         val rad = loggJobbFel("abc123", fel, 1_700_000_000_000L)
