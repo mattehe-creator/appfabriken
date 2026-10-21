@@ -45,3 +45,5 @@ gradle :styrelserummet:test --tests "*SummeringGransfallStoraBeloppTest"
 - Dela upp i flera testklasser (denna uppgift äger filen ovan).
 - Ändra `SummeringTest.kt` eller andra filer (utom `Summering.kt` enligt regeln ovan vid visad bugg).
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (hela testklassen — den lokala modellen levererade endast flytt till pagar/)
