@@ -13,6 +13,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import se.tmconnect.styrelserummet.tolking.Tolkare
 import java.io.ByteArrayOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
@@ -118,6 +119,37 @@ class JobbKoTest {
         assertFalse(rad.contains("underhallsplan.pdf"))
         assertFalse(rad.contains(felText(serverFelTillKod(ServerFel.AiOgiltigtSvar))))
     }
+    
+    @Test
+    fun forStorHandlingAnroparInteTolkare() {
+        val id = "test_jobb_for_stor"
+        val spionTolkare = SpionTolkare()
+        
+        // Skapa en PDF med text som överskrider gränsen
+        skapaJobbMedPdf(id, pdfMedLangText(MAX_TECKEN_TILL_TOLKNING + 1000))
+
+        JobbKo(lagring, spionTolkare, scope = scope, synkron = true).lagTill(id)
+
+        val metaResult = lagring.lasMeta(id)!!
+        assertEquals(JobbStatus.FEL.name, metaResult.status)
+        assertEquals(felText(Felkoder.FOR_STOR_HANDLING), metaResult.felmeddelande)
+        assertEquals(0, spionTolkare.antalAnrop)
+    }
+    
+    @Test
+    fun underGransenAnroparTolkare() {
+        val id = "test_jobb_under_grans"
+        val spionTolkare = SpionTolkare()
+        
+        // Skapa en PDF med text som är under gränsen
+        skapaJobbMedPdf(id, pdfMedLangText(MAX_TECKEN_TILL_TOLKNING - 1000))
+
+        JobbKo(lagring, spionTolkare, scope = scope, synkron = true).lagTill(id)
+
+        val metaResult = lagring.lasMeta(id)!!
+        assertEquals(JobbStatus.KLAR.name, metaResult.status)
+        assertTrue(spionTolkare.antalAnrop > 0)
+    }
 
     private fun skapaJobbMedPdf(id: String, pdfBytes: ByteArray) {
         val nu = System.currentTimeMillis()
@@ -138,6 +170,15 @@ class JobbKoTest {
 
     private fun pdfMedText(text: String): ByteArray = pdfMedText(listOf(text))
 
+    private fun pdfMedLangText(tecken: Int): ByteArray {
+        val chunkSize = 2000
+        val sidor =
+            (0 until tecken step chunkSize).map { start ->
+                "x".repeat(minOf(chunkSize, tecken - start))
+            }
+        return pdfMedText(sidor)
+    }
+
     private fun pdfMedText(sidor: List<String>): ByteArray {
         PDDocument().use { doc ->
             sidor.forEach { text ->
@@ -155,5 +196,22 @@ class JobbKoTest {
             }
             return ByteArrayOutputStream().also { doc.save(it) }.toByteArray()
         }
+    }
+}
+
+private class SpionTolkare(
+    private val jsonSvar: String = """
+        {"komponenter":[{"namn":"Tak","grupp":"TAK","anskaffningsvarde":500000,"anskaffningsar":2010,"nyttjandeperiodAr":40,"kalla":"plan, sida 2","sakerhet":"HOG"}],"anmarkningar":[]}
+    """.trimIndent(),
+) : Tolkare {
+    var antalAnrop = 0
+
+    override fun foreslaKomponenter(
+        underhallsplanUtdrag: String,
+        sidor: List<Int>,
+        filnamn: String,
+    ): Result<String> {
+        antalAnrop++
+        return Result.success(jsonSvar)
     }
 }

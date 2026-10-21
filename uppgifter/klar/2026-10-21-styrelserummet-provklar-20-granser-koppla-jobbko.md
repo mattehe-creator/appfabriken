@@ -35,3 +35,5 @@ gradle :styrelserummet-server:test --tests "*JobbKoTest.forStorHandling*"
 ## Gör inte
 - Ändra `MAX_TECKEN_TILL_TOLKNING` utan att uppgift 18 matchar.
 - Skicka riktiga handlingar.
+
+utfall: godkänd 2026-10-21 (återställde FelSvar/FelHantering, felForStorHandling med Felkoder, SpionTolkare och pdfMedLangText)
