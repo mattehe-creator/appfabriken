@@ -67,11 +67,9 @@ class CsvExportGransfallTest {
         val forvantadRubrik = "namn;grupp;anskaffningsvärde;anskaffningsår;nyttjandeperiod;restvärde;avskrivning året;bokfört värde;källa;säkerhet\n"
         Assert.assertTrue("CSV börjar inte med förväntad rubrik. Fick: ${csv.take(100)}", csv.startsWith(forvantadRubrik))
         
-        // Kontrollera att det endast finns två rader (rubrik + utkast-rad)
-        val rader = csv.split("\n")
+        // Kontrollera att det endast finns två rader (rubrik + utkast-rad; avslutande radbrytning ger tom sista del vid split)
+        val rader = csv.trimEnd('\n').split("\n")
         Assert.assertEquals(2, rader.size)
-        
-        // Kontrollera att sista raden är utkast-rad
         Assert.assertEquals(UTKAST_RAD, rader[1])
     }
 
