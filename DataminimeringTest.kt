@@ -36,7 +36,7 @@ class DataminimeringTest {
     }
 
     @Test
-    fun efterKlartJobbBaraTillatnaFiler() = runBlocking {
+    fun efterKlartJobb() = runBlocking {
         val tmp = createTempDirectory("styrelserummet-dataminimering-test")
         testApplication {
             application {
