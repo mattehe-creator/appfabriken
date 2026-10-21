@@ -393,7 +393,7 @@ private fun VeckaRad(rad: VeckaDagRad, locale: Locale, onClick: () -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Column {
-            Text(formateraDatum(rad.datum, locale), style = MaterialTheme.typography.bodyLarge)
+            Text(formateraVeckodagOchDatum(rad.datum, locale), style = MaterialTheme.typography.bodyLarge)
             helgdagPa(rad.datum, medAftnar = true)?.let { helg ->
                 Text(
                     text = helgdagNamn(helg),
@@ -853,3 +853,8 @@ private fun temaStringRes(lage: TemaLage): Int =
         TemaLage.LJUST -> R.string.tema_ljust
         TemaLage.MORKT -> R.string.tema_morkt
     }
+
+/** "Måndag 12 oktober" eller "Monday 12 October": veckodagen är det man letar efter i veckovyn. */
+internal fun formateraVeckodagOchDatum(datum: LocalDate, locale: Locale): String =
+    datum.format(java.time.format.DateTimeFormatter.ofPattern("EEEE d MMMM", locale))
+        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }

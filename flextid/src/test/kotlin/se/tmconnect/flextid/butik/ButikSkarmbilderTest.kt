@@ -56,6 +56,9 @@ import se.tmconnect.flextid.regler.SemesterAr
 import se.tmconnect.flextid.regler.SemesterSammanfattning
 import se.tmconnect.flextid.data.Installning
 import se.tmconnect.flextid.regler.DagTyp
+import se.tmconnect.flextid.regler.dagensUtfall
+import se.tmconnect.flextid.regler.arbetadeMinuter
+import se.tmconnect.flextid.regler.ARBETSDAGAR_MANDAG_FREDAG
 import se.tmconnect.flextid.ui.DagFormularTillstand
 import se.tmconnect.flextid.ui.FlextidFlik
 import se.tmconnect.flextid.ui.IdagInnehall
@@ -71,7 +74,7 @@ import java.time.YearMonth
 
 private val noOp: () -> Unit = {}
 private val idag = LocalDate.of(2026, 10, 15)
-private val veckaAnkar = LocalDate.of(2026, 10, 13)
+private val veckaAnkar = LocalDate.of(2026, 10, 12)
 
 class ButikRoboActivity : ComponentActivity()
 
@@ -405,13 +408,13 @@ class ButikSkarmbilderSvTest : ButikSkarmbilderBas() {
 
     override fun exempelVeckaRader(): List<VeckaDagRad> =
         listOf(
-            rad(LocalDate.of(2026, 10, 13), "08:00", "16:30", 30),
-            rad(LocalDate.of(2026, 10, 14), "07:45", "15:45", 30),
-            rad(LocalDate.of(2026, 10, 15), "08:00", "16:30", 30),
-            rad(LocalDate.of(2026, 10, 16), null, null, 0, typ = DagTyp.LEDIG),
-            rad(LocalDate.of(2026, 10, 17), "08:15", "14:00", 15),
+            rad(LocalDate.of(2026, 10, 12), "08:00", "16:30", 30),
+            rad(LocalDate.of(2026, 10, 13), "07:45", "16:45", 30),
+            rad(LocalDate.of(2026, 10, 14), "08:00", "16:30", 30),
+            rad(LocalDate.of(2026, 10, 15), null, null, 0, typ = DagTyp.SEMESTER),
+            rad(LocalDate.of(2026, 10, 16), "08:15", "15:00", 15),
+            rad(LocalDate.of(2026, 10, 17), null, null, 0, typ = DagTyp.LEDIG),
             rad(LocalDate.of(2026, 10, 18), null, null, 0, typ = DagTyp.LEDIG),
-            rad(LocalDate.of(2026, 10, 19), null, null, 0, typ = DagTyp.LEDIG),
         )
 
     override fun exempelDagFormular(): DagFormularTillstand =
@@ -446,7 +449,12 @@ class ButikSkarmbilderSvTest : ButikSkarmbilderBas() {
             } else {
                 null
             }
-        return VeckaDagRad(datum = datum, dag = dag, arbetadeMin = 450, utfallMin = utfall)
+        return VeckaDagRad(
+            datum = datum,
+            dag = dag,
+            arbetadeMin = dag?.let { arbetadeMinuter(it.start, it.slut, it.rastMin) } ?: 0,
+            utfallMin = dag?.let { dagensUtfall(it, 480, ARBETSDAGAR_MANDAG_FREDAG) } ?: utfall,
+        )
     }
 }
 
@@ -462,13 +470,13 @@ class ButikSkarmbilderEnTest : ButikSkarmbilderBas() {
 
     override fun exempelVeckaRader(): List<VeckaDagRad> =
         listOf(
-            rad(LocalDate.of(2026, 10, 13), "08:00", "16:30", 30),
-            rad(LocalDate.of(2026, 10, 14), "07:45", "15:45", 30),
-            rad(LocalDate.of(2026, 10, 15), "08:00", "16:30", 30),
-            rad(LocalDate.of(2026, 10, 16), null, null, 0, typ = DagTyp.LEDIG),
-            rad(LocalDate.of(2026, 10, 17), "08:15", "14:00", 15),
+            rad(LocalDate.of(2026, 10, 12), "08:00", "16:30", 30),
+            rad(LocalDate.of(2026, 10, 13), "07:45", "16:45", 30),
+            rad(LocalDate.of(2026, 10, 14), "08:00", "16:30", 30),
+            rad(LocalDate.of(2026, 10, 15), null, null, 0, typ = DagTyp.SEMESTER),
+            rad(LocalDate.of(2026, 10, 16), "08:15", "15:00", 15),
+            rad(LocalDate.of(2026, 10, 17), null, null, 0, typ = DagTyp.LEDIG),
             rad(LocalDate.of(2026, 10, 18), null, null, 0, typ = DagTyp.LEDIG),
-            rad(LocalDate.of(2026, 10, 19), null, null, 0, typ = DagTyp.LEDIG),
         )
 
     override fun exempelDagFormular(): DagFormularTillstand =
@@ -503,7 +511,12 @@ class ButikSkarmbilderEnTest : ButikSkarmbilderBas() {
             } else {
                 null
             }
-        return VeckaDagRad(datum = datum, dag = dag, arbetadeMin = 450, utfallMin = utfall)
+        return VeckaDagRad(
+            datum = datum,
+            dag = dag,
+            arbetadeMin = dag?.let { arbetadeMinuter(it.start, it.slut, it.rastMin) } ?: 0,
+            utfallMin = dag?.let { dagensUtfall(it, 480, ARBETSDAGAR_MANDAG_FREDAG) } ?: utfall,
+        )
     }
 }
 
