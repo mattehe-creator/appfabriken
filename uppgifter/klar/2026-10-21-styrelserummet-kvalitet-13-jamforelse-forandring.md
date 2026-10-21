@@ -42,3 +42,5 @@ gradle :styrelserummet:test --tests "*JamforelseTest.forandring"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #332). Ersatt av 2026-10-21-styrelserummet-kvalitet-13-jamforelse-forandring-f2.md
