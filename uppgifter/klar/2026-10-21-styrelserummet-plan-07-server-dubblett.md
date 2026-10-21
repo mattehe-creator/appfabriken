@@ -34,3 +34,5 @@ gradle :styrelserummet-server:test
 - Ändra kolumner eller rubriker.
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #459). Ersatt av 2026-10-21-styrelserummet-plan-07-server-dubblett-f2.md
