@@ -12,14 +12,15 @@ beror-på: 2026-10-21-flextid-helgdagar-08-rapport-texter.md
 - flextid/src/main/kotlin/se/tmconnect/flextid/export/ManadsRapportTexter.kt
 
 ## Uppgift
-I `ManadsPdf.kt`, där raden med `texter.saldoManadsslutEtikett` skrivs: skriv en rad till direkt **före** den, på samma sätt som de andra summaraderna (samma typsnitt och radavstånd):
+`skrivManadsPdf` har ingen `Context`; etiketten kommer färdig i `texter.normaltidManadEtikett` (Claude fyller i den där rapporten skapas).
 
-`"${normaltidManadEtikett(context, rapport.arbetsdagarManad)}: ${rapport.normaltidManad}"`
+I `ManadsPdf.kt`, där raden med `texter.saldoManadsslutEtikett` skrivs: skriv en rad till direkt **före** den, på samma sätt som de andra summaraderna (samma typsnitt och radavstånd), men bara om `texter.normaltidManadEtikett` inte är tom:
 
-Om filen inte har tillgång till en `Context` där raden skrivs: använd `texter.normaltidManadEtikett` om den inte är tom, med `" (${rapport.arbetsdagarManad})"` efter, och hoppa över raden om etiketten är tom. Välj det som går utan att ändra någon funktionssignatur.
+`"${texter.normaltidManadEtikett}: ${rapport.normaltidManad}"`
 
 ## Exempel
-- April 2026, normaltid 480 → raden "Normaltid i månaden (20 arbetsdagar): 160:00" före saldoraden (formatet på tiden kommer från `formateraMinuterSomTid`).
+- Etikett "Normaltid i månaden (20 arbetsdagar)", normaltid "160:00" → raden "Normaltid i månaden (20 arbetsdagar): 160:00" före saldoraden.
+- Tom etikett → ingen ny rad.
 
 ## Test som ska gå igenom
 gradle :flextid:testDebugUnitTest
