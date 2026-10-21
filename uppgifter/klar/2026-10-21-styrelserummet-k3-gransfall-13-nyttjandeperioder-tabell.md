@@ -32,3 +32,5 @@ gradle :styrelserummet:test --tests "*NyttjandeperioderTabellGransfallTest"
 ## Gör inte
 - Ändra `NyttjandeperiodForslag`-testfiler (parallell kö).
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #364). Ersatt av 2026-10-21-styrelserummet-k3-gransfall-13-nyttjandeperioder-tabell-f2.md
