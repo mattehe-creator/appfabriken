@@ -3,7 +3,7 @@ package se.tmconnect.styrelserummet.regler
 import org.junit.Test
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
-import kotlin.test.assertEquals as kotlinAssertEquals
+import java.lang.IllegalArgumentException
 
 class FondplanTest {
     
@@ -33,19 +33,28 @@ class FondplanTest {
     @Test
     fun `test summaPerAr med gränsvärden`() {
         // antalAr 0 → IllegalArgumentException
-        assertThrows(IllegalArgumentException::class.java) {
+        try {
             summaPerAr(emptyList(), 2026, 0)
+            assert(false) { "Expected IllegalArgumentException" }
+        } catch (e: IllegalArgumentException) {
+            // Expected
         }
         
         // antalAr 101 → IllegalArgumentException
-        assertThrows(IllegalArgumentException::class.java) {
+        try {
             summaPerAr(emptyList(), 2026, 101)
+            assert(false) { "Expected IllegalArgumentException" }
+        } catch (e: IllegalArgumentException) {
+            // Expected
         }
         
         // belopp −1 → IllegalArgumentException
         val atgarder = listOf(PlaneradAtgard(2026, -1L, "Test"))
-        assertThrows(IllegalArgumentException::class.java) {
+        try {
             summaPerAr(atgarder, 2026, 1)
+            assert(false) { "Expected IllegalArgumentException" }
+        } catch (e: IllegalArgumentException) {
+            // Expected
         }
     }
 }
