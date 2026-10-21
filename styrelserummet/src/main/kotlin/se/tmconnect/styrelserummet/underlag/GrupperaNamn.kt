@@ -11,9 +11,9 @@ fun gissaGrupp(namn: String): Komponentgrupp? {
     val fonsterDorrNyckelord = listOf("fönster", "balkongdörr", "entrédörr")
     
     // Hitta första förekomsten av varje nyckelord
-    val takIndex = findFirstIndex(namnL, takNyckelword)
-    val fasadIndex = findFirstIndex(namnL, fasadNyckelword)
-    val fonsterDorrIndex = findFirstIndex(namnL, fonsterDorrNyckelword)
+    val takIndex = findFirstIndex(namnL, takNyckelord)
+    val fasadIndex = findFirstIndex(namnL, fasadNyckelord)
+    val fonsterDorrIndex = findFirstIndex(namnL, fonsterDorrNyckelord)
     
     // Hitta lägsta index (först förekommande)
     val minIndex = listOf(takIndex, fasadIndex, fonsterDorrIndex)
