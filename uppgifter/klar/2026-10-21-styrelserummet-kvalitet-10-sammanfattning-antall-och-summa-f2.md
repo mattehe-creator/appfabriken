@@ -42,3 +42,5 @@ gradle :styrelserummet:test --tests "*SammanfattningTest.antalOchSumma"
 - Lägga till beroenden.
 - Ändra datamodellen.
 - Lägga filer i repots rot.
+
+utfall: godkänd 2026-10-21 (implementerade Sammanfattning.kt och SammanfattningTest.kt — tomma filer i försök 2)
