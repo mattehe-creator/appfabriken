@@ -23,10 +23,18 @@ fun sammanfatta(komponenter: List<Komponent>, byggnadensVarde: Long?, arsslut: I
         }
     }
 
+    val avskrivningSumma = komponenter.sumOf { avskrivningFor(it, arsslut) }
+    val avskrivningMening =
+        "Avskrivningen för räkenskapsåret är ${kronor(avskrivningSumma)} totalt."
+    val utkastMening =
+        "Detta är ett utkast – kontrollera uppgifterna mot handlingarna innan beslut."
+
     return listOf(
         "Listan innehåller $antal komponenter.",
         "Anskaffningsvärdet är $summa sammanlagt.",
         osakerhetMening,
         avstamningMening,
+        avskrivningMening,
+        utkastMening,
     )
 }

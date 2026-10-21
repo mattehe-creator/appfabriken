@@ -43,3 +43,5 @@ gradle :styrelserummet:test --tests "*SammanfattningTest.avskrivningOchUtkast"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: godkänd 2026-10-21 (hela implementationen — lokala modellen lämnade bara commit «Uppgift startad»)
