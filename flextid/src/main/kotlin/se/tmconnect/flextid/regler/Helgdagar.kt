@@ -26,3 +26,49 @@ fun paskdagen(ar: Int): LocalDate {
 
     return LocalDate.of(ar, manad, dag)
 }
+
+fun rorligaHelgdagar(ar: Int): List<Helgdag> {
+    val p = paskdagen(ar)
+    return listOf(
+        Helgdag(p.minusDays(2), "Långfredagen"),
+        Helgdag(p, "Påskdagen"),
+        Helgdag(p.plusDays(1), "Annandag påsk"),
+        Helgdag(p.plusDays(39), "Kristi himmelsfärdsdag"),
+        Helgdag(p.plusDays(49), "Pingstdagen"),
+    )
+}
+
+fun forstaLordagenFran(datum: LocalDate): LocalDate =
+    datum.with(java.time.temporal.TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SATURDAY))
+
+fun svenskaHelgdagar(ar: Int): List<Helgdag> {
+    val fasta = listOf(
+        Helgdag(LocalDate.of(ar, 1, 1), "Nyårsdagen"),
+        Helgdag(LocalDate.of(ar, 1, 6), "Trettondedag jul"),
+        Helgdag(LocalDate.of(ar, 5, 1), "Första maj"),
+        Helgdag(LocalDate.of(ar, 6, 6), "Sveriges nationaldag"),
+        Helgdag(LocalDate.of(ar, 12, 25), "Juldagen"),
+        Helgdag(LocalDate.of(ar, 12, 26), "Annandag jul"),
+    )
+    val beraknade = listOf(
+        Helgdag(forstaLordagenFran(LocalDate.of(ar, 6, 20)), "Midsommardagen"),
+        Helgdag(forstaLordagenFran(LocalDate.of(ar, 10, 31)), "Alla helgons dag"),
+    )
+    return (fasta + rorligaHelgdagar(ar) + beraknade).sortedBy { it.datum }
+}
+
+fun svenskaAftnar(ar: Int): List<Helgdag> =
+    listOf(
+        Helgdag(forstaLordagenFran(LocalDate.of(ar, 6, 20)).minusDays(1), "Midsommarafton", arAfton = true),
+        Helgdag(LocalDate.of(ar, 12, 24), "Julafton", arAfton = true),
+        Helgdag(LocalDate.of(ar, 12, 31), "Nyårsafton", arAfton = true),
+    )
+
+fun helgdagPa(datum: LocalDate, medAftnar: Boolean): Helgdag? =
+    svenskaHelgdagar(datum.year).firstOrNull { it.datum == datum }
+        ?: if (medAftnar) svenskaAftnar(datum.year).firstOrNull { it.datum == datum } else null
+
+fun arRodDag(datum: LocalDate): Boolean = svenskaHelgdagar(datum.year).any { it.datum == datum }
+
+fun arLedigDag(datum: LocalDate, raknaAftnarSomLediga: Boolean): Boolean =
+    arRodDag(datum) || (raknaAftnarSomLediga && svenskaAftnar(datum.year).any { it.datum == datum })

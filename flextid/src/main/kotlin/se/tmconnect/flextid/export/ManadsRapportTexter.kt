@@ -63,3 +63,6 @@ private fun veckodagStringRes(dag: DayOfWeek): Int =
         DayOfWeek.SATURDAY -> R.string.veckodag_lor
         DayOfWeek.SUNDAY -> R.string.veckodag_son
     }
+
+fun normaltidManadEtikett(context: Context, arbetsdagar: Int): String =
+    context.getString(R.string.pdf_normaltid_manad, arbetsdagar)

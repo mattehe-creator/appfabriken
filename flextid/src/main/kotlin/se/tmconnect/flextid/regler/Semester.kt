@@ -21,3 +21,38 @@ fun semesterArFor(datum: LocalDate, startManad: Int = SEMESTERAR_STARTMANAD_STAN
     
     return SemesterAr(fran, till)
 }
+
+fun raknaDagarAvTyp(
+    dagar: List<se.tmconnect.flextid.data.Dag>,
+    typ: DagTyp,
+    fran: LocalDate,
+    till: LocalDate,
+    arbetsdagarMask: Int,
+): Int {
+    if (fran.isAfter(till)) return 0
+    return dagar.count { d ->
+        d.typ == typ && !d.datum.isBefore(fran) && !d.datum.isAfter(till) && arArbetsdag(d.datum, arbetsdagarMask)
+    }
+}
+
+data class SemesterSammanfattning(
+    val ar: SemesterAr,
+    val uttagna: Int,
+    val planerade: Int,
+    val kvar: Int,
+)
+
+const val SEMESTERDAGAR_STANDARD = 25
+
+fun semesterSammanfattning(
+    dagar: List<se.tmconnect.flextid.data.Dag>,
+    idag: LocalDate,
+    arbetsdagarMask: Int,
+    dagarPerAr: Int = SEMESTERDAGAR_STANDARD,
+    startManad: Int = SEMESTERAR_STARTMANAD_STANDARD,
+): SemesterSammanfattning {
+    val ar = semesterArFor(idag, startManad)
+    val uttagna = raknaDagarAvTyp(dagar, DagTyp.SEMESTER, ar.fran, idag, arbetsdagarMask)
+    val planerade = raknaDagarAvTyp(dagar, DagTyp.SEMESTER, idag.plusDays(1), ar.till, arbetsdagarMask)
+    return SemesterSammanfattning(ar, uttagna, planerade, dagarPerAr.coerceAtLeast(0) - uttagna - planerade)
+}

@@ -105,6 +105,17 @@ fun skrivManadsPdf(
             }
         }
 
+        if (texter.normaltidManadEtikett.isNotBlank()) {
+            skrivare.y = y + 4f
+            skrivare.behovNySida(PDF_RAD_AVSTAND)
+            canvas.drawText(
+                "${texter.normaltidManadEtikett}: ${rapport.normaltidManad}",
+                PDF_MARGIN,
+                skrivare.y,
+                underrubrikPaint,
+            )
+            y = skrivare.y + PDF_RAD_AVSTAND - 4f
+        }
         skrivare.y = y + 4f
         skrivare.behovNySida(PDF_RAD_AVSTAND)
         canvas.drawText(

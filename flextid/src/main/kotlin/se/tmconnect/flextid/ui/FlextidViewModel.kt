@@ -46,6 +46,9 @@ import se.tmconnect.flextid.regler.DagTyp
 import se.tmconnect.flextid.regler.TidValideringFel
 import se.tmconnect.flextid.regler.arbetadeMinuter
 import se.tmconnect.flextid.regler.dagensUtfall
+import se.tmconnect.flextid.regler.SEMESTERAR_STARTMANAD_STANDARD
+import se.tmconnect.flextid.regler.SEMESTERDAGAR_STANDARD
+import se.tmconnect.flextid.regler.semesterSammanfattning
 import se.tmconnect.flextid.regler.kanLaggaTillDagPost
 import se.tmconnect.flextid.regler.mandagISammaVecka
 import se.tmconnect.flextid.regler.sondagISammaVecka
@@ -183,6 +186,43 @@ class FlextidViewModel(
                 VeckaDagRad(datum, dag, arbetat, utfall)
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val aftnarLediga =
+        uiInstallningarLager.aftnarLediga.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            true,
+        )
+
+    val semesterdagarPerAr =
+        uiInstallningarLager.semesterdagarPerAr.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            SEMESTERDAGAR_STANDARD,
+        )
+
+    val semesterarStartmanad =
+        uiInstallningarLager.semesterarStartmanad.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            SEMESTERAR_STARTMANAD_STANDARD,
+        )
+
+    val semester =
+        combine(
+            repository.observeraAllaDagar(),
+            installning,
+            semesterdagarPerAr,
+            semesterarStartmanad,
+        ) { alla, inst, perAr, startManad ->
+            semesterSammanfattning(
+                dagar = alla,
+                idag = LocalDate.now(),
+                arbetsdagarMask = inst.arbetsdagarMask,
+                dagarPerAr = perAr,
+                startManad = startManad,
+            )
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val exportArManad =
         uiInstallningarLager.exportArManad.stateIn(
@@ -411,6 +451,26 @@ class FlextidViewModel(
         }
     }
 
+    fun sattAftnarLediga(lediga: Boolean) {
+        viewModelScope.launch {
+            uiInstallningarLager.sattAftnarLediga(lediga)
+            synkaPaminnelseJobb()
+        }
+    }
+
+    fun sattSemesterdagarPerAr(text: String) {
+        val dagar = text.trim().toIntOrNull() ?: return
+        viewModelScope.launch { uiInstallningarLager.sattSemesterdagarPerAr(dagar) }
+    }
+
+    fun sattSemesterarKalenderar(kalenderar: Boolean) {
+        viewModelScope.launch {
+            uiInstallningarLager.sattSemesterarStartmanad(
+                if (kalenderar) 1 else SEMESTERAR_STARTMANAD_STANDARD,
+            )
+        }
+    }
+
     fun sattExportArManad(arManad: YearMonth) {
         viewModelScope.launch { uiInstallningarLager.sattExportArManad(arManad) }
     }
@@ -458,7 +518,7 @@ class FlextidViewModel(
         val dagar = repository.hamtaAllaDagar()
         val inst = repository.hamtaInstallning()
         val arManad = exportArManad.value
-        return byggManadsRapport(dagar, inst, arManad, texter, locale)
+        return byggManadsRapport(dagar, inst, arManad, texter, locale, aftnarLediga = aftnarLediga.value)
     }
 
     fun skrivTillUri(uri: Uri, skriv: suspend (java.io.OutputStream) -> Unit) {

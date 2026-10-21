@@ -54,8 +54,15 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.util.Locale
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import se.tmconnect.flextid.R
 import se.tmconnect.flextid.regler.DagTyp
+import se.tmconnect.flextid.regler.SemesterSammanfattning
+import se.tmconnect.flextid.regler.dagensUtfall
+import se.tmconnect.flextid.regler.gaHemTid
+import se.tmconnect.flextid.regler.gaHemTidForNollsaldo
+import se.tmconnect.flextid.regler.helgdagPa
 import se.tmconnect.flextid.regler.formateraMinuterSomTid
 import se.tmconnect.flextid.regler.formateraSaldoMinuter
 import se.tmconnect.flextid.regler.formateraTid
@@ -98,6 +105,10 @@ fun FlextidStartSkarm(
     val stamplaUtPaminnelse by viewModel.stamplaUtPaminnelsePa.collectAsState()
     val stamplaInPaminnelse by viewModel.stamplaInPaminnelsePa.collectAsState()
     val stamplaInPaminnelseMin by viewModel.stamplaInPaminnelseMinEfterMidnatt.collectAsState()
+    val semester by viewModel.semester.collectAsState()
+    val aftnarLediga by viewModel.aftnarLediga.collectAsState()
+    val semesterdagarPerAr by viewModel.semesterdagarPerAr.collectAsState()
+    val semesterarStartmanad by viewModel.semesterarStartmanad.collectAsState()
 
     Scaffold(
         modifier = modifier,
@@ -158,6 +169,8 @@ fun FlextidStartSkarm(
                         saldo = saldo,
                         dag = idagDag,
                         standardRast = installning.standardRastMin,
+                        installning = installning,
+                        semester = semester,
                         locale = locale,
                         onStamplaIn = viewModel::stamplaIn,
                         onStamplaUt = viewModel::stamplaUt,
@@ -197,6 +210,12 @@ fun FlextidStartSkarm(
                         onExporteraPdf = onExporteraPdf,
                         onExporteraJson = onExporteraSakerhetskopia,
                         onImporteraJson = onImporteraSakerhetskopia,
+                        aftnarLediga = aftnarLediga,
+                        semesterdagarPerAr = semesterdagarPerAr,
+                        semesterarKalenderar = semesterarStartmanad == 1,
+                        onAftnarLediga = viewModel::sattAftnarLediga,
+                        onSemesterdagarPerAr = viewModel::sattSemesterdagarPerAr,
+                        onSemesterarKalenderar = viewModel::sattSemesterarKalenderar,
                     )
             }
         }
@@ -219,6 +238,8 @@ internal fun IdagInnehall(
     saldo: Int,
     dag: se.tmconnect.flextid.data.Dag?,
     standardRast: Int,
+    installning: se.tmconnect.flextid.data.Installning,
+    semester: SemesterSammanfattning?,
     locale: Locale,
     onStamplaIn: () -> Unit,
     onStamplaUt: () -> Unit,
@@ -235,6 +256,13 @@ internal fun IdagInnehall(
             text = formateraDatum(LocalDate.now(), locale),
             style = MaterialTheme.typography.bodyLarge,
         )
+        helgdagPa(LocalDate.now(), medAftnar = true)?.let { helg ->
+            Text(
+                text = helgdagNamn(helg),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
         dag?.start?.let {
             Text(
                 text = stringResource(R.string.idag_in, formateraTid(it, locale)),
@@ -246,6 +274,23 @@ internal fun IdagInnehall(
                 text = stringResource(R.string.idag_ut, formateraTid(it, locale)),
                 style = MaterialTheme.typography.bodyMedium,
             )
+        }
+        val start = dag?.start
+        if (dag != null && start != null && dag.slut == null) {
+            val dagensUtfallNu = dagensUtfall(dag, installning.normaltidMinPerDag, installning.arbetsdagarMask)
+            val saldoForeIdag = saldo - dagensUtfallNu
+            gaHemTid(start, dag.rastMin, installning.normaltidMinPerDag)?.let { tid ->
+                Text(
+                    text = stringResource(R.string.ga_hem_normaltid, formateraTid(tid, locale)),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+            gaHemTidForNollsaldo(start, dag.rastMin, installning.normaltidMinPerDag, saldoForeIdag)?.let { tid ->
+                Text(
+                    text = stringResource(R.string.ga_hem_nollsaldo, formateraTid(tid, locale)),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = onStamplaIn, modifier = Modifier.tryckyta48()) {
@@ -267,6 +312,21 @@ internal fun IdagInnehall(
         )
         OutlinedButton(onClick = onRedigera, modifier = Modifier.tryckyta48()) {
             Text(stringResource(R.string.redigera_dag))
+        }
+        semester?.let { sem ->
+            Text(
+                text = stringResource(
+                    R.string.semester_rad,
+                    formateraDatum(sem.ar.fran, locale),
+                    formateraDatum(sem.ar.till, locale),
+                ),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+            Text(
+                text = stringResource(R.string.semester_siffror, sem.uttagna, sem.planerade, sem.kvar),
+                style = MaterialTheme.typography.bodyMedium,
+            )
         }
     }
 }
@@ -334,6 +394,13 @@ private fun VeckaRad(rad: VeckaDagRad, locale: Locale, onClick: () -> Unit) {
     ) {
         Column {
             Text(formateraDatum(rad.datum, locale), style = MaterialTheme.typography.bodyLarge)
+            helgdagPa(rad.datum, medAftnar = true)?.let { helg ->
+                Text(
+                    text = helgdagNamn(helg),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
             val tidText =
                 when {
                     rad.dag?.start != null && rad.dag.slut != null ->
@@ -373,7 +440,14 @@ internal fun InstallningarInnehall(
     onExporteraPdf: () -> Unit,
     onExporteraJson: () -> Unit,
     onImporteraJson: () -> Unit,
+    aftnarLediga: Boolean = true,
+    semesterdagarPerAr: Int = se.tmconnect.flextid.regler.SEMESTERDAGAR_STANDARD,
+    semesterarKalenderar: Boolean = false,
+    onAftnarLediga: (Boolean) -> Unit = {},
+    onSemesterdagarPerAr: (String) -> Unit = {},
+    onSemesterarKalenderar: (Boolean) -> Unit = {},
 ) {
+    var semesterdagarText by remember(semesterdagarPerAr) { mutableStateOf(semesterdagarPerAr.toString()) }
     var normaltid by remember(installning.normaltidMinPerDag) {
         mutableStateOf(installning.normaltidMinPerDag.toString())
     }
@@ -427,6 +501,38 @@ internal fun InstallningarInnehall(
                 valtMinEfterMidnatt = stamplaInPaminnelseMinEfterMidnatt,
                 locale = locale,
                 onValj = onStamplaInPaminnelseKlockslag,
+            )
+        }
+        item {
+            PaminnelseReglage(
+                rubrik = stringResource(R.string.aftnar_lediga_rubrik),
+                beskrivning = stringResource(R.string.aftnar_lediga_beskrivning),
+                pa = aftnarLediga,
+                onAndras = onAftnarLediga,
+            )
+        }
+        item {
+            Text(stringResource(R.string.semester_rubrik), style = MaterialTheme.typography.titleMedium)
+        }
+        item {
+            OutlinedTextField(
+                value = semesterdagarText,
+                onValueChange = {
+                    semesterdagarText = it
+                    onSemesterdagarPerAr(it)
+                },
+                label = { Text(stringResource(R.string.semesterdagar_per_ar)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+        item {
+            PaminnelseReglage(
+                rubrik = stringResource(R.string.semesterar_kalenderar_rubrik),
+                beskrivning = stringResource(R.string.semesterar_kalenderar_beskrivning),
+                pa = semesterarKalenderar,
+                onAndras = onSemesterarKalenderar,
             )
         }
         if (behorighetNekad) {

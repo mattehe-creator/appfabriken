@@ -52,6 +52,8 @@ import org.robolectric.annotation.LooperMode
 import org.robolectric.shadows.ShadowLooper
 import se.tmconnect.flextid.R
 import se.tmconnect.flextid.data.Dag
+import se.tmconnect.flextid.regler.SemesterAr
+import se.tmconnect.flextid.regler.SemesterSammanfattning
 import se.tmconnect.flextid.data.Installning
 import se.tmconnect.flextid.regler.DagTyp
 import se.tmconnect.flextid.ui.DagFormularTillstand
@@ -237,10 +239,17 @@ abstract class ButikSkarmbilderBas {
                         Dag(
                             datum = LocalDate.now(),
                             start = LocalTime.of(8, 0),
-                            slut = LocalTime.of(16, 30),
                             rastMin = 30,
                         ),
                     standardRast = 30,
+                    installning = Installning(),
+                    semester =
+                        SemesterSammanfattning(
+                            ar = SemesterAr(LocalDate.of(2026, 4, 1), LocalDate.of(2027, 3, 31)),
+                            uttagna = 15,
+                            planerade = 5,
+                            kvar = 5,
+                        ),
                     locale = loc,
                     onStamplaIn = noOp,
                     onStamplaUt = noOp,
@@ -279,6 +288,8 @@ abstract class ButikSkarmbilderBas {
                     saldo = 125,
                     dag = null,
                     standardRast = 30,
+                    installning = Installning(),
+                    semester = null,
                     locale = loc,
                     onStamplaIn = noOp,
                     onStamplaUt = noOp,
