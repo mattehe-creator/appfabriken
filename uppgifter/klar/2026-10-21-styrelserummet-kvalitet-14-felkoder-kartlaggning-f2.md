@@ -59,3 +59,5 @@ Testmetoden `kartlaggning` ska med `org.junit.Assert` verifiera exemplen ovan (i
 - Ändra Application.kt eller JobbKo.kt i denna uppgift.
 - Ändra `uppgifter/`, `granskning/`, `BESLUTSLOGG.md` eller andra filer utanför listan.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (hela implementationen — lokal modell levererade ingen kod på försök 2, PR #339)
