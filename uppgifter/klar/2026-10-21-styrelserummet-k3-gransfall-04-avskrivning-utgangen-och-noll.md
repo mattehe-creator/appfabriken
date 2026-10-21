@@ -26,3 +26,5 @@ gradle :styrelserummet:test --tests "*AvskrivningGransfallUtgangenTest"
 ## Gör inte
 - Ändra andra filer än test + ev. `Avskrivning.kt`.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #351). Ersatt av 2026-10-21-styrelserummet-k3-gransfall-04-avskrivning-utgangen-och-noll-f2.md
