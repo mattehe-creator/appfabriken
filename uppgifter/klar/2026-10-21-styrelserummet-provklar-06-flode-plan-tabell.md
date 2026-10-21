@@ -32,3 +32,5 @@ gradle :styrelserummet:test --tests "*SyntetiskPlanTabellTest"
 - Ändra produktionskod om testerna redan går grönt.
 - Lägga till beroenden.
 - Checka in riktiga handlingar.
+
+utfall: godkänd 2026-10-21 (flyttade test från reporoten till rätt sökväg, import av PdfLasare, grupp TAK i stället för TAG)
