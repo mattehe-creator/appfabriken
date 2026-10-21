@@ -31,3 +31,5 @@ gradle :styrelserummet:test --tests "*NyttjandeperiodForslagTest.arInomIntervall
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra `nyttjandeperioder.csv`.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #338). Ersatt av 2026-10-21-styrelserummet-kvalitet-07-ar-inom-intervall-f2.md
