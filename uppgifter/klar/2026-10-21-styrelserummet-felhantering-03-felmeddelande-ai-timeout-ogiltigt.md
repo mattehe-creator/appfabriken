@@ -29,3 +29,5 @@ gradle :styrelserummet-server:test --tests "*FelHanteringTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #376). Ersatt av 2026-10-21-styrelserummet-felhantering-03-felmeddelande-ai-timeout-ogiltigt-f2.md
