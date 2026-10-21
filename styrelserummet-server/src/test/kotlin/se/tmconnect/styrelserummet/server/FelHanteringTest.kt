@@ -99,7 +99,7 @@ class FelHanteringTest {
     fun forMangaJobbForklararFemJobbPerTimmeOchNastaForsok() {
         val meddelande = felTillMeddelande(ServerFel.ForMangaJobb(1_700_000_000_000L))
         assertTrue(meddelande.contains("fem jobb per timme"))
-        assertTrue(meddelande.contains("klockan"))
+        assertTrue(meddelande.contains("klockan 23:13"))
         assertFalse(meddelande.contains("Exception", ignoreCase = true))
         assertFalse(meddelande.contains("503"))
         assertFalse(meddelande.contains("HTTP", ignoreCase = true))

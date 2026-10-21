@@ -41,7 +41,11 @@ fun felTillMeddelande(fel: ServerFel): String =
         ServerFel.AiOgiltigtSvar ->
             "Komponentförslagen kunde inte tas fram. Kontrollera underhållsplanen och försök igen."
         is ServerFel.ForMangaJobb -> {
-            val tid = LocalDateTime.ofInstant(Instant.ofEpochMilli(fel.kanForsokaIgenEpochMs), ZoneId.systemDefault())
+            val tid =
+                LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(fel.kanForsokaIgenEpochMs),
+                    ZoneId.of("Europe/Stockholm"),
+                )
             val formatter = DateTimeFormatter.ofPattern("HH:mm")
             "Du har skickat för många jobb. Gränsen är fem jobb per timme. Försök igen klockan ${tid.format(formatter)}."
         }
