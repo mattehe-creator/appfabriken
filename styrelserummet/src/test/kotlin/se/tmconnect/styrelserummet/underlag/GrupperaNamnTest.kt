@@ -2,7 +2,7 @@ package se.tmconnect.styrelserummet.underlag
 
 import org.junit.jupiter.api.Test
 import se.tmconnect.styrelserummet.modell.Komponentgrupp
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
 
 class GrupperaNamnTest {
     
