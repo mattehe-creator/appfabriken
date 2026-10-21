@@ -1,6 +1,7 @@
 package se.tmconnect.styrelserummet.server
 
 import org.junit.After
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -195,5 +196,49 @@ class JobbLagringTest {
         assertNull(lagring.lasUtkast(jobId))
         
         assertTrue(lagring.listaFiler(jobId).isEmpty())
+    }
+
+    @Test
+    fun sparaFilSakertNamnLangtOchUnicode() {
+        val jobId = "test_long_filename"
+        val lagring = JobbLagring(tempDir)
+        lagring.skapa(
+            JobbMeta(
+                id = jobId,
+                forening = "Testförening",
+                arsslut = 2023,
+                status = JobbStatus.VANTAR.name,
+                skapadMs = System.currentTimeMillis(),
+                senastAktivMs = System.currentTimeMillis(),
+                klientIpHash = "test",
+            ),
+        )
+
+        // Skapa ett långt filnamn med svenska tecken
+        val longFilename = "Årsredovisning Testförening 2025.pdf".repeat(10) // Gör det minst 200 tecken
+        val bytes = "Testinnehåll för filen".encodeToByteArray()
+
+        lagring.sparaFil(jobId, longFilename, bytes)
+
+        // Kontrollera att filen finns i filer-katalogen
+        val filerDir = lagring.jobbKatalog(jobId) / "filer"
+        assertTrue(filerDir.exists())
+        
+        // Hämta filnamnet som det sparades (det säkra namnet)
+        val savedFiles = filerDir.toFile().listFiles()?.toList() ?: emptyList()
+        assertEquals(1, savedFiles.size)
+        
+        val savedFile = savedFiles[0]
+        val fileName = savedFile.name
+        
+        // Kontrollera att filnamnet bara innehåller tillåtna tecken och trunkeras till högst 200
+        assertTrue("Filnamn innehåller ogiltiga tecken: $fileName", 
+            fileName.matches(Regex("^[a-zA-Z0-9._-]+$")))
+        assertTrue("Filnamn ska vara högst 200 tecken efter sanering", fileName.length <= 200)
+        assertEquals(200, fileName.length)
+        
+        // Kontrollera att innehållet är oförändrat
+        val readBytes = savedFile.readBytes()
+        assertArrayEquals(bytes, readBytes)
     }
 }

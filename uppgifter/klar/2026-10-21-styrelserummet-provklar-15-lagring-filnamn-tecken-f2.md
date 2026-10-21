@@ -38,3 +38,5 @@ gradle :styrelserummet-server:test --tests "*JobbLagringTest*"
 ## Gör inte
 - Ändra `Indata.kt` `sakertFilnamn` (annan uppgift); fokus på lagring efter upload.
 - Ta bort eller ändra befintliga tester i `JobbLagringTest.kt`.
+
+utfall: godkänd 2026-10-21 (oanvänd import borttagen; assert filnamnslängd 200 efter trunkering)
