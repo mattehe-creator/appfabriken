@@ -1,113 +1,96 @@
 # Data safety — Husloggen (Play Console)
 
-Svar att fylla i i Google Play Console, med motivering utifrån sammanslaget manifest för `:husloggen`, modulberoenden (`:karna` m.m.) och appens faktiska beteende. Mattias kopierar och justerar vid behov om formuläret ändras. Appnamn i butiken är preliminärt (arbetsnamn Husloggen).
+Svar att fylla i i Google Play Console, med motivering utifrån manifestet för `:husloggen`, modulberoenden (`:karna`) och appens beteende. Skrivet av Claude 2026-10-21. Appnamnet i butiken är preliminärt.
 
 ## Samlad bild
 
 | Källa | Vad den innebär |
-|--------|------------------|
-| `husloggen/src/main/AndroidManifest.xml` | `POST_NOTIFICATIONS` för lokala påminnelser om underhållsuppgifter. `INTERNET` och `ACCESS_NETWORK_STATE` **tas bort** (`tools:node="remove"`). |
-| `:karna` / Play Billing | Google Play Billing Library använder Play Store på enheten för engångsköpet Pro. Appen samlar inte in användardata för att skicka till egen server (ingen server finns). |
-| Appdata | Uppgifter, loggposter, bilder och inställningar lagras lokalt (Room, filer, DataStore). Export och säkerhetskopia sker **endast** när användaren själv sparar en fil. |
+|-------|-----------------|
+| `husloggen/src/main/AndroidManifest.xml` | `POST_NOTIFICATIONS` för lokala påminnelser. `INTERNET` och `ACCESS_NETWORK_STATE` **tas bort** (`tools:node="remove"`). |
+| `:karna` / Play Billing | Google Play Billing Library använder Play Store på enheten för engångsköpet Pro. Ingen egen server finns. |
+| Appdata | Bostäder, uppgifter, loggposter, bilder, dokument, mätare och inställningar lagras lokalt (Room, DataStore, appens privata filer). Export och säkerhetskopia sker **endast** när användaren själv sparar en fil eller väljer en mapp för automatisk säkerhetskopia. |
 
 ---
 
 ## 1. Samlar appen in eller delar användar- eller enhetsdata?
 
-**Svar: Nej** (ingen insamling eller delning av personuppgifter till utvecklaren).
+**Svar: Nej.**
 
-**Motivering:** Det finns ingen egen backend, ingen analys-SDK och ingen annons-SDK. Allt användaren matar in (uppgifter, loggposter, valfria fält, kvittobilder) stannar på enheten tills användaren exporterar eller raderar. Utvecklaren får ingen kopia automatiskt.
+**Motivering:** Ingen backend, ingen analys-SDK, ingen annons-SDK och ingen internetbehörighet. Allt användaren matar in stannar på enheten tills användaren exporterar eller raderar appen. Utvecklaren får ingen kopia.
 
-**Undantag att inte blanda ihop:** Play Console kan ställa följdfrågor om **köp i app** via Google Play. Det är Googles betalflöde, inte att TM Connect tar emot personuppgifter. Se avsnitt om Billing nedan.
+Köpet av Pro går genom Google Play. Det är Googles betalflöde och räknas inte som att TM Connect samlar in data (avsnitt 6).
 
 ---
 
 ## 2. Kryptering
 
-**Svar:** Appen använder standard Android-lagring för lokal databas och filer. Säkerhetskopian som användaren kan spara är **inte** extra krypterad av appen (framgår av appens texter).
-
-**Motivering:** Ingen egen nätverksöverföring av användarinnehåll. Eventuell disk-kryptering på enheten hanteras av operativsystemet, inte som separat deklaration i appen.
+**Svar:** Ej tillämpligt för överföring (ingen överföring). Lokal lagring skyddas av Androids standardkryptering av enheten. Säkerhetskopian som användaren sparar är inte extra krypterad av appen.
 
 ---
 
-## 3. Kontotyper
+## 3. Konton
 
-**Svar:** Ingen inloggning, inget utvecklarkonto i appen.
-
-**Motivering:** Ingen autentisering implementerad.
+**Svar:** Inget konto, ingen inloggning.
 
 ---
 
-## 4. Data som användaren kan mata in (lokal lagring)
+## 4. Data som lagras på enheten
 
-Följande lagras **på enheten** för appens funktion. Det ska **inte** markeras som insamlat/delat med utvecklaren om formuläret skiljer på “data the developer collects” vs “on-device only” — välj formulärets alternativ som motsvarar *ingen insamling av utvecklaren*.
+Markeras **inte** som insamlad, eftersom den aldrig lämnar enheten till utvecklaren.
 
-| Data | Syfte (lokal) | Delas med utvecklaren |
+| Data | Syfte (lokalt) | Delas med utvecklaren |
 |------|----------------|------------------------|
-| Underhållsuppgifter (namn, intervall, datum, påminnelser, anteckningar) | Att göra-lista, påminnelser | Nej |
-| Loggposter (beskrivning, datum, typ, belopp, utförare, anteckningar) | Logg, export, sammanställning | Nej |
-| Kvittobilder | Kopplade till poster, visas i appen och kan ingå i export/säkerhetskopia | Nej |
-| Pro-status (köpt eller inte) | Tar bort gränsen på 15 poster | Nej (lagras lokalt; verifiering via Play) |
-
-**Motivering:** Room (`uppgift`, `post`), bildfiler via appens bildlager, DataStore för inställningar och Pro-flagga.
+| Bostäder (namn, valfri adress, anteckning) | Hålla isär flera bostäder | Nej |
+| Uppgifter (namn, intervall, datum) | Påminnelser och nästa datum | Nej |
+| Loggposter (datum, belopp, typ, rot/rut-avdrag, anteckning) | Logg, sammanställning, PDF, CSV | Nej |
+| Bilder och kvitton | Visas på posten | Nej |
+| Dokument (manualer, ritningar m.m.) | Visas i appen | Nej |
+| Mätare och avläsningar | Förbrukning | Nej |
+| Planerade kostnader | Översikt framåt | Nej |
+| Inställningar (påminnelser, säkerhetskopia, tema) | Appens funktion | Nej |
+| Pro-status | Tar bort gränserna | Nej (verifieras via Play) |
 
 ---
 
 ## 5. Behörigheter
 
-| Behörighet | Varför | Data safety-koppling |
-|------------|--------|----------------------|
-| `POST_NOTIFICATIONS` | Lokala notiser om förfallna underhållsuppgifter enligt användarens val | Notiser genereras på enheten; inget skickas till utvecklaren |
-| `com.android.vending.BILLING` | Finns i **sammanslaget manifest**; kommer från Google Play Billing Library (`billing-ktx` i `:karna`) | Play Store på enheten hanterar köp; utvecklaren tar inte emot betalningsuppgifter. Se avsnitt 6 |
-| `WAKE_LOCK`, `RECEIVE_BOOT_COMPLETED`, `FOREGROUND_SERVICE` | WorkManager (påminnelser, automatisk säkerhetskopia) — **sammanslaget release-manifest** | Schemaläggning på enheten; ingen nätverks- eller molninsamling |
-| (ingen `INTERNET` i slutlig manifest) | Medvetet borttagen | Stödjer påståendet att appen inte använder nätverk för egen datainsamling |
+| Behörighet | Varför | Data safety |
+|------------|--------|-------------|
+| `POST_NOTIFICATIONS` | Lokala påminnelser före nästa datum | Skapas på enheten |
+| `com.android.vending.BILLING` | Från Play Billing Library i `:karna` | Avsnitt 6 |
+| `WAKE_LOCK`, `RECEIVE_BOOT_COMPLETED`, `FOREGROUND_SERVICE` | WorkManager (påminnelser, automatisk säkerhetskopia), via sammanslaget manifest | Schemaläggning på enheten |
+| (ingen `INTERNET`) | Medvetet borttagen | Appen kan inte skicka något själv |
 
-Kamera och lagring används via **systemintents** (fotoväljare/kamera) enligt projektregler, inte som breda lagringsbehörigheter i manifest.
-
-Automatisk säkerhetskopia är **av som standard**. Slår användaren på den väljer hen en mapp med systemets filväljare; appen skickar inget själv och har inget nätverk. Kopian är en ZIP med samma innehåll som den manuella säkerhetskopian och är inte krypterad.
+Ingen kamera- eller lagringsbehörighet: bilder via systemets fotoväljare och kamera, filer via systemets filväljare (Storage Access Framework). Ingen platsbehörighet.
 
 ---
 
-## 6. Google Play Billing (Pro, engångsköp)
+## 6. Google Play Billing (Pro)
 
-**Vad biblioteket gör:** `billing-ktx` i `:karna` ansluter till **Google Play** för engångsköp Pro. Appen sparar bara en lokal **Pro ja/nej**-flagga efter lyckat köp. Pro tar bort gränsen på 15 loggposter; uppgifter, påminnelser, export och säkerhetskopia är gratis.
-
-**Play Console — typisk tolkning:**
-
-- Det är **inte** att utvecklaren säljer användardata.
-- Markera **inte** att appen “samlar in” betalningsuppgifter: kort och betalning hanteras av Google Play.
-- **Delning:** Data delas i betalningsflödet med **Google** som betalningsleverantör, inte med TM Connects server (finns ingen).
-
-**Motivering:** `PlayProKalla` pratar med `BillingClient`; ingen TM Connect-backend. Manifest saknar `INTERNET` — kommunikation sker via Play Store-appen på enheten.
+Produkt-id `pro`, engångsköp. Appen sparar bara en lokal flagga efter lyckat köp. Betalningsuppgifter hanteras av Google Play och når aldrig TM Connect. Markera inte betalningsuppgifter som insamlade av utvecklaren.
 
 ---
 
-## 7. Analys, reklam, kraschrapportering
+## 7. Barn, hälsa, plats
 
-| Tjänst | I appen? | Data safety |
-|--------|----------|-------------|
-| Firebase / Analytics | Nej | — |
-| Annonser | Nej | — |
-| Egna krasch-SDK:er | Nej | Krascher via Play Console enligt CLAUDE.md |
+Appen riktar sig inte till barn. Ingen hälsodata, ingen plats, inga konton. Målgrupp: vuxna bostadsägare.
 
 ---
 
-## 8. Barn och känsliga kategorier
+## 8. Radering
 
-**Svar:** Appen riktar sig inte till barn. Ingen hälsodata, ingen platsinsamling, inga konton.
-
-**Motivering:** Produktregler i CLAUDE.md punkt 6 och `husloggen/APP.md`.
+Användaren tar bort poster i appen eller avinstallerar appen. Ingen kopia finns hos utvecklaren. Play kräver en länk för radering bara för appar med konton; Husloggen har inga.
 
 ---
 
-## 9. Butiksgrafik
+## 9. Sammanfattning till formuläret
 
-Skärmbilder (1080 × 1920), funktionsgrafik (1024 × 500) och ikon (512 × 512) genereras i JVM-test (Roborazzi) och ligger under `husloggen/butik/`. Se `README.md` för återskapande.
+| Fråga | Svar |
+|-------|------|
+| Samlar eller delar appen användardata? | **Nej** |
+| Kryptering vid överföring | Ej tillämpligt |
+| Konto krävs | **Nej** |
+| Riktad till barn | **Nej** |
+| Integritetspolicy | `https://mattehe-creator.github.io/appfabriken/husloggen/integritet/` (när GitHub Pages är påslaget) |
 
----
-
-## 10. Checklista innan publicering
-
-- [ ] Data safety-svar stämmer med **sammanslaget manifest** (kör `./gradlew :husloggen:processDebugMainManifest` vid tvivel).
-- [ ] Butikstexter i `sv/` och `en/` innehåller inga URL:er (kontrolleras av `ButikTexterTest`).
-- [ ] Skärmbilder och grafik i `butik/` motsvarar faktisk UI (Roborazzi).
+Uppdatera filen om manifest, beroenden eller beteende ändras.

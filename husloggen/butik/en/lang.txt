@@ -1,13 +1,19 @@
-Track house maintenance, log work and expenses offline. No accounts, no ads.
+Husloggen keeps track of your home's upkeep: what needs doing, what has been done and what it cost. Everything stays on your phone, no account needed.
 
-What you can do:
-• Set up recurring tasks with intervals in months (1–120). The app reminds you when it's time, and you mark them as done.
-• Log work and expenses. Each entry has an amount, date, and can include images of receipts. You can link entries to tasks.
-• See a yearly and type-based summary. This is the basis when selling your home.
-• Tax information about improvement expenses is shown as information according to sections 45 and 46 of the Income Tax Act (2022:260) for Sweden. The app provides guidance but no legal advice.
+To do
+Add recurring jobs, such as changing filters, clearing gutters or servicing the heat pump, with an interval in months. The app works out the next date and reminds you ahead of time. Ready-made suggestions help you get started. Mark a job as done with one tap: it goes into the log and the next date moves forward.
 
-Husloggen works completely offline. The app does not request any internet permission. No account is required, no ads, and no analytics. All data stays on your phone until you choose to export or share it.
+Log and receipts
+Record work done and expenses with date, amount, type and notes. Photograph the receipt or add pictures, several per entry.
 
-Everything in the app is free, but the free version holds 15 entries. Pro (one-time purchase, no subscription) removes the limit. Tasks and reminders are unlimited. Export and backup are always free.
+A record for when you sell
+The summary shows expenses per year and type, separating maintenance and repairs from new building, extensions and conversions. Create a PDF with the history of the house to hand to the buyer or estate agent, or export as CSV. For Swedish homeowners the app explains how the Swedish Tax Agency treats improvement costs and ROT/RUT deductions, without giving tax advice.
 
-Note: Tax information in the app applies to Sweden only and is provided as information, not advice.
+More in the app
+Meters for electricity, water and heating with consumption between readings. Documents such as manuals, drawings and inspection reports. Several homes, for example a house and a holiday cottage. Planned future costs. Dark mode.
+
+Your data stays with you
+Husloggen has no internet permission, no accounts, no ads and no analytics. Back up to a file or folder you choose, manually or automatically, and restore it on a new phone.
+
+Free and Pro
+The free version has every feature. The limit is 15 log entries and 3 homes. Tasks, reminders, meters and documents are unlimited. Pro is a one-time purchase that removes the limits. Export, PDF and backup are always free, and existing data is never deleted.
