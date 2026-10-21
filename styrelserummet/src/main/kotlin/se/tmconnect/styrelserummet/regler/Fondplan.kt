@@ -22,3 +22,13 @@ fun summaPerAr(atgarder: List<PlaneradAtgard>, franAr: Int, antalAr: Int): List<
     
     return resultat
 }
+
+fun jamnAvsattning(atgarder: List<PlaneradAtgard>, franAr: Int, antalAr: Int, ingaendeFond: Long): Long {
+    val behov = summaPerAr(atgarder, franAr, antalAr).sum() - ingaendeFond
+    if (behov <= 0) {
+        return 0L
+    }
+    
+    // Avrunda uppåt till hel krona: (behov + antalAr - 1) / antalAr
+    return (behov + antalAr - 1) / antalAr
+}

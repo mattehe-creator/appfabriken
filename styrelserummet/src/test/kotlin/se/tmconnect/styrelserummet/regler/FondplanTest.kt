@@ -56,4 +56,27 @@ class FondplanTest {
             // Expected
         }
     }
+    
+    @Test
+    fun `test jamnAvsattning`() {
+        val atgarder = listOf(
+            PlaneradAtgard(2026, 100_000L, "Takvård"),
+            PlaneradAtgard(2028, 600_000L, "Fönster"),
+            PlaneradAtgard(2028, 300_000L, "Balkonger"),
+            PlaneradAtgard(2030, 200_000L, "Ventilation"),
+            PlaneradAtgard(2040, 1_000_000L, "Stammar")
+        )
+        
+        // franAr 2026, antalAr 5, fond 300 000 → 180 000
+        assertEquals(180_000L, jamnAvsattning(atgarder, 2026, 5, 300_000L))
+        
+        // franAr 2026, antalAr 5, fond 0 → 240 000
+        assertEquals(240_000L, jamnAvsattning(atgarder, 2026, 5, 0L))
+        
+        // franAr 2026, antalAr 3, fond 0 → 333 334
+        assertEquals(333_334L, jamnAvsattning(atgarder, 2026, 3, 0L))
+        
+        // franAr 2026, antalAr 5, fond 2 000 000 → 0
+        assertEquals(0L, jamnAvsattning(atgarder, 2026, 5, 2_000_000L))
+    }
 }
