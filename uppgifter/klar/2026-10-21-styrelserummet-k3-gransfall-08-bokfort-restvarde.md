@@ -28,3 +28,5 @@ gradle :styrelserummet:test --tests "*BokfortVardeGransfallRestvardeTest"
 ## Gör inte
 - Ändra `Komponent.kt` (restvärde finns redan).
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #359). Ersatt av 2026-10-21-styrelserummet-k3-gransfall-08-bokfort-restvarde-f2.md
