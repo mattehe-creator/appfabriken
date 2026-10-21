@@ -25,14 +25,14 @@ class NyttjandeperiodForslagTest {
         val tabell = lasNyttjandeperioderFranResurs()
         
         // Rad FASAD (intervallAr = 40..100, forslagAr = 40)
-        val fasadRad = tabell.find { it.grupp == Komponentgrupp.FASAD }
-        assertEquals(true, arInomIntervall(40, fasadRad!!))
-        assertEquals(true, arInomIntervall(100, fasadRad!!))
-        assertEquals(false, arInomIntervall(30, fasadRad!!))
+        val fasadRad = tabell.find { it.grupp == Komponentgrupp.FASAD }!!
+        assertEquals(true, arInomIntervall(40, fasadRad))
+        assertEquals(true, arInomIntervall(100, fasadRad))
+        assertEquals(false, arInomIntervall(30, fasadRad))
         
         // Rad STAMMAR (intervallAr = null, forslagAr = 50)
-        val stammarRad = tabell.find { it.grupp == Komponentgrupp.STAMMAR }
-        assertEquals(true, arInomIntervall(50, stammarRad!!))
-        assertEquals(false, arInomIntervall(49, stammarRad!!))
+        val stammarRad = tabell.find { it.grupp == Komponentgrupp.STAMMAR }!!
+        assertEquals(true, arInomIntervall(50, stammarRad))
+        assertEquals(false, arInomIntervall(49, stammarRad))
     }
 }
