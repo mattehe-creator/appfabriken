@@ -500,4 +500,71 @@ class ApiTest {
             assertEquals(felTillMeddelande(ServerFel.ForStorFil), fel)
         }
     }
+
+    @Test
+    fun helhetFelAiTimeout() = helhetFelViaApi(
+        SvarLage.TIMEOUT,
+        ServerFel.AiTimeout,
+        arsredovisningText = "Noter utan byggnadsvärde",
+    )
+
+    @Test
+    fun helhetFelOgiltigtJson() = helhetFelViaApi(SvarLage.OGILTIGT_JSON, ServerFel.AiOgiltigtSvar)
+
+    @Test
+    fun helhetFelTomtSvar() = helhetFelViaApi(SvarLage.TOMT, ServerFel.AiOgiltigtSvar)
+
+    private fun helhetFelViaApi(
+        lage: SvarLage,
+        forvantatFel: ServerFel,
+        arsredovisningText: String = "Byggnader och mark 500 000",
+    ) = runBlocking {
+        val tmp = createTempDirectory("styrelserummet-test")
+        testApplication {
+            application {
+                module(
+                    ServerMiljo(
+                        dataRot = tmp,
+                        port = 0,
+                        tolkare = FalskTolkare(lage = lage),
+                        synkronJobb = true,
+                    ),
+                )
+            }
+            val client = createClient { }
+            val planBytes = pdfMedText("HEMLIG_KLIENTTEXT_12345 Underhall tak")
+            val arBytes = pdfMedText(arsredovisningText)
+            val res = client.post("/api/jobb") {
+                setBody(
+                    MultiPartFormDataContent(
+                        formData {
+                            append("forening", "Test brf")
+                            append("arsslut", "2025")
+                            append("filer", planBytes, Headers.build {
+                                append(HttpHeaders.ContentType, "application/pdf")
+                                append(HttpHeaders.ContentDisposition, "filename=plan.pdf")
+                            })
+                            append("filer", arBytes, Headers.build {
+                                append(HttpHeaders.ContentType, "application/pdf")
+                                append(HttpHeaders.ContentDisposition, "filename=arsredovisning.pdf")
+                            })
+                        },
+                    ),
+                )
+            }
+            assertEquals(HttpStatusCode.OK, res.status)
+            val id = json.parseToJsonElement(res.bodyAsText()).jsonObject["id"]!!.jsonPrimitive.content
+
+            val s = client.get("/api/jobb/$id")
+            val statusBody = s.bodyAsText()
+            assertEquals(HttpStatusCode.OK, s.status)
+            val metaObj = json.parseToJsonElement(statusBody).jsonObject["meta"]!!.jsonObject
+            assertEquals("FEL", metaObj["status"]!!.jsonPrimitive.content)
+            assertEquals(felTillMeddelande(forvantatFel), metaObj["felmeddelande"]!!.jsonPrimitive.content)
+
+            assertFalse(statusBody.contains("Exception"))
+            assertFalse(statusBody.contains("at se.tmconnect"))
+            assertFalse(statusBody.contains("HEMLIG_KLIENTTEXT_12345"))
+        }
+    }
 }
