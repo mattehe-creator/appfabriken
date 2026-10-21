@@ -34,3 +34,5 @@ gradle :styrelserummet:test --tests "*PdfLasareTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #399). Ersatt av 2026-10-21-styrelserummet-felhantering-08-pdf-krypterad-f2.md
