@@ -2,7 +2,7 @@ name: Webb
 on:
   push:
     branches: [main]
-    paths: ["webb/**", ".github/workflows/webb.yml"]
+    paths: ["webb/**", "*/butik/integritetspolicy-*.md", ".github/workflows/webb.yml"]
   workflow_dispatch:
 permissions:
   contents: read

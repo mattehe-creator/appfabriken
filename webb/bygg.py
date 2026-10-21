@@ -13,4 +13,7 @@ for sida in rot.glob("*/sida.html"):
     m.mkdir(parents=True, exist_ok=True)
     (m / "index.html").write_text(html, encoding="utf-8")
     print("byggd:", m / "index.html")
+import integritet
+for s in integritet.bygg(ut):
+    print("byggd:", s)
 (ut / "index.html").write_text('<!doctype html><meta charset="utf-8"><title>TM Connect</title><p>TM Connect</p>\n', encoding="utf-8")
