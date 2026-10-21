@@ -26,3 +26,5 @@ gradle :styrelserummet-server:test --tests "*GranserTest*"
 ## Gör inte
 - Koppla till JobbKo i denna uppgift.
 - Ändra andra filer.
+
+utfall: godkänd 2026-10-21 (JUnit 4-import i GranserTest)
