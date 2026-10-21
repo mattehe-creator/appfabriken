@@ -3,6 +3,7 @@ package se.tmconnect.styrelserummet.server
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonException
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
@@ -28,7 +29,10 @@ data class JobbMeta(
     val felmeddelande: String? = null,
 )
 
-class JobbLagring(private val rot: Path) {
+class JobbLagring(
+    private val rot: Path,
+    private val logg: (String) -> Unit = ::println
+) {
     private val json = Json { prettyPrint = true; ignoreUnknownKeys = true }
 
     init {
@@ -48,7 +52,15 @@ class JobbLagring(private val rot: Path) {
     fun lasMeta(id: String): JobbMeta? {
         val fil = jobbKatalog(id) / "meta.json"
         if (!fil.exists()) return null
-        return json.decodeFromString<JobbMeta>(fil.readText())
+        return try {
+            json.decodeFromString<JobbMeta>(fil.readText())
+        } catch (e: JsonException) {
+            logg("Skadad meta.json-fil, jobb hoppas över")
+            null
+        } catch (e: Exception) {
+            logg("Skadad meta.json-fil, jobb hoppas över")
+            null
+        }
     }
 
     fun skrivMeta(meta: JobbMeta) {
@@ -113,3 +125,4 @@ fun jobbResponse(meta: JobbMeta, utkast: UtkastDto?): JobbResponse =
         utkast = utkast,
         visning = utkast?.let(::tillVisning),
     )
+}
