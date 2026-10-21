@@ -18,6 +18,7 @@ class JobbKo(
     private val pdfLasare: PdfLasare = PdfLasare(),
     scope: CoroutineScope,
     private val synkron: Boolean = false,
+    private val loggSkriv: (String) -> Unit = ::println,
 ) {
     private val kanal = Channel<String>(Channel.UNLIMITED)
 
@@ -114,13 +115,15 @@ class JobbKo(
 
     private fun fel(id: String, serverFel: ServerFel) {
         val meta = lagring.lasMeta(id) ?: return
+        val tidMs = System.currentTimeMillis()
         lagring.skrivMeta(
             meta.copy(
                 status = JobbStatus.FEL.name,
                 felmeddelande = felTillMeddelande(serverFel),
-                senastAktivMs = System.currentTimeMillis(),
+                senastAktivMs = tidMs,
             ),
         )
+        loggSkriv(loggJobbFel(id, serverFel, tidMs))
     }
 }
 

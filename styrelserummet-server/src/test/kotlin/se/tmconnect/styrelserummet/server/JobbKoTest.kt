@@ -9,6 +9,8 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.ByteArrayOutputStream
@@ -68,6 +70,53 @@ class JobbKoTest {
         val metaResult = lagring.lasMeta(id)!!
         assertEquals(JobbStatus.FEL.name, metaResult.status)
         assertEquals(felTillMeddelande(ServerFel.AiTimeout), metaResult.felmeddelande)
+    }
+
+    @Test
+    fun felLoggarJobbIdOchFelkodUtanKansligData() {
+        val id = "test_jobb_logg_1"
+        val loggar = mutableListOf<String>()
+        skapaJobbMedPdf(id, skannadPdfUtanText())
+
+        JobbKo(
+            lagring,
+            FalskTolkare(),
+            scope = scope,
+            synkron = true,
+            loggSkriv = loggar::add,
+        ).lagTill(id)
+
+        assertEquals(1, loggar.size)
+        val rad = loggar.single()
+        assertTrue(rad.contains(id))
+        assertTrue(rad.contains("IngenLasbarText"))
+        assertFalse(rad.contains("19800101-1234"))
+        assertFalse(rad.contains("underhallsplan.pdf"))
+        assertFalse(rad.contains(felTillMeddelande(ServerFel.IngenLasbarText)))
+    }
+
+    @Test
+    fun ogiltigtAiSvarLoggarUtanPersonnummerEllerFilnamn() {
+        val id = "test_jobb_logg_2"
+        val loggar = mutableListOf<String>()
+        skapaJobbMedPdf(id, pdfMedText("19800101-1234 Underhall tak"))
+
+        JobbKo(
+            lagring,
+            FalskTolkare(lage = SvarLage.OGILTIGT_JSON),
+            scope = scope,
+            synkron = true,
+            loggSkriv = loggar::add,
+        ).lagTill(id)
+
+        assertEquals(1, loggar.size)
+        val rad = loggar.single()
+        assertTrue(rad.contains(id))
+        assertTrue(rad.contains("AiOgiltigtSvar"))
+        assertFalse(rad.contains("19800101-1234"))
+        assertFalse(rad.contains("Underhall tak"))
+        assertFalse(rad.contains("underhallsplan.pdf"))
+        assertFalse(rad.contains(felTillMeddelande(ServerFel.AiOgiltigtSvar)))
     }
 
     private fun skapaJobbMedPdf(id: String, pdfBytes: ByteArray) {
