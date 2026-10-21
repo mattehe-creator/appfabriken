@@ -57,3 +57,5 @@ gradle :styrelserummet:test --tests "*SyntetiskArsredovisningTest"
 - Skapa filer i repots rot.
 - Ändra `HittaByggnadensVarde.kt` eller annan produktionskod om testet kan göras grönt med befintlig logik (se `HittaByggnadensVardeTest.hittaByggnadensVardeTvaKolumner`).
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (duplicerad rotfil borttagen, PdfLasare-import, setLeading i PDF, maskning av balansrader)

@@ -20,6 +20,18 @@ class MaskaPersonuppgifterTest {
     }
 
     @Test
+    fun maskaInteBalansraderMedArOchBelopp() {
+        val balans = """
+            Balansräkning
+            Byggnader och mark
+            2025 2024
+            12 500 000 11 800 000
+            Byggnadsår 1975
+        """.trimIndent()
+        assertEquals(balans, maskaPersonuppgifter(balans))
+    }
+
+    @Test
     fun maskaInteFalskaTrffar() {
         assertEquals(
             "Org 769612-3456, bankgiro 123-4567",
