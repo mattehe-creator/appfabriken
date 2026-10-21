@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fondplan för underhållet — Styrelserummet</title>
+  <meta name="description" content="Hur mycket behöver föreningen avsätta till underhållsfonden varje år? Räkna ut fondens utveckling år för år ur underhållsplanen. Gratis, inget sparas.">
+  <link rel="stylesheet" href="/gemensam.css">
+</head>
+<body>
+  <div class="ram bred">
+    <div class="topp">
+      <a class="marke" href="/">Styrelserummet</a>
+      <span class="stampel">Utkast</span>
+    </div>
+    <header class="hjalte">
+      <span class="etikett">Gratis verktyg</span>
+      <h1>Fondplan för underhållet</h1>
+      <p class="ingress">Lägg in åtgärderna ur underhållsplanen per år. Ni ser vilken årlig avsättning som räcker, och vilket år fonden annars tar slut. Ingenting sparas.</p>
+    </header>
+
+    <form id="fond-form">
+      <div class="falt">
+        <label for="franAr">Första år</label>
+        <input id="franAr" type="number" min="1990" max="2100" required inputmode="numeric">
+      </div>
+      <div class="falt">
+        <label for="antalAr">Antal år</label>
+        <input id="antalAr" type="number" min="1" max="60" value="30" required inputmode="numeric">
+      </div>
+      <div class="falt">
+        <label for="fond">Underhållsfond vid start (kr)</label>
+        <input id="fond" inputmode="numeric" value="0">
+      </div>
+      <div class="falt">
+        <label for="avsattning">Årlig avsättning att prova (kr, valfritt)</label>
+        <input id="avsattning" inputmode="numeric" aria-describedby="avsattning-hjalp">
+        <p class="hjalp" id="avsattning-hjalp">Lämna tomt för att se den minsta avsättning som räcker varje år.</p>
+      </div>
+
+      <div class="tabellram">
+        <table id="atgarder">
+          <caption>Åtgärder ur underhållsplanen</caption>
+          <thead><tr><th scope="col">År</th><th scope="col" class="tal">Belopp (kr)</th><th scope="col">Åtgärd</th><th scope="col"><span class="hjalp">Ta bort</span></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="knapp-rad">
+        <button class="knapp sekundar" type="button" id="ny-rad">Lägg till åtgärd</button>
+        <button class="knapp sekundar" type="button" id="exempel">Fyll i exempel</button>
+        <button class="knapp" type="submit">Räkna</button>
+      </div>
+      <p id="svar" class="svar" role="status" aria-live="polite"></p>
+    </form>
+
+    <section id="resultat" hidden>
+      <ul id="sammanfattning" class="sammanfattning"></ul>
+      <div class="tabellram">
+        <table id="utveckling">
+          <caption>Fondens utveckling — utkast</caption>
+          <thead><tr><th scope="col">År</th><th scope="col" class="tal">Avsättning</th><th scope="col" class="tal">Uttag</th><th scope="col" class="tal">Fond vid årets slut</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="knapp-rad">
+        <a class="knapp sekundar" id="csv" href="#" download="fondplan.csv">Ladda ned CSV</a>
+      </div>
+      <p id="anmarkning" class="hjalp"></p>
+    </section>
+
+    <footer>
+      <a href="/">Komponentlista enligt K3</a>
+      <a href="/nyckeltal">Nyckeltal</a>
+      <a href="/integritet">Integritet</a>
+      <span>Styrelserummet är en tjänst från TM Connect.</span>
+    </footer>
+  </div>
+  <script src="/fondplan.js"></script>
+</body>
+</html>

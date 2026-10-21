@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nyckeltal för bostadsrättsföreningar — Styrelserummet</title>
+  <meta name="description" content="Räkna fram de obligatoriska nyckeltalen till förvaltningsberättelsen enligt BFNAR 2023:1. Gratis, inget sparas.">
+  <link rel="stylesheet" href="/gemensam.css">
+</head>
+<body>
+  <div class="ram bred">
+    <div class="topp">
+      <a class="marke" href="/">Styrelserummet</a>
+      <span class="stampel">Utkast</span>
+    </div>
+    <header class="hjalte">
+      <span class="etikett">Gratis verktyg</span>
+      <h1>Nyckeltal till förvaltningsberättelsen</h1>
+      <p class="ingress">Fyll i siffrorna ur bokslutet för räkenskapsåret och upp till tre år bakåt. Nyckeltalen räknas enligt definitionerna i BFNAR 2023:1. Ingenting sparas.</p>
+    </header>
+
+    <form id="nyckeltal-form">
+      <div class="tabellram">
+        <table id="underlag">
+          <caption>Underlag (hela kronor och kvadratmeter)</caption>
+          <thead><tr id="ar-rad"><th scope="col">Post</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="hjalp">Justeringar: väsentliga intäkter (minus) eller kostnader (plus) som inte hör till den normala verksamheten, till exempel en engångsintäkt från försäljning. Lämna tomt om ni inte har några.</p>
+      <div class="knapp-rad">
+        <button class="knapp" type="submit">Räkna nyckeltal</button>
+        <button class="knapp sekundar" type="button" id="exempel">Fyll i exempel</button>
+      </div>
+      <p id="svar" class="svar" role="status" aria-live="polite"></p>
+    </form>
+
+    <section id="resultat" hidden>
+      <div class="tabellram">
+        <table id="nyckeltal">
+          <caption>Nyckeltal — utkast</caption>
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p id="anmarkning" class="hjalp"></p>
+    </section>
+
+    <footer>
+      <a href="/">Komponentlista enligt K3</a>
+      <a href="/fondplan">Fondplan</a>
+      <a href="/integritet">Integritet</a>
+      <span>Styrelserummet är en tjänst från TM Connect.</span>
+    </footer>
+  </div>
+  <script src="/nyckeltal.js"></script>
+</body>
+</html>
