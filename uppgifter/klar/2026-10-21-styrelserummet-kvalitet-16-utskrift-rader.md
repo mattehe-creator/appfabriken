@@ -47,3 +47,5 @@ gradle :styrelserummet-server:test --tests "*UtskriftTest.utskriftsRader"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Koppla in i webb eller API.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #381). Ersatt av 2026-10-21-styrelserummet-kvalitet-16-utskrift-rader-f2.md
