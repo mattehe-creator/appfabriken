@@ -1,11 +1,27 @@
-Flextid registrerar din flextid offline utan konton. Stämpla in och ut per dag, ange rast i minuter och ange din egen normaltid. Appen visar saldo mot din normaltid och en veckovy med arbetsdagar och lediga dagar.
+Flextid håller koll på din arbetstid och ditt flexsaldo, utan konto och utan internet.
 
-Påminnelser hjälper dig att inte glömma stämpla in eller ut. En påminnelse kommer kl. 08:00 på arbetsdagar om du inte startat dagen, och en påminnelse efter normaltid om du inte stämplat ut. Påminnelser är valfria och kan stängas av i inställningar.
+Stämpla in och ut
+Ett tryck när du kommer och ett när du går. Rasten fylls i automatiskt och kan ändras. Glömde du stämpla går dagen att rätta i efterhand.
 
-Du kan exportera dina dagar som CSV för vald månad via systemets filväljare. Du kan även säkerhetskopiera din data som JSON med versionsnummer. Export och säkerhetskopia är alltid gratis, oavsett om du har Pro eller inte.
+När kan jag gå hem?
+Under dagen visar Flextid när din normaltid är fylld, och när saldot blir noll om du har plus eller minus sedan tidigare.
 
-Flextid kräver ingen internetanslutning. Appen har ingen internetbehörighet, inga konton, ingen reklam och ingen analys. All data stannar på din telefon tills du väljer att exportera den.
+Saldo och vecka
+Ange din egen normaltid och vilka veckodagar du arbetar. Appen räknar saldot mot normaltiden och visar veckan dag för dag. Ledighet, semester, sjukdom och helgdag registreras med ett val.
 
-Appen är gratis upp till 15 dagposter. Pro (engångsköp) tar bort gränsen på dagposter. Befintlig data raderas aldrig.
+Svenska helgdagar och semester
+Röda dagar är inbyggda och visas i veckan, och du får ingen påminnelse om att stämpla in på dem. Midsommar-, jul- och nyårsafton kan räknas som lediga. Appen visar hur många semesterdagar du har tagit, planerat och har kvar under semesteråret.
 
-Flextid antar inget kollektivavtal och ger ingen rådgivning om vad avtal eller lag tillåter. Appen hjälper dig bara att hålla koll på din egen tid.
+Påminnelser
+Valfria påminnelser om att stämpla in på morgonen och att stämpla ut när normaltiden är slut.
+
+Rapport och export
+Månadsrapport som PDF med normaltiden för månaden, CSV för ditt eget kalkylark och säkerhetskopia som du sparar var du vill. Export och säkerhetskopia är alltid gratis.
+
+Integritet
+Ingen internetbehörighet, inga konton, ingen reklam, ingen analys och ingen plats. Allt stannar på telefonen.
+
+Gratis och Pro
+Gratisversionen har alla funktioner och sparar upp till 15 dagar. Pro är ett engångsköp som tar bort gränsen. Inget raderas.
+
+Flextid räknar efter dina egna inställningar och ger inga råd om vad avtal eller lag tillåter.
