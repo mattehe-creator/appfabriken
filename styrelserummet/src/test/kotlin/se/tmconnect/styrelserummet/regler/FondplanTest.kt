@@ -2,7 +2,6 @@ package se.tmconnect.styrelserummet.regler
 
 import org.junit.Test
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
 import java.lang.IllegalArgumentException
 
 class FondplanTest {
