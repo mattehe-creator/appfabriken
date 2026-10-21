@@ -16,6 +16,54 @@ const statusEl = document.getElementById("status");
 const tbody = document.querySelector("#komponent-tabell tbody");
 let utkast = null;
 let visning = null;
+let betalning = null;
+
+async function bekraftaBetalning() {
+  const p = new URLSearchParams(location.search);
+  const kassa = p.get("kassa");
+  if (!kassa || !id) return;
+  history.replaceState(null, "", location.pathname);
+  const res = await fetch(`/api/jobb/${id}/bekrafta`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ kassa }),
+  });
+  if (!res.ok) {
+    const json = await res.json().catch(() => ({}));
+    document.getElementById("betal-status").textContent = json.fel || "Betalningen kunde inte bekräftas.";
+  }
+}
+
+function visaBetalning() {
+  const kraver = betalning && betalning.aktiv && !betalning.betald;
+  document.getElementById("betal-sektion").hidden = !kraver;
+  document.getElementById("csv").hidden = !!kraver;
+  document.getElementById("skrivUt").hidden = !!kraver;
+  if (kraver) {
+    document.getElementById("betal-text").textContent =
+      `Granska och rätta utkastet här utan kostnad. CSV och utskrift för revisorn kostar ${betalning.prisKr} kr för det här utkastet. Du betalar hos Stripe och får ett kvitto till föreningens e-post.`;
+    document.getElementById("betala").textContent = `Betala ${betalning.prisKr} kr`;
+  }
+}
+
+document.getElementById("betala").addEventListener("click", async () => {
+  const knapp = document.getElementById("betala");
+  const status = document.getElementById("betal-status");
+  knapp.disabled = true;
+  status.textContent = "Öppnar betalningen…";
+  const res = await fetch(`/api/jobb/${id}/kassa`, { method: "POST" });
+  const json = await res.json().catch(() => ({}));
+  if (res.ok && json.url) {
+    location.href = json.url;
+    return;
+  }
+  if (res.ok && json.betald) {
+    await hamta();
+    return;
+  }
+  knapp.disabled = false;
+  status.textContent = json.fel || "Betalningen kunde inte startas.";
+});
 
 async function hamta() {
   if (!id) {
@@ -41,6 +89,8 @@ async function hamta() {
   }
   utkast = json.utkast;
   visning = json.visning;
+  betalning = json.betalning || null;
+  visaBetalning();
   statusEl.textContent = `Räkenskapsår slut ${utkast.arsslut}. UTKAST — beslutas av förening och revisor.`;
   visaSammanfattning(visning?.sammanfattning);
   visaAvstamning(visning?.avstamning);
@@ -219,4 +269,4 @@ async function jamforelse(csv) {
   lista.hidden = false;
 }
 
-hamta();
+bekraftaBetalning().finally(hamta);

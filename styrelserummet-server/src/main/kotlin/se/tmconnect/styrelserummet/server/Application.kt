@@ -44,6 +44,8 @@ data class ServerMiljo(
     val tolkare: Tolkare,
     val synkronJobb: Boolean = false,
     val proxyPaa: Boolean = proxyPaaFranMiljo(),
+    val betalning: BetalKonfig = betalKonfigFranMiljo(),
+    val betalare: Betalare? = null,
 )
 
 fun miljoFranEnv(): ServerMiljo {
@@ -66,6 +68,18 @@ fun Application.module(miljo: ServerMiljo) {
     val scope = CoroutineScope(SupervisorJob())
     val ko = JobbKo(lagring, miljo.tolkare, scope = scope, synkron = miljo.synkronJobb)
     rensaGamlaJobb(lagring)
+    val betalKonfig = miljo.betalning
+    val betalare: Betalare? = miljo.betalare ?: if (betalKonfig.aktiv) StripeBetalare(betalKonfig) else null
+
+    /** Har kunden betalat men inte kommit tillbaka till sidan? Fråga Stripe en gång per hämtning. */
+    fun medBetalning(meta: JobbMeta): JobbMeta {
+        val kassa = meta.kassaId
+        if (!betalKonfig.aktiv || meta.betald || kassa == null || betalare == null) return meta
+        return when (betalare.kontrollera(kassa, meta.id)) {
+            KassaStatus.Betald -> meta.copy(betald = true).also { lagring.skrivMeta(it) }
+            else -> meta
+        }
+    }
 
     install(ContentNegotiation) {
         json(Json { ignoreUnknownKeys = true })
@@ -114,6 +128,13 @@ fun Application.module(miljo: ServerMiljo) {
                 ?: return@get call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.SAKNAR_UTKAST)))
             if (meta.status != JobbStatus.KLAR.name) {
                 throw FelBegaran(Felkoder.JOBB_EJ_KLART)
+            }
+            if (!farLamnaUt(betalKonfig, medBetalning(meta))) {
+                return@get call.respondText(
+                    betalningKravsHtml(id),
+                    ContentType.Text.Html,
+                    HttpStatusCode.PaymentRequired,
+                )
             }
             lagring.uppdateraAktivitet(id)
             val visning = tillVisning(utkast)
@@ -225,6 +246,14 @@ fun Application.module(miljo: ServerMiljo) {
                 if (!arGiltigtJobbId(id)) throw FelBegaran(Felkoder.OGILIG_LANK)
                 val utkast = lagring.lasUtkast(id)
                     ?: return@get call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.JOBB_SAKNAS)))
+                val csvMeta = lagring.lasMeta(id)
+                    ?: return@get call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.JOBB_SAKNAS)))
+                if (!farLamnaUt(betalKonfig, medBetalning(csvMeta))) {
+                    return@get call.respond(
+                        HttpStatusCode.PaymentRequired,
+                        mapOf("fel" to felText(Felkoder.BETALNING_KRAVS)),
+                    )
+                }
                 lagring.uppdateraAktivitet(id)
                 val csv = tillCsv(utkast.komponenter, utkast.arsslut)
                 call.response.header(HttpHeaders.ContentDisposition, "attachment; filename=\"komponentlista.csv\"")
@@ -238,7 +267,8 @@ fun Application.module(miljo: ServerMiljo) {
                     ?: return@get call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.JOBB_SAKNAS)))
                 lagring.uppdateraAktivitet(id)
                 val utkast = lagring.lasUtkast(id)
-                call.respond(jobbResponse(meta, utkast))
+                val aktuell = medBetalning(meta)
+                call.respond(jobbResponse(aktuell, utkast, betalStatus(betalKonfig, aktuell)))
             }
 
             put("/{id}/rader") {
@@ -254,7 +284,7 @@ fun Application.module(miljo: ServerMiljo) {
                 val nytt = uppdateraKomponenter(body.komponenter, gammalt)
                 lagring.sparaUtkast(id, nytt)
                 lagring.uppdateraAktivitet(id)
-                call.respond(jobbResponse(meta, nytt))
+                call.respond(jobbResponse(meta, nytt, betalStatus(betalKonfig, meta)))
             }
 
             post("/{id}/jamforelse") {
@@ -269,6 +299,50 @@ fun Application.module(miljo: ServerMiljo) {
                 val body = call.receive<JamforelseRequest>()
                 lagring.uppdateraAktivitet(id)
                 call.respond(jamforelseMotCsv(utkast, body.csv))
+            }
+
+            post("/{id}/kassa") {
+                val id = call.parameters["id"] ?: throw FelBegaran(Felkoder.SAKNAR_JOBB_ID)
+                if (!arGiltigtJobbId(id)) throw FelBegaran(Felkoder.OGILIG_LANK)
+                val meta = lagring.lasMeta(id)
+                    ?: return@post call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.JOBB_SAKNAS)))
+                if (meta.status != JobbStatus.KLAR.name) throw FelBegaran(Felkoder.JOBB_EJ_KLART)
+                if (!betalKonfig.aktiv || betalare == null) {
+                    return@post call.respond(HttpStatusCode.Conflict, mapOf("fel" to felText(Felkoder.BETALNING_EJ_AKTIV)))
+                }
+                val aktuell = medBetalning(meta)
+                if (aktuell.betald) {
+                    return@post call.respond(mapOf("betald" to "true"))
+                }
+                val kassa = betalare.skapaKassa(id)
+                    ?: return@post call.respond(
+                        HttpStatusCode.BadGateway,
+                        mapOf("fel" to felText(Felkoder.BETALNING_MISSLYCKADES)),
+                    )
+                lagring.skrivMeta(aktuell.copy(kassaId = kassa.id, senastAktivMs = System.currentTimeMillis()))
+                call.respond(mapOf("url" to kassa.url))
+            }
+
+            post("/{id}/bekrafta") {
+                val id = call.parameters["id"] ?: throw FelBegaran(Felkoder.SAKNAR_JOBB_ID)
+                if (!arGiltigtJobbId(id)) throw FelBegaran(Felkoder.OGILIG_LANK)
+                val meta = lagring.lasMeta(id)
+                    ?: return@post call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.JOBB_SAKNAS)))
+                if (!betalKonfig.aktiv || betalare == null) {
+                    return@post call.respond(HttpStatusCode.Conflict, mapOf("fel" to felText(Felkoder.BETALNING_EJ_AKTIV)))
+                }
+                val body = call.receive<BekraftaRequest>()
+                if (!arGiltigtKassaId(body.kassa)) throw FelBegaran(Felkoder.BETALNING_MISSLYCKADES)
+                val status = if (meta.betald) KassaStatus.Betald else betalare.kontrollera(body.kassa, id)
+                if (status != KassaStatus.Betald) {
+                    return@post call.respond(
+                        HttpStatusCode.PaymentRequired,
+                        mapOf("fel" to felText(Felkoder.BETALNING_MISSLYCKADES)),
+                    )
+                }
+                val ny = meta.copy(betald = true, kassaId = body.kassa)
+                lagring.skrivMeta(ny)
+                call.respond(jobbResponse(ny, lagring.lasUtkast(id), betalStatus(betalKonfig, ny)))
             }
 
             delete("/{id}") {

@@ -149,3 +149,9 @@ footer { font-size: 0.85rem; color: var(--dampad); display: grid; gap: 0.4rem; b
   .knapp-rad, footer, .topp { display: none; }
   body { background: white; color: black; }
 }
+
+[hidden] { display: none !important; }
+
+/* Utskriftssidan (/j/{id}/utskrift). Inline-stil blockeras av CSP, därför här. */
+.stampel-rad { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+.meta { color: var(--dampad); margin: 0 0 1rem; }

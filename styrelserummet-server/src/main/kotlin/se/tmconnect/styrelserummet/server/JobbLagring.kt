@@ -26,6 +26,8 @@ data class JobbMeta(
     val senastAktivMs: Long,
     val klientIpHash: String,
     val felmeddelande: String? = null,
+    val betald: Boolean = false,
+    val kassaId: String? = null,
 )
 
 class JobbLagring(
@@ -125,6 +127,7 @@ data class JobbResponse(
     val meta: JobbMeta,
     val utkast: UtkastDto? = null,
     val visning: UtkastVisningDto? = null,
+    val betalning: BetalStatus? = null,
 )
 
 @Serializable
@@ -133,9 +136,13 @@ data class RaderRequest(val komponenter: List<KomponentDto>)
 @Serializable
 data class JamforelseRequest(val csv: String)
 
-fun jobbResponse(meta: JobbMeta, utkast: UtkastDto?): JobbResponse =
+fun jobbResponse(meta: JobbMeta, utkast: UtkastDto?, betalning: BetalStatus? = null): JobbResponse =
     JobbResponse(
-        meta = meta,
+        meta = meta.copy(kassaId = null),
         utkast = utkast,
         visning = utkast?.let(::tillVisning),
+        betalning = betalning,
     )
+
+@Serializable
+data class BekraftaRequest(val kassa: String)
