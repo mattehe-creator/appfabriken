@@ -197,7 +197,7 @@ class DataminimeringTest {
 
             // Kontrollera att katalogen inte finns
             val jobbKatalog = tmp / "jobb" / id
-            assertTrue("Jobbkatalogen ska inte finnas efter radering", !jobbKatalog.exists())
+            assertTrue("Jobbkatalogen ska inte finnas efter radering", !Files.exists(jobbKatalog))
         }
     }
 }
