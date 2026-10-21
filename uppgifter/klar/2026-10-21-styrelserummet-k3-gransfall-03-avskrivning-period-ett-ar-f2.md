@@ -40,3 +40,5 @@ gradle :styrelserummet:test --tests "*AvskrivningGransfallEnArTest"
 - Ändra `AvskrivningTest.kt`, modellklasser eller andra testfiler.
 - Lägga till beroenden.
 - Lägga filer i repots rot (sökvägen ska börja med `styrelserummet/`).
+
+utfall: godkänd 2026-10-21 (hela testfilen AvskrivningGransfallEnArTest.kt — lokal modell levererade ingen kod på försök 2)
