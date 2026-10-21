@@ -118,6 +118,39 @@ class JobbKoTest {
         assertFalse(rad.contains("underhallsplan.pdf"))
         assertFalse(rad.contains(felText(serverFelTillKod(ServerFel.AiOgiltigtSvar))))
     }
+    
+    @Test
+    fun forStorHandlingAnroparInteTolkare() {
+        val id = "test_jobb_for_stor"
+        val spionTolkare = SpionTolkare()
+        
+        // Skapa en PDF med text som överskrider gränsen
+        val forStorText = "x".repeat(MAX_TECKEN_TILL_TOLKNING + 1000)
+        skapaJobbMedPdf(id, pdfMedText(forStorText))
+
+        JobbKo(lagring, spionTolkare, scope = scope, synkron = true).lagTill(id)
+
+        val metaResult = lagring.lasMeta(id)!!
+        assertEquals(JobbStatus.FEL.name, metaResult.status)
+        assertEquals(felText(serverFelTillKod(ServerFel.ForStorHandling)), metaResult.felmeddelande)
+        assertEquals(0, spionTolkare.antalAnrop)
+    }
+    
+    @Test
+    fun underGransenAnroparTolkare() {
+        val id = "test_jobb_under_grans"
+        val spionTolkare = SpionTolkare()
+        
+        // Skapa en PDF med text som är under gränsen
+        val underGransText = "x".repeat(MAX_TECKEN_TILL_TOLKNING - 1000)
+        skapaJobbMedPdf(id, pdfMedText(underGransText))
+
+        JobbKo(lagring, spionTolkare, scope = scope, synkron = true).lagTill(id)
+
+        val metaResult = lagring.lasMeta(id)!!
+        assertEquals(JobbStatus.KLAR.name, metaResult.status)
+        assertTrue(spionTolkare.antalAnrop > 0)
+    }
 
     private fun skapaJobbMedPdf(id: String, pdfBytes: ByteArray) {
         val nu = System.currentTimeMillis()
@@ -155,5 +188,19 @@ class JobbKoTest {
             }
             return ByteArrayOutputStream().also { doc.save(it) }.toByteArray()
         }
+    }
+}
+
+// Spionklass för att kontrollera antal anrop till Tolkare
+class SpionTolkare : Tolkare {
+    var antalAnrop = 0
+    
+    override fun foreslaKomponenter(underhallsplan: String, arsredovisning: String, forening: Forening): KomponentResultat {
+        antalAnrop++
+        // Returnera ett tomt resultat som inte påverkar testet
+        return KomponentResultat(
+            komponenter = emptyList(),
+            anmarkningar = emptyList()
+        )
     }
 }

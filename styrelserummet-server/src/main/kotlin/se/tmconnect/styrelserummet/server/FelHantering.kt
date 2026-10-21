@@ -21,6 +21,8 @@ sealed class ServerFel {
     data class ForMangaJobb(val kanForsokaIgenEpochMs: Long) : ServerFel()
 
     data object Okant : ServerFel()
+    
+    data object ForStorHandling : ServerFel()
 }
 
 private val maxMbPerJobb: Int = MAX_BYTES_PER_JOBB / (1024 * 1024)
@@ -49,6 +51,9 @@ fun felTillMeddelande(fel: ServerFel): String =
             val formatter = DateTimeFormatter.ofPattern("HH:mm")
             "Du har skickat för många jobb. Gränsen är fem jobb per timme. Försök igen klockan ${tid.format(formatter)}."
         }
+        ServerFel.ForStorHandling ->
+            "Filen är för stor för att tolkas. Total uppladdning får vara högst cirka $MAX_TECKEN_TILL_TOLKNING tecken. " +
+                "Prova att ladda upp färre eller mindre filer."
         ServerFel.Okant ->
             "Ett okänt fel uppstod. Försök igen och kontakta support om felet kvarstår."
     }
@@ -61,6 +66,7 @@ fun felTillHttpStatus(fel: ServerFel): Int =
         is ServerFel.ForMangaJobb -> 429
         ServerFel.AiOgiltigtSvar -> 502
         ServerFel.AiTimeout -> 504
+        ServerFel.ForStorHandling -> 413
         ServerFel.Okant -> 500
     }
 
@@ -74,6 +80,7 @@ fun loggJobbFel(jobbId: String, fel: ServerFel, tidMs: Long): String {
             ServerFel.AiTimeout -> "AiTimeout"
             ServerFel.AiOgiltigtSvar -> "AiOgiltigtSvar"
             is ServerFel.ForMangaJobb -> "ForMangaJobb"
+            ServerFel.ForStorHandling -> "ForStorHandling"
             ServerFel.Okant -> "Okant"
         }
     return "$jobbId $felKod $tidMs"

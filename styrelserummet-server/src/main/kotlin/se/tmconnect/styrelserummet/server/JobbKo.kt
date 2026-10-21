@@ -84,6 +84,14 @@ class JobbKo(
                 fel(id, ServerFel.Okant)
                 return
             }
+            
+            // Kontroll för maximal teckenmängd innan tolkning
+            val totalTecken = skattaTecken(listOf(underhallsplan, arsredovisning))
+            if (totalTecken > MAX_TECKEN_TILL_TOLKNING) {
+                fel(id, ServerFel.ForStorHandling)
+                return
+            }
+            
             val utkast = byggUtkast(
                 underhallsplanText = underhallsplan,
                 arsredovisningText = arsredovisning.ifBlank { underhallsplan },
