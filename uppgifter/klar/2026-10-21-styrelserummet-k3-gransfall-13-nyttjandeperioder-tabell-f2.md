@@ -52,3 +52,5 @@ gradle :styrelserummet:test --tests "*NyttjandeperioderTabellGransfallTest"
 - Ändra `NyttjandeperiodForslagTest.kt` eller andra befintliga testfiler (parallell kö).
 - Ändra `uppgifter/`, `granskning/` eller filer i repots rot.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (Cursor skapade NyttjandeperioderTabellGransfallTest.kt; lokal modell levererade ingen kod)
