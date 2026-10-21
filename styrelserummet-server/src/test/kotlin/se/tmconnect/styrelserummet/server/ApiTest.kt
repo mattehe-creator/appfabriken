@@ -127,6 +127,137 @@ class ApiTest {
     }
 
     @Test
+    fun helhetFlodeMedTreKomponenterOchMaskning() = runBlocking {
+        val tmp = createTempDirectory("styrelserummet-test")
+        testApplication {
+            application {
+                module(
+                    ServerMiljo(
+                        dataRot = tmp,
+                        port = 0,
+                        tolkare = FalskTolkare(jsonSvar = """{
+                            "komponenter": [
+                                {
+                                    "namn": "Tak",
+                                    "grupp": "TAK",
+                                    "anskaffningsvarde": 500000,
+                                    "anskaffningsar": 2010,
+                                    "nyttjandeperiodAr": 40,
+                                    "restvarde": 0,
+                                    "kalla": "plan",
+                                    "sakerhet": "HOG"
+                                },
+                                {
+                                    "namn": "Fasad",
+                                    "grupp": "FASAD",
+                                    "anskaffningsvarde": 300000,
+                                    "anskaffningsar": 2015,
+                                    "nyttjandeperiodAr": 50,
+                                    "restvarde": 0,
+                                    "kalla": "arsredovisning",
+                                    "sakerhet": "HOG"
+                                },
+                                {
+                                    "namn": "Fonster",
+                                    "grupp": "FONSTER",
+                                    "anskaffningsvarde": 200000,
+                                    "anskaffningsar": 2020,
+                                    "nyttjandeperiodAr": 30,
+                                    "restvarde": 0,
+                                    "kalla": "plan",
+                                    "sakerhet": "HOG"
+                                }
+                            ]
+                        }"""),
+                        synkronJobb = true,
+                    ),
+                )
+            }
+            val client = createClient { }
+            run {
+                val planBytes = pdfMedText("Styrelseledamot 19800101-1234 Underhall tak")
+                val arBytes = pdfMedText("Byggnader och mark 1 000 000")
+                
+                val res = client.post("/api/jobb") {
+                    setBody(
+                        MultiPartFormDataContent(
+                            formData {
+                                append("forening", "Test brf")
+                                append("arsslut", "2025")
+                                append("filer", planBytes, Headers.build {
+                                    append(HttpHeaders.ContentType, "application/pdf")
+                                    append(HttpHeaders.ContentDisposition, "filename=plan.pdf")
+                                })
+                                append("filer", arBytes, Headers.build {
+                                    append(HttpHeaders.ContentType, "application/pdf")
+                                    append(HttpHeaders.ContentDisposition, "filename=arsredovisning.pdf")
+                                })
+                            },
+                        ),
+                    )
+                }
+                
+                assertEquals(HttpStatusCode.OK, res.status)
+                val body = json.parseToJsonElement(res.bodyAsText()).jsonObject
+                val id = body["id"]!!.jsonPrimitive.content
+                assertTrue(arGiltigtJobbId(id))
+
+                val s = client.get("/api/jobb/$id")
+                val statusBody = s.bodyAsText()
+                assertEquals(HttpStatusCode.OK, s.status)
+                val root = json.parseToJsonElement(statusBody).jsonObject
+                val metaObj = root["meta"]?.jsonObject
+                if (metaObj == null) {
+                    org.junit.Assert.fail("Saknar meta: $statusBody")
+                }
+                val status = metaObj!!["status"]!!.jsonPrimitive.content
+                if (status == "FEL") {
+                    val fel = metaObj["felmeddelande"]?.jsonPrimitive?.content
+                    org.junit.Assert.fail("Jobb FEL: $fel\n$statusBody")
+                }
+                assertEquals("KLAR", status)
+
+                // Kontrollera att vi har tre komponenter
+                val utkast = root["utkast"]?.jsonObject
+                if (utkast == null) {
+                    org.junit.Assert.fail("Saknar utkast: $statusBody")
+                }
+                val komponenter = utkast["komponenter"]?.jsonArray
+                if (komponenter == null) {
+                    org.junit.Assert.fail("Saknar komponenter i utkast: $statusBody")
+                }
+                assertEquals(3, komponenter.size)
+
+                // Kontrollera att personnummer är maskat
+                assertFalse("Personnummer ska vara maskat", (root["utkast"]?.jsonObject?.get("komponenter")?.jsonArray?.get(0)?.jsonObject?.get("namn")?.jsonPrimitive?.content ?: "").contains("19800101-1234"))
+                
+                // Kontrollera att maskningen skett i tolkaren
+                val tolkare = (application as ServerMiljo).tolkare as FalskTolkare
+                assertFalse("Personnummer ska vara maskat i tolkaren", tolkare.senasteUtdrag!!.contains("19800101-1234"))
+                
+                // Kontrollera CSV
+                val csv = client.get("/api/jobb/$id.csv")
+                assertEquals(HttpStatusCode.OK, csv.status)
+                val csvText = csv.bodyAsText()
+                assertTrue(csvText.contains("UTKAST"))
+                
+                // Kontrollera rubriker
+                val forstaRad = csvText.lines().firstOrNull()
+                assertEquals("Komponent;Grupp;Anskaffningsvärde;Anskaffningsår;Nyttjandeperiod;Bokfört värde;Källa;Säkerhet", forstaRad)
+                
+                // Parsa datarader och kontrollera summa
+                val rader = csvText.lines().drop(1).dropLast(1) // Ta bort rubrik och utkastrad
+                assertEquals(3, rader.size)
+                
+                val summa = rader.sumOf { 
+                    it.split(';')[2].toLong() 
+                }
+                assertEquals(1_000_000L, summa)
+            }
+        }
+    }
+
+    @Test
     fun forMangaFiler() = runBlocking {
         val tmp = createTempDirectory("styrelserummet-test")
         testApplication {
