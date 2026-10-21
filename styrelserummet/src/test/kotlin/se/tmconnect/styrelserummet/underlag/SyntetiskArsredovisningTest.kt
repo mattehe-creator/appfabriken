@@ -8,6 +8,7 @@ import org.apache.pdfbox.pdmodel.font.Standard14Fonts
 import org.junit.Assert
 import org.junit.Test
 import se.tmconnect.styrelserummet.modell.Forening
+import se.tmconnect.styrelserummet.pdf.PdfLasare
 import se.tmconnect.styrelserummet.tolking.Tolkare
 import java.io.ByteArrayOutputStream
 
@@ -53,18 +54,19 @@ class SyntetiskArsredovisningTest {
             PDPageContentStream(doc, page).use { cs ->
                 cs.beginText()
                 cs.setFont(PDType1Font(Standard14Fonts.FontName.HELVETICA), 12f)
+                cs.setLeading(14.5f)
                 cs.newLineAtOffset(50f, 700f)
 
-                cs.showText("Balansräkning")
-                cs.newLine()
-                cs.showText("Byggnader och mark")
-                cs.newLine()
-                cs.showText("2025 2024")
-                cs.newLine()
-                cs.showText("12 500 000 11 800 000")
-                cs.newLine()
-                cs.showText("Byggnadsår 1975")
-                cs.newLine()
+                listOf(
+                    "Balansräkning",
+                    "Byggnader och mark",
+                    "2025 2024",
+                    "12 500 000 11 800 000",
+                    "Byggnadsår 1975",
+                ).forEach { rad ->
+                    cs.showText(rad)
+                    cs.newLine()
+                }
 
                 cs.endText()
             }

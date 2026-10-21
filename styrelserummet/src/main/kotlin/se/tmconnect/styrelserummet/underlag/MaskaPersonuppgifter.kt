@@ -8,6 +8,9 @@ private val telefon = Regex(
     """(?:\+46\s?(?:\d[\s-]?){8,11}|0\d{1,3}[\s-]?(?:\d[\s-]?){5,10})""",
 )
 private val isoDatum = Regex("""\d{4}-\d{2}-\d{2}""")
+private val tvaRapporteringsar = Regex("""(?<!\d)\d{4}\s+\d{4}(?!\d)""")
+private val belopMedMellanslag = Regex("""\d{1,3}(?: \d{3}){2,}""")
+private val belopMedPunkt = Regex("""\d{1,3}(?:\.\d{3}){2,}""")
 
 fun maskaPersonuppgifter(text: String): String {
     var resultat = text
@@ -32,7 +35,19 @@ internal fun serUtSomPersonnummer(text: String): Boolean {
 
 internal fun serUtSomTelefon(fullText: String, range: IntRange): Boolean {
     if (overlapparIsoDatum(fullText, range)) return false
+    if (overlapparRegex(fullText, range, tvaRapporteringsar)) return false
+    if (overlapparRegex(fullText, range, belopMedMellanslag)) return false
+    if (overlapparRegex(fullText, range, belopMedPunkt)) return false
     return true
+}
+
+private fun overlapparRegex(fullText: String, range: IntRange, regex: Regex): Boolean {
+    for (match in regex.findAll(fullText)) {
+        if (range.first <= match.range.last && range.last >= match.range.first) {
+            return true
+        }
+    }
+    return false
 }
 
 private fun overlapparIsoDatum(fullText: String, range: IntRange): Boolean {
