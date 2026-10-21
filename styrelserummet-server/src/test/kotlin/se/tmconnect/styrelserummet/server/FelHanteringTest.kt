@@ -24,24 +24,23 @@ class FelHanteringTest {
     }
 
     @Test
-    fun forStorFil() {
-        val meddelande = felTillMeddelande(ServerFel.ForStorFil)
-        assertTrue(meddelande.contains("25"))
-        assertTrue(meddelande.contains("MB") || meddelande.contains("megabyte", ignoreCase = true))
-        assertTrue(
-            meddelande.contains("tillsammans", ignoreCase = true) ||
-                meddelande.contains("total", ignoreCase = true),
-        )
-        assertFalse(meddelande.contains("Exception", ignoreCase = true))
+    fun loggJobbFelKrypteradPdfInnehallerIdTypOchTidUtanAnvandarmeddelande() {
+        val fel = ServerFel.KrypteradPdf
+        val rad = loggJobbFel("abc123", fel, 1_700_000_000_000L)
+        assertTrue(rad.contains("abc123"))
+        assertTrue(rad.contains("KrypteradPdf"))
+        assertTrue(rad.contains("1700000000000"))
+        assertFalse(rad.contains(felTillMeddelande(fel)))
+        assertFalse(rad.contains(".pdf"))
     }
 
     @Test
-    fun intePdf() {
-        val meddelande = felTillMeddelande(ServerFel.IntePdf)
-        assertTrue(meddelande.contains("PDF") || meddelande.contains("pdf"))
-        assertTrue(
-            meddelande.contains("accepteras", ignoreCase = true) ||
-                meddelande.contains("Ladda upp"),
-        )
+    fun loggJobbFelIngenLasbarTextInnehallerIdTypUtanMeddelandeEllerFilnamn() {
+        val fel = ServerFel.IngenLasbarText
+        val rad = loggJobbFel("jobb-1", fel, 0L)
+        assertTrue(rad.contains("jobb-1"))
+        assertTrue(rad.contains("IngenLasbarText"))
+        assertFalse(rad.contains(felTillMeddelande(fel)))
+        assertFalse(rad.contains(".pdf"))
     }
 }

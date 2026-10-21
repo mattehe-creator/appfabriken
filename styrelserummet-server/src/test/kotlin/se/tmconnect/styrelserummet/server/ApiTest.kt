@@ -18,6 +18,7 @@ import io.ktor.http.contentType
 import io.ktor.server.testing.testApplication
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -122,6 +123,138 @@ class ApiTest {
         val bort = client.delete("/api/jobb/$id")
         assertEquals(HttpStatusCode.NoContent, bort.status)
         assertEquals(HttpStatusCode.NotFound, client.get("/api/jobb/$id").status)
+            }
+        }
+    }
+
+    @Test
+    fun helhetFlodeMedTreKomponenterOchMaskning() = runBlocking {
+        val tmp = createTempDirectory("styrelserummet-test")
+        val tolkare = FalskTolkare(
+            jsonSvar = """
+                {
+                    "komponenter": [
+                        {
+                            "namn": "Tak",
+                            "grupp": "TAK",
+                            "anskaffningsvarde": 500000,
+                            "anskaffningsar": 2010,
+                            "nyttjandeperiodAr": 40,
+                            "restvarde": 0,
+                            "kalla": "plan",
+                            "sakerhet": "HOG"
+                        },
+                        {
+                            "namn": "Fasad",
+                            "grupp": "FASAD",
+                            "anskaffningsvarde": 300000,
+                            "anskaffningsar": 2015,
+                            "nyttjandeperiodAr": 30,
+                            "restvarde": 0,
+                            "kalla": "arsredovisning",
+                            "sakerhet": "HOG"
+                        },
+                        {
+                            "namn": "Fonster",
+                            "grupp": "FONSTER_DORRAR",
+                            "anskaffningsvarde": 200000,
+                            "anskaffningsar": 2020,
+                            "nyttjandeperiodAr": 20,
+                            "restvarde": 0,
+                            "kalla": "plan",
+                            "sakerhet": "HOG"
+                        }
+                    ]
+                }
+            """.trimIndent(),
+        )
+        testApplication {
+            application {
+                module(
+                    ServerMiljo(
+                        dataRot = tmp,
+                        port = 0,
+                        tolkare = tolkare,
+                        synkronJobb = true,
+                    ),
+                )
+            }
+            val client = createClient { }
+            run {
+                val planBytes = pdfMedText("Styrelseledamot 19800101-1234 Underhall tak")
+                val arBytes = pdfMedText("Byggnader och mark 1 000 000")
+                
+                val res = client.post("/api/jobb") {
+                    setBody(
+                        MultiPartFormDataContent(
+                            formData {
+                                append("forening", "Test brf")
+                                append("arsslut", "2025")
+                                append("filer", planBytes, Headers.build {
+                                    append(HttpHeaders.ContentType, "application/pdf")
+                                    append(HttpHeaders.ContentDisposition, "filename=plan.pdf")
+                                })
+                                append("filer", arBytes, Headers.build {
+                                    append(HttpHeaders.ContentType, "application/pdf")
+                                    append(HttpHeaders.ContentDisposition, "filename=arsredovisning.pdf")
+                                })
+                            },
+                        ),
+                    )
+                }
+                
+                assertEquals(HttpStatusCode.OK, res.status)
+                val body = json.parseToJsonElement(res.bodyAsText()).jsonObject
+                val id = body["id"]!!.jsonPrimitive.content
+                assertTrue(arGiltigtJobbId(id))
+                
+                val s = client.get("/api/jobb/$id")
+                val statusBody = s.bodyAsText()
+                assertEquals(HttpStatusCode.OK, s.status)
+                val root = json.parseToJsonElement(statusBody).jsonObject
+                val metaObj = root["meta"]?.jsonObject
+                if (metaObj == null) {
+                    org.junit.Assert.fail("Saknar meta: $statusBody")
+                }
+                val status = metaObj!!["status"]!!.jsonPrimitive.content
+                if (status == "FEL") {
+                    val fel = metaObj["felmeddelande"]?.jsonPrimitive?.content
+                    org.junit.Assert.fail("Jobb FEL: $fel\n$statusBody")
+                }
+                assertEquals("KLAR", status)
+
+                val utkastKomponenter = root["utkast"]?.jsonObject?.get("komponenter")?.jsonArray
+                assertEquals(3, utkastKomponenter?.size)
+
+                val utdrag = tolkare.senasteUtdrag
+                assertFalse(utdrag!!.contains("19800101-1234"))
+                assertTrue(utdrag.contains("[personnummer]"))
+
+                val csv = client.get("/api/jobb/$id.csv")
+                assertEquals(HttpStatusCode.OK, csv.status)
+                val csvText = csv.bodyAsText()
+                
+                // Kontrollera att CSV innehåller UTKAST
+                assertTrue("CSV ska innehålla UTKAST", csvText.contains("UTKAST"))
+                
+                // Kontrollera CSV-rubriker
+                val rubriker = "Komponent;Grupp;Anskaffningsvärde;Anskaffningsår;Nyttjandeperiod;Bokfört värde;Källa;Säkerhet"
+                assertTrue("CSV ska innehålla rätt rubriker", csvText.startsWith(rubriker))
+                
+                // Räkna antal datarader (exklusive rubrik och utkastrad)
+                val rader = csvText.lines()
+                val datarader = rader.drop(1).dropLast(1) // Ta bort rubrik och sista raden (UTKAST-rad)
+                assertEquals("Ska ha tre datarader", 3, datarader.size)
+                
+                // Summera anskaffningsvärden
+                var summa = 0L
+                for (rad in datarader) {
+                    val falt = rad.split(';')
+                    if (falt.size >= 3) {
+                        summa += falt[2].toLongOrNull() ?: 0L
+                    }
+                }
+                assertEquals("Summan av anskaffningsvärden ska vara 1 000 000", 1_000_000L, summa)
             }
         }
     }

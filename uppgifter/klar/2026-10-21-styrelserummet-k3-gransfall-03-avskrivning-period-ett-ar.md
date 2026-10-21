@@ -28,3 +28,5 @@ gradle :styrelserummet:test --tests "*AvskrivningGransfallEnArTest"
 ## Gör inte
 - Ändra modellklasser eller andra testfiler.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #350). Ersatt av 2026-10-21-styrelserummet-k3-gransfall-03-avskrivning-period-ett-ar-f2.md

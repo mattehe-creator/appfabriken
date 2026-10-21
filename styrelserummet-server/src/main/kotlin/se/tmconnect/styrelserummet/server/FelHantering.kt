@@ -21,3 +21,12 @@ fun felTillMeddelande(fel: ServerFel): String =
         ServerFel.IntePdf ->
             "Endast PDF-filer accepteras. Ladda upp dina dokument som PDF."
     }
+
+fun loggJobbFel(jobbId: String, fel: ServerFel, tidMs: Long): String {
+    val felKod =
+        when (fel) {
+            ServerFel.IngenLasbarText -> "IngenLasbarText"
+            ServerFel.KrypteradPdf -> "KrypteradPdf"
+        }
+    return "$jobbId $felKod $tidMs"
+}
