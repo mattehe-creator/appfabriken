@@ -31,3 +31,5 @@ gradle :styrelserummet:test --tests "*SummeringGransfallGrupperTest"
 ## Gör inte
 - Ändra `SummeringTest.kt`.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #360). Ersatt av 2026-10-21-styrelserummet-k3-gransfall-09-summering-grupper-f2.md
