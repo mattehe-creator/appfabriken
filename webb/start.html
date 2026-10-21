@@ -1,0 +1,64 @@
+<title>TM Connect – appar</title>
+<meta name="description" content="Små appar utan konton, reklam eller spårning: Garantivalvet, Husloggen och Flextid. Från TM Connect.">
+<style>
+:root {
+  --bg: #f4f5f2; --yta: #ffffff; --text: #1c2527; --dampad: #56636a; --linje: #d4dbd8; --accent: #1f5f5b;
+  --rubrik: "Helvetica Neue", Arial, sans-serif; --brod: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #121819; --yta: #1a2224; --text: #e6ebe9; --dampad: #9eabaf; --linje: #2d3a3d; --accent: #7cc4bd; } }
+body { background: var(--bg); color: var(--text); font: 17px/1.6 var(--brod); }
+main { max-width: 44rem; margin: 0 auto; padding: 3rem 16px 4rem; display: grid; gap: 2.5rem; }
+h1, h2 { font-family: var(--rubrik); line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(2rem, 6vw, 2.8rem); letter-spacing: -0.01em; }
+h2 { font-size: 1.3rem; }
+p { margin: 0; max-width: 60ch; }
+.ingress { color: var(--dampad); font-size: 1.1rem; }
+.appar { display: grid; gap: 1rem; }
+.app { background: var(--yta); border: 1px solid var(--linje); border-radius: 14px; padding: 1.25rem 1.25rem 1.1rem; display: grid; gap: .5rem; }
+.status { font-size: .85rem; color: var(--dampad); letter-spacing: .02em; }
+.lankar { display: flex; flex-wrap: wrap; gap: .25rem 1rem; font-size: .95rem; }
+a { color: var(--accent); }
+.principer { display: grid; gap: .4rem; padding-left: 1.1rem; margin: 0; }
+footer { color: var(--dampad); font-size: .9rem; border-top: 1px solid var(--linje); padding-top: 1rem; }
+</style>
+<main>
+  <header style="display:grid;gap:.75rem">
+    <h1>Appar som stannar på telefonen</h1>
+    <p class="ingress">TM Connect gör små, användbara appar utan konton, reklam eller spårning. Det du sparar ligger hos dig.</p>
+  </header>
+
+  <section class="appar" aria-label="Appar">
+    <article class="app">
+      <h2>Garantivalvet</h2>
+      <p>Kvitton, garantier och öppet köp på ett ställe, med påminnelser innan tiden går ut och hjälp att reklamera.</p>
+      <p class="status">Kommer till Google Play</p>
+      <p class="lankar"><a href="garantivalvet/integritet/">Integritetspolicy</a><a href="garantivalvet/privacy/">Privacy policy</a></p>
+    </article>
+    <article class="app">
+      <h2>Husloggen</h2>
+      <p>Husets underhåll: återkommande uppgifter med påminnelser, en logg med kvitton och ett underlag när du säljer.</p>
+      <p class="status">Kommer till Google Play</p>
+      <p class="lankar"><a href="husloggen/integritet/">Integritetspolicy</a><a href="husloggen/privacy/">Privacy policy</a></p>
+    </article>
+    <article class="app">
+      <h2>Flextid</h2>
+      <p>Stämpla in och ut, se saldot och när du kan gå hem. Svenska helgdagar och semesterår är inbyggda.</p>
+      <p class="status">Kommer till Google Play</p>
+      <p class="lankar"><a href="flextid/integritet/">Integritetspolicy</a><a href="flextid/privacy/">Privacy policy</a></p>
+    </article>
+  </section>
+
+  <section style="display:grid;gap:.75rem">
+    <h2>Så gör vi</h2>
+    <ul class="principer">
+      <li>Ingen internetbehörighet i apparna. De kan inte skicka något själva.</li>
+      <li>Inga konton, ingen reklam, ingen analys.</li>
+      <li>Gratisversionen har alla funktioner. Pro är ett engångsköp som tar bort en gräns, aldrig en prenumeration.</li>
+      <li>Export och säkerhetskopia är alltid gratis.</li>
+    </ul>
+  </section>
+
+  <footer>TM Connect</footer>
+</main>

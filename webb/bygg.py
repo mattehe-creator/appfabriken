@@ -16,4 +16,14 @@ for sida in rot.glob("*/sida.html"):
 import integritet
 for s in integritet.bygg(ut):
     print("byggd:", s)
-(ut / "index.html").write_text('<!doctype html><meta charset="utf-8"><title>TM Connect</title><p>TM Connect</p>\n', encoding="utf-8")
+start = rot / "start.html"
+if start.exists():
+    innehall = start.read_text(encoding="utf-8")
+    (ut / "index.html").write_text(
+        '<!doctype html>\n<html lang="sv">\n<head>\n<meta charset="utf-8">\n'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+        '<style>body{margin:0}</style>\n'
+        + innehall.replace("</style>", "</style>\n</head>\n<body>", 1) + "\n</body>\n</html>\n",
+        encoding="utf-8",
+    )
+    print("byggd:", ut / "index.html")
