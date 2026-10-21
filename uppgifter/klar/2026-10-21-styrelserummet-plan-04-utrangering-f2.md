@@ -46,3 +46,5 @@ Skriv minst fem `@Test` med `org.junit.Test` och `org.junit.Assert.assertEquals`
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (hela implementationen Utbyte.kt och UtbyteTest.kt — försök 2 saknade kod)
