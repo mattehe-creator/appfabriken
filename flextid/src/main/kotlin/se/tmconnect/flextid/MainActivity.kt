@@ -33,6 +33,7 @@ import se.tmconnect.flextid.export.ManadsCsvTexter
 import se.tmconnect.flextid.export.manadsCsvFilnamn
 import se.tmconnect.flextid.export.manadsPdfFilnamn
 import se.tmconnect.flextid.export.manadsRapportTexter
+import se.tmconnect.flextid.export.normaltidManadEtikett
 import se.tmconnect.flextid.export.skrivManadsPdf
 import se.tmconnect.flextid.paminnelse.FlextidPaminnelseInstallningarLager
 import se.tmconnect.flextid.paminnelse.PaminnelseWorker
@@ -119,7 +120,9 @@ class MainActivity : ComponentActivity() {
                     val arManad = viewModel.exportArManad.value
                     val texter = manadsRapportTexter(this, arManad, locale)
                     val rapport = viewModel.skapaManadsRapport(texter, locale)
-                    skrivManadsPdf(rapport, texter, out)
+                    val texterMedNormaltid =
+                        texter.copy(normaltidManadEtikett = normaltidManadEtikett(this, rapport.arbetsdagarManad))
+                    skrivManadsPdf(rapport, texterMedNormaltid, out)
                 }
             }
         }

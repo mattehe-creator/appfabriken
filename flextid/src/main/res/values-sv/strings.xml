@@ -139,4 +139,5 @@
     <string name="semesterar_kalenderar_beskrivning">Av: april–mars, som i semesterlagen. På: januari–december.</string>
     <string name="aftnar_lediga_rubrik">Aftnar är lediga</string>
     <string name="aftnar_lediga_beskrivning">Midsommar-, jul- och nyårsafton räknas som lediga för påminnelser. Röda dagar är alltid lediga.</string>
+    <string name="pdf_normaltid_manad">Normaltid i månaden (%1$d arbetsdagar)</string>
 </resources>

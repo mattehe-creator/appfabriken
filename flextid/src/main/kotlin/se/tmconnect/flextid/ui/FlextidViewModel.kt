@@ -518,7 +518,7 @@ class FlextidViewModel(
         val dagar = repository.hamtaAllaDagar()
         val inst = repository.hamtaInstallning()
         val arManad = exportArManad.value
-        return byggManadsRapport(dagar, inst, arManad, texter, locale)
+        return byggManadsRapport(dagar, inst, arManad, texter, locale, aftnarLediga = aftnarLediga.value)
     }
 
     fun skrivTillUri(uri: Uri, skriv: suspend (java.io.OutputStream) -> Unit) {

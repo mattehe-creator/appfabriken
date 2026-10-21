@@ -16,6 +16,7 @@ data class ManadsRapportTexter(
     val typEtiketter: Map<DagTyp, String>,
     val veckodagEtiketter: Map<DayOfWeek, String>,
     val saknasTecken: String,
+    val normaltidManadEtikett: String = "",
 )
 
 data class ManadsRapportRad(
@@ -36,6 +37,8 @@ data class ManadsRapportData(
     val summaUtfall: String?,
     val saldoManadsslut: String,
     val ingaDagar: Boolean,
+    val arbetsdagarManad: Int = 0,
+    val normaltidManad: String = "",
 )
 
 fun arKomplettDag(dag: Dag): Boolean = dag.start != null && dag.slut != null
@@ -58,7 +61,16 @@ fun byggManadsRapport(
     arManad: YearMonth,
     texter: ManadsRapportTexter,
     locale: Locale = Locale.getDefault(),
+    aftnarLediga: Boolean = true,
 ): ManadsRapportData {
+    val arbetsdagar =
+        arbetsdagarIManad(
+            arManad.year,
+            arManad.monthValue,
+            installning.arbetsdagarMask,
+            uteslutRodaDagar = true,
+            uteslutAftnar = aftnarLediga,
+        )
     val sistaDagIManaden = arManad.atEndOfMonth()
     val saldo = saldoVidOchMed(dagar, installning, sistaDagIManaden)
     val iManaden =
@@ -140,6 +152,8 @@ fun byggManadsRapport(
             },
         saldoManadsslut = formateraSaldoMinuter(saldo, locale),
         ingaDagar = rader.isEmpty(),
+        arbetsdagarManad = arbetsdagar,
+        normaltidManad = formateraMinuterSomTid(arbetsdagar * installning.normaltidMinPerDag, locale),
     )
 }
 

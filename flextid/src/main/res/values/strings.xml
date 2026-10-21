@@ -139,4 +139,5 @@
     <string name="semesterar_kalenderar_beskrivning">Off: April–March, as in Swedish law. On: January–December.</string>
     <string name="aftnar_lediga_rubrik">Holiday eves are days off</string>
     <string name="aftnar_lediga_beskrivning">Midsummer, Christmas and New Year\'s Eve count as days off for reminders. Public holidays are always days off.</string>
+    <string name="pdf_normaltid_manad">Normal hours this month (%1$d working days)</string>
 </resources>
