@@ -51,7 +51,7 @@ class SyntetiskPlanTusentalsTest {
         Assert.assertEquals(1_250_000L, utkast.avstamning!!.summa)
 
         val fönster = utkast.komponenter.single()
-        Assert.assertEquals(1_250_000L, fönster.ananskaffningsvarde)
+        Assert.assertEquals(1_250_000L, fönster.anskaffningsvarde)
         Assert.assertEquals(Sakerhet.MEDEL, fönster.sakerhet)
 
         val anmarkningar = anmarkningarFor(utkast, listOf(), 2025)
