@@ -3,7 +3,7 @@ package se.tmconnect.styrelserummet.server
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonException
+import kotlinx.serialization.json.decodeFromStream
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
@@ -54,9 +54,6 @@ class JobbLagring(
         if (!fil.exists()) return null
         return try {
             json.decodeFromString<JobbMeta>(fil.readText())
-        } catch (e: JsonException) {
-            logg("Skadad meta.json-fil, jobb hoppas över")
-            null
         } catch (e: Exception) {
             logg("Skadad meta.json-fil, jobb hoppas över")
             null
