@@ -65,11 +65,13 @@ class JamforelseTest {
             Komponent("Vägg", Komponentgrupp.STOMME, 100000L, 2020, 40, 0L, "test", Sakerhet.HOG)
         )
         val resultat5 = forandring(nu5, foreg5)
-        assertEquals(2, resultat5.size)
-        assertEquals("Tak", resultat5[0].namn)
-        assertEquals(ForandringTyp.NY, resultat5[0].typ)
-        assertEquals("Vägg", resultat5[1].namn)
-        assertEquals(ForandringTyp.ANDRAD, resultat5[1].typ)
+        assertEquals(3, resultat5.size)
+        assertEquals("Hiss", resultat5[0].namn)
+        assertEquals(ForandringTyp.BORTTAGEN, resultat5[0].typ)
+        assertEquals("Tak", resultat5[1].namn)
+        assertEquals(ForandringTyp.NY, resultat5[1].typ)
+        assertEquals("Vägg", resultat5[2].namn)
+        assertEquals(ForandringTyp.ANDRAD, resultat5[2].typ)
         
         // Testa normalisering av namn (blanksteg och gemener)
         val nu6 = listOf(
