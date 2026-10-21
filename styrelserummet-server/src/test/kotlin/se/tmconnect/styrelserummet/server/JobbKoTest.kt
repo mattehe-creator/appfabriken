@@ -1,20 +1,25 @@
 package se.tmconnect.styrelserummet.server
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.pdmodel.PDPage
+import org.apache.pdfbox.pdmodel.PDPageContentStream
+import org.apache.pdfbox.pdmodel.font.PDType1Font
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import se.tmconnect.styrelserummet.pdf.PdfLasare
-import se.tmconnect.styrelserummet.tolking.FalskTolkare
-import se.tmconnect.styrelserummet.tolking.SvarLage
+import java.io.ByteArrayOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.createTempDirectory
-import kotlin.io.path.writeBytes
 
 class JobbKoTest {
     private lateinit var tempDir: Path
     private lateinit var lagring: JobbLagring
-    private lateinit var jobbKo: JobbKo
+    private val scope = CoroutineScope(Dispatchers.Unconfined)
 
     @Before
     fun setUp() {
@@ -30,96 +35,76 @@ class JobbKoTest {
     }
 
     @Test
-    fun `test tom PDF ger felmeddelande`() {
-        // Skapa en tom PDF utan text
-        val pdfBytes = createSkannadPdfUtanText()
-        
+    fun tomPdfGerIngenLasbarTextFel() {
         val id = "test_jobb_1"
-        val meta = JobbMeta(
-            id = id,
-            forening = "Testförening",
-            arsslut = 2023,
-            status = JobbStatus.VANTAR.name,
-            senastAktivMs = System.currentTimeMillis()
-        )
-        
-        lagring.skrivMeta(meta)
-        val filPath = tempDir.resolve("test.pdf")
-        filPath.writeBytes(pdfBytes)
-        lagring.lagTillFil(id, filPath)
-        
-        jobbKo = JobbKo(lagring, FalskTolkare(), synkron = true)
-        jobbKo.lagTill(id)
-        
+        skapaJobbMedPdf(id, skannadPdfUtanText())
+
+        JobbKo(lagring, FalskTolkare(), scope = scope, synkron = true).lagTill(id)
+
         val metaResult = lagring.lasMeta(id)!!
-        assert(metaResult.status == JobbStatus.FEL.name)
-        assert(metaResult.felmeddelande == felTillMeddelande(ServerFel.IngenLasbarText))
+        assertEquals(JobbStatus.FEL.name, metaResult.status)
+        assertEquals(felTillMeddelande(ServerFel.IngenLasbarText), metaResult.felmeddelande)
     }
 
     @Test
-    fun `test ogiltigt AI-svar ger felmeddelande`() {
-        val pdfBytes = createPdfMedText()
-        
+    fun ogiltigtAiSvarGerAiOgiltigtSvarFel() {
         val id = "test_jobb_2"
-        val meta = JobbMeta(
-            id = id,
-            forening = "Testförening",
-            arsslut = 2023,
-            status = JobbStatus.VANTAR.name,
-            senastAktivMs = System.currentTimeMillis()
-        )
-        
-        lagring.skrivMeta(meta)
-        val filPath = tempDir.resolve("test.pdf")
-        filPath.writeBytes(pdfBytes)
-        lagring.lagTillFil(id, filPath)
-        
-        jobbKo = JobbKo(lagring, FalskTolkare(SvarLage.OGILTIGT_JSON), synkron = true)
-        jobbKo.lagTill(id)
-        
+        skapaJobbMedPdf(id, pdfMedText("Underhall tak 500000"))
+
+        JobbKo(lagring, FalskTolkare(lage = SvarLage.OGILTIGT_JSON), scope = scope, synkron = true).lagTill(id)
+
         val metaResult = lagring.lasMeta(id)!!
-        assert(metaResult.status == JobbStatus.FEL.name)
-        assert(metaResult.felmeddelande == felTillMeddelande(ServerFel.AiOgiltigtSvar))
+        assertEquals(JobbStatus.FEL.name, metaResult.status)
+        assertEquals(felTillMeddelande(ServerFel.AiOgiltigtSvar), metaResult.felmeddelande)
     }
 
     @Test
-    fun `test AI-timeout ger felmeddelande`() {
-        val pdfBytes = createPdfMedText()
-        
+    fun aiTimeoutGerAiTimeoutFel() {
         val id = "test_jobb_3"
+        skapaJobbMedPdf(id, pdfMedText("Underhall tak 500000"))
+
+        JobbKo(lagring, FalskTolkare(lage = SvarLage.TIMEOUT), scope = scope, synkron = true).lagTill(id)
+
+        val metaResult = lagring.lasMeta(id)!!
+        assertEquals(JobbStatus.FEL.name, metaResult.status)
+        assertEquals(felTillMeddelande(ServerFel.AiTimeout), metaResult.felmeddelande)
+    }
+
+    private fun skapaJobbMedPdf(id: String, pdfBytes: ByteArray) {
+        val nu = System.currentTimeMillis()
         val meta = JobbMeta(
             id = id,
             forening = "Testförening",
             arsslut = 2023,
             status = JobbStatus.VANTAR.name,
-            senastAktivMs = System.currentTimeMillis()
+            skapadMs = nu,
+            senastAktivMs = nu,
+            klientIpHash = "test",
         )
-        
-        lagring.skrivMeta(meta)
-        val filPath = tempDir.resolve("test.pdf")
-        filPath.writeBytes(pdfBytes)
-        lagring.lagTillFil(id, filPath)
-        
-        jobbKo = JobbKo(lagring, FalskTolkare(SvarLage.TIMEOUT), synkron = true)
-        jobbKo.lagTill(id)
-        
-        val metaResult = lagring.lasMeta(id)!!
-        assert(metaResult.status == JobbStatus.FEL.name)
-        assert(metaResult.felmeddelande == felTillMeddelande(ServerFel.AiTimeout))
+        lagring.skapa(meta)
+        lagring.sparaFil(id, "underhallsplan.pdf", pdfBytes)
     }
 
-    private fun createSkannadPdfUtanText(): ByteArray {
-        // Skapa en PDF utan text som i PdfLasareTest.skannadPdfUtanTextGerIngenLasbarText
-        val pdfLasare = PdfLasare()
-        return pdfLasare.lasPerSida(byteArrayOf()).getOrNull()?.let { 
-            // Denna metod är inte tillgänglig, så vi skapar en enkel tom PDF
-            // En riktig implementation skulle använda PDFBox för att skapa en tom PDF
-            byteArrayOf()
-        } ?: byteArrayOf()
-    }
+    private fun skannadPdfUtanText(): ByteArray = pdfMedText(listOf("", ""))
 
-    private fun createPdfMedText(): ByteArray {
-        // Skapa en PDF med text som i ApiTest.pdfMedText
-        return byteArrayOf() // Placeholder - i praktiken skulle detta skapas med PDFBox
+    private fun pdfMedText(text: String): ByteArray = pdfMedText(listOf(text))
+
+    private fun pdfMedText(sidor: List<String>): ByteArray {
+        PDDocument().use { doc ->
+            sidor.forEach { text ->
+                val page = PDPage()
+                doc.addPage(page)
+                if (text.isNotBlank()) {
+                    PDPageContentStream(doc, page).use { cs ->
+                        cs.beginText()
+                        cs.setFont(PDType1Font(Standard14Fonts.FontName.HELVETICA), 12f)
+                        cs.newLineAtOffset(50f, 700f)
+                        cs.showText(text)
+                        cs.endText()
+                    }
+                }
+            }
+            return ByteArrayOutputStream().also { doc.save(it) }.toByteArray()
+        }
     }
 }

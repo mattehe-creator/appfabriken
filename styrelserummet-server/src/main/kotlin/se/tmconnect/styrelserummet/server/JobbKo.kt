@@ -5,10 +5,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import se.tmconnect.styrelserummet.modell.Forening
+import se.tmconnect.styrelserummet.pdf.IngenLasbarTextException
+import se.tmconnect.styrelserummet.pdf.KrypteradPdfException
 import se.tmconnect.styrelserummet.pdf.PdfLasare
 import se.tmconnect.styrelserummet.tolking.Tolkare
 import se.tmconnect.styrelserummet.underlag.byggUtkast
-import java.nio.file.Path
 import kotlin.io.path.readBytes
 
 class JobbKo(
@@ -60,8 +61,8 @@ class JobbKo(
                 }
                 val text = pdfLasare.lasSomText(bytes).getOrElse {
                     when (it) {
-                        is PdfLasare.KrypteradPdfException -> fel(id, ServerFel.KrypteradPdf)
-                        is PdfLasare.IngenLasbarTextException -> fel(id, ServerFel.IngenLasbarText)
+                        is KrypteradPdfException -> fel(id, ServerFel.KrypteradPdf)
+                        is IngenLasbarTextException -> fel(id, ServerFel.IngenLasbarText)
                         else -> fel(id, ServerFel.Okant)
                     }
                     return
@@ -90,7 +91,7 @@ class JobbKo(
             )
             if (utkast.komponenter.isEmpty()) {
                 // Kontrollera om alla anmärkningar är "Tolkning misslyckades" (typiskt timeout)
-                val harTimeoutAnmärkningar = utkast.anmärkningar.all { it.startsWith("Tolkning misslyckades") }
+                val harTimeoutAnmärkningar = utkast.anmarkningar.all { it.startsWith("Tolkning misslyckades") }
                 if (harTimeoutAnmärkningar) {
                     fel(id, ServerFel.AiTimeout)
                 } else {
