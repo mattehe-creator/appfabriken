@@ -28,8 +28,8 @@ fun normaltidForIntervallMin(fran: LocalDate, till: LocalDate, arbetsdagarMask: 
 ## Exempel
 Mask `ARBETSDAGAR_MANDAG_FREDAG`:
 - 2026-10-12 – 2026-10-18 → 5
-- 2026-03-30 – 2026-04-05 (påskveckan) → 3 (långfredagen 3/4 räknas bort, annandag påsk 6/4 ligger utanför)
-- 2026-12-21 – 2026-12-27, aftnar lediga → 2 (24/12 afton, 25/12 juldagen); aftnar inte lediga → 3
+- 2026-03-30 – 2026-04-05 (påskveckan) → 4 (långfredagen 3/4 räknas bort, annandag påsk 6/4 ligger utanför)
+- 2026-12-21 – 2026-12-27, aftnar lediga → 3 (24/12 afton och 25/12 juldagen räknas bort); aftnar inte lediga → 4
 - `normaltidForIntervallMin(2026-10-12, 2026-10-18, mask, 480, true)` → 2400
 - `fran` 2026-10-18, `till` 2026-10-12 → 0
 
