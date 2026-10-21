@@ -14,6 +14,13 @@ private val nyckelord = listOf(
     NyckelordMatch("balkongdörr", Komponentgrupp.FONSTER_DORRAR),
     NyckelordMatch("entrédörr", Komponentgrupp.FONSTER_DORRAR),
     NyckelordMatch("fönster", Komponentgrupp.FONSTER_DORRAR),
+    NyckelordMatch("stammar", Komponentgrupp.STAMMAR),
+    NyckelordMatch("avlopp", Komponentgrupp.STAMMAR),
+    NyckelordMatch("vattenledning", Komponentgrupp.STAMMAR),
+    NyckelordMatch("ventilation", Komponentgrupp.VENTILATION),
+    NyckelordMatch("ftx", Komponentgrupp.VENTILATION),
+    NyckelordMatch("frånluft", Komponentgrupp.VENTILATION),
+    NyckelordMatch("tilluft", Komponentgrupp.VENTILATION),
 )
 
 fun gissaGrupp(namn: String): Komponentgrupp? {

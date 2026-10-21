@@ -41,3 +41,5 @@ Lägg till testmetoden `gissaGruppStammarVentilation` med `assertEquals` för al
 - Ändra andra filer (inga `uppgifter/`, `granskning/`, `BESLUTSLOGG.md` eller rotfiler).
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: godkänd 2026-10-21 (inget)
