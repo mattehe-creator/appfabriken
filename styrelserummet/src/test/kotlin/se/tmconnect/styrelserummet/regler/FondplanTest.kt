@@ -1,8 +1,9 @@
 package se.tmconnect.styrelserummet.regler
 
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
-import kotlin.test.assertEquals
+import org.junit.Test
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
+import kotlin.test.assertEquals as kotlinAssertEquals
 
 class FondplanTest {
     
@@ -32,18 +33,18 @@ class FondplanTest {
     @Test
     fun `test summaPerAr med gränsvärden`() {
         // antalAr 0 → IllegalArgumentException
-        assertThrows<IllegalArgumentException> {
+        assertThrows(IllegalArgumentException::class.java) {
             summaPerAr(emptyList(), 2026, 0)
         }
         
         // antalAr 101 → IllegalArgumentException
-        assertThrows<IllegalArgumentException> {
+        assertThrows(IllegalArgumentException::class.java) {
             summaPerAr(emptyList(), 2026, 101)
         }
         
         // belopp −1 → IllegalArgumentException
         val atgarder = listOf(PlaneradAtgard(2026, -1L, "Test"))
-        assertThrows<IllegalArgumentException> {
+        assertThrows(IllegalArgumentException::class.java) {
             summaPerAr(atgarder, 2026, 1)
         }
     }
