@@ -119,7 +119,7 @@ class JobbKo(
         lagring.skrivMeta(
             meta.copy(
                 status = JobbStatus.FEL.name,
-                felmeddelande = felTillMeddelande(serverFel),
+                felmeddelande = felText(serverFelTillKod(serverFel)),
                 senastAktivMs = tidMs,
             ),
         )

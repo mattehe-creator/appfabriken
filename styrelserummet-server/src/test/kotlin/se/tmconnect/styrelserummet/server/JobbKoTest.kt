@@ -45,7 +45,7 @@ class JobbKoTest {
 
         val metaResult = lagring.lasMeta(id)!!
         assertEquals(JobbStatus.FEL.name, metaResult.status)
-        assertEquals(felTillMeddelande(ServerFel.IngenLasbarText), metaResult.felmeddelande)
+        assertEquals(felText(serverFelTillKod(ServerFel.IngenLasbarText)), metaResult.felmeddelande)
     }
 
     @Test
@@ -57,7 +57,7 @@ class JobbKoTest {
 
         val metaResult = lagring.lasMeta(id)!!
         assertEquals(JobbStatus.FEL.name, metaResult.status)
-        assertEquals(felTillMeddelande(ServerFel.AiOgiltigtSvar), metaResult.felmeddelande)
+        assertEquals(felText(serverFelTillKod(ServerFel.AiOgiltigtSvar)), metaResult.felmeddelande)
     }
 
     @Test
@@ -69,7 +69,7 @@ class JobbKoTest {
 
         val metaResult = lagring.lasMeta(id)!!
         assertEquals(JobbStatus.FEL.name, metaResult.status)
-        assertEquals(felTillMeddelande(ServerFel.AiTimeout), metaResult.felmeddelande)
+        assertEquals(felText(serverFelTillKod(ServerFel.AiTimeout)), metaResult.felmeddelande)
     }
 
     @Test
@@ -92,7 +92,7 @@ class JobbKoTest {
         assertTrue(rad.contains("IngenLasbarText"))
         assertFalse(rad.contains("19800101-1234"))
         assertFalse(rad.contains("underhallsplan.pdf"))
-        assertFalse(rad.contains(felTillMeddelande(ServerFel.IngenLasbarText)))
+        assertFalse(rad.contains(felText(serverFelTillKod(ServerFel.IngenLasbarText))))
     }
 
     @Test
@@ -116,7 +116,7 @@ class JobbKoTest {
         assertFalse(rad.contains("19800101-1234"))
         assertFalse(rad.contains("Underhall tak"))
         assertFalse(rad.contains("underhallsplan.pdf"))
-        assertFalse(rad.contains(felTillMeddelande(ServerFel.AiOgiltigtSvar)))
+        assertFalse(rad.contains(felText(serverFelTillKod(ServerFel.AiOgiltigtSvar))))
     }
 
     private fun skapaJobbMedPdf(id: String, pdfBytes: ByteArray) {

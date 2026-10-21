@@ -17,6 +17,11 @@
       <p id="status" class="ingress" role="status" aria-live="polite"></p>
     </header>
 
+    <section id="sammanfattning-sektion" class="yta" hidden>
+      <h2>Sammanfattning</h2>
+      <ul id="sammanfattning" class="sammanfattning"></ul>
+    </section>
+
     <section id="avstamning" class="yta" hidden>
       <h2>Avstämning mot byggnadens värde</h2>
       <p id="avstamning-text"></p>
@@ -35,7 +40,7 @@
             <tr>
               <th>Komponent</th>
               <th>Grupp</th>
-              <th class="tal">Belopp, kr</th>
+              <th class="tal">Belopp</th>
               <th class="tal">Anskaffningsår</th>
               <th class="tal">Nyttjandeperiod</th>
               <th>Källa</th>
@@ -51,6 +56,22 @@
         <button type="button" class="knapp sekundar" id="skrivUt">Skriv ut / PDF</button>
         <button type="button" class="knapp farlig" id="radera">Radera allt</button>
       </div>
+    </section>
+
+    <section id="jamforelse-sektion" class="yta" hidden>
+      <h2>Jämförelse mot föregående år</h2>
+      <p class="hjalp">Valfritt. Klistra in eller ladda upp föregående års CSV-export (samma format som nedladdningen). Inget sparas på servern.</p>
+      <label class="falt" for="foreg-csv">Föregående års lista</label>
+      <textarea id="foreg-csv" rows="6" aria-describedby="jamforelse-status"></textarea>
+      <div class="knapp-rad">
+        <button type="button" class="knapp sekundar" id="jamforelse-knapp">Visa förändringar</button>
+        <label class="knapp sekundar fil-val">
+          Ladda upp CSV
+          <input type="file" id="foreg-fil" accept=".csv,text/csv" hidden>
+        </label>
+      </div>
+      <p id="jamforelse-status" class="hjalp" role="status"></p>
+      <ul id="forandringar" hidden></ul>
     </section>
 
     <footer>
