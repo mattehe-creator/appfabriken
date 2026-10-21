@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/claude/2026-10-21-styrelserummet-avskrivningsplan.md
 försök: 1
-beror-på: 2026-10-21-styrelserummet-plan-05-ersatt.md
+beror-på: 2026-10-21-styrelserummet-plan-05-ersatt-f2.md
 
 ## Ändra bara dessa filer
 - styrelserummet/src/main/kotlin/se/tmconnect/styrelserummet/regler/AvskrivningsplanCsv.kt (ny)
