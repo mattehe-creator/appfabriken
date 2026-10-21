@@ -221,12 +221,9 @@ class ApiTest {
                 }
                 assertEquals("KLAR", status)
                 
-                // Kontrollera att CSV innehåller UTKAST
+                // Kontrollera CSV-rubriker
                 val csv = client.get("/api/jobb/$id.csv")
                 assertEquals(HttpStatusCode.OK, csv.status)
-                assertTrue("CSV ska innehålla UTKAST", csv.bodyAsText().contains("UTKAST"))
-                
-                // Kontrollera CSV-rubriker
                 val csvText = csv.bodyAsText()
                 val rubriker = "Komponent;Grupp;Anskaffningsvärde;Anskaffningsår;Nyttjandeperiod;Bokfört värde;Källa;Säkerhet"
                 assertTrue("CSV ska innehålla rätt rubriker", csvText.startsWith(rubriker))
@@ -245,6 +242,9 @@ class ApiTest {
                     }
                 }
                 assertEquals("Summan av anskaffningsvärden ska vara 1 000 000", 1_000_000L, summa)
+                
+                // Kontrollera att CSV innehåller UTKAST
+                assertTrue("CSV ska innehålla UTKAST", csvText.contains("UTKAST"))
             }
         }
     }
