@@ -4,6 +4,11 @@ Claude skriver här när något kräver Mattias (se ARBETSFLODE.md). Mattias sva
 
 ## Öppna
 
+- (2026-10-21) Tre saker, i den ordningen, var för sig några minuter:
+  1. Slå på GitHub Pages: repot → Settings → Pages → Source: **GitHub Actions**. Utan det har landningssidan `webb/k3/` aldrig legat ute, och integritetspolicyerna kan inte länkas från Play. Adresserna blir `https://mattehe-creator.github.io/appfabriken/k3/` och `.../<app>/integritet/` (svenska) och `.../<app>/privacy/` (engelska).
+  2. En kontaktadress för policyerna (gärna en adress för TM Connect, inte din privata). Jag lägger den i `webb/kontakt.txt`, då uppdateras alla sex sidorna.
+  3. Landningssidan samlar inga anmälningar förrän den har en mottagare. Skapa ett gratis konto på formspree.io med TM Connects adress, skapa ett formulär och skicka mig formulärets adress (`https://formspree.io/f/...`). Jag lägger in den.
+
 - (2026-10-20) Styrelserummet är byggt och mergat (kärna, underlag, server, UI). Inget behövs av dig i natt. Före driftsättning behöver jag av dig: (1) exakt bolagsnamn, organisationsnummer och en kontakt-e-post för integritetssidan (jag har skrivit "TM Connect" utan bolagsform tills du svarar), (2) att du skapar ett konto hos en värd när jag har valt (jag föreslår då en), (3) en Anthropic API-nyckel som hemlighet hos värden, (4) om du vill ha betalning: ett betalkonto. Det går att prova servern lokalt först: `styrelserummet/DRIFT.md`.
 - (2026-10-13) Play kräver en publik länk till integritetspolicyn. Texterna ligger färdiga i `garantivalvet/butik/integritetspolicy-sv.md` och `-en.md`, med en plats för kontaktadress. Jag föreslår att du lägger dem som en sida på TM Connects webbplats (eller GitHub Pages om du vill). Skicka mig länken och kontaktadressen så lägger jag in dem i butiksunderlaget. Texterna i `butik/` (butiksbeskrivning, kort text) är uppdaterade för nya funktioner och är ditt beslut innan publicering.
 - (2026-10-12) Ny design och skärmbilder är klara på main. Installera APK:n från releasen `senaste-master` och prova igen (steg 3 i STATUS.md): lista, formulär, detaljsida, PDF och säkerhetskopia med "Testläge: Pro" under kugghjulet. Svara med vad som fungerar och vad som inte gör det.
