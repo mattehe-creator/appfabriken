@@ -1,8 +1,12 @@
 # Uppgift: gissaGrupp utan träff
 
 uppdrag: uppdrag/2026-10-21-styrelserummet-kvalitet-utkast.md
-försök: 1
+försök: 2
 beror-på: 2026-10-21-styrelserummet-kvalitet-04-gissa-grupp-hiss-tvatt-mark-f2.md
+
+## Vad som saknades
+- Grenen innehöll bara commit «Uppgift startad» (flytt till `pagar/`). Ingen ny testmetod `gissaGruppNullfall` lades till i `GrupperaNamnTest.kt`.
+- `gradle :styrelserummet:test --tests "*GrupperaNamnTest.gissaGruppNullfall"` rapporterar «No tests found» och kan inte verifiera uppgiften.
 
 ## Ändra bara dessa filer
 - styrelserummet/src/main/kotlin/se/tmconnect/styrelserummet/underlag/GrupperaNamn.kt
@@ -14,9 +18,16 @@ beror-på: 2026-10-21-styrelserummet-kvalitet-04-gissa-grupp-hiss-tvatt-mark-f2.
 ## Uppgift
 Säkerställ att `gissaGrupp` returnerar `null` när inget nyckelord matchar, inklusive namn som liknar nyckelord men inte ska klassas (inga nya grupper).
 
-Lägg till tester; ändra implementationen bara om något befintligt fall failar.
+Lägg till JUnit 4-test (`org.junit.Test`, `org.junit.Assert.assertEquals` — **inte** `kotlin.test`):
 
-## Exempel
+@Test
+fun gissaGruppNullfall() { ... }
+
+med `assertEquals(null, gissaGrupp(...))` för alla fyra exemplen nedan. Du får samla dem i en metod även om två redan finns i andra testmetoder.
+
+Ändra `GrupperaNamn.kt` **bara** om något assert i `gissaGruppNullfall` (eller befintliga tester) failar.
+
+## Exempel (ska finnas som assert i `gissaGruppNullfall`)
 - `""` → `null`
 - `"Stomme i betong"` → `null`
 - `"Elisabeths trädgård"` → `null`
