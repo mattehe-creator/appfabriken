@@ -26,3 +26,5 @@ gradle :styrelserummet:test --tests "*SyntetiskPlanSaknadKostnadTest"
 ## Gör inte
 - Ändra fördelningslogik om testet redan går grönt.
 - Riktiga belopp från verkliga föreningar.
+
+utfall: godkänd 2026-10-21 (PDF-flöde, PdfLasare, assert på fördelat värde och uppskattningsanmärkning)
