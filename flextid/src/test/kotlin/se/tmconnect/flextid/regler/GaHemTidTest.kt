@@ -1,9 +1,9 @@
 package se.tmconnect.flextid.regler
 
 import java.time.LocalTime
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Test
 
 class GaHemTidTest {
     
