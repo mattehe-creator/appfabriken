@@ -30,3 +30,5 @@ gradle :styrelserummet:test --tests "*SammanfattningTest.avskrivningOchUtkast"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #395). Ersatt av 2026-10-21-styrelserummet-kvalitet-12-sammanfattning-avskrivning-utkast-f2.md
