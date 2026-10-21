@@ -17,7 +17,10 @@ object Felkoder {
     const val OGILIG_LANK = "OGILIG_LANK"
     const val INGA_FILER = "INGA_FILER"
     const val PDF_EJ_LASBAR = "PDF_EJ_LASBAR"
+    const val PDF_LOSENORD = "PDF_LOSENORD"
     const val INGEN_PLAN = "INGEN_PLAN"
+    const val AI_TIDSGRANS = "AI_TIDSGRANS"
+    const val AI_OGILTIGT_SVAR = "AI_OGILTIGT_SVAR"
     const val BEARBETNING_MISSLYCKADES = "BEARBETNING_MISSLYCKADES"
     const val INTERNT_FEL = "INTERNT_FEL"
 
@@ -38,7 +41,10 @@ object Felkoder {
         OGILIG_LANK,
         INGA_FILER,
         PDF_EJ_LASBAR,
+        PDF_LOSENORD,
         INGEN_PLAN,
+        AI_TIDSGRANS,
+        AI_OGILTIGT_SVAR,
         BEARBETNING_MISSLYCKADES,
         INTERNT_FEL,
     )

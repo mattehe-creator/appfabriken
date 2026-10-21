@@ -3,11 +3,11 @@ package se.tmconnect.styrelserummet.server
 fun serverFelTillKod(fel: ServerFel): String =
     when (fel) {
         ServerFel.IngenLasbarText -> Felkoder.PDF_EJ_LASBAR
-        ServerFel.KrypteradPdf -> Felkoder.PDF_EJ_LASBAR
+        ServerFel.KrypteradPdf -> Felkoder.PDF_LOSENORD
         ServerFel.ForStorFil -> Felkoder.FOR_STORA_FILER
         ServerFel.IntePdf -> Felkoder.INTE_PDF
-        ServerFel.AiTimeout -> Felkoder.BEARBETNING_MISSLYCKADES
-        ServerFel.AiOgiltigtSvar -> Felkoder.BEARBETNING_MISSLYCKADES
+        ServerFel.AiTimeout -> Felkoder.AI_TIDSGRANS
+        ServerFel.AiOgiltigtSvar -> Felkoder.AI_OGILTIGT_SVAR
         is ServerFel.ForMangaJobb -> Felkoder.FOR_MANGA_JOBB
         ServerFel.Okant -> Felkoder.INTERNT_FEL
     }
