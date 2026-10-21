@@ -1,8 +1,8 @@
 # Uppgift: Saknad jobbkatalog mitt i körning
 
-uppdrag: uppdrag/2026-10-21-styrelserummet-provklar-forsta-korning.md
+uppdrag: uppdrag/2026-10-21-styrelserummet-provklar.md
 försök: 1
-beror-på: ingen
+beror-på: 2026-10-21-styrelserummet-provklar-13-lagring-samtidig-skrivning.md
 
 ## Ändra bara dessa filer
 - styrelserummet-server/src/main/kotlin/se/tmconnect/styrelserummet/server/JobbLagring.kt

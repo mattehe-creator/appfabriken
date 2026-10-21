@@ -1,6 +1,6 @@
 # Uppgift: Miljökontroll API-nyckel
 
-uppdrag: uppdrag/2026-10-21-styrelserummet-provklar-forsta-korning.md
+uppdrag: uppdrag/2026-10-21-styrelserummet-provklar.md
 försök: 1
 beror-på: 2026-10-21-styrelserummet-provklar-01-miljo-data-skrivbar.md
 

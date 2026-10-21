@@ -1,6 +1,6 @@
 # Uppgift: Felkod FOR_STOR_HANDLING
 
-uppdrag: uppdrag/2026-10-21-styrelserummet-provklar-forsta-korning.md
+uppdrag: uppdrag/2026-10-21-styrelserummet-provklar.md
 försök: 1
 beror-på: 2026-10-21-styrelserummet-provklar-18-granser-skatta-tecken.md
 

@@ -1,6 +1,6 @@
 # Uppgift: Dataminimering efter klart jobb
 
-uppdrag: uppdrag/2026-10-21-styrelserummet-provklar-forsta-korning.md
+uppdrag: uppdrag/2026-10-21-styrelserummet-provklar.md
 försök: 1
 beror-på: ingen
 

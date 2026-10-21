@@ -1,6 +1,6 @@
 # Uppgift: Kostnadsskydd före Tolkare
 
-uppdrag: uppdrag/2026-10-21-styrelserummet-provklar-forsta-korning.md
+uppdrag: uppdrag/2026-10-21-styrelserummet-provklar.md
 försök: 1
 beror-på: 2026-10-21-styrelserummet-provklar-19-granser-for-stor-felkod.md
 
