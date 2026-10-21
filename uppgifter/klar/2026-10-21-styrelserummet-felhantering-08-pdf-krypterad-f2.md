@@ -51,3 +51,5 @@ Befintliga tester `lasPerSidaReturnerarTextPerSida` och `skannadPdfUtanTextGerIn
 - Ändra andra filer.
 - Lägga till beroenden.
 - Flytta eller duplicera filer till repots rot.
+
+utfall: godkänd 2026-10-21 (lokal modellen lämnade ingen Kotlin-kod; Cursor implementerade hela uppgiften)
