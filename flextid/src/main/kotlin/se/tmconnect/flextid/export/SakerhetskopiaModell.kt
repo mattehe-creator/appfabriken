@@ -17,6 +17,9 @@ data class SakerhetskopiaInstallning(
     val ingangssaldoMin: Int,
     val arbetsdagarMask: Int,
     val stamplaInPaminnelseMinEfterMidnatt: Int = STANDARD_STAMPLA_IN_PAMINNELSE_MIN_EFTER_MIDNATT,
+    val aftnarLediga: Boolean = true,
+    val semesterdagarPerAr: Int = 25,
+    val semesterarStartmanad: Int = 4,
 )
 
 data class SakerhetskopiaDag(
