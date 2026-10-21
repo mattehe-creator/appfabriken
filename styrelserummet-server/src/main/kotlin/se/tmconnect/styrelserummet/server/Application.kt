@@ -34,6 +34,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.json.Json
 import se.tmconnect.styrelserummet.tolking.Tolkare
 import se.tmconnect.styrelserummet.tolking.anthropicTolkareFranMiljo
+import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Year
 
@@ -289,7 +290,7 @@ fun main() {
     val env = System.getenv()
     val rader = kontrolleraMiljo(env) { katalog ->
         val path = Path.of(katalog)
-        if (path.exists()) {
+        if (Files.exists(path)) {
             Files.isWritable(path)
         } else {
             false

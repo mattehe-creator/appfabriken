@@ -4,8 +4,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.nio.file.Files
-import java.nio.file.Path
 
 class MiljoTest {
     @Test
@@ -280,14 +278,27 @@ class MiljoTest {
     @Test
     fun skrivMiljoRapporterIngenNyckel() {
         val logg = mutableListOf<String>()
-        val testRader = listOf("Fel: ANTHROPIC_API_KEY har fel format, börja med \"sk-ant-\".")
-        
-        skrivMiljoRapporter(testRader) { rad ->
-            logg.add(rad)
-        }
-        
-        assertEquals(1, logg.size)
-        assertTrue(logg[0].contains("ANTHROPIC_API_KEY"))
-        assertFalse(logg[0].contains("sk-ant-hemlig"))
+        val hemligNyckel = "sk-ant-hemlig"
+        val rader = kontrolleraMiljo(
+            mapOf(
+                "STYRELSERUMMET_DATA" to "/data",
+                "ANTHROPIC_API_KEY" to "sk-fel",
+            ),
+        ) { true }
+        skrivMiljoRapporter(rader) { logg.add(it) }
+        assertTrue(logg.isNotEmpty())
+        assertTrue(logg.single().contains("ANTHROPIC_API_KEY"))
+        assertFalse(logg.any { it.contains("sk-fel") })
+        assertFalse(logg.any { it.contains(hemligNyckel) })
+
+        logg.clear()
+        val okRader = kontrolleraMiljo(
+            mapOf(
+                "STYRELSERUMMET_DATA" to "/data",
+                "ANTHROPIC_API_KEY" to hemligNyckel,
+            ),
+        ) { true }
+        skrivMiljoRapporter(okRader) { logg.add(it) }
+        assertTrue(logg.isEmpty())
     }
 }

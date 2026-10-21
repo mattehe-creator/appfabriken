@@ -30,3 +30,5 @@ gradle :styrelserummet-server:test --tests "*MiljoTest.skrivMiljoRapporter*"
 - Stoppa serverstart på miljöfel (kommer i senare drift om Claude beslutar annat).
 - Skriva ut nycklar.
 - Ändra fler än tre filer.
+
+utfall: godkänd 2026-10-21 (raderade felplacerad Application.kt i reporoten; import Files och Files.exists i Application.kt; skärpte skrivMiljoRapporterIngenNyckel-test)
