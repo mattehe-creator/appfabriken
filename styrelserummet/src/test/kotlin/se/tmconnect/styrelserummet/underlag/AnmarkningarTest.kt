@@ -7,6 +7,7 @@ import se.tmconnect.styrelserummet.modell.Forening
 import se.tmconnect.styrelserummet.modell.Komponent
 import se.tmconnect.styrelserummet.modell.Komponentgrupp
 import se.tmconnect.styrelserummet.modell.Sakerhet
+import se.tmconnect.styrelserummet.regler.lasNyttjandeperioderFranResurs
 
 class AnmarkningarTest {
     private fun utkastMedAnskaffningsar(anskaffningsar: Int): Utkast =
@@ -31,7 +32,7 @@ class AnmarkningarTest {
 
     @Test
     fun anmarkningAnskaffningsarForeByggnadsar() {
-        val tidigt = anmarkningarFor(utkastMedAnskaffningsar(1970), emptyList())
+        val tidigt = anmarkningarFor(utkastMedAnskaffningsar(1970), emptyList(), arsslut = 2025)
         assertTrue(
             tidigt.any {
                 it.contains("Stomme") &&
@@ -41,12 +42,39 @@ class AnmarkningarTest {
             },
         )
 
-        val sammaAr = anmarkningarFor(utkastMedAnskaffningsar(1975), emptyList())
+        val sammaAr = anmarkningarFor(utkastMedAnskaffningsar(1975), emptyList(), arsslut = 2025)
         assertFalse(
             sammaAr.any {
                 it.contains("Stomme") &&
                     it.contains("före") &&
                     it.contains("byggnadsår")
+            },
+        )
+    }
+
+    @Test
+    fun anmarkningAnskaffningsarEfterArsslut() {
+        val tabell = lasNyttjandeperioderFranResurs()
+
+        // Testa att en komponent med anskaffningsår 2026 ger anmärkning när arsslut är 2025
+        val efter = anmarkningarFor(utkastMedAnskaffningsar(2026), tabell, arsslut = 2025)
+        assertTrue(
+            "Borde innehålla anmärkning för anskaffningsår efter räkenskapsåret",
+            efter.any {
+                it.contains("Stomme") &&
+                    it.contains("2026") &&
+                    it.contains("2025") &&
+                    it.contains("efter räkenskapsårets slut")
+            },
+        )
+
+        // Testa att en komponent med anskaffningsår 2025 inte ger anmärkning när arsslut är 2025
+        val sammaAr = anmarkningarFor(utkastMedAnskaffningsar(2025), tabell, arsslut = 2025)
+        assertFalse(
+            "Borde INTE innehålla anmärkning för anskaffningsår lika med räkenskapsåret",
+            sammaAr.any {
+                it.contains("Stomme") &&
+                    it.contains("efter räkenskapsårets slut")
             },
         )
     }

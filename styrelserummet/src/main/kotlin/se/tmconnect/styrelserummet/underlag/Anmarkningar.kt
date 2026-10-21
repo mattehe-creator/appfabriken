@@ -3,7 +3,7 @@ package se.tmconnect.styrelserummet.underlag
 import se.tmconnect.styrelserummet.modell.Sakerhet
 import se.tmconnect.styrelserummet.regler.NyttjandeperiodRad
 
-fun anmarkningarFor(utkast: Utkast, tabell: List<NyttjandeperiodRad>): List<String> {
+fun anmarkningarFor(utkast: Utkast, tabell: List<NyttjandeperiodRad>, arsslut: Int): List<String> {
     val anmarkningar = utkast.anmarkningar.toMutableList()
     utkast.avstamning?.let { avstamning ->
         if (!avstamning.stammer) {
@@ -37,6 +37,9 @@ fun anmarkningarFor(utkast: Utkast, tabell: List<NyttjandeperiodRad>): List<Stri
             if (komponent.anskaffningsar < byggnadsar) {
                 anmarkningar += "Komponenten \"${komponent.namn}\" har anskaffningsår ${komponent.anskaffningsar} som ligger före föreningens byggnadsår ${byggnadsar}."
             }
+        }
+        if (komponent.anskaffningsar > arsslut) {
+            anmarkningar += "Komponenten \"${komponent.namn}\" har anskaffningsår ${komponent.anskaffningsar} som ligger efter räkenskapsårets slut (${arsslut})."
         }
     }
     return anmarkningar.distinct()
