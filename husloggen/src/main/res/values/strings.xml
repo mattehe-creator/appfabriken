@@ -282,4 +282,8 @@
     <string name="mer_plan_text">Costs you expect ahead</string>
     <string name="mer_matare_text">Electricity, water and heating</string>
     <string name="mer_dokument_text">Manuals, drawings and reports</string>
+    <string name="butik_rubrik">Upkeep, receipts and the history of your home</string>
+    <string name="butik_punkt_1">Reminders before every recurring job</string>
+    <string name="butik_punkt_2">Receipts and costs per year, PDF for the sale</string>
+    <string name="butik_punkt_3">Offline. No account, no ads</string>
 </resources>

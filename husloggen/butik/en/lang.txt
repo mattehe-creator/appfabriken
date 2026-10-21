@@ -1,4 +1,4 @@
-Husloggen keeps track of your home's upkeep: what needs doing, what has been done and what it cost. Everything stays on your phone, no account needed.
+House Log keeps track of your home's upkeep: what needs doing, what has been done and what it cost. Everything stays on your phone, no account needed.
 
 To do
 Add recurring jobs, such as changing filters, clearing gutters or servicing the heat pump, with an interval in months. The app works out the next date and reminds you ahead of time. Ready-made suggestions help you get started. Mark a job as done with one tap: it goes into the log and the next date moves forward.
@@ -13,7 +13,7 @@ More in the app
 Meters for electricity, water and heating with consumption between readings. Documents such as manuals, drawings and inspection reports. Several homes, for example a house and a holiday cottage. Planned future costs. Dark mode.
 
 Your data stays with you
-Husloggen has no internet permission, no accounts, no ads and no analytics. Back up to a file or folder you choose, manually or automatically, and restore it on a new phone.
+House Log has no internet permission, no accounts, no ads and no analytics. Back up to a file or folder you choose, manually or automatically, and restore it on a new phone.
 
 Free and Pro
 The free version has every feature. The limit is 15 log entries and 3 homes. Tasks, reminders, meters and documents are unlimited. Pro is a one-time purchase that removes the limits. Export, PDF and backup are always free, and existing data is never deleted.

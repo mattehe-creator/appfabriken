@@ -278,4 +278,8 @@
     <string name="mer_plan_text">Kostnader du räknar med framåt</string>
     <string name="mer_matare_text">El, vatten och värme</string>
     <string name="mer_dokument_text">Manualer, ritningar och protokoll</string>
+    <string name="butik_rubrik">Underhåll, kvitton och husets historik</string>
+    <string name="butik_punkt_1">Påminnelser före varje återkommande jobb</string>
+    <string name="butik_punkt_2">Kvitton och kostnader per år, PDF vid försäljning</string>
+    <string name="butik_punkt_3">Offline. Inget konto, ingen reklam</string>
 </resources>

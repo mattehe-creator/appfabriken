@@ -119,15 +119,27 @@ abstract class ButikSkarmbilderBas {
                     Column(modifier = Modifier.padding(horizontal = 64.dp)) {
                         Text(
                             text = stringResource(R.string.app_name),
-                            style = MaterialTheme.typography.displaySmall,
+                            style = MaterialTheme.typography.displayMedium,
                             color = Color.White,
                         )
                         Text(
-                            text = stringResource(R.string.pro_forklaring),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.White.copy(alpha = 0.92f),
-                            modifier = Modifier.padding(top = 12.dp),
+                            text = stringResource(R.string.butik_rubrik),
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = Color.White,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 24.dp),
                         )
+                        listOf(
+                            R.string.butik_punkt_1,
+                            R.string.butik_punkt_2,
+                            R.string.butik_punkt_3,
+                        ).forEach { punkt ->
+                            Text(
+                                text = "✓  " + stringResource(punkt),
+                                style = MaterialTheme.typography.titleLarge,
+                                color = Color.White.copy(alpha = 0.95f),
+                                modifier = Modifier.padding(vertical = 4.dp),
+                            )
+                        }
                     }
                 }
             }
