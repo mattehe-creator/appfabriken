@@ -42,3 +42,5 @@ gradle :styrelserummet:test --tests "*TolkaForslagGransfallOkandGruppTest"
 - Lägga till beroenden.
 - Lägga filer i repots rot.
 - Lämna testfilen tom eller utan assert mot exemplen ovan.
+
+utfall: godkänd 2026-10-21 (hela testklassen — PR #377 hade ingen testkod)
