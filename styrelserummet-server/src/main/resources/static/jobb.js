@@ -15,6 +15,7 @@ const id = jobbId();
 const statusEl = document.getElementById("status");
 const tbody = document.querySelector("#komponent-tabell tbody");
 let utkast = null;
+let visning = null;
 
 async function hamta() {
   if (!id) {
@@ -39,21 +40,33 @@ async function hamta() {
     return;
   }
   utkast = json.utkast;
+  visning = json.visning;
   statusEl.textContent = `Räkenskapsår slut ${utkast.arsslut}. UTKAST — beslutas av förening och revisor.`;
-  visaAvstamning(utkast);
+  visaSammanfattning(visning?.sammanfattning);
+  visaAvstamning(visning?.avstamning);
   visaAnmarkningar(utkast.anmarkningar);
-  visaTabell(utkast.komponenter);
+  visaTabell(visning?.komponenter || utkast.komponenter);
   document.getElementById("tabell-sektion").hidden = false;
+  document.getElementById("jamforelse-sektion").hidden = false;
   document.getElementById("csv").href = `/api/jobb/${id}.csv`;
+  document.getElementById("skrivUt").onclick = () => window.open(`/j/${id}/utskrift`, "_blank", "noopener");
 }
 
-function visaAvstamning(u) {
-  const a = u.avstamning;
-  const el = document.getElementById("avstamning-text");
-  el.textContent =
-    `Byggnadens värde: ${a.byggnadensVarde.toLocaleString("sv-SE")} kr. ` +
-    `Summa komponenter: ${a.summa.toLocaleString("sv-SE")} kr. ` +
-    (a.stammer ? "Stämmer." : `Differens: ${a.differens.toLocaleString("sv-SE")} kr.`);
+function visaSammanfattning(rader) {
+  if (!rader || !rader.length) return;
+  const ul = document.getElementById("sammanfattning");
+  ul.replaceChildren();
+  rader.forEach((t) => {
+    const li = document.createElement("li");
+    li.textContent = t;
+    ul.appendChild(li);
+  });
+  document.getElementById("sammanfattning-sektion").hidden = false;
+}
+
+function visaAvstamning(a) {
+  if (!a) return;
+  document.getElementById("avstamning-text").textContent = a.text;
   document.getElementById("avstamning").hidden = false;
 }
 
@@ -75,16 +88,40 @@ function visaTabell(komponenter) {
     const tr = document.createElement("tr");
     if (k.sakerhet === "LAG") tr.classList.add("osaker");
     if (k.sakerhet === "UPPSKATTNING") tr.classList.add("uppskattning");
+    const beloppText = k.anskaffningsvardeText || String(k.anskaffningsvarde);
+    const hjalp = k.nyttjandeperiodHjalp || "";
+    const varning = k.nyttjandeperiodVarning
+      ? '<p class="hjalp varning">Perioden ligger utanför typintervallet i standardtabellen — kontrollera mot handlingarna.</p>'
+      : "";
+    const gruppForslag = k.gruppForslag
+      ? `<button type="button" class="knapp-mini anvand-grupp" data-grupp="${esc(k.gruppForslag)}">Använd gruppförslag: ${esc(k.gruppForslag)}</button>`
+      : "";
     tr.innerHTML = `
       <td><input aria-label="Namn rad ${idx + 1}" data-f="namn" value="${esc(k.namn)}"></td>
-      <td><select data-f="grupp">${GRUPPER.map((g) => `<option ${g === k.grupp ? "selected" : ""}>${g}</option>`).join("")}</select></td>
-      <td class="tal"><input data-f="anskaffningsvarde" inputmode="numeric" value="${k.anskaffningsvarde}"></td>
+      <td>
+        <select data-f="grupp" aria-label="Grupp rad ${idx + 1}">${GRUPPER.map((g) => `<option ${g === k.grupp ? "selected" : ""}>${g}</option>`).join("")}</select>
+        ${gruppForslag}
+      </td>
+      <td class="tal">
+        <span class="belopp-visning">${esc(beloppText)}</span>
+        <input data-f="anskaffningsvarde" inputmode="numeric" value="${k.anskaffningsvarde}" aria-label="Belopp rad ${idx + 1}">
+      </td>
       <td class="tal"><input data-f="anskaffningsar" inputmode="numeric" value="${k.anskaffningsar}"></td>
-      <td class="tal"><input data-f="nyttjandeperiodAr" inputmode="numeric" value="${k.nyttjandeperiodAr}"></td>
+      <td class="tal">
+        <input data-f="nyttjandeperiodAr" inputmode="numeric" value="${k.nyttjandeperiodAr}" aria-describedby="np-h${idx}">
+        ${hjalp ? `<p class="hjalp" id="np-h${idx}">${esc(hjalp)}</p>` : ""}
+        ${varning}
+      </td>
       <td><input data-f="kalla" value="${esc(k.kalla)}"></td>
       <td>${k.sakerhet}</td>`;
     tr.dataset.index = String(idx);
     tbody.appendChild(tr);
+    const gruppKnapp = tr.querySelector(".anvand-grupp");
+    if (gruppKnapp) {
+      gruppKnapp.addEventListener("click", () => {
+        tr.querySelector('[data-f="grupp"]').value = gruppKnapp.dataset.grupp;
+      });
+    }
   });
 }
 
@@ -120,17 +157,66 @@ document.getElementById("spara").addEventListener("click", async () => {
     alert(json.fel || "Kunde inte spara.");
     return;
   }
-  utkast = json;
-  visaAvstamning(utkast);
+  utkast = json.utkast;
+  visning = json.visning;
+  visaSammanfattning(visning?.sammanfattning);
+  visaAvstamning(visning?.avstamning);
   visaAnmarkningar(utkast.anmarkningar);
-  visaTabell(utkast.komponenter);
+  visaTabell(visning?.komponenter || utkast.komponenter);
 });
 
-document.getElementById("skrivUt").addEventListener("click", () => window.print());
 document.getElementById("radera").addEventListener("click", async () => {
   if (!confirm("Radera uppladdade filer och utkastet permanent?")) return;
   await fetch(`/api/jobb/${id}`, { method: "DELETE" });
   location.href = "/";
 });
+
+document.getElementById("jamforelse-knapp").addEventListener("click", () => jamforelse(document.getElementById("foreg-csv").value));
+
+document.getElementById("foreg-fil").addEventListener("change", async (ev) => {
+  const fil = ev.target.files?.[0];
+  if (!fil) return;
+  const text = await fil.text();
+  document.getElementById("foreg-csv").value = text;
+  jamforelse(text);
+});
+
+async function jamforelse(csv) {
+  const status = document.getElementById("jamforelse-status");
+  const lista = document.getElementById("forandringar");
+  if (!csv.trim()) {
+    status.textContent = "Klistra in eller ladda upp en CSV-fil först.";
+    lista.hidden = true;
+    return;
+  }
+  status.textContent = "Jämför…";
+  const res = await fetch(`/api/jobb/${id}/jamforelse`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ csv }),
+  });
+  const json = await res.json();
+  if (!res.ok) {
+    status.textContent = json.fel || "Jämförelsen misslyckades.";
+    lista.hidden = true;
+    return;
+  }
+  const andringar = json.forandringar || [];
+  if (!andringar.length) {
+    status.textContent = "Inga förändringar mot föregående års lista.";
+    lista.hidden = true;
+    return;
+  }
+  status.textContent = `${andringar.length} förändring(ar) — utkast, kontrollera mot beslutade listor.`;
+  lista.replaceChildren();
+  andringar.forEach((f) => {
+    const li = document.createElement("li");
+    const typ =
+      f.typ === "NY" ? "Ny komponent" : f.typ === "BORTTAGEN" ? "Borttagen" : "Ändrad";
+    li.textContent = `${typ}: ${f.namn}`;
+    lista.appendChild(li);
+  });
+  lista.hidden = false;
+}
 
 hamta();

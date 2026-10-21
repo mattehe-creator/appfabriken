@@ -407,12 +407,7 @@ class ApiTest {
             val felText =
                 json.parseToJsonElement(over.bodyAsText()).jsonObject["fel"]!!.jsonPrimitive.content
             val ipGrans = IpGrans(tmp)
-            val forvantat =
-                felTillMeddelande(
-                    ServerFel.ForMangaJobb(ipGrans.nastaForsokEpochMs("10.0.0.1", System.currentTimeMillis())),
-                )
-            assertEquals(forvantat, felText)
-            assertTrue(felText.contains("Försök igen klockan"))
+            assertEquals(felText(Felkoder.FOR_MANGA_JOBB), felText)
         }
     }
 
@@ -467,7 +462,7 @@ class ApiTest {
             }
             assertEquals(HttpStatusCode.UnsupportedMediaType, res.status)
             val fel = json.parseToJsonElement(res.bodyAsText()).jsonObject["fel"]!!.jsonPrimitive.content
-            assertEquals(felTillMeddelande(ServerFel.IntePdf), fel)
+            assertEquals(felText(Felkoder.INTE_PDF), fel)
         }
     }
 
@@ -497,7 +492,7 @@ class ApiTest {
             }
             assertEquals(HttpStatusCode.PayloadTooLarge, res.status)
             val fel = json.parseToJsonElement(res.bodyAsText()).jsonObject["fel"]!!.jsonPrimitive.content
-            assertEquals(felTillMeddelande(ServerFel.ForStorFil), fel)
+            assertEquals(felText(Felkoder.FOR_STORA_FILER), fel)
         }
     }
 
@@ -560,7 +555,7 @@ class ApiTest {
             assertEquals(HttpStatusCode.OK, s.status)
             val metaObj = json.parseToJsonElement(statusBody).jsonObject["meta"]!!.jsonObject
             assertEquals("FEL", metaObj["status"]!!.jsonPrimitive.content)
-            assertEquals(felTillMeddelande(forvantatFel), metaObj["felmeddelande"]!!.jsonPrimitive.content)
+            assertEquals(felText(serverFelTillKod(forvantatFel)), metaObj["felmeddelande"]!!.jsonPrimitive.content)
 
             assertFalse(statusBody.contains("Exception"))
             assertFalse(statusBody.contains("at se.tmconnect"))

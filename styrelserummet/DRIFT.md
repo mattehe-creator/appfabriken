@@ -49,6 +49,10 @@ docker run --rm -p 8080:8080 \
 6. Prova flödet: ladda upp två PDF:er med markerbar text, spara länken, granska utkast, ladda ned CSV, radera jobbet.
 7. Betalning och pris på landningssidan kommer i eget uppdrag när betalkonto finns.
 
+## Vad som visas i utkastet
+
+Jobbsidan visar sammanfattning, formaterade belopp, förslag på nyttjandeperiod och gruppförslag (allt märkt som utkast), valfri jämförelse mot föregående års CSV (skickas bara för visning — **sparas inte**), utskrift/PDF och CSV-export. Uppladdade PDF:er och utkast lagras som tidigare i `STYRELSERUMMET_DATA`; jämförelse-CSV och klistrad text lagras inte.
+
 ## Gränser
 
 - 10 filer och 25 MB per jobb.

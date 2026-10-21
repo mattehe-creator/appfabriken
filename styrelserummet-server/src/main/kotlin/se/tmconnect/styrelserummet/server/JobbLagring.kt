@@ -95,7 +95,21 @@ class JobbLagring(private val rot: Path) {
 }
 
 @Serializable
+data class JobbResponse(
+    val meta: JobbMeta,
+    val utkast: UtkastDto? = null,
+    val visning: UtkastVisningDto? = null,
+)
+
+@Serializable
 data class RaderRequest(val komponenter: List<KomponentDto>)
 
 @Serializable
-data class JobbResponse(val meta: JobbMeta, val utkast: UtkastDto? = null)
+data class JamforelseRequest(val csv: String)
+
+fun jobbResponse(meta: JobbMeta, utkast: UtkastDto?): JobbResponse =
+    JobbResponse(
+        meta = meta,
+        utkast = utkast,
+        visning = utkast?.let(::tillVisning),
+    )

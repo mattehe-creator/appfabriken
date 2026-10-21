@@ -71,16 +71,16 @@ fun Application.module(miljo: ServerMiljo) {
     }
     install(StatusPages) {
         exception<FelBegaran> { call, cause ->
-            call.respond(HttpStatusCode.BadRequest, mapOf("fel" to cause.meddelande))
+            call.respond(HttpStatusCode.BadRequest, mapOf("fel" to felText(cause.kod)))
         }
         exception<ServerFelBegaran> { call, cause ->
             call.respond(
                 HttpStatusCode.fromValue(felTillHttpStatus(cause.fel)),
-                mapOf("fel" to felTillMeddelande(cause.fel)),
+                mapOf("fel" to felText(serverFelTillKod(cause.fel))),
             )
         }
         exception<Throwable> { call, _ ->
-            call.respond(HttpStatusCode.InternalServerError, mapOf("fel" to "Något gick fel. Försök igen."))
+            call.respond(HttpStatusCode.InternalServerError, mapOf("fel" to felText(Felkoder.INTERNT_FEL)))
         }
     }
 
@@ -104,6 +104,24 @@ fun Application.module(miljo: ServerMiljo) {
             )
         }
 
+        get("/j/{id}/utskrift") {
+            val id = call.parameters["id"] ?: throw FelBegaran(Felkoder.SAKNAR_JOBB_ID)
+            if (!arGiltigtJobbId(id)) throw FelBegaran(Felkoder.OGILIG_LANK)
+            val meta = lagring.lasMeta(id)
+                ?: return@get call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.JOBB_SAKNAS)))
+            val utkast = lagring.lasUtkast(id)
+                ?: return@get call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.SAKNAR_UTKAST)))
+            if (meta.status != JobbStatus.KLAR.name) {
+                throw FelBegaran(Felkoder.JOBB_EJ_KLART)
+            }
+            lagring.uppdateraAktivitet(id)
+            val visning = tillVisning(utkast)
+            call.respondText(
+                utskriftHtml(meta.forening, utkast.arsslut, visning.utskrift),
+                ContentType.Text.Html,
+            )
+        }
+
         get("/integritet") {
             call.respondText(
                 javaClass.classLoader.getResource("static/integritet.html")!!.readText(),
@@ -119,7 +137,7 @@ fun Application.module(miljo: ServerMiljo) {
                     val fel = ServerFel.ForMangaJobb(ipGrans.nastaForsokEpochMs(ip, nuMs))
                     call.respond(
                         HttpStatusCode.fromValue(felTillHttpStatus(fel)),
-                        mapOf("fel" to felTillMeddelande(fel)),
+                        mapOf("fel" to felText(serverFelTillKod(fel))),
                     )
                     return@post
                 }
@@ -149,7 +167,7 @@ fun Application.module(miljo: ServerMiljo) {
                         is PartData.FileItem -> {
                             if (filAntal >= MAX_FILER) {
                                 part.dispose()
-                                throw FelBegaran("Högst $MAX_FILER filer per jobb.")
+                                throw FelBegaran(Felkoder.FOR_MANGA_FILER)
                             }
                             val bytes = part.streamProvider().use { it.readBytes() }
                             totalBytes += bytes.size
@@ -172,18 +190,18 @@ fun Application.module(miljo: ServerMiljo) {
                     part.dispose()
                 }
 
-                valideraForeningsnamn(forening)?.let { fel ->
+                foreningFelKod(forening)?.let { kod ->
                     lagring.raderaJobb(id)
-                    throw FelBegaran(fel)
+                    throw FelBegaran(kod)
                 }
                 val ar = valideraArsslut(arsslutText, Year.now().value)
                     ?: run {
                         lagring.raderaJobb(id)
-                        throw FelBegaran("Ange räkenskapsårets slut (år).")
+                        throw FelBegaran(Felkoder.ARSSLUT_SAKNAS)
                     }
                 if (filAntal == 0) {
                     lagring.raderaJobb(id)
-                    throw FelBegaran("Ladda upp minst en PDF.")
+                    throw FelBegaran(Felkoder.INGA_PDF)
                 }
 
                 lagring.skrivMeta(
@@ -202,10 +220,10 @@ fun Application.module(miljo: ServerMiljo) {
             }
 
             get("/{id}.csv") {
-                val id = call.parameters["id"] ?: throw FelBegaran("Saknar jobb-id.")
-                if (!arGiltigtJobbId(id)) throw FelBegaran("Ogiltig länk.")
+                val id = call.parameters["id"] ?: throw FelBegaran(Felkoder.SAKNAR_JOBB_ID)
+                if (!arGiltigtJobbId(id)) throw FelBegaran(Felkoder.OGILIG_LANK)
                 val utkast = lagring.lasUtkast(id)
-                    ?: return@get call.respond(HttpStatusCode.NotFound, mapOf("fel" to "Jobbet finns inte."))
+                    ?: return@get call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.JOBB_SAKNAS)))
                 lagring.uppdateraAktivitet(id)
                 val csv = tillCsv(utkast.komponenter, utkast.arsslut)
                 call.response.header(HttpHeaders.ContentDisposition, "attachment; filename=\"komponentlista.csv\"")
@@ -213,32 +231,48 @@ fun Application.module(miljo: ServerMiljo) {
             }
 
             get("/{id}") {
-                val id = call.parameters["id"] ?: throw FelBegaran("Saknar jobb-id.")
-                if (!arGiltigtJobbId(id)) throw FelBegaran("Ogiltig länk.")
-                val meta = lagring.lasMeta(id) ?: return@get call.respond(HttpStatusCode.NotFound, mapOf("fel" to "Jobbet finns inte."))
+                val id = call.parameters["id"] ?: throw FelBegaran(Felkoder.SAKNAR_JOBB_ID)
+                if (!arGiltigtJobbId(id)) throw FelBegaran(Felkoder.OGILIG_LANK)
+                val meta = lagring.lasMeta(id)
+                    ?: return@get call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.JOBB_SAKNAS)))
                 lagring.uppdateraAktivitet(id)
                 val utkast = lagring.lasUtkast(id)
-                call.respond(JobbResponse(meta, utkast))
+                call.respond(jobbResponse(meta, utkast))
             }
 
             put("/{id}/rader") {
-                val id = call.parameters["id"] ?: throw FelBegaran("Saknar jobb-id.")
-                if (!arGiltigtJobbId(id)) throw FelBegaran("Ogiltig länk.")
-                val meta = lagring.lasMeta(id) ?: return@put call.respond(HttpStatusCode.NotFound, mapOf("fel" to "Jobbet finns inte."))
+                val id = call.parameters["id"] ?: throw FelBegaran(Felkoder.SAKNAR_JOBB_ID)
+                if (!arGiltigtJobbId(id)) throw FelBegaran(Felkoder.OGILIG_LANK)
+                val meta = lagring.lasMeta(id)
+                    ?: return@put call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.JOBB_SAKNAS)))
                 if (meta.status != JobbStatus.KLAR.name) {
-                    throw FelBegaran("Jobbet är inte klart än.")
+                    throw FelBegaran(Felkoder.JOBB_EJ_KLART)
                 }
                 val body = call.receive<RaderRequest>()
-                val gammalt = lagring.lasUtkast(id) ?: throw FelBegaran("Saknar utkast.")
+                val gammalt = lagring.lasUtkast(id) ?: throw FelBegaran(Felkoder.SAKNAR_UTKAST)
                 val nytt = uppdateraKomponenter(body.komponenter, gammalt)
                 lagring.sparaUtkast(id, nytt)
                 lagring.uppdateraAktivitet(id)
-                call.respond(nytt)
+                call.respond(jobbResponse(meta, nytt))
+            }
+
+            post("/{id}/jamforelse") {
+                val id = call.parameters["id"] ?: throw FelBegaran(Felkoder.SAKNAR_JOBB_ID)
+                if (!arGiltigtJobbId(id)) throw FelBegaran(Felkoder.OGILIG_LANK)
+                val meta = lagring.lasMeta(id)
+                    ?: return@post call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.JOBB_SAKNAS)))
+                if (meta.status != JobbStatus.KLAR.name) {
+                    throw FelBegaran(Felkoder.JOBB_EJ_KLART)
+                }
+                val utkast = lagring.lasUtkast(id) ?: throw FelBegaran(Felkoder.SAKNAR_UTKAST)
+                val body = call.receive<JamforelseRequest>()
+                lagring.uppdateraAktivitet(id)
+                call.respond(jamforelseMotCsv(utkast, body.csv))
             }
 
             delete("/{id}") {
-                val id = call.parameters["id"] ?: throw FelBegaran("Saknar jobb-id.")
-                if (!arGiltigtJobbId(id)) throw FelBegaran("Ogiltig länk.")
+                val id = call.parameters["id"] ?: throw FelBegaran(Felkoder.SAKNAR_JOBB_ID)
+                if (!arGiltigtJobbId(id)) throw FelBegaran(Felkoder.OGILIG_LANK)
                 lagring.raderaJobb(id)
                 call.respond(HttpStatusCode.NoContent)
             }
@@ -246,7 +280,7 @@ fun Application.module(miljo: ServerMiljo) {
     }
 }
 
-class FelBegaran(val meddelande: String) : Exception(meddelande)
+class FelBegaran(val kod: String) : Exception(felText(kod))
 
 private class ServerFelBegaran(val fel: ServerFel) : Exception()
 
