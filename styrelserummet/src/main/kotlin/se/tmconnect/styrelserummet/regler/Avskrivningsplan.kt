@@ -23,3 +23,23 @@ fun planForKomponent(k: Komponent, franAr: Int, antalAr: Int): List<PlanAr> {
     
     return plan
 }
+
+fun avskrivningsplan(komponenter: List<Komponent>, franAr: Int, antalAr: Int): List<PlanAr> {
+    if (antalAr <= 0) {
+        return emptyList()
+    }
+    
+    if (antalAr > 100) {
+        throw IllegalArgumentException("Antal år får inte vara större än 100")
+    }
+    
+    val plan = mutableListOf<PlanAr>()
+    
+    for (ar in franAr until franAr + antalAr) {
+        val totalAvskrivning = komponenter.sumOf { avskrivningFor(it, ar) }
+        val totalBokfortVarde = komponenter.sumOf { bokfortVarde(it, ar) }
+        plan.add(PlanAr(ar, totalAvskrivning, totalBokfortVarde))
+    }
+    
+    return plan
+}
