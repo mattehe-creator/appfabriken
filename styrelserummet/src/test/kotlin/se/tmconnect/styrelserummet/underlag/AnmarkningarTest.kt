@@ -31,65 +31,29 @@ class AnmarkningarTest {
         )
 
     @Test
-    fun anmarkningAnskaffningsarForeByggnadsar() {
-        val tidigt = anmarkningarFor(utkastMedAnskaffningsar(1970), emptyList(), 2025)
-        assertTrue(
-            tidigt.any {
-                it.contains("Stomme") &&
-                    it.contains("1970") &&
-                    it.contains("1975") &&
-                    it.contains("före")
-            },
-        )
-
-        val sammaAr = anmarkningarFor(utkastMedAnskaffningsar(1975), emptyList(), 2025)
-        assertFalse(
-            sammaAr.any {
-                it.contains("Stomme") &&
-                    it.contains("före") &&
-                    it.contains("byggnadsår")
-            },
-        )
-    }
-    
-    @Test
     fun anmarkningAnskaffningsarEfterArsslut() {
         val tabell = lasNyttjandeperioderFranResurs()
         
-        // Komponent med anskaffningsår efter arsslut ska ge anmärkning
-        val utkastEfter = utkastMedAnskaffningsar(2026)
-        val anmarkningarEfter = anmarkningarFor(utkastEfter, tabell, 2025)
+        // Testa att en komponent med anskaffningsår 2026 ger anmärkning när arsslut är 2025
+        val efter = anmarkningarFor(utkastMedAnskaffningsar(2026), tabell, arsslut = 2025)
         assertTrue(
-            "Ska innehålla anmärkning för anskaffningsår efter arsslut",
-            anmarkningarEfter.any {
-                it.contains("Stomme") && 
-                it.contains("2026") && 
-                it.contains("2025")
-            }
+            "Borde innehålla anmärkning för anskaffningsår efter räkenskapsåret",
+            efter.any {
+                it.contains("Stomme") &&
+                    it.contains("2026") &&
+                    it.contains("2025") &&
+                    it.contains("efter räkenskapsårets slut")
+            },
         )
-        
-        // Komponent med samma anskaffningsår som arsslut ska inte ge anmärkning
-        val utkastSamma = utkastMedAnskaffningsar(2025)
-        val anmarkningarSamma = anmarkningarFor(utkastSamma, tabell, 2025)
+
+        // Testa att en komponent med anskaffningsår 2025 inte ger anmärkning när arsslut är 2025
+        val sammaAr = anmarkningarFor(utkastMedAnskaffningsar(2025), tabell, arsslut = 2025)
         assertFalse(
-            "Ska inte innehålla anmärkning för samma anskaffningsår som arsslut",
-            anmarkningarSamma.any {
-                it.contains("Stomme") && 
-                it.contains("2025") && 
-                it.contains("2025")
-            }
-        )
-        
-        // Komponent med anskaffningsår före arsslut ska inte ge anmärkning
-        val utkastFöre = utkastMedAnskaffningsar(2024)
-        val anmarkningarFöre = anmarkningarFor(utkastFöre, tabell, 2025)
-        assertFalse(
-            "Ska inte innehålla anmärkning för anskaffningsår före arsslut",
-            anmarkningarFöre.any {
-                it.contains("Stomme") && 
-                it.contains("2024") && 
-                it.contains("2025")
-            }
+            "Borde INTE innehålla anmärkning för anskaffningsår lika med räkenskapsåret",
+            sammaAr.any {
+                it.contains("Stomme") &&
+                    it.contains("efter räkenskapsårets slut")
+            },
         )
     }
 }

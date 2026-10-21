@@ -38,8 +38,8 @@ fun anmarkningarFor(utkast: Utkast, tabell: List<NyttjandeperiodRad>, arsslut: I
                 anmarkningar += "Komponenten \"${komponent.namn}\" har anskaffningsår ${komponent.anskaffningsar} som ligger före föreningens byggnadsår ${byggnadsar}."
             }
         }
-        if (komponent.anskaffningsar > arsslut) {
-            anmarkningar += "Komponenten \"${komponent.namn}\" har anskaffningsår ${komponent.anskaffningsar} som ligger efter räkenskapsårets slut ($arsslut)."
+        if (komponent.anskaffningsar != null && komponent.anskaffningsar > arsslut) {
+            anmarkningar += "Komponenten \"${komponent.namn}\" har anskaffningsår ${komponent.anskaffningsar} som ligger efter räkenskapsårets slut (${arsslut})."
         }
     }
     return anmarkningar.distinct()
