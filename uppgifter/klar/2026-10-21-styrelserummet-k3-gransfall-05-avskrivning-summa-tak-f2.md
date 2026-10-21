@@ -43,3 +43,5 @@ gradle :styrelserummet:test --tests "*AvskrivningGransfallSummatakTest"
 - Ändra andra testfiler (`AvskrivningTest.kt` m.fl.).
 - Lägga till beroenden.
 - Lägga filer i repots rot.
+
+utfall: godkänd 2026-10-21 (hela testklassen — den lokala modellen levererade endast flytt till pagar/)
