@@ -50,3 +50,5 @@ Använd `assertEquals` om du låser exakta strängar, eller `assertTrue(meddelan
 - Ändra andra filer (inklusive `uppgifter/ny/.gitkeep`).
 - Lägga till beroenden.
 - Implementera HTTP-status eller koppling till API ännu.
+
+utfall: godkänd 2026-10-21 (hela uppgiftslösningen — lokal modell levererade ingen kod på försök 2)
