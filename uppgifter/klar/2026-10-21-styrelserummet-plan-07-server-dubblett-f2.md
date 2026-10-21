@@ -46,3 +46,5 @@ gradle :styrelserummet-server:test
 - Ändra kolumner eller rubriker.
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (import UTKAST_RAD, oanvänd import bort, test assert UTKAST_RAD)
