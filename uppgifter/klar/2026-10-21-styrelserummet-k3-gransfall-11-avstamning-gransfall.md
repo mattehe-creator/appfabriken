@@ -31,3 +31,5 @@ gradle :styrelserummet:test --tests "*AvstamningGransfallTest"
 ## Gör inte
 - Ändra `ReglerTest.kt` eller modeller.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #362). Ersatt av 2026-10-21-styrelserummet-k3-gransfall-11-avstamning-gransfall-f2.md
