@@ -152,4 +152,45 @@ class JobbLagringTest {
         assertEquals(jobId, meta!!.id)
         assertEquals("Testförening", meta.forening)
     }
+
+    @Test
+    fun saknadJobbKatalogGerNullInteUndantag() {
+        val jobId = "test5"
+        val lagring = JobbLagring(tempDir)
+        
+        // Skapa ett jobb för att få en giltig katalog
+        lagring.skapa(
+            JobbMeta(
+                id = jobId,
+                forening = "Testförening",
+                arsslut = 2023,
+                status = JobbStatus.VANTAR.name,
+                skapadMs = System.currentTimeMillis(),
+                senastAktivMs = System.currentTimeMillis(),
+                klientIpHash = "test",
+            ),
+        )
+        
+        // Radera jobbkatalogen manuellt från filsystemet (inte via raderaJobb)
+        val katalog = lagring.jobbKatalog(jobId)
+        assertTrue(katalog.exists())
+        Files.walk(katalog)
+            .sorted(Comparator.reverseOrder())
+            .forEach { it.toFile().delete() }
+        
+        // Kontrollera att metoder inte kraschar utan returnerar null/tom lista
+        assertNull(lagring.lasMeta(jobId))
+        
+        val utkast = UtkastDto(
+            komponenter = emptyList(),
+            sakerhet = 0.0,
+            avstamning = 0.0,
+            anmärkningar = emptyList()
+        )
+        
+        lagring.sparaUtkast(jobId, utkast)
+        assertNull(lagring.lasUtkast(jobId))
+        
+        assertTrue(lagring.listaFiler(jobId).isEmpty())
+    }
 }

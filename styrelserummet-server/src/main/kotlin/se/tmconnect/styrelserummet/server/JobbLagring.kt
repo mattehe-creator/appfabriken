@@ -50,7 +50,9 @@ class JobbLagring(
     }
 
     fun lasMeta(id: String): JobbMeta? {
-        val fil = jobbKatalog(id) / "meta.json"
+        val dir = jobbKatalog(id)
+        if (!dir.exists()) return null
+        val fil = dir / "meta.json"
         if (!fil.exists()) return null
         return try {
             json.decodeFromString<JobbMeta>(fil.readText())
@@ -68,22 +70,33 @@ class JobbLagring(
     }
 
     fun sparaUtkast(id: String, utkast: UtkastDto) {
-        (jobbKatalog(id) / "utkast.json").writeText(json.encodeToString(utkast))
+        val dir = jobbKatalog(id)
+        if (!dir.exists()) return
+        (dir / "utkast.json").writeText(json.encodeToString(utkast))
     }
 
     fun lasUtkast(id: String): UtkastDto? {
-        val fil = jobbKatalog(id) / "utkast.json"
+        val dir = jobbKatalog(id)
+        if (!dir.exists()) return null
+        val fil = dir / "utkast.json"
         if (!fil.exists()) return null
         return json.decodeFromString<UtkastDto>(fil.readText())
     }
 
     fun sparaFil(id: String, filnamn: String, bytes: ByteArray) {
         val saker = filnamn.replace(Regex("""[^a-zA-Z0-9._-]"""), "_")
-        Files.write(jobbKatalog(id) / "filer" / saker, bytes)
+        val dir = jobbKatalog(id)
+        if (!dir.exists()) return
+        Files.write(dir / "filer" / saker, bytes)
     }
 
-    fun listaFiler(id: String): List<Path> =
-        (jobbKatalog(id) / "filer").takeIf { it.exists() }?.listDirectoryEntries().orEmpty()
+    fun listaFiler(id: String): List<Path> {
+        val dir = jobbKatalog(id)
+        if (!dir.exists()) return emptyList()
+        val filerDir = dir / "filer"
+        if (!filerDir.exists()) return emptyList()
+        return filerDir.listDirectoryEntries().toList()
+    }
 
     fun raderaJobb(id: String) {
         val dir = jobbKatalog(id)
