@@ -47,3 +47,5 @@ gradle :styrelserummet:test --tests "*BokfortVardeGransfallArsskifteTest"
 - Lägga till beroenden.
 - Lägga filer i repots rot.
 - Ändra både `BokfortVarde.kt` och `Avskrivning.kt` i samma PR.
+
+utfall: godkänd 2026-10-21 (Cursor skrev hela testklassen; filen var tom)
