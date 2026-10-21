@@ -3,7 +3,6 @@ package se.tmconnect.styrelserummet.underlag
 import org.junit.Test
 import se.tmconnect.styrelserummet.modell.Forening
 import se.tmconnect.styrelserummet.tolking.Tolkare
-import se.tmconnect.styrelserummet.tolking.TolkareResultat
 import java.io.ByteArrayOutputStream
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
@@ -11,6 +10,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream
 import org.apache.pdfbox.pdmodel.font.PDType1Font
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class SyntetiskPlanTvaSidorTest {
     
@@ -27,7 +27,7 @@ class SyntetiskPlanTvaSidorTest {
                 underhallsplanUtdrag: String,
                 sidor: List<Int>,
                 filnamn: String
-            ): Result<TolkareResultat> {
+            ): Result<String> {
                 anropadeSidorna.addAll(sidor)
                 
                 // Returnera JSON baserat på vilken sida som anropas
@@ -104,7 +104,7 @@ class SyntetiskPlanTvaSidorTest {
                     }
                 }
                 
-                return Result.success(TolkareResultat(json))
+                return Result.success(json)
             }
             
             fun getAnropadeSidorna(): List<Int> = anropadeSidorna.toList()
@@ -120,7 +120,7 @@ class SyntetiskPlanTvaSidorTest {
         // Anropa byggUtkast
         val forening = Forening(
             namn = "Testförening",
-            orgnummer = "1234567890",
+            orgNr = "1234567890",
             byggnadsar = 2023
         )
         
