@@ -33,3 +33,5 @@ gradle :styrelserummet-server:test --tests "*ApiTest*"
 ## Gör inte
 - Ändra andra filer (utom om IpGrans **måste** få en rad — i så fall avbryt och låt Cursor ta båda filerna).
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #400). Ersatt av 2026-10-21-styrelserummet-felhantering-09-koppla-uppladdning-f2.md
