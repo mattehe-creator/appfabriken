@@ -26,4 +26,38 @@ class MiljoTest {
         val rader = kontrolleraMiljo(mapOf("STYRELSERUMMET_DATA" to "/data")) { true }
         assertEquals(emptyList<String>(), rader)
     }
+    
+    @Test
+    fun saknadApiNyckelGerFel() {
+        val rader = kontrolleraMiljo(mapOf("ANTHROPIC_API_KEY" to null))
+        assertEquals(1, rader.size)
+        assertTrue(rader.single().startsWith("Fel:"))
+        assertTrue(rader.single().contains("ANTHROPIC_API_KEY"))
+        assertFalse(rader.single().contains("sk-ant-"))
+    }
+    
+    @Test
+    fun tomApiNyckelGerFel() {
+        val rader = kontrolleraMiljo(mapOf("ANTHROPIC_API_KEY" to ""))
+        assertEquals(1, rader.size)
+        assertTrue(rader.single().startsWith("Fel:"))
+        assertTrue(rader.single().contains("ANTHROPIC_API_KEY"))
+        assertFalse(rader.single().contains("sk-ant-"))
+    }
+    
+    @Test
+    fun felFormatApiNyckelGerFel() {
+        val rader = kontrolleraMiljo(mapOf("ANTHROPIC_API_KEY" to "fel-prefix-123"))
+        assertEquals(1, rader.size)
+        assertTrue(rader.single().startsWith("Fel:"))
+        assertTrue(rader.single().contains("ANTHROPIC_API_KEY"))
+        assertFalse(rader.single().contains("fel-prefix-123"))
+        assertFalse(rader.single().contains("sk-ant-"))
+    }
+    
+    @Test
+    fun giltigApiNyckelGerIngaFel() {
+        val rader = kontrolleraMiljo(mapOf("ANTHROPIC_API_KEY" to "sk-ant-test")) { true }
+        assertEquals(emptyList<String>(), rader)
+    }
 }

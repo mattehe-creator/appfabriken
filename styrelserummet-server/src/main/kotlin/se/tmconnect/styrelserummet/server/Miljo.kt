@@ -15,5 +15,18 @@ fun kontrolleraMiljo(
             "Fel: Datakatalogen $dataSokvag går inte att skriva till.",
         )
     }
+    
+    val apiNyckel = env["ANTHROPIC_API_KEY"]
+    if (apiNyckel.isNullOrEmpty()) {
+        return listOf(
+            "Fel: Miljövariabeln ANTHROPIC_API_KEY måste anges.",
+        )
+    }
+    if (!apiNyckel.startsWith("sk-ant-")) {
+        return listOf(
+            "Fel: ANTHROPIC_API_KEY har fel format, börja med \"sk-ant-\".",
+        )
+    }
+    
     return emptyList()
 }
