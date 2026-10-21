@@ -39,3 +39,5 @@ gradle :styrelserummet:test --tests "*SyntetiskPlanTusentalsTest"
 - Ändra `nyttjandeperioder.csv`.
 - Lägga till beroenden.
 - Ändra produktionskod.
+
+utfall: godkänd 2026-10-21 (tog bort duplicerad testfil i repots rot; stavfel anskaffningsvarde)
