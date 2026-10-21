@@ -64,7 +64,7 @@ class CsvExportGransfallTest {
         
         // Kontrollera att CSV börjar med exakt samma rubrikrad som i CsvExportTest.tomListaHarRubrikOchUtkastRad
         val forvantadRubrik = "namn;grupp;anskaffningsvärde;anskaffningsår;nyttjandeperiod;restvärde;avskrivning året;bokfört värde;källa;säkerhet\n"
-        Assert.assertTrue("CSV börjar inte med förväntad rubrik. Fick: ${csv.take(100)}", csv.startsWith(forvantadRubrik))
+        Assert.assertTrue(csv.startsWith(forvantadRubrik))
         
         // Kontrollera att det endast finns två rader (rubrik + utkast-rad)
         val rader = csv.split("\n")
