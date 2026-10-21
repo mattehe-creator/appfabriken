@@ -42,3 +42,5 @@ gradle :styrelserummet:test --tests "*FondplanTest"
 ## Gör inte
 - Ändra andra filer eller tidigare funktioner.
 - Använda flyttal.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #464). Ersatt av 2026-10-21-styrelserummet-fond-03-utveckling-f2.md

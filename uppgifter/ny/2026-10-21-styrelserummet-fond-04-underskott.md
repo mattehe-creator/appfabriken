@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/claude/2026-10-21-styrelserummet-fondplan.md
 försök: 1
-beror-på: 2026-10-21-styrelserummet-fond-03-utveckling.md
+beror-på: 2026-10-21-styrelserummet-fond-03-utveckling-f2.md
 
 ## Ändra bara dessa filer
 - styrelserummet/src/main/kotlin/se/tmconnect/styrelserummet/regler/Fondplan.kt
