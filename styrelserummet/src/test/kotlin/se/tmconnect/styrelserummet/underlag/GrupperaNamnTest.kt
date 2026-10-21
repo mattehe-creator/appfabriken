@@ -40,4 +40,12 @@ class GrupperaNamnTest {
         assertEquals(Komponentgrupp.MARK_OCH_GARAGE, gissaGrupp("Asfalterad gård"))
         assertEquals(Komponentgrupp.MARK_OCH_GARAGE, gissaGrupp("Garageport"))
     }
+
+    @Test
+    fun gissaGruppNullfall() {
+        assertEquals(null, gissaGrupp(""))
+        assertEquals(null, gissaGrupp("Stomme i betong"))
+        assertEquals(null, gissaGrupp("Elisabeths trädgård"))
+        assertEquals(null, gissaGrupp("Balkong"))
+    }
 }
