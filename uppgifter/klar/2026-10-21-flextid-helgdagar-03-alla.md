@@ -53,3 +53,5 @@ gradle :flextid:testDebugUnitTest --tests "*HelgdagarTest"
 - Ändra andra filer.
 - Ta med aftnar (julafton med flera); de kommer i nästa uppgift.
 - Lägga till beroenden.
+
+utfall: utförd av Claude (gren claude/flextid-helgdagar-gahem), 2026-10-21

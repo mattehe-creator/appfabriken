@@ -39,3 +39,5 @@ gradle :flextid:testDebugUnitTest --tests "*ManadsRapport*"
 - Ändra andra filer.
 - Ändra hur utfall och saldo räknas.
 - Lägga till beroenden.
+
+utfall: utförd av Claude (gren claude/flextid-helgdagar-gahem), 2026-10-21

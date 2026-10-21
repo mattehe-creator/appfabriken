@@ -45,3 +45,5 @@ gradle :flextid:testDebugUnitTest --tests "*SemesterTest"
 - Ändra andra filer.
 - Ändra `semesterArFor`.
 - Lägga till beroenden.
+
+utfall: utförd av Claude (gren claude/flextid-helgdagar-gahem), 2026-10-21

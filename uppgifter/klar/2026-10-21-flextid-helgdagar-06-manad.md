@@ -55,3 +55,5 @@ gradle :flextid:testDebugUnitTest --tests "*ManadsNormaltidTest"
 - Ändra andra filer.
 - Ändra `Arbetsdagar.kt` eller `Helgdagar.kt`.
 - Lägga till beroenden.
+
+utfall: utförd av Claude (gren claude/flextid-helgdagar-gahem), 2026-10-21
