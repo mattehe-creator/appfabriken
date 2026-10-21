@@ -29,3 +29,5 @@ gradle :styrelserummet-server:test --tests "*MiljoTest"
 - Ändra andra filer.
 - Logga eller returnera nyckelvärden.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (MiljoTest: datakatalog + nyckel i env, test för att nyckelvärde inte läcker)
