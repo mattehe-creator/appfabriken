@@ -85,6 +85,7 @@ class JobbLagring(
 
     fun sparaFil(id: String, filnamn: String, bytes: ByteArray) {
         val saker = filnamn.replace(Regex("""[^a-zA-Z0-9._-]"""), "_")
+            .take(200) // Trunkera till max 200 tecken efter sanering
         val dir = jobbKatalog(id)
         if (!dir.exists()) return
         Files.write(dir / "filer" / saker, bytes)
