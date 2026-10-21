@@ -49,3 +49,5 @@ Skapa `FalskTolkareTest` med JUnit 4 (`org.junit.Test`, `org.junit.Assert` — *
 - Ändra produktionskod.
 - Ändra `ApiTest.kt` eller andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (hela implementationen — lokal modell levererade ingen kod på försök 2)
