@@ -44,3 +44,5 @@ gradle :styrelserummet:test --tests "*FondplanTest"
 ## Gör inte
 - Ändra andra filer eller tidigare funktioner.
 - Använda flyttal.
+
+utfall: godkänd 2026-10-21 (Cursor implementerade fondUtveckling och tester — lokal modell levererade ingen kod)

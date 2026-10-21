@@ -79,4 +79,38 @@ class FondplanTest {
         // franAr 2026, antalAr 5, fond 2 000 000 → 0
         assertEquals(0L, jamnAvsattning(atgarder, 2026, 5, 2_000_000L))
     }
+
+    private fun exempelAtgarder() = listOf(
+        PlaneradAtgard(2026, 100_000L, "Takvård"),
+        PlaneradAtgard(2028, 600_000L, "Fönster"),
+        PlaneradAtgard(2028, 300_000L, "Balkonger"),
+        PlaneradAtgard(2030, 200_000L, "Ventilation"),
+        PlaneradAtgard(2040, 1_000_000L, "Stammar"),
+    )
+
+    @Test
+    fun `test fondUtveckling`() {
+        val atgarder = exempelAtgarder()
+        val resultat = fondUtveckling(atgarder, 2026, 5, 180_000L, 300_000L)
+        assertEquals(
+            listOf(
+                FondAr(2026, 180_000L, 100_000L, 380_000L),
+                FondAr(2027, 180_000L, 0L, 560_000L),
+                FondAr(2028, 180_000L, 900_000L, -160_000L),
+                FondAr(2029, 180_000L, 0L, 20_000L),
+                FondAr(2030, 180_000L, 200_000L, 0L),
+            ),
+            resultat,
+        )
+    }
+
+    @Test
+    fun `test fondUtveckling negativ avsattning`() {
+        try {
+            fondUtveckling(exempelAtgarder(), 2026, 5, -1L, 300_000L)
+            assert(false) { "Expected IllegalArgumentException" }
+        } catch (e: IllegalArgumentException) {
+            // Expected
+        }
+    }
 }
