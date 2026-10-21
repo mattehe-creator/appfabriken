@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-21-styrelserummet-felhantering.md
 försök: 1
-beror-på: 2026-10-21-styrelserummet-felhantering-11-koppla-loggning.md
+beror-på: 2026-10-21-styrelserummet-felhantering-11-koppla-loggning-f2.md
 
 ## Ändra bara dessa filer
 - styrelserummet-server/src/test/kotlin/se/tmconnect/styrelserummet/server/ApiTest.kt

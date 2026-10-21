@@ -23,3 +23,5 @@ gradle :styrelserummet-server:test --tests "*JobbKoTest"
 ## Gör inte
 - Ändra andra filer.
 - Logga användarmeddelandet eller stacktrace.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #405). Ersatt av 2026-10-21-styrelserummet-felhantering-11-koppla-loggning-f2.md
