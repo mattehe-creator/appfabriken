@@ -36,3 +36,5 @@ gradle :styrelserummet-server:test --tests "*DataminimeringTest.efterRadera*"
 - Skapa filer i repots rot.
 - Lägga till beroenden.
 - Använda `kotlin.test` — använd `org.junit`.
+
+utfall: godkänd 2026-10-21 (inget)
