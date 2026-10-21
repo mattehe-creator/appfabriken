@@ -27,3 +27,5 @@ gradle :styrelserummet-server:test --tests "*FelHanteringTest"
 ## Gör inte
 - Ändra andra filer.
 - Koppla in faktisk loggning i `JobbKo` (kommer i senare uppgift).
+
+utfall: underkänd 2026-10-21 av Cursor (PR #344). Ersatt av 2026-10-21-styrelserummet-felhantering-06-logg-rad-f2.md
