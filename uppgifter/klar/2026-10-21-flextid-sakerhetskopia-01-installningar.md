@@ -32,3 +32,5 @@ gradle :flextid:testDebugUnitTest --tests "*Sakerhetskopia*"
 - Ändra versionsnumret `FLEXTID_SAKERHETSKOPIA_VERSION` (fälten är valfria och bakåtkompatibla).
 - Ändra andra filer (Claude kopplar in export och import).
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (flytt från rot till flextid/, aftnarLediga-standard och JSON-bool)
