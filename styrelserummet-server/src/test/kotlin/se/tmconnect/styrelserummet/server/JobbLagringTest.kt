@@ -13,7 +13,6 @@ import java.nio.file.Path
 import kotlin.io.path.createTempDirectory
 import kotlin.io.path.div
 import kotlin.io.path.exists
-import kotlin.io.path.readBytes
 import kotlin.io.path.writeText
 
 class JobbLagringTest {
@@ -232,9 +231,11 @@ class JobbLagringTest {
         val savedFile = savedFiles[0]
         val fileName = savedFile.name
         
-        // Kontrollera att filnamnet bara innehåller tillåtna tecken
+        // Kontrollera att filnamnet bara innehåller tillåtna tecken och trunkeras till högst 200
         assertTrue("Filnamn innehåller ogiltiga tecken: $fileName", 
             fileName.matches(Regex("^[a-zA-Z0-9._-]+$")))
+        assertTrue("Filnamn ska vara högst 200 tecken efter sanering", fileName.length <= 200)
+        assertEquals(200, fileName.length)
         
         // Kontrollera att innehållet är oförändrat
         val readBytes = savedFile.readBytes()
