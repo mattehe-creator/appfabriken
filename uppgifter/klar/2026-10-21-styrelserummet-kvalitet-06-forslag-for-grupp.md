@@ -34,3 +34,5 @@ gradle :styrelserummet:test --tests "*NyttjandeperiodForslagTest.forslagForGrupp
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra `nyttjandeperioder.csv` eller datamodellen.
+
+utfall: godkänd 2026-10-21 (JUnit 4-import och saknad-rad-test mot minimal tabell)
