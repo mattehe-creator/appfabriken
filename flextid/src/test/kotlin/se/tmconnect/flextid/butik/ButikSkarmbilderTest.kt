@@ -288,6 +288,8 @@ abstract class ButikSkarmbilderBas {
                     saldo = 125,
                     dag = null,
                     standardRast = 30,
+                    installning = Installning(),
+                    semester = null,
                     locale = loc,
                     onStamplaIn = noOp,
                     onStamplaUt = noOp,
