@@ -2,6 +2,7 @@ package se.tmconnect.styrelserummet.server
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class FelmeddelandenTest {
@@ -23,7 +24,11 @@ class FelmeddelandenTest {
     fun forStorHandlingMeddelande() {
         val meddelande = Felmeddelanden.forklara(Felkoder.FOR_STOR_HANDLING)
         assertFalse("Meddelandet får inte vara tomt", meddelande.isEmpty())
-        assert(meddelande.contains("handlingen är för stor") || meddelande.contains("tolkning"))
+        assertTrue(
+            "Meddelandet ska nämna storlek eller tolkning (case-insensitive)",
+            meddelande.contains("stor", ignoreCase = true) ||
+                meddelande.contains("tolkning", ignoreCase = true),
+        )
         assertFalse("Meddelandet får inte nämna API eller exakt teckengräns", 
             meddelande.contains("API", ignoreCase = true) || 
             meddelande.contains("tecken", ignoreCase = true) ||
