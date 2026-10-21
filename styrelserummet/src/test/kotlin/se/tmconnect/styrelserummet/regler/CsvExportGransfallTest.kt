@@ -1,11 +1,10 @@
 package se.tmconnect.styrelserummet.regler
 
-import org.junit.Assert
 import org.junit.Test
+import org.junit.Assert
 import se.tmconnect.styrelserummet.modell.Komponent
 import se.tmconnect.styrelserummet.modell.Komponentgrupp
 import se.tmconnect.styrelserummet.modell.Sakerhet
-import se.tmconnect.styrelserummet.underlag.UTKAST_RAD
 
 class CsvExportGransfallTest {
 
@@ -21,7 +20,7 @@ class CsvExportGransfallTest {
         Assert.assertTrue(csv.contains("\"Fönster; \"\"special\"\"\nrad\""))
         
         // Kontrollera att utkast-rad finns
-        Assert.assertTrue(csv.endsWith("$UTKAST_RAD\n"))
+        Assert.assertTrue(csv.endsWith("UTKAST. Beslutas av förening och revisor.\n"))
     }
 
     @Test
@@ -37,7 +36,7 @@ class CsvExportGransfallTest {
         Assert.assertTrue(csv.startsWith("namn;grupp;anskaffningsvärde;anskaffningsår;nyttjandeperiod;restvärde;avskrivning året;bokfört värde;källa;säkerhet\n"))
         
         // Kontrollera att utkast-rad finns
-        Assert.assertTrue(csv.endsWith("$UTKAST_RAD\n"))
+        Assert.assertTrue(csv.endsWith("UTKAST. Beslutas av förening och revisor.\n"))
     }
 
     @Test
@@ -56,7 +55,7 @@ class CsvExportGransfallTest {
         Assert.assertTrue(csv.startsWith("namn;grupp;anskaffningsvärde;anskaffningsår;nyttjandeperiod;restvärde;avskrivning året;bokfört värde;källa;säkerhet\n"))
         
         // Kontrollera att utkast-rad finns
-        Assert.assertTrue(csv.endsWith("$UTKAST_RAD\n"))
+        Assert.assertTrue(csv.endsWith("UTKAST. Beslutas av förening och revisor.\n"))
     }
 
     @Test
@@ -65,14 +64,14 @@ class CsvExportGransfallTest {
         
         // Kontrollera att CSV börjar med exakt samma rubrikrad som i CsvExportTest.tomListaHarRubrikOchUtkastRad
         val forvantadRubrik = "namn;grupp;anskaffningsvärde;anskaffningsår;nyttjandeperiod;restvärde;avskrivning året;bokfört värde;källa;säkerhet\n"
-        Assert.assertTrue("CSV börjar inte med förväntad rubrik. Fick: ${csv.take(100)}", csv.startsWith(forvantadRubrik))
+        Assert.assertTrue(csv.startsWith(forvantadRubrik))
         
         // Kontrollera att det endast finns två rader (rubrik + utkast-rad)
         val rader = csv.split("\n")
         Assert.assertEquals(2, rader.size)
         
         // Kontrollera att sista raden är utkast-rad
-        Assert.assertEquals(UTKAST_RAD, rader[1])
+        Assert.assertEquals("UTKAST. Beslutas av förening och revisor.", rader[1])
     }
 
     @Test
@@ -80,7 +79,7 @@ class CsvExportGransfallTest {
         val csv = tillCsv(emptyList(), 2025)
         
         // Kontrollera att resultatet är exakt som i CsvExportTest.tomListaHarRubrikOchUtkastRad
-        val forvantad = "namn;grupp;anskaffningsvärde;anskaffningsår;nyttjandeperiod;restvärde;avskrivning året;bokfört värde;källa;säkerhet\n$UTKAST_RAD\n"
+        val forvantad = "namn;grupp;anskaffningsvärde;anskaffningsår;nyttjandeperiod;restvärde;avskrivning året;bokfört värde;källa;säkerhet\nUTKAST. Beslutas av förening och revisor.\n"
         Assert.assertEquals(forvantad, csv)
     }
 
