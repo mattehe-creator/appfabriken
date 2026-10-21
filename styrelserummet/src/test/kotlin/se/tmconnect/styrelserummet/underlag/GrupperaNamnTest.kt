@@ -32,4 +32,12 @@ class GrupperaNamnTest {
         assertEquals(Komponentgrupp.VARME, gissaGrupp("Fjärrvärme undercentral"))
         assertEquals(Komponentgrupp.VARME, gissaGrupp("Radiatorer trapphus"))
     }
+
+    @Test
+    fun gissaGruppHissTvattMark() {
+        assertEquals(Komponentgrupp.HISS, gissaGrupp("Personhiss"))
+        assertEquals(Komponentgrupp.TVATTSTUGA, gissaGrupp("Tvättstuga källare"))
+        assertEquals(Komponentgrupp.MARK_OCH_GARAGE, gissaGrupp("Asfalterad gård"))
+        assertEquals(Komponentgrupp.MARK_OCH_GARAGE, gissaGrupp("Garageport"))
+    }
 }

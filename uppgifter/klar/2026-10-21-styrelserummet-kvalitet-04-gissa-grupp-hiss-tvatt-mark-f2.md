@@ -43,3 +43,5 @@ gradle :styrelserummet:test --tests "*GrupperaNamnTest.gissaGruppHissTvattMark"
 - Ändra andra filer (inklusive filer i repots rot).
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: godkänd 2026-10-21 (hel implementation efter försök 2 utan kod; helordsmatchning gård/mark)

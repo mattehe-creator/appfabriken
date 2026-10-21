@@ -27,6 +27,10 @@ private val nyckelord = listOf(
     NyckelordMatch("fjärrvärme", Komponentgrupp.VARME),
     NyckelordMatch("radiator", Komponentgrupp.VARME),
     NyckelordMatch("undercentral", Komponentgrupp.VARME),
+    NyckelordMatch("tvättstuga", Komponentgrupp.TVATTSTUGA),
+    NyckelordMatch("hiss", Komponentgrupp.HISS),
+    NyckelordMatch("garage", Komponentgrupp.MARK_OCH_GARAGE),
+    NyckelordMatch("asfalt", Komponentgrupp.MARK_OCH_GARAGE),
 )
 
 private fun indexSomEgetOrd(text: String, ord: String): Int {
@@ -52,6 +56,12 @@ fun gissaGrupp(namn: String): Komponentgrupp? {
     val elIndex = indexSomEgetOrd(lower, "el")
     if (elIndex >= 0) {
         traeffar.add(Triple(elIndex, 2, Komponentgrupp.EL))
+    }
+    for (ord in listOf("gård", "mark")) {
+        val index = indexSomEgetOrd(lower, ord)
+        if (index >= 0) {
+            traeffar.add(Triple(index, ord.length, Komponentgrupp.MARK_OCH_GARAGE))
+        }
     }
     val basta = traeffar.minWithOrNull(
         compareBy<Triple<Int, Int, Komponentgrupp>>({ it.first }).thenByDescending { it.second },
