@@ -120,7 +120,7 @@ class SyntetiskPlanTvaSidorTest {
         // Anropa byggUtkast
         val forening = Forening(
             namn = "Testförening",
-            orgNr = "1234567890",
+            orgnummer = "1234567890",
             byggnadsar = 2023
         )
         
