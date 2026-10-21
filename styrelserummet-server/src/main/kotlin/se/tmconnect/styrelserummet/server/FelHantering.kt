@@ -53,6 +53,17 @@ fun felTillMeddelande(fel: ServerFel): String =
             "Ett okänt fel uppstod. Försök igen och kontakta support om felet kvarstår."
     }
 
+fun felTillHttpStatus(fel: ServerFel): Int =
+    when (fel) {
+        ServerFel.IngenLasbarText, ServerFel.KrypteradPdf -> 400
+        ServerFel.ForStorFil -> 413
+        ServerFel.IntePdf -> 415
+        ServerFel.ForMangaJobb -> 429
+        ServerFel.AiOgiltigtSvar -> 502
+        ServerFel.AiTimeout -> 504
+        ServerFel.Okant -> 500
+    }
+
 fun loggJobbFel(jobbId: String, fel: ServerFel, tidMs: Long): String {
     val felKod =
         when (fel) {

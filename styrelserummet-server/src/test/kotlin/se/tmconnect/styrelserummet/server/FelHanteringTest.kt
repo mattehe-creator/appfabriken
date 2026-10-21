@@ -114,4 +114,16 @@ class FelHanteringTest {
         assertFalse(meddelande.contains("500"))
         assertFalse(meddelande.contains("HTTP", ignoreCase = true))
     }
+
+    @Test
+    fun felTillHttpStatusMapperRattStatusKod() {
+        assertTrue(felTillHttpStatus(ServerFel.IngenLasbarText) == 400)
+        assertTrue(felTillHttpStatus(ServerFel.KrypteradPdf) == 400)
+        assertTrue(felTillHttpStatus(ServerFel.ForStorFil) == 413)
+        assertTrue(felTillHttpStatus(ServerFel.IntePdf) == 415)
+        assertTrue(felTillHttpStatus(ServerFel.ForMangaJobb(1_700_000_000_000L)) == 429)
+        assertTrue(felTillHttpStatus(ServerFel.AiOgiltigtSvar) == 502)
+        assertTrue(felTillHttpStatus(ServerFel.AiTimeout) == 504)
+        assertTrue(felTillHttpStatus(ServerFel.Okant) == 500)
+    }
 }
