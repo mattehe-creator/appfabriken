@@ -61,3 +61,5 @@ gradle :styrelserummet-server:test --tests "*ApiTest*helhet*Fel*"
 - Ändra produktionskod.
 - Ändra andra filer än `ApiTest.kt`.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (helhetstester i ApiTest.kt; timeout utan parsbart byggnadsvärde i årsredovisning)
