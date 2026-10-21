@@ -21,8 +21,14 @@ object Felmeddelanden {
             Felkoder.INGA_FILER -> "Inga filer hittades."
             Felkoder.PDF_EJ_LASBAR ->
                 "Filen innehåller ingen läsbar text. Ladda upp en PDF som går att markera text i."
+            Felkoder.PDF_LOSENORD ->
+                "PDF:en är lösenordsskyddad. Spara en kopia utan lösenord och ladda upp den."
             Felkoder.INGEN_PLAN ->
                 "Kunde inte läsa underhållsplanen. Ladda upp minst en PDF med text."
+            Felkoder.AI_TIDSGRANS ->
+                "Tjänsten hann inte svara i tid. Försök igen om en liten stund."
+            Felkoder.AI_OGILTIGT_SVAR ->
+                "Komponentförslagen kunde inte tas fram. Försök igen eller ladda upp en tydligare handling."
             Felkoder.BEARBETNING_MISSLYCKADES -> "Bearbetningen misslyckades."
             Felkoder.INTERNT_FEL -> "Något gick fel. Försök igen."
             else -> "Något gick fel. Försök igen."
