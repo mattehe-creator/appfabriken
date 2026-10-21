@@ -44,3 +44,5 @@ Använd `import org.junit.Test` och `import org.junit.Assert.assertEquals`.
 - Ändra andra filer (inga `BESLUTSLOGG.md`, `STATUS.md`, `uppdrag/`, `uppgifter/`).
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: godkänd 2026-10-21 (hela implementationen — lokal modell levererade ingen kod på försök 2)
