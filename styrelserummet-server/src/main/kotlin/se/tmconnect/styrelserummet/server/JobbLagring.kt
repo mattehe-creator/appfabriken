@@ -123,6 +123,5 @@ fun jobbResponse(meta: JobbMeta, utkast: UtkastDto?): JobbResponse =
     JobbResponse(
         meta = meta,
         utkast = utkast,
-        visning = utkast?.let(::tillVisning),
+        visning = utkast?.let { tillVisning(it) },
     )
-}
