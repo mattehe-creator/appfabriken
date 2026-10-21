@@ -31,3 +31,5 @@ gradle :styrelserummet:test --tests "*BokfortVardeGransfallGranserTest"
 ## Gör inte
 - Ändra `BokfortVardeTest.kt` eller modeller.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #357). Ersatt av 2026-10-21-styrelserummet-k3-gransfall-06-bokfort-granser-f2.md
