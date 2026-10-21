@@ -177,6 +177,11 @@ private fun JsonObject.heltalsVarde(
         markeraLag()
         return null
     }
+    if (varde < 0L && nyckel == "anskaffningsvarde") {
+        anmarkningar += "Rad $rad ($namn): anskaffningsvarde är negativt."
+        markeraLag()
+        return null
+    }
     return varde
 }
 

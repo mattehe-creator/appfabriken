@@ -39,3 +39,5 @@ gradle :styrelserummet:test --tests "*TolkaForslagGransfallTalTest"
 - Ändra `TolkaForslagTest.kt` eller modeller.
 - Lägga till beroenden.
 - Lägga filer i repots rot.
+
+utfall: godkänd 2026-10-21 (tom testklass från lokal modell; Cursor skrev tester och negativt belopp i TolkaForslag.kt)
