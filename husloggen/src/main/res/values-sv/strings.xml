@@ -272,4 +272,10 @@
     <string name="dokument_for_stort">Filen är för stor. Högst 25 MB.</string>
     <string name="dokument_ogiltig_typ">Endast PDF-filer och bilder stöds.</string>
     <string name="dokument_kunde_inte_laggas_till">Kunde inte lägga till dokumentet.</string>
+    <string name="flik_oversikt">Översikt</string>
+    <string name="flik_mer">Mer</string>
+    <string name="mer_plan_titel">Planerade kostnader</string>
+    <string name="mer_plan_text">Kostnader du räknar med framåt</string>
+    <string name="mer_matare_text">El, vatten och värme</string>
+    <string name="mer_dokument_text">Manualer, ritningar och protokoll</string>
 </resources>
