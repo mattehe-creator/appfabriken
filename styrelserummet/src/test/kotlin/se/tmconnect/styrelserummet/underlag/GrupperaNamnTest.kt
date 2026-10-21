@@ -16,4 +16,12 @@ class GrupperaNamnTest {
         assertEquals(Komponentgrupp.TAK, gissaGrupp("Tegeltak nord"))
         assertEquals(Komponentgrupp.FASAD, gissaGrupp("Fasadtegel öst"))
     }
+
+    @Test
+    fun gissaGruppStammarVentilation() {
+        assertEquals(Komponentgrupp.STAMMAR, gissaGrupp("Stamledning avlopp"))
+        assertEquals(Komponentgrupp.VENTILATION, gissaGrupp("FTX-aggregat"))
+        assertEquals(Komponentgrupp.VENTILATION, gissaGrupp("Från- och tilluft"))
+        assertEquals(Komponentgrupp.STAMMAR, gissaGrupp("Vattenledning kök"))
+    }
 }
