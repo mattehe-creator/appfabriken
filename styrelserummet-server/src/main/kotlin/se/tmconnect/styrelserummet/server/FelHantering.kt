@@ -58,7 +58,7 @@ fun felTillHttpStatus(fel: ServerFel): Int =
         ServerFel.IngenLasbarText, ServerFel.KrypteradPdf -> 400
         ServerFel.ForStorFil -> 413
         ServerFel.IntePdf -> 415
-        ServerFel.ForMangaJobb -> 429
+        is ServerFel.ForMangaJobb -> 429
         ServerFel.AiOgiltigtSvar -> 502
         ServerFel.AiTimeout -> 504
         ServerFel.Okant -> 500
