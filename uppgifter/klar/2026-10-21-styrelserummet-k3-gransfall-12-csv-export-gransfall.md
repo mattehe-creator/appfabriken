@@ -32,3 +32,5 @@ gradle :styrelserummet:test --tests "*CsvExportGransfallTest"
 ## Gör inte
 - Ändra `CsvExportTest.kt`, `GrupperaNamn`, `Formatering`, `Sammanfattning`, `Jamforelse`, `FelHantering`, `Utskrift` (andra parallella uppgifter).
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #363). Ersatt av 2026-10-21-styrelserummet-k3-gransfall-12-csv-export-gransfall-f2.md
