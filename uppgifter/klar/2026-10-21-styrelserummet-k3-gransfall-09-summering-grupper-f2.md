@@ -54,3 +54,5 @@ gradle :styrelserummet:test --tests "*SummeringGransfallGrupperTest"
 ## Gör inte
 - Ändra `SummeringTest.kt`.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (hela testklassen — PR hade tom fil)
