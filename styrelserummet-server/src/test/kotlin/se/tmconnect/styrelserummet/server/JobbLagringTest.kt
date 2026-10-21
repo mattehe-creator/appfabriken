@@ -114,4 +114,42 @@ class JobbLagringTest {
         assertEquals("Skadad meta.json-fil, jobb hoppas över", loggmeddelande)
         assertFalse(loggmeddelande!!.contains(jobId))
     }
+
+    @Test
+    fun samtidigSkrivMetaGerGiltigJson() {
+        val jobId = "test4"
+        val lagring = JobbLagring(tempDir)
+        lagring.skapa(
+            JobbMeta(
+                id = jobId,
+                forening = "Testförening",
+                arsslut = 2023,
+                status = JobbStatus.VANTAR.name,
+                skapadMs = System.currentTimeMillis(),
+                senastAktivMs = System.currentTimeMillis(),
+                klientIpHash = "test",
+            ),
+        )
+
+        val threads = mutableListOf<Thread>()
+        val antalUppdateringar = 20
+
+        repeat(antalUppdateringar) {
+            val thread = Thread {
+                repeat(10) {
+                    lagring.uppdateraAktivitet(jobId)
+                }
+            }
+            threads.add(thread)
+        }
+
+        threads.forEach { it.start() }
+        threads.forEach { it.join() }
+
+        // Kontrollera att metafilen är giltig
+        val meta = lagring.lasMeta(jobId)
+        assertTrue(meta != null)
+        assertEquals(jobId, meta!!.id)
+        assertEquals("Testförening", meta.forening)
+    }
 }
