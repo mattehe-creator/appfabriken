@@ -406,6 +406,7 @@ private fun VeckaRad(rad: VeckaDagRad, locale: Locale, onClick: () -> Unit) {
                     rad.dag?.start != null && rad.dag.slut != null ->
                         "${formateraTid(rad.dag.start, locale)}–${formateraTid(rad.dag.slut, locale)}"
                     rad.dag?.start != null -> formateraTid(rad.dag.start, locale)
+                    rad.dag != null && rad.dag.typ != DagTyp.ARBETE -> stringResource(dagTypStringRes(rad.dag.typ))
                     else -> "—"
                 }
             Text(tidText, style = MaterialTheme.typography.bodyMedium)
