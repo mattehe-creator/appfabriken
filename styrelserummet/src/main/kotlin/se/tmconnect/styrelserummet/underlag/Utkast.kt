@@ -137,7 +137,7 @@ class ByggUtkast(
             avstamning = avstamning,
             anmarkningar = anmarkningar,
         )
-        return utkast.copy(anmarkningar = anmarkningarFor(utkast, tabell))
+        return utkast.copy(anmarkningar = anmarkningarFor(utkast, tabell, nuAr))
     }
 }
 
