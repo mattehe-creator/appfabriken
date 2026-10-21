@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/claude/2026-10-22-styrelserummet-nyckeltal.md
 försök: 1
-beror-på: 2026-10-22-styrelserummet-nyckeltal-03-sparande.md
+beror-på: 2026-10-22-styrelserummet-nyckeltal-03-sparande-f2.md
 
 ## Ändra bara dessa filer
 - styrelserummet/src/main/kotlin/se/tmconnect/styrelserummet/regler/Nyckeltal.kt

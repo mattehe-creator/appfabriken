@@ -34,3 +34,5 @@ gradle :styrelserummet:test --tests "*NyckeltalTest"
 ## Gör inte
 - Ändra andra filer eller tidigare funktioner.
 - Använda flyttal.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #477). Ersatt av 2026-10-22-styrelserummet-nyckeltal-03-sparande-f2.md
