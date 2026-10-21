@@ -45,3 +45,5 @@ gradle :styrelserummet:test --tests "*AvskrivningGransfallRakenskapsarTest"
 - Ändra `AvskrivningTest.kt`, `Komponent.kt`, `Forening.kt` eller andra filer (utom `Avskrivning.kt` om test visar bugg och då enligt regeln ovan).
 - Lägga till beroenden.
 - Använda flyttal för pengar i tester eller implementation.
+
+utfall: godkänd 2026-10-21 (hela AvskrivningGransfallRakenskapsarTest.kt — lokal modell levererade ingen kod i försök 2)
