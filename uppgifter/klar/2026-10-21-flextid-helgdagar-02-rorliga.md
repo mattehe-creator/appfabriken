@@ -45,3 +45,5 @@ gradle :flextid:testDebugUnitTest --tests "*HelgdagarTest"
 - Ändra andra filer.
 - Ändra `paskdagen`.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #445). Ersatt av 2026-10-21-flextid-helgdagar-02-rorliga-f2.md

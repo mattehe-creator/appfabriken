@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/claude/2026-10-21-flextid-helgdagar.md
 försök: 1
-beror-på: 2026-10-21-flextid-helgdagar-02-rorliga.md
+beror-på: 2026-10-21-flextid-helgdagar-02-rorliga-f2.md
 
 ## Ändra bara dessa filer
 - flextid/src/main/kotlin/se/tmconnect/flextid/regler/Helgdagar.kt
