@@ -3,7 +3,6 @@ package se.tmconnect.styrelserummet.server
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromStream
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
@@ -120,5 +119,5 @@ fun jobbResponse(meta: JobbMeta, utkast: UtkastDto?): JobbResponse =
     JobbResponse(
         meta = meta,
         utkast = utkast,
-        visning = utkast?.let { tillVisning(it) },
+        visning = utkast?.let(::tillVisning),
     )

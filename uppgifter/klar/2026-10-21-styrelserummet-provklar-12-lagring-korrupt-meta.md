@@ -31,3 +31,5 @@ gradle :styrelserummet-server:test --tests "*JobbLagringTest.korruptMeta*"
 ## Gör inte
 - Ändra API-routes.
 - Logga filinnehåll.
+
+utfall: godkänd 2026-10-21 (JUnit 4 och path-imports i test; rensaGamlaJobb-assert; bort oanvänd import)

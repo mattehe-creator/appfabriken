@@ -1,26 +1,37 @@
 package se.tmconnect.styrelserummet.server
 
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.io.TempDir
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import kotlin.io.path.createTempDirectory
+import kotlin.io.path.div
+import kotlin.io.path.writeText
 
 class JobbLagringTest {
-    @TempDir
-    lateinit var tempDir: Path
+    private lateinit var tempDir: Path
 
-    private val json = Json { prettyPrint = true; ignoreUnknownKeys = true }
+    @Before
+    fun setUp() {
+        tempDir = createTempDirectory("jobb_lagring_test")
+    }
+
+    @After
+    fun tearDown() {
+        Files.walk(tempDir)
+            .sorted(Comparator.reverseOrder())
+            .forEach { it.toFile().delete() }
+    }
 
     @Test
     fun korruptMetaOgiltigJson() {
-        val lagring = JobbLagring(tempDir)
-        
-        // Skapa ett jobb med korrupt meta.json (ogiltig JSON)
         val jobId = "test1"
-        lagring.skapa(
+        JobbLagring(tempDir).skapa(
             JobbMeta(
                 id = jobId,
                 forening = "Testförening",
@@ -28,39 +39,32 @@ class JobbLagringTest {
                 status = JobbStatus.VANTAR.name,
                 skapadMs = System.currentTimeMillis(),
                 senastAktivMs = System.currentTimeMillis(),
-                klientIpHash = "test"
-            )
+                klientIpHash = "test",
+            ),
         )
-        
-        // Skriv korrupt JSON
-        val metaFil = lagring.jobbKatalog(jobId) / "meta.json"
-        metaFil.writeText("{") // Ogiltig JSON
-        
+        (JobbLagring(tempDir).jobbKatalog(jobId) / "meta.json").writeText("{")
+
         var loggmeddelande: String? = null
         val lagringMedLogg = JobbLagring(tempDir) { msg ->
             loggmeddelande = msg
         }
-        
-        // Testa att lasMeta returnerar null för korrupt fil
-        val meta = lagringMedLogg.lasMeta(jobId)
-        assertNull(meta)
-        
-        // Kontrollera att loggmeddelandet är korrekt
+
+        assertNull(lagringMedLogg.lasMeta(jobId))
         assertEquals("Skadad meta.json-fil, jobb hoppas över", loggmeddelande)
-        
-        // Testa att allaJobb inte kraschar och returnerar jobbet trots korrupt fil
+        assertFalse(loggmeddelande!!.contains(jobId))
+
         val allaJobb = lagringMedLogg.allaJobb()
         assertEquals(1, allaJobb.size)
-        assertEquals(jobId, allaJobb[0])
+        assertEquals(jobId, allaJobb.single())
+
+        rensaGamlaJobb(lagringMedLogg)
+        assertEquals(1, lagringMedLogg.allaJobb().size)
     }
 
     @Test
     fun korruptMetaTomFil() {
-        val lagring = JobbLagring(tempDir)
-        
-        // Skapa ett jobb med tom meta.json
         val jobId = "test2"
-        lagring.skapa(
+        JobbLagring(tempDir).skapa(
             JobbMeta(
                 id = jobId,
                 forening = "Testförening",
@@ -68,34 +72,25 @@ class JobbLagringTest {
                 status = JobbStatus.VANTAR.name,
                 skapadMs = System.currentTimeMillis(),
                 senastAktivMs = System.currentTimeMillis(),
-                klientIpHash = "test"
-            )
+                klientIpHash = "test",
+            ),
         )
-        
-        // Skriv tom fil
-        val metaFil = lagring.jobbKatalog(jobId) / "meta.json"
-        metaFil.writeText("") // Tom fil
-        
+        (JobbLagring(tempDir).jobbKatalog(jobId) / "meta.json").writeText("")
+
         var loggmeddelande: String? = null
         val lagringMedLogg = JobbLagring(tempDir) { msg ->
             loggmeddelande = msg
         }
-        
-        // Testa att lasMeta returnerar null för tom fil
-        val meta = lagringMedLogg.lasMeta(jobId)
-        assertNull(meta)
-        
-        // Kontrollera att loggmeddelandet är korrekt
+
+        assertNull(lagringMedLogg.lasMeta(jobId))
         assertEquals("Skadad meta.json-fil, jobb hoppas över", loggmeddelande)
+        assertFalse(loggmeddelande!!.contains(jobId))
     }
 
     @Test
     fun korruptMetaHalvFil() {
-        val lagring = JobbLagring(tempDir)
-        
-        // Skapa ett jobb med halv JSON
         val jobId = "test3"
-        lagring.skapa(
+        JobbLagring(tempDir).skapa(
             JobbMeta(
                 id = jobId,
                 forening = "Testförening",
@@ -103,24 +98,20 @@ class JobbLagringTest {
                 status = JobbStatus.VANTAR.name,
                 skapadMs = System.currentTimeMillis(),
                 senastAktivMs = System.currentTimeMillis(),
-                klientIpHash = "test"
-            )
+                klientIpHash = "test",
+            ),
         )
-        
-        // Skriv halv JSON
-        val metaFil = lagring.jobbKatalog(jobId) / "meta.json"
-        metaFil.writeText("""{"id": "test", "forening": "Testförening", """) // Halv JSON
-        
+        (JobbLagring(tempDir).jobbKatalog(jobId) / "meta.json").writeText(
+            """{"id": "test", "forening": "Testförening", """,
+        )
+
         var loggmeddelande: String? = null
         val lagringMedLogg = JobbLagring(tempDir) { msg ->
             loggmeddelande = msg
         }
-        
-        // Testa att lasMeta returnerar null för halv fil
-        val meta = lagringMedLogg.lasMeta(jobId)
-        assertNull(meta)
-        
-        // Kontrollera att loggmeddelandet är korrekt
+
+        assertNull(lagringMedLogg.lasMeta(jobId))
         assertEquals("Skadad meta.json-fil, jobb hoppas över", loggmeddelande)
+        assertFalse(loggmeddelande!!.contains(jobId))
     }
 }
