@@ -43,3 +43,5 @@ Testerna ska asserta mot exemplen ovan (innehåller id och feltyp; `assertFalse`
 - Ändra andra filer (inga `uppgifter/`, `JobbKo`, workflow-filer).
 - Koppla in faktisk loggning i `JobbKo` (kommer i senare uppgift).
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (hela implementationen — lokal modell levererade ingen kod på försök 2)
