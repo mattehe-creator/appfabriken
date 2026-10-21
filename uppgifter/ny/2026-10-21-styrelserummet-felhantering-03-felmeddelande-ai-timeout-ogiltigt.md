@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-21-styrelserummet-felhantering.md
 försök: 1
-beror-på: 2026-10-21-styrelserummet-felhantering-02-felmeddelande-storlek-typ.md
+beror-på: 2026-10-21-styrelserummet-felhantering-02-felmeddelande-storlek-typ-f2.md
 
 ## Ändra bara dessa filer
 - styrelserummet-server/src/main/kotlin/se/tmconnect/styrelserummet/server/FelHantering.kt
