@@ -18,4 +18,15 @@ class FelmeddelandenTest {
             )
         }
     }
+
+    @Test
+    fun forStorHandlingMeddelande() {
+        val meddelande = Felmeddelanden.forklara(Felkoder.FOR_STOR_HANDLING)
+        assertFalse("Meddelandet får inte vara tomt", meddelande.isEmpty())
+        assertTrue("Meddelandet ska vara på svenska", meddelande.contains("handlingen är för stor") || meddelande.contains("tolkning"))
+        assertFalse("Meddelandet får inte nämna API eller exakt teckengräns", 
+            meddelande.contains("API", ignoreCase = true) || 
+            meddelande.contains("tecken", ignoreCase = true) ||
+            meddelande.contains("400000", ignoreCase = true))
+    }
 }

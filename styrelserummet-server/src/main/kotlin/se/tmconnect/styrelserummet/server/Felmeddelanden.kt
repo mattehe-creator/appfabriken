@@ -30,6 +30,8 @@ object Felmeddelanden {
             Felkoder.AI_OGILTIGT_SVAR ->
                 "Komponentförslagen kunde inte tas fram. Försök igen eller ladda upp en tydligare handling."
             Felkoder.BEARBETNING_MISSLYCKADES -> "Bearbetningen misslyckades."
+            Felkoder.FOR_STOR_HANDLING ->
+                "Handlingen är för stor för automatisk tolkning. Försök med kortare utdrag eller färre sidor."
             Felkoder.INTERNT_FEL -> "Något gick fel. Försök igen."
             else -> "Något gick fel. Försök igen."
         }

@@ -23,6 +23,7 @@ object Felkoder {
     const val AI_OGILTIGT_SVAR = "AI_OGILTIGT_SVAR"
     const val BEARBETNING_MISSLYCKADES = "BEARBETNING_MISSLYCKADES"
     const val INTERNT_FEL = "INTERNT_FEL"
+    const val FOR_STOR_HANDLING = "FOR_STOR_HANDLING"
 
     fun allaKoder(): Set<String> = setOf(
         FOR_MANGA_JOBB,
@@ -47,5 +48,6 @@ object Felkoder {
         AI_OGILTIGT_SVAR,
         BEARBETNING_MISSLYCKADES,
         INTERNT_FEL,
+        FOR_STOR_HANDLING,
     )
 }
