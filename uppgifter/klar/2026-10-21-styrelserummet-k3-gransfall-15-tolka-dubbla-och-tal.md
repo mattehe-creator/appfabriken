@@ -30,3 +30,5 @@ gradle :styrelserummet:test --tests "*TolkaForslagGransfallTalTest"
 ## Gör inte
 - Ändra `TolkaForslagTest.kt` eller modeller.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #368). Ersatt av 2026-10-21-styrelserummet-k3-gransfall-15-tolka-dubbla-och-tal-f2.md
