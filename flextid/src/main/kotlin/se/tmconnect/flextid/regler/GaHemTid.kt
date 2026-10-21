@@ -1,0 +1,16 @@
+package se.tmconnect.flextid.regler
+
+import java.time.LocalTime
+
+fun gaHemTid(start: LocalTime, rastMin: Int, normaltidMin: Int): LocalTime? {
+    val rast = rastMin.coerceAtLeast(0)
+    val normaltid = normaltidMin.coerceAtLeast(0)
+    
+    val totalMin = start.toSecondOfDay() / 60 + rast + normaltid
+    
+    return if (totalMin >= 24 * 60) {
+        null
+    } else {
+        LocalTime.of(totalMin / 60, totalMin % 60)
+    }
+}
