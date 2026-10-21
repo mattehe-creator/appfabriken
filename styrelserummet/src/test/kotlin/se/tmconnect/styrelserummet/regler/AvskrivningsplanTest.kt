@@ -56,4 +56,28 @@ class AvskrivningsplanTest {
 
         planForKomponent(k, 2020, 101)
     }
+
+    @Test
+    fun avskrivningsplan_med_komponenter() {
+        val k1 = komponent(200_000, 2010, 40, 0)
+        val k2 = komponent(300_000, 2020, 10, 0)
+        
+        val result = avskrivningsplan(listOf(k1, k2), 2026, 5)
+
+        assertEquals(5, result.size)
+        assertEquals(PlanAr(2026, 60_000L, 780_000L), result[0])
+        assertEquals(PlanAr(2027, 60_000L, 720_000L), result[1])
+        assertEquals(PlanAr(2028, 60_000L, 660_000L), result[2])
+        assertEquals(PlanAr(2029, 60_000L, 600_000L), result[3])
+        assertEquals(PlanAr(2030, 30_000L, 570_000L), result[4])
+    }
+
+    @Test
+    fun avskrivningsplan_tom_list() {
+        val result = avskrivningsplan(emptyList(), 2026, 2)
+
+        assertEquals(2, result.size)
+        assertEquals(PlanAr(2026, 0L, 0L), result[0])
+        assertEquals(PlanAr(2027, 0L, 0L), result[1])
+    }
 }
