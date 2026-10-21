@@ -25,3 +25,5 @@ gradle :styrelserummet-server:test --tests "*JobbLagringTest.sparaFilSakertNamn*
 
 ## Gör inte
 - Ändra `Indata.kt` `sakertFilnamn` (annan uppgift); fokus på lagring efter upload.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #438). Ersatt av 2026-10-21-styrelserummet-provklar-15-lagring-filnamn-tecken-f2.md
