@@ -29,3 +29,5 @@ gradle :styrelserummet:test --tests "*SyntetiskPlanTusentalsTest"
 ## Gör inte
 - Ändra `nyttjandeperioder.csv`.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #424). Ersatt av 2026-10-21-styrelserummet-provklar-09-flode-plan-tusentalsavgransare-f2.md
