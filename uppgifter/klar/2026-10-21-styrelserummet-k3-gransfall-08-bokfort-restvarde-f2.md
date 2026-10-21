@@ -44,3 +44,5 @@ gradle :styrelserummet:test --tests "*BokfortVardeGransfallRestvardeTest"
 ## Gör inte
 - Ändra `Komponent.kt`, `BokfortVardeTest.kt` eller andra filer (utom `BokfortVarde.kt` om test visar bugg enligt regeln ovan).
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (hela BokfortVardeGransfallRestvardeTest.kt — lokal modell levererade inga tester i försök 2)
