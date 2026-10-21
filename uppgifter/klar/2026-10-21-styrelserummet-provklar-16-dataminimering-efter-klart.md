@@ -30,3 +30,5 @@ gradle :styrelserummet-server:test --tests "*DataminimeringTest.efterKlartJobb*"
 ## Gör inte
 - Spara maskad text till disk.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (fel sökväg i rot borttagen, imports, jobb/{id}, metodnamn, filantal, PDF undantas vid textkontroll)
