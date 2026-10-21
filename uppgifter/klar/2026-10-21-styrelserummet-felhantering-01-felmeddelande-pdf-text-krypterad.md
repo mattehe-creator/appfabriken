@@ -36,3 +36,5 @@ gradle :styrelserummet-server:test --tests "*FelHanteringTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Implementera HTTP-status eller koppling till API ännu.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #326). Ersatt av 2026-10-21-styrelserummet-felhantering-01-felmeddelande-pdf-text-krypterad-f2.md
