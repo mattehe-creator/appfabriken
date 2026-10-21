@@ -42,3 +42,5 @@ Skriv `FormateringTest.kt` med JUnit 4 (`org.junit.Test`, `org.junit.Assert.asse
 - Lägga till beroenden.
 - Ändra datamodellen.
 - Lägg filer i repots rot — endast sökvägarna under `styrelserummet/` ovan.
+
+utfall: godkänd 2026-10-21 (hel implementation — lokala modellen lämnade tomma filer igen)
