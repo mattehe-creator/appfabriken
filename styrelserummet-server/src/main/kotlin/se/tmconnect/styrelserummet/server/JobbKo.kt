@@ -5,6 +5,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import se.tmconnect.styrelserummet.modell.Forening
+import se.tmconnect.styrelserummet.pdf.IngenLasbarTextException
+import se.tmconnect.styrelserummet.pdf.KrypteradPdfException
 import se.tmconnect.styrelserummet.pdf.PdfLasare
 import se.tmconnect.styrelserummet.tolking.Tolkare
 import se.tmconnect.styrelserummet.underlag.byggUtkast
@@ -41,7 +43,7 @@ class JobbKo(
         try {
             val filer = lagring.listaFiler(id)
             if (filer.isEmpty()) {
-                fel(id, "Inga filer hittades.")
+                fel(id, ServerFel.Okant)
                 return
             }
             var underhallsplan = ""
@@ -49,15 +51,20 @@ class JobbKo(
             var planNamn = "underhallsplan.pdf"
             filer.forEach { path ->
                 val bytes = path.readBytes()
+                if (pdfLasare.arKrypterad(bytes)) {
+                    fel(id, ServerFel.KrypteradPdf)
+                    return
+                }
                 if (!pdfLasare.harLasbarText(bytes)) {
-                    fel(
-                        id,
-                        "Filen ${path.fileName} innehåller ingen läsbar text. Ladda upp en PDF som går att markera text i.",
-                    )
+                    fel(id, ServerFel.IngenLasbarText)
                     return
                 }
                 val text = pdfLasare.lasSomText(bytes).getOrElse {
-                    fel(id, "Filen ${path.fileName} innehåller ingen läsbar text. Ladda upp en PDF som går att markera text i.")
+                    when (it) {
+                        is KrypteradPdfException -> fel(id, ServerFel.KrypteradPdf)
+                        is IngenLasbarTextException -> fel(id, ServerFel.IngenLasbarText)
+                        else -> fel(id, ServerFel.Okant)
+                    }
                     return
                 }
                 val namn = path.fileName.toString().lowercase()
@@ -73,7 +80,7 @@ class JobbKo(
                 arsredovisning = ""
             }
             if (underhallsplan.isBlank()) {
-                fel(id, "Kunde inte läsa underhållsplanen. Ladda upp minst en PDF med text.")
+                fel(id, ServerFel.Okant)
                 return
             }
             val utkast = byggUtkast(
@@ -82,6 +89,16 @@ class JobbKo(
                 forening = Forening(namn = meta.forening, byggnadsar = null),
                 tolkare = tolkare,
             )
+            if (utkast.komponenter.isEmpty()) {
+                // Kontrollera om alla anmärkningar är "Tolkning misslyckades" (typiskt timeout)
+                val harTimeoutAnmärkningar = utkast.anmarkningar.all { it.startsWith("Tolkning misslyckades") }
+                if (harTimeoutAnmärkningar) {
+                    fel(id, ServerFel.AiTimeout)
+                } else {
+                    fel(id, ServerFel.AiOgiltigtSvar)
+                }
+                return
+            }
             lagring.sparaUtkast(id, tillUtkastDto(utkast, meta.arsslut))
             lagring.skrivMeta(
                 meta.copy(
@@ -91,16 +108,16 @@ class JobbKo(
                 ),
             )
         } catch (_: Exception) {
-            fel(id, "Bearbetningen misslyckades.")
+            fel(id, ServerFel.Okant)
         }
     }
 
-    private fun fel(id: String, meddelande: String) {
+    private fun fel(id: String, serverFel: ServerFel) {
         val meta = lagring.lasMeta(id) ?: return
         lagring.skrivMeta(
             meta.copy(
                 status = JobbStatus.FEL.name,
-                felmeddelande = meddelande,
+                felmeddelande = felTillMeddelande(serverFel),
                 senastAktivMs = System.currentTimeMillis(),
             ),
         )
