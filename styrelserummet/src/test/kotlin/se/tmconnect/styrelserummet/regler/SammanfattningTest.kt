@@ -30,10 +30,10 @@ class SammanfattningTest {
     fun osakerOchAvstamning() {
         // Testa med komponenter där några har låg säkerhet
         val komponenter = listOf(
-            komponent(1_000_000),
-            komponent(2_000_000),
-            komponentMedSakerhet(3_000_000, Sakerhet.LAG),
-            komponentMedSakerhet(4_000_000, Sakerhet.UPPSKATTNING)
+            komponent(1_000_000),  // HOG
+            komponent(2_000_000),  // HOG
+            komponentMedSakerhet(3_000_000, Sakerhet.LAG),  // LAG
+            komponentMedSakerhet(4_000_000, Sakerhet.UPPSKATTNING)  // UPPSKATTNING
         )
         
         assertEquals(
