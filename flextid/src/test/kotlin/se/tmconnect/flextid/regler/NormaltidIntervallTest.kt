@@ -1,7 +1,7 @@
 package se.tmconnect.flextid.regler
 
 import java.time.LocalDate
-import kotlin.test.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 
 class NormaltidIntervallTest {
