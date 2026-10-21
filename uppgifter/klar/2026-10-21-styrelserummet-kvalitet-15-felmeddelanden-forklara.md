@@ -31,3 +31,5 @@ gradle :styrelserummet-server:test --tests "*FelmeddelandenTest.forklara"
 ## Gör inte
 - Koppla in `forklara` i Application.kt (senare uppdrag).
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #380). Ersatt av 2026-10-21-styrelserummet-kvalitet-15-felmeddelanden-forklara-f2.md
