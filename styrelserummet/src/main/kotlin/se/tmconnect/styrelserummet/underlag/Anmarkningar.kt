@@ -2,6 +2,7 @@ package se.tmconnect.styrelserummet.underlag
 
 import se.tmconnect.styrelserummet.modell.Sakerhet
 import se.tmconnect.styrelserummet.regler.NyttjandeperiodRad
+import se.tmconnect.styrelserummet.regler.bokfortVarde
 
 fun anmarkningarFor(utkast: Utkast, tabell: List<NyttjandeperiodRad>, arsslut: Int): List<String> {
     val anmarkningar = utkast.anmarkningar.toMutableList()
@@ -21,6 +22,13 @@ fun anmarkningarFor(utkast: Utkast, tabell: List<NyttjandeperiodRad>, arsslut: I
             }
         }
     }
+    utkast.komponenter
+        .groupBy { it.namn }
+        .filter { it.value.size >= 2 }
+        .forEach { (namn, _) ->
+            anmarkningar +=
+                "Det finns flera komponenter med samma namn \"$namn\"."
+        }
     utkast.komponenter.forEach { komponent ->
         if (komponent.sakerhet == Sakerhet.LAG) {
             anmarkningar += "Komponenten \"${komponent.namn}\" har låg säkerhet och bör kontrolleras."
@@ -40,6 +48,13 @@ fun anmarkningarFor(utkast: Utkast, tabell: List<NyttjandeperiodRad>, arsslut: I
         }
         if (komponent.anskaffningsar > arsslut) {
             anmarkningar += "Komponenten \"${komponent.namn}\" har anskaffningsår ${komponent.anskaffningsar} som ligger efter räkenskapsårets slut (${arsslut})."
+        }
+        if (komponent.anskaffningsar + komponent.nyttjandeperiodAr <= arsslut) {
+            val bokfort = bokfortVarde(komponent, arsslut)
+            if (bokfort > komponent.restvarde) {
+                anmarkningar +=
+                    "Komponenten \"${komponent.namn}\" har nyttjandeperioden gått ut vid $arsslut men bokfört värde $bokfort kr överstiger restvärdet (${komponent.restvarde} kr)."
+            }
         }
     }
     return anmarkningar.distinct()
