@@ -31,9 +31,31 @@ class AnmarkningarTest {
         )
 
     @Test
+    fun anmarkningAnskaffningsarForeByggnadsar() {
+        val tidigt = anmarkningarFor(utkastMedAnskaffningsar(1970), emptyList(), arsslut = 2025)
+        assertTrue(
+            tidigt.any {
+                it.contains("Stomme") &&
+                    it.contains("1970") &&
+                    it.contains("1975") &&
+                    it.contains("före")
+            },
+        )
+
+        val sammaAr = anmarkningarFor(utkastMedAnskaffningsar(1975), emptyList(), arsslut = 2025)
+        assertFalse(
+            sammaAr.any {
+                it.contains("Stomme") &&
+                    it.contains("före") &&
+                    it.contains("byggnadsår")
+            },
+        )
+    }
+
+    @Test
     fun anmarkningAnskaffningsarEfterArsslut() {
         val tabell = lasNyttjandeperioderFranResurs()
-        
+
         // Testa att en komponent med anskaffningsår 2026 ger anmärkning när arsslut är 2025
         val efter = anmarkningarFor(utkastMedAnskaffningsar(2026), tabell, arsslut = 2025)
         assertTrue(
