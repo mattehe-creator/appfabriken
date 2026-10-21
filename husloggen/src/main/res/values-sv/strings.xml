@@ -123,11 +123,11 @@
     <string name="forslag_service_varmepump">Service av värmepump</string>
     <string name="forslag_service_ventilation">Service av ventilation</string>
     <plurals name="intervall_manader">
-        <item quantity="one">Var %d:e månad</item>
+        <item quantity="one">Varje månad</item>
         <item quantity="other">Var %d:e månad</item>
     </plurals>
     <plurals name="intervall_ar">
-        <item quantity="one">Var %d:e år</item>
+        <item quantity="one">Varje år</item>
         <item quantity="other">Var %d:e år</item>
     </plurals>
     

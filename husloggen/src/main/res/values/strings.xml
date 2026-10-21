@@ -123,11 +123,11 @@
     <string name="forslag_service_varmepump">Heat pump service</string>
     <string name="forslag_service_ventilation">Ventilation service</string>
     <plurals name="intervall_manader">
-        <item quantity="one">Every %d month</item>
+        <item quantity="one">Every month</item>
         <item quantity="other">Every %d months</item>
     </plurals>
     <plurals name="intervall_ar">
-        <item quantity="one">Every %d year</item>
+        <item quantity="one">Every year</item>
         <item quantity="other">Every %d years</item>
     </plurals>
     
