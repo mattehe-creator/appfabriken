@@ -33,3 +33,5 @@ gradle :styrelserummet:test --tests "*FondplanTest"
 ## Gör inte
 - Ändra andra filer eller `summaPerAr`.
 - Använda flyttal.
+
+utfall: godkänd 2026-10-21 (inget)
