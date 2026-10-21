@@ -36,3 +36,5 @@ gradle :styrelserummet:test --tests "*FondplanTest"
 ## Gör inte
 - Ändra andra filer eller tidigare funktioner.
 - Använda flyttal.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #470). Ersatt av 2026-10-21-styrelserummet-fond-04-underskott-f2.md
