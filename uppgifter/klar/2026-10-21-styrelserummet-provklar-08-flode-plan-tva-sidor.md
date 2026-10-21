@@ -28,3 +28,5 @@ gradle :styrelserummet:test --tests "*SyntetiskPlanTvaSidorTest"
 ## Gör inte
 - Ändra `Komponent` eller `Forening`.
 - Riktiga PDF:er i repot.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #421). Ersatt av 2026-10-21-styrelserummet-provklar-08-flode-plan-tva-sidor-f2.md
