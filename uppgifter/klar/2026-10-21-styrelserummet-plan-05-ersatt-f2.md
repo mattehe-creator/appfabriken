@@ -54,3 +54,5 @@ Lägg till minst fyra `@Test` för `ersattKomponent` enligt exemplen ovan. Anvä
 - Ändra andra filer.
 - Ändra `utrangeringsbelopp`.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (hela implementationen `Utbyte`, `ersattKomponent` och fyra tester — försök 2 saknade kod)
