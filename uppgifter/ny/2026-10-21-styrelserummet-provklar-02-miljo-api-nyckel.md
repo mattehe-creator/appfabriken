@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-21-styrelserummet-provklar.md
 försök: 1
-beror-på: 2026-10-21-styrelserummet-provklar-01-miljo-data-skrivbar.md
+beror-på: 2026-10-21-styrelserummet-provklar-01-miljo-data-skrivbar-f2.md
 
 ## Ändra bara dessa filer
 - styrelserummet-server/src/main/kotlin/se/tmconnect/styrelserummet/server/Miljo.kt

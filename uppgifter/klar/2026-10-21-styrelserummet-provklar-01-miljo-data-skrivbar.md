@@ -35,3 +35,5 @@ gradle :styrelserummet-server:test --tests "*MiljoTest"
 - Ändra andra filer.
 - Skriva ut eller inkludera `ANTHROPIC_API_KEY` eller andra hemligheter i felmeddelanden.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #415). Ersatt av 2026-10-21-styrelserummet-provklar-01-miljo-data-skrivbar-f2.md
