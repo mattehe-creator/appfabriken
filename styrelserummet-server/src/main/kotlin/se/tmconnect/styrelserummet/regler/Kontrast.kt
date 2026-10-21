@@ -2,9 +2,6 @@ package se.tmconnect.styrelserummet.regler
 
 import java.math.BigDecimal
 import java.math.RoundingMode
-import kotlin.math.max
-import kotlin.math.min
-
 fun kontrastforhallande(fg: String, bg: String): Double {
     val fgRgb = hexToRgb(fg)
     val bgRgb = hexToRgb(bg)

@@ -32,3 +32,5 @@ gradle :styrelserummet-server:test --tests "*KontrastTest"
 ## Gör inte
 - Ändra `gemensam.css` eller HTML.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (JUnit 4, CSS-parser för dark mode och variabelnamn, kontrastkrav ≥)
