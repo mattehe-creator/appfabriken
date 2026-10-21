@@ -40,3 +40,5 @@ gradle :styrelserummet:test --tests "*GrupperaNamnTest.gissaGruppNullfall"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: godkänd 2026-10-21 (Cursor lade till `gissaGruppNullfall` efter försök 2 utan kod)
