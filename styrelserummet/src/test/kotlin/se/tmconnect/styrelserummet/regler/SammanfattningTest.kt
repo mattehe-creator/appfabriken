@@ -16,6 +16,8 @@ class SammanfattningTest {
                 "Anskaffningsvärdet är 0 kr sammanlagt.",
                 "0 komponenter (–) har uppskattat värde eller låg säkerhet.",
                 "Byggnadens värde saknas, så avstämning görs inte.",
+                "Avskrivningen för räkenskapsåret är 0 kr totalt.",
+                "Detta är ett utkast – kontrollera uppgifterna mot handlingarna innan beslut.",
             ),
             sammanfatta(emptyList(), null, 2025),
         )
@@ -25,6 +27,8 @@ class SammanfattningTest {
                 "Anskaffningsvärdet är 1\u00A0000\u00A0000 kr sammanlagt.",
                 "0 komponenter (0,0 %) har uppskattat värde eller låg säkerhet.",
                 "Byggnadens värde saknas, så avstämning görs inte.",
+                "Avskrivningen för räkenskapsåret är 25\u00A0000 kr totalt.",
+                "Detta är ett utkast – kontrollera uppgifterna mot handlingarna innan beslut.",
             ),
             sammanfatta(listOf(komponent(1_000_000)), null, 2025),
         )
@@ -45,7 +49,9 @@ class SammanfattningTest {
                 "Listan innehåller 4 komponenter.",
                 "Anskaffningsvärdet är 10\u00A0000\u00A0000 kr sammanlagt.",
                 "2 komponenter (50,0 %) har uppskattat värde eller låg säkerhet.",
-                "Byggnadens värde saknas, så avstämning görs inte."
+                "Byggnadens värde saknas, så avstämning görs inte.",
+                "Avskrivningen för räkenskapsåret är 250\u00A0000 kr totalt.",
+                "Detta är ett utkast – kontrollera uppgifterna mot handlingarna innan beslut.",
             ),
             sammanfatta(komponenter, null, 2025)
         )
@@ -56,7 +62,9 @@ class SammanfattningTest {
                 "Listan innehåller 4 komponenter.",
                 "Anskaffningsvärdet är 10\u00A0000\u00A0000 kr sammanlagt.",
                 "2 komponenter (50,0 %) har uppskattat värde eller låg säkerhet.",
-                "Komponenternas anskaffningsvärde stämmer med byggnadens värde."
+                "Komponenternas anskaffningsvärde stämmer med byggnadens värde.",
+                "Avskrivningen för räkenskapsåret är 250\u00A0000 kr totalt.",
+                "Detta är ett utkast – kontrollera uppgifterna mot handlingarna innan beslut.",
             ),
             sammanfatta(komponenter, 10_000_000L, 2025)
         )
@@ -67,13 +75,47 @@ class SammanfattningTest {
                 "Listan innehåller 4 komponenter.",
                 "Anskaffningsvärdet är 10\u00A0000\u00A0000 kr sammanlagt.",
                 "2 komponenter (50,0 %) har uppskattat värde eller låg säkerhet.",
-                "Skillnaden mot byggnadens värde är 1\u00A0000\u00A0000 kr."
+                "Skillnaden mot byggnadens värde är 1\u00A0000\u00A0000 kr.",
+                "Avskrivningen för räkenskapsåret är 250\u00A0000 kr totalt.",
+                "Detta är ett utkast – kontrollera uppgifterna mot handlingarna innan beslut.",
             ),
             sammanfatta(komponenter, 11_000_000L, 2025)
         )
     }
 
-    private fun komponent(varde: Long) =
+    @Test
+    fun avskrivningOchUtkast() {
+        assertEquals(
+            listOf(
+                "Listan innehåller 0 komponenter.",
+                "Anskaffningsvärdet är 0 kr sammanlagt.",
+                "0 komponenter (–) har uppskattat värde eller låg säkerhet.",
+                "Byggnadens värde saknas, så avstämning görs inte.",
+                "Avskrivningen för räkenskapsåret är 0 kr totalt.",
+                "Detta är ett utkast – kontrollera uppgifterna mot handlingarna innan beslut.",
+            ),
+            sammanfatta(emptyList(), null, 2025),
+        )
+        val tvaKomponenter = listOf(
+            komponentMedVarde(400_000),
+            komponentMedVarde(200_000),
+        )
+        assertEquals(
+            listOf(
+                "Listan innehåller 2 komponenter.",
+                "Anskaffningsvärdet är 600\u00A0000 kr sammanlagt.",
+                "0 komponenter (0,0 %) har uppskattat värde eller låg säkerhet.",
+                "Byggnadens värde saknas, så avstämning görs inte.",
+                "Avskrivningen för räkenskapsåret är 15\u00A0000 kr totalt.",
+                "Detta är ett utkast – kontrollera uppgifterna mot handlingarna innan beslut.",
+            ),
+            sammanfatta(tvaKomponenter, null, 2025),
+        )
+    }
+
+    private fun komponent(varde: Long) = komponentMedVarde(varde)
+
+    private fun komponentMedVarde(varde: Long) =
         Komponent(
             namn = "Test",
             grupp = Komponentgrupp.STOMME,
