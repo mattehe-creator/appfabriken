@@ -1,5 +1,10 @@
 package se.tmconnect.styrelserummet.server
 
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
 sealed class ServerFel {
     data object IngenLasbarText : ServerFel()
 
@@ -12,6 +17,10 @@ sealed class ServerFel {
     data object AiTimeout : ServerFel()
 
     data object AiOgiltigtSvar : ServerFel()
+
+    data class ForMangaJobb(val kanForsokaIgenEpochMs: Long) : ServerFel()
+
+    data object Okant : ServerFel()
 }
 
 private val maxMbPerJobb: Int = MAX_BYTES_PER_JOBB / (1024 * 1024)
@@ -31,6 +40,17 @@ fun felTillMeddelande(fel: ServerFel): String =
             "Tjänsten hann inte svara i tid. Försök igen om en liten stund."
         ServerFel.AiOgiltigtSvar ->
             "Komponentförslagen kunde inte tas fram. Kontrollera underhållsplanen och försök igen."
+        is ServerFel.ForMangaJobb -> {
+            val tid =
+                LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(fel.kanForsokaIgenEpochMs),
+                    ZoneId.of("Europe/Stockholm"),
+                )
+            val formatter = DateTimeFormatter.ofPattern("HH:mm")
+            "Du har skickat för många jobb. Gränsen är fem jobb per timme. Försök igen klockan ${tid.format(formatter)}."
+        }
+        ServerFel.Okant ->
+            "Ett okänt fel uppstod. Försök igen och kontakta support om felet kvarstår."
     }
 
 fun loggJobbFel(jobbId: String, fel: ServerFel, tidMs: Long): String {
@@ -42,6 +62,8 @@ fun loggJobbFel(jobbId: String, fel: ServerFel, tidMs: Long): String {
             ServerFel.IntePdf -> "IntePdf"
             ServerFel.AiTimeout -> "AiTimeout"
             ServerFel.AiOgiltigtSvar -> "AiOgiltigtSvar"
+            is ServerFel.ForMangaJobb -> "ForMangaJobb"
+            ServerFel.Okant -> "Okant"
         }
     return "$jobbId $felKod $tidMs"
 }
