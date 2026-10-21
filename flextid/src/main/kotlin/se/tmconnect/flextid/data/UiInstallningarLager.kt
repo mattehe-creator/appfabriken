@@ -5,12 +5,15 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import se.tmconnect.flextid.regler.SEMESTERAR_STARTMANAD_STANDARD
+import se.tmconnect.flextid.regler.SEMESTERDAGAR_STANDARD
 
 private val Context.flextidUiDataStore: DataStore<Preferences> by preferencesDataStore(
     name = "flextid_ui",
@@ -43,7 +46,42 @@ class UiInstallningarLager(private val context: Context) {
         }
     }
 
+    /** Midsommar-, jul- och nyårsafton räknas som lediga (påminnelser och visning). Standard: ja. */
+    val aftnarLediga: Flow<Boolean> =
+        context.flextidUiDataStore.data.map { prefs -> prefs[AFTNAR_LEDIGA] ?: true }
+
+    suspend fun sattAftnarLediga(lediga: Boolean) {
+        context.flextidUiDataStore.edit { prefs -> prefs[AFTNAR_LEDIGA] = lediga }
+    }
+
+    val semesterdagarPerAr: Flow<Int> =
+        context.flextidUiDataStore.data.map { prefs ->
+            (prefs[SEMESTERDAGAR_PER_AR] ?: SEMESTERDAGAR_STANDARD).coerceIn(0, MAX_SEMESTERDAGAR)
+        }
+
+    suspend fun sattSemesterdagarPerAr(dagar: Int) {
+        context.flextidUiDataStore.edit { prefs ->
+            prefs[SEMESTERDAGAR_PER_AR] = dagar.coerceIn(0, MAX_SEMESTERDAGAR)
+        }
+    }
+
+    /** Semesterårets första månad: 4 (april, semesterlagen) eller 1 (kalenderår). */
+    val semesterarStartmanad: Flow<Int> =
+        context.flextidUiDataStore.data.map { prefs ->
+            if (prefs[SEMESTERAR_STARTMANAD] == 1) 1 else SEMESTERAR_STARTMANAD_STANDARD
+        }
+
+    suspend fun sattSemesterarStartmanad(manad: Int) {
+        context.flextidUiDataStore.edit { prefs ->
+            prefs[SEMESTERAR_STARTMANAD] = if (manad == 1) 1 else SEMESTERAR_STARTMANAD_STANDARD
+        }
+    }
+
     companion object {
+        const val MAX_SEMESTERDAGAR = 60
+        private val AFTNAR_LEDIGA = booleanPreferencesKey("aftnar_lediga")
+        private val SEMESTERDAGAR_PER_AR = intPreferencesKey("semesterdagar_per_ar")
+        private val SEMESTERAR_STARTMANAD = intPreferencesKey("semesterar_startmanad")
         private val VALKOMMEN_VISAD = booleanPreferencesKey("valkommen_visad")
         private val TEMA_LAGE = stringPreferencesKey("tema_lage")
         private val EXPORT_AR_MANAD = stringPreferencesKey("export_ar_manad")

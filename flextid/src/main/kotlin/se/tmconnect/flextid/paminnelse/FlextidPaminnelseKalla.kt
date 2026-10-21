@@ -12,6 +12,8 @@ import se.tmconnect.karna.paminnelse.PaminnelseFrist
 import se.tmconnect.karna.paminnelse.PaminnelseKalla
 import se.tmconnect.karna.paminnelse.PaminnelseNotisInnehall
 
+import se.tmconnect.flextid.data.UiInstallningarLager
+
 class FlextidPaminnelseKalla(
     private val context: Context,
     private val installningar: FlextidPaminnelseInstallningarLager,
@@ -28,6 +30,7 @@ class FlextidPaminnelseKalla(
         val stamplaUtPa = installningar.stamplaUtPa.first()
         val stamplaInPa = installningar.stamplaInPa.first()
         val stamplaInMin = installningar.stamplaInPaminnelseMinEfterMidnatt.first()
+        val aftnarLediga = UiInstallningarLager(context).aftnarLediga.first()
         return paminnelseFristerForDag(
             idag = idag,
             dag = dag,
@@ -36,6 +39,7 @@ class FlextidPaminnelseKalla(
             stamplaUtPa = stamplaUtPa,
             stamplaInPa = stamplaInPa,
             stamplaInPaminnelseMinEfterMidnatt = stamplaInMin,
+            aftnarLediga = aftnarLediga,
         )
     }
 
