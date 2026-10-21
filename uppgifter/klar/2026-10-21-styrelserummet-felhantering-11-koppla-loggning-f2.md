@@ -41,3 +41,5 @@ gradle :styrelserummet-server:test --tests "*JobbKoTest"
 - Ändra andra filer (inkl. `FelHantering.kt`, `uppgifter/`, workflow).
 - Logga användarmeddelandet eller stacktrace.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (Cursor implementerade hela uppgiften; lokal modell levererade ingen kod)
