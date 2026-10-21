@@ -31,3 +31,5 @@ gradle :styrelserummet:test --tests "*GrupperaNamnTest.gissaGruppStammarVentilat
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #337). Ersatt av 2026-10-21-styrelserummet-kvalitet-02-gissa-grupp-stammar-ventilation-f2.md

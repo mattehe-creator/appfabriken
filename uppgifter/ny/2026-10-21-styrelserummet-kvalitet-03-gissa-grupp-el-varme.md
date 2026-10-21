@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-21-styrelserummet-kvalitet-utkast.md
 försök: 1
-beror-på: 2026-10-21-styrelserummet-kvalitet-02-gissa-grupp-stammar-ventilation.md
+beror-på: 2026-10-21-styrelserummet-kvalitet-02-gissa-grupp-stammar-ventilation-f2.md
 
 ## Ändra bara dessa filer
 - styrelserummet/src/main/kotlin/se/tmconnect/styrelserummet/underlag/GrupperaNamn.kt
