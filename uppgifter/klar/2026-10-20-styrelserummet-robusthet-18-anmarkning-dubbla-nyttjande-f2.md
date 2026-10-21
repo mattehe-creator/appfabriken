@@ -42,3 +42,4 @@ Befintliga tester i `AnmarkningarTest` ska fortsatt vara gröna.
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+utfall: godkänd 2026-10-21 (Cursor implementerade efter försök 2 utan kod från lokal modell)
