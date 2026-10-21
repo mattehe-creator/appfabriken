@@ -80,7 +80,7 @@
     <!-- Pro -->
     <string name="pro">Pro</string>
     <string name="pro_las_upp">Unlock Pro</string>
-    <string name="pro_forklaring">The free version saves up to 15 day entries. Pro is a one-time purchase without subscription and removes the limit.</string>
+    <string name="pro_forklaring">The free version has every feature and saves up to 15 day entries. Pro is a one-time purchase without subscription that removes the limit. Export, PDF and backup are always free, and nothing is deleted.</string>
     <string name="pro_du_har">You have Pro</string>
     <string name="pro_grans_nadd">Limit reached: 15 day entries</string>
     <string name="pro_grans_forklaring">You have 15 day entries. Unlock Pro to add more. Export, CSV and backup are always free.</string>
