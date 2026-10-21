@@ -30,3 +30,5 @@ gradle :styrelserummet-server:test --tests "*MiljoTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (STYRELSERUMMET_MODELL saknad vs tom; test saknadModellGerIngaFel)
