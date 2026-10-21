@@ -43,3 +43,5 @@ Skriv `MiljoTest` med **JUnit 4** (`org.junit.Test`, `org.junit.Assert`), som i 
 - Ändra andra filer.
 - Skriva ut eller inkludera `ANTHROPIC_API_KEY` eller andra hemligheter i felmeddelanden.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (Cursor implementerade Miljo.kt och MiljoTest.kt — tom försök 2)
