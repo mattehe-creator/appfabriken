@@ -196,4 +196,46 @@ class JobbLagringTest {
         
         assertTrue(lagring.listaFiler(jobId).isEmpty())
     }
+
+    @Test
+    fun sparaFilSakertNamnLangtOchUnicode() {
+        val jobId = "test_long_filename"
+        val lagring = JobbLagring(tempDir)
+        lagring.skapa(
+            JobbMeta(
+                id = jobId,
+                forening = "Testförening",
+                arsslut = 2023,
+                status = JobbStatus.VANTAR.name,
+                skapadMs = System.currentTimeMillis(),
+                senastAktivMs = System.currentTimeMillis(),
+                klientIpHash = "test",
+            ),
+        )
+
+        // Skapa ett långt filnamn med svenska tecken
+        val longFilename = "Årsredovisning Testförening 2025.pdf".repeat(10) // Gör det minst 200 tecken
+        val bytes = "Testinnehåll för filen".encodeToByteArray()
+
+        lagring.sparaFil(jobId, longFilename, bytes)
+
+        // Kontrollera att filen finns i filer-katalogen
+        val filerDir = lagring.jobbKatalog(jobId) / "filer"
+        assertTrue(filerDir.exists())
+        
+        // Hämta filnamnet som det sparades (det säkra namnet)
+        val savedFiles = filerDir.listDirectoryEntries().toList()
+        assertEquals(1, savedFiles.size)
+        
+        val savedFile = savedFiles[0]
+        val fileName = savedFile.fileName.toString()
+        
+        // Kontrollera att filnamnet bara innehåller tillåtna tecken
+        assertTrue("Filnamn innehåller ogiltiga tecken: $fileName", 
+            fileName.matches(Regex("^[a-zA-Z0-9._-]+$")))
+        
+        // Kontrollera att innehållet är oförändrat
+        val readBytes = savedFile.readBytes()
+        assertArrayEquals(bytes, readBytes)
+    }
 }
