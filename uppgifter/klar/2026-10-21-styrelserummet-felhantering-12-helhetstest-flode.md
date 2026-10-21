@@ -30,3 +30,5 @@ gradle :styrelserummet-server:test --tests "*ApiTest.helhetFlodeMedTreKomponente
 ## Gör inte
 - Ändra produktionskod.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #340). Ersatt av 2026-10-21-styrelserummet-felhantering-12-helhetstest-flode-f2.md
