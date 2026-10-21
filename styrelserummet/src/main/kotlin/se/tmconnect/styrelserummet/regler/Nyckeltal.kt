@@ -25,3 +25,21 @@ fun avrundaKvot(taljare: Long, namnare: Long): Long {
         -avrundaKvot(-taljare, namnare)
     }
 }
+
+fun totalYta(u: NyckeltalUnderlag): Long = u.kvmBostadsratt + u.kvmHyresratt
+
+fun arsavgiftPerKvmBostadsratt(u: NyckeltalUnderlag): Long? {
+    if (u.kvmBostadsratt <= 0) return null
+    return avrundaKvot(u.arsavgifter, u.kvmBostadsratt)
+}
+
+fun skuldsattningPerKvm(u: NyckeltalUnderlag): Long? {
+    val yta = totalYta(u)
+    if (yta <= 0) return null
+    return avrundaKvot(u.rantebarandeSkulder, yta)
+}
+
+fun skuldsattningPerKvmBostadsratt(u: NyckeltalUnderlag): Long? {
+    if (u.kvmBostadsratt <= 0) return null
+    return avrundaKvot(u.rantebarandeSkulder, u.kvmBostadsratt)
+}
