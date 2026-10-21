@@ -30,3 +30,5 @@ gradle :styrelserummet:test --tests "*AvskrivningGransfallRakenskapsarTest"
 - Ändra `AvskrivningTest.kt`, `Komponent.kt`, `Forening.kt` eller andra filer.
 - Lägga till beroenden.
 - Använda flyttal för pengar i tester eller implementation.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #348). Ersatt av 2026-10-21-styrelserummet-k3-gransfall-01-avskrivning-rakenskapsar-f2.md
