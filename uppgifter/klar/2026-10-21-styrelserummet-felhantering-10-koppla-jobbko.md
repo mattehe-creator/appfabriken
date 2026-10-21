@@ -32,3 +32,5 @@ gradle :styrelserummet-server:test --tests "*JobbKoTest"
 ## Gör inte
 - Ändra `Komponent`, `Forening` eller `byggUtkast` om det inte går att klara inom tre filer — i så fall dokumentera i PR och lämna till Cursor.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-21 av Cursor (PR #403). Ersatt av 2026-10-21-styrelserummet-felhantering-10-koppla-jobbko-f2.md

@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-21-styrelserummet-felhantering.md
 försök: 1
-beror-på: 2026-10-21-styrelserummet-felhantering-10-koppla-jobbko.md
+beror-på: 2026-10-21-styrelserummet-felhantering-10-koppla-jobbko-f2.md
 
 ## Ändra bara dessa filer
 - styrelserummet-server/src/main/kotlin/se/tmconnect/styrelserummet/server/JobbKo.kt
