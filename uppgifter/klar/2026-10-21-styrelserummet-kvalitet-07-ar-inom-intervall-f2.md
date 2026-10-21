@@ -41,3 +41,5 @@ Lägg testmetoden `arInomIntervall` i befintliga `NyttjandeperiodForslagTest.kt`
 - Ändra andra filer (inga `uppgifter/`, `BESLUTSLOGG.md`, `STATUS.md`).
 - Lägga till beroenden.
 - Ändra `nyttjandeperioder.csv`.
+
+utfall: godkänd 2026-10-21 (inget)

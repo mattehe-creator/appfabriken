@@ -10,3 +10,11 @@ fun forslagFor(grupp: Komponentgrupp, tabell: List<NyttjandeperiodRad>): Int? {
     val rad = tabell.find { it.grupp == grupp } ?: return null
     return rad.forslagAr
 }
+
+fun arInomIntervall(ar: Int, rad: NyttjandeperiodRad): Boolean {
+    if (rad.intervallAr != null) {
+        return ar in rad.intervallAr
+    } else {
+        return ar == rad.forslagAr
+    }
+}
