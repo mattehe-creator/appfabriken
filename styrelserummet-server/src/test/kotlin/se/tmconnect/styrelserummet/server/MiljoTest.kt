@@ -260,4 +260,45 @@ class MiljoTest {
         ) { true }
         assertEquals(emptyList<String>(), rader)
     }
+
+    @Test
+    fun skrivMiljoRapporter() {
+        val logg = mutableListOf<String>()
+        val testRader = listOf("Fel: Något gick fel", "Varning: Något är konstigt")
+        
+        skrivMiljoRapporter(testRader) { rad ->
+            logg.add(rad)
+        }
+        
+        assertEquals(2, logg.size)
+        assertEquals("Fel: Något gick fel", logg[0])
+        assertEquals("Varning: Något är konstigt", logg[1])
+    }
+
+    @Test
+    fun skrivMiljoRapporterIngenNyckel() {
+        val logg = mutableListOf<String>()
+        val hemligNyckel = "sk-ant-hemlig"
+        val rader = kontrolleraMiljo(
+            mapOf(
+                "STYRELSERUMMET_DATA" to "/data",
+                "ANTHROPIC_API_KEY" to "sk-fel",
+            ),
+        ) { true }
+        skrivMiljoRapporter(rader) { logg.add(it) }
+        assertTrue(logg.isNotEmpty())
+        assertTrue(logg.single().contains("ANTHROPIC_API_KEY"))
+        assertFalse(logg.any { it.contains("sk-fel") })
+        assertFalse(logg.any { it.contains(hemligNyckel) })
+
+        logg.clear()
+        val okRader = kontrolleraMiljo(
+            mapOf(
+                "STYRELSERUMMET_DATA" to "/data",
+                "ANTHROPIC_API_KEY" to hemligNyckel,
+            ),
+        ) { true }
+        skrivMiljoRapporter(okRader) { logg.add(it) }
+        assertTrue(logg.isEmpty())
+    }
 }

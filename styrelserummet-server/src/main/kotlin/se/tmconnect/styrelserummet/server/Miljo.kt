@@ -73,3 +73,9 @@ fun kontrolleraMiljo(
     
     return emptyList()
 }
+
+fun skrivMiljoRapporter(rader: List<String>, skriv: (String) -> Unit = System.err::println) {
+    rader.forEach { rad ->
+        skriv(rad)
+    }
+}

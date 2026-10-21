@@ -34,6 +34,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.json.Json
 import se.tmconnect.styrelserummet.tolking.Tolkare
 import se.tmconnect.styrelserummet.tolking.anthropicTolkareFranMiljo
+import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Year
 
@@ -286,6 +287,16 @@ private class ServerFelBegaran(val fel: ServerFel) : Exception()
 
 fun main() {
     val miljo = miljoFranEnv()
+    val env = System.getenv()
+    val rader = kontrolleraMiljo(env) { katalog ->
+        val path = Path.of(katalog)
+        if (Files.exists(path)) {
+            Files.isWritable(path)
+        } else {
+            false
+        }
+    }
+    skrivMiljoRapporter(rader)
     embeddedServer(CIO, port = miljo.port) {
         module(miljo)
     }.start(wait = true)
