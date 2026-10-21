@@ -38,3 +38,5 @@ gradle :styrelserummet-server:test --tests "*FelHanteringTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (is ServerFel.ForMangaJobb i felTillHttpStatus)
