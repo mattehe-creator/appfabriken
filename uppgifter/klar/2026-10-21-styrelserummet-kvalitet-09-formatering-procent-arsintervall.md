@@ -34,3 +34,5 @@ gradle :styrelserummet:test --tests "*FormateringTest.procentOchArsintervall"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra datamodellen.
+
+utfall: godkänd 2026-10-21 (flytt från repots rot till styrelserummet-sökvägar, en-dash och Locale.US)

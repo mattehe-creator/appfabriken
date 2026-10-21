@@ -11,4 +11,11 @@ class FormateringTest {
         assertEquals("0 kr", kronor(0))
         assertEquals("\u2212500 kr", kronor(-500))
     }
+
+    @Test
+    fun procentOchArsintervall() {
+        assertEquals("12,5 %", procent(1, 8))
+        assertEquals("\u2013", procent(0, 0))
+        assertEquals("2010\u20132050", arsintervall(2010, 2050))
+    }
 }
