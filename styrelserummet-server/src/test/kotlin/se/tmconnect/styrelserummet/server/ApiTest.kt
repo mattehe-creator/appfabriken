@@ -18,6 +18,7 @@ import io.ktor.http.contentType
 import io.ktor.server.testing.testApplication
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -129,50 +130,51 @@ class ApiTest {
     @Test
     fun helhetFlodeMedTreKomponenterOchMaskning() = runBlocking {
         val tmp = createTempDirectory("styrelserummet-test")
+        val tolkare = FalskTolkare(
+            jsonSvar = """
+                {
+                    "komponenter": [
+                        {
+                            "namn": "Tak",
+                            "grupp": "TAK",
+                            "anskaffningsvarde": 500000,
+                            "anskaffningsar": 2010,
+                            "nyttjandeperiodAr": 40,
+                            "restvarde": 0,
+                            "kalla": "plan",
+                            "sakerhet": "HOG"
+                        },
+                        {
+                            "namn": "Fasad",
+                            "grupp": "FASAD",
+                            "anskaffningsvarde": 300000,
+                            "anskaffningsar": 2015,
+                            "nyttjandeperiodAr": 30,
+                            "restvarde": 0,
+                            "kalla": "arsredovisning",
+                            "sakerhet": "HOG"
+                        },
+                        {
+                            "namn": "Fonster",
+                            "grupp": "FONSTER_DORRAR",
+                            "anskaffningsvarde": 200000,
+                            "anskaffningsar": 2020,
+                            "nyttjandeperiodAr": 20,
+                            "restvarde": 0,
+                            "kalla": "plan",
+                            "sakerhet": "HOG"
+                        }
+                    ]
+                }
+            """.trimIndent(),
+        )
         testApplication {
             application {
                 module(
                     ServerMiljo(
                         dataRot = tmp,
                         port = 0,
-                        tolkare = FalskTolkare(
-                            jsonSvar = """
-                                {
-                                    "komponenter": [
-                                        {
-                                            "namn": "Tak",
-                                            "grupp": "TAK",
-                                            "anskaffningsvarde": 500000,
-                                            "anskaffningsar": 2010,
-                                            "nyttjandeperiodAr": 40,
-                                            "restvarde": 0,
-                                            "kalla": "plan",
-                                            "sakerhet": "HOG"
-                                        },
-                                        {
-                                            "namn": "Fasad",
-                                            "grupp": "FASAD",
-                                            "anskaffningsvarde": 300000,
-                                            "anskaffningsar": 2015,
-                                            "nyttjandeperiodAr": 30,
-                                            "restvarde": 0,
-                                            "kalla": "arsredovisning",
-                                            "sakerhet": "HOG"
-                                        },
-                                        {
-                                            "namn": "Fonster",
-                                            "grupp": "FONSTER",
-                                            "anskaffningsvarde": 200000,
-                                            "anskaffningsar": 2020,
-                                            "nyttjandeperiodAr": 20,
-                                            "restvarde": 0,
-                                            "kalla": "plan",
-                                            "sakerhet": "HOG"
-                                        }
-                                    ]
-                                }
-                            """.trimIndent()
-                        ),
+                        tolkare = tolkare,
                         synkronJobb = true,
                     ),
                 )
@@ -220,8 +222,14 @@ class ApiTest {
                     org.junit.Assert.fail("Jobb FEL: $fel\n$statusBody")
                 }
                 assertEquals("KLAR", status)
-                
-                // Kontrollera CSV-rubriker
+
+                val utkastKomponenter = root["utkast"]?.jsonObject?.get("komponenter")?.jsonArray
+                assertEquals(3, utkastKomponenter?.size)
+
+                val utdrag = tolkare.senasteUtdrag
+                assertFalse(utdrag!!.contains("19800101-1234"))
+                assertTrue(utdrag.contains("[personnummer]"))
+
                 val csv = client.get("/api/jobb/$id.csv")
                 assertEquals(HttpStatusCode.OK, csv.status)
                 val csvText = csv.bodyAsText()

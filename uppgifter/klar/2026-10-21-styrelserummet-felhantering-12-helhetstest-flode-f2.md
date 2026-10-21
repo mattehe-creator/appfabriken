@@ -49,3 +49,5 @@ gradle :styrelserummet-server:test --tests "*ApiTest.helhetFlodeMedTreKomponente
 - Ändra produktionskod.
 - Ändra andra filer än `ApiTest.kt`.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-21 (FONSTER_DORRAR, tolkare-variabel, utkast- och maskningsassert)
