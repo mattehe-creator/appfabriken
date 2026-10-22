@@ -1,6 +1,6 @@
 package se.tmconnect.flextid.regler
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import kotlin.test.assertEquals
 

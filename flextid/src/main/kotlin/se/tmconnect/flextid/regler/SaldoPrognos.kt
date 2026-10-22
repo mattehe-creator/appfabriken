@@ -12,10 +12,10 @@ fun saldoVidArssluten(saldoNuMin: Int, utfallIArMin: Int, idag: LocalDate): Int?
     }
     
     // Beräkna prognos: saldoNuMin + utfallIArMin * dagarKvar / dagarHittills
-    val täljare = (saldoNuMin.toLong() * 1000) + (utfallIArMin.toLong() * dagarKvar * 1000)
-    val nämnare = dagarHittills * 1000
+    val täljare = utfallIArMin.toLong() * dagarKvar
+    val nämnare = dagarHittills.toLong()
     
-    // Avrundning: för täljare t och nämnare n > 0:
+    // Avrundning: för täljare `t` och nämnare `n > 0`: 
     // if (t >= 0) (2*t + n) / (2*n) else -((-2*t + n) / (2*n))
     val avrundat = if (täljare >= 0) {
         (2 * täljare + nämnare) / (2 * nämnare)
@@ -23,5 +23,5 @@ fun saldoVidArssluten(saldoNuMin: Int, utfallIArMin: Int, idag: LocalDate): Int?
         -( (-2 * täljare + nämnare) / (2 * nämnare) )
     }
     
-    return avrundat.toInt()
+    return (saldoNuMin + avrundat).toInt()
 }
