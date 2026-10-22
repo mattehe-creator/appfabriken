@@ -1,5 +1,6 @@
 package se.tmconnect.styrelserummet.server
 
+import se.tmconnect.styrelserummet.regler.kontrolleraUnderlag
 import kotlinx.serialization.Serializable
 import se.tmconnect.styrelserummet.regler.FondAr
 import se.tmconnect.styrelserummet.regler.NyckeltalRad
@@ -79,7 +80,7 @@ data class NyckeltalRequest(
 data class NyckeltalRadDto(val etikett: String, val varde: String, val forandring: String? = null)
 
 @Serializable
-data class NyckeltalSvarAr(val ar: Int, val rader: List<NyckeltalRadDto>)
+data class NyckeltalSvarAr(val ar: Int, val rader: List<NyckeltalRadDto>, val kontroller: List<String> = emptyList())
 
 @Serializable
 data class NyckeltalSvar(val ar: List<NyckeltalSvarAr>, val anmarkning: String, val csv: String = "")
@@ -195,7 +196,8 @@ fun beraknaNyckeltalSvar(req: NyckeltalRequest): NyckeltalSvar {
     val fore = req.foregaendeAr?.let { tillForegaendeUnderlag(it) }
     val ar = req.ar.sortedByDescending { it.ar }.mapIndexed { index, d ->
         val jamforelse = if (index == 0) fore else null
-        NyckeltalSvarAr(d.ar, nyckeltalRadDtos(tillUnderlag(d), jamforelse))
+        val u = tillUnderlag(d)
+        NyckeltalSvarAr(d.ar, nyckeltalRadDtos(u, jamforelse), kontrolleraUnderlag(u))
     }
     return NyckeltalSvar(
         ar = ar,
