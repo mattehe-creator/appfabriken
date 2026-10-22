@@ -49,6 +49,7 @@ import se.tmconnect.husloggen.data.Matare
 import se.tmconnect.husloggen.regler.AvlasningFel
 import se.tmconnect.husloggen.regler.MatareFel
 import se.tmconnect.husloggen.regler.beraknaArsforbrukning
+import se.tmconnect.husloggen.regler.jamforArsforbrukning
 import se.tmconnect.husloggen.regler.beraknaAvlasningarMedForbrukning
 import se.tmconnect.husloggen.regler.formateraMatareVarde
 import se.tmconnect.karna.format.formateraDatum
@@ -220,14 +221,20 @@ fun MatareDetaljSkarm(
                         text = stringResource(R.string.matare_arsforbrukning_rubrik),
                         style = MaterialTheme.typography.titleMedium,
                     )
-                    arsSumma.entries.sortedByDescending { it.key }.forEach { (ar, summa) ->
+                    jamforArsforbrukning(arsSumma).forEach { rad ->
+                        val bas = stringResource(
+                            R.string.matare_arsforbrukning_rad,
+                            rad.ar.toString(),
+                            formateraMatareVarde(rad.forbrukning),
+                            matare.enhet,
+                        )
+                        val forandring = rad.forandringTiondelsProcent?.let { t ->
+                            val tecken = if (t > 0) "+" else if (t < 0) "\u2212" else ""
+                            val a = kotlin.math.abs(t)
+                            stringResource(R.string.matare_forandring, "$tecken${a / 10},${a % 10}")
+                        }
                         Text(
-                            text = stringResource(
-                                R.string.matare_arsforbrukning_rad,
-                                ar.toString(),
-                                formateraMatareVarde(summa),
-                                matare.enhet,
-                            ),
+                            text = if (forandring != null) "$bas $forandring" else bas,
                             style = MaterialTheme.typography.bodyMedium,
                         )
                     }

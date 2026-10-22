@@ -290,4 +290,5 @@
     <string name="logg_filter_reparation">Reparation</string>
     <string name="logg_filter_ombyggnad">Ombyggnad</string>
     <string name="logg_inga_traffar">Inga poster matchar sökningen.</string>
+    <string name="matare_forandring">(%1$s %% mot året innan)</string>
 </resources>

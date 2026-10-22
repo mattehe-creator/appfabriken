@@ -294,4 +294,5 @@
     <string name="logg_filter_reparation">Repair</string>
     <string name="logg_filter_ombyggnad">Building</string>
     <string name="logg_inga_traffar">No entries match the search.</string>
+    <string name="matare_forandring">(%1$s %% vs. previous year)</string>
 </resources>
