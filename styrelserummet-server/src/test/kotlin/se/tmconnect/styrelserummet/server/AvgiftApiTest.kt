@@ -41,6 +41,17 @@ class AvgiftApiTest {
     }
 
     @Test
+    fun trappaIStegMotBehovet() {
+        val trappa = avgiftsTrappa(4_200_000, 4_970_000, 3, 5_200)
+        assertEquals(listOf(1, 2, 3), trappa.map { it.ar })
+        assertEquals(se.tmconnect.styrelserummet.regler.kronor(4_970_000), trappa.last().arsavgifter)
+        assertEquals("+6,1 %", trappa.first().hojning)
+        assertTrue(avgiftsTrappa(4_200_000, 4_970_000, 0, 5_200).isEmpty())
+        assertThrows(VerktygFel::class.java) { avgiftsTrappa(4_200_000, 4_970_000, 11, 5_200) }
+        assertThrows(VerktygFel::class.java) { avgiftsTrappa(0, 4_970_000, 3, 5_200) }
+    }
+
+    @Test
     fun rutter() = testApplication {
         application {
             module(ServerMiljo(dataRot = createTempDirectory("avgift"), port = 0, tolkare = FalskTolkare(), synkronJobb = true))

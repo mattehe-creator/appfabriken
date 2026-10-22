@@ -7,6 +7,7 @@ import se.tmconnect.styrelserummet.regler.avgiftsforandringTiondelsProcent
 import se.tmconnect.styrelserummet.regler.behovdaArsavgifter
 import se.tmconnect.styrelserummet.regler.fordelaEfterAndelstal
 import se.tmconnect.styrelserummet.regler.kronor
+import se.tmconnect.styrelserummet.regler.stegvisHojning
 
 /** Gratisverktyget Avgift: vilka årsavgifter budgeten kräver. Räknas i minnet, inget sparas. */
 
@@ -20,6 +21,8 @@ data class AvgiftRequest(
     val kvmBostadsratt: Long = 0,
     /** Andelstal per lägenhet som heltal (sidan skalar bort decimalerna). Tom = ingen fördelning. */
     val andelstal: List<Long> = emptyList(),
+    /** Höj i lika steg över så här många år (1–10). 0 = ingen trappa. */
+    val antalAr: Int = 0,
 )
 
 @Serializable
@@ -30,7 +33,26 @@ data class AvgiftSvar(
     val forandring: String,
     val anmarkning: String,
     val lagenheter: List<LagenhetAvgift> = emptyList(),
+    val trappa: List<TrappSteg> = emptyList(),
 )
+
+@Serializable
+data class TrappSteg(val ar: Int, val arsavgifter: String, val perKvmManad: String, val hojning: String)
+
+/** Årsavgifterna år för år från dagens nivå till behovet, med höjningen mot året innan. */
+fun avgiftsTrappa(nuvarande: Long, behov: Long, antalAr: Int, kvm: Long): List<TrappSteg> {
+    if (antalAr == 0) return emptyList()
+    if (antalAr !in 1..10) throw VerktygFel("Antal år ska vara mellan 1 och 10.")
+    if (nuvarande <= 0) throw VerktygFel("Ange dagens årsavgifter för att räkna en trappa.")
+    val steg = stegvisHojning(nuvarande, behov, antalAr) ?: return emptyList()
+    var fore = nuvarande
+    return steg.mapIndexed { i, belopp ->
+        val t = (belopp - fore) * 1000
+        val tiondelar = if (t >= 0) (2 * t + fore) / (2 * fore) else -((-2 * t + fore) / (2 * fore))
+        fore = belopp
+        TrappSteg(i + 1, kronor(belopp), perKvm(avgiftPerKvmOchManad(belopp, kvm)), tiondelsProcent(tiondelar))
+    }
+}
 
 @Serializable
 data class LagenhetAvgift(val nr: Int, val ar: String, val manad: String)
@@ -80,6 +102,7 @@ fun beraknaAvgiftSvar(req: AvgiftRequest): AvgiftSvar {
         nuvarandePerKvmManad = perKvm(avgiftPerKvmOchManad(req.nuvarandeArsavgifter, req.kvmBostadsratt)),
         forandring = tiondelsProcent(avgiftsforandringTiondelsProcent(u)),
         lagenheter = fordelaAvgift(behov, req.andelstal),
+        trappa = avgiftsTrappa(req.nuvarandeArsavgifter, behov, req.antalAr, req.kvmBostadsratt),
         anmarkning = "Utkast. Kapitalkostnader är räntor och amortering. Föreningen beslutar om budget och avgifter.",
     )
 }
