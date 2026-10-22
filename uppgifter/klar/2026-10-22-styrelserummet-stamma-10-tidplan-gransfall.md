@@ -26,3 +26,5 @@ gradle :styrelserummet:test --tests "*StammotidplanGransfallTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (JUnit 4-import, borttagen rotfil, testnamn och femte test via tidplan)
