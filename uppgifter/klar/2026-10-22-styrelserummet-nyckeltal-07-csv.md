@@ -34,3 +34,5 @@ gradle :styrelserummet:test --tests "*NyckeltalCsvTest"
 
 ## Gör inte
 - Ändra andra filer.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #517). Ersatt av 2026-10-22-styrelserummet-nyckeltal-07-csv-f2.md
