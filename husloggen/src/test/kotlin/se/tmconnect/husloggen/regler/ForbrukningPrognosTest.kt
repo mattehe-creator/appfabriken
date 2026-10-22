@@ -22,7 +22,7 @@ class ForbrukningPrognosTest {
     @Test
     fun testBaraEnAvlasning() {
         val avlasningar = listOf(
-            Avlasning(1, 1, LocalDate.of(2026, 1, 1), 10000000)
+            Avlasning(1, 1, LocalDate.of(2026, 1, 1), 0)
         )
         
         val resultat = arsprognos(avlasningar, 2026, LocalDate.of(2026, 10, 22))
@@ -54,11 +54,22 @@ class ForbrukningPrognosTest {
     @Test
     fun testForstaAvlasningInomAr() {
         val avlasningar = listOf(
-            Avlasning(1, 1, LocalDate.of(2026, 1, 1), 10000000),
-            Avlasning(2, 1, LocalDate.of(2026, 10, 22), 15000000)
+            Avlasning(1, 1, LocalDate.of(2026, 1, 1), 0),
+            Avlasning(2, 1, LocalDate.of(2026, 1, 15), 1000)
         )
         
         val resultat = arsprognos(avlasningar, 2026, LocalDate.of(2026, 10, 22))
-        assertEquals(10027473, resultat)
+        assertEquals(2469388, resultat)
+    }
+    
+    @Test
+    fun testIngenAvlasningForAr() {
+        val avlasningar = listOf(
+            Avlasning(1, 1, LocalDate.of(2025, 1, 1), 1000),
+            Avlasning(2, 1, LocalDate.of(2025, 12, 31), 2000)
+        )
+        
+        val resultat = arsprognos(avlasningar, 2026, LocalDate.of(2026, 10, 22))
+        assertNull(resultat)
     }
 }
