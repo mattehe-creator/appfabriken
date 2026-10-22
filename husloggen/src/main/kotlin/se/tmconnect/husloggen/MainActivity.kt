@@ -471,6 +471,7 @@ class MainActivity : ComponentActivity() {
                                     uppgiftNamn = uppgiftNamn,
                                     onAndra = { viewModel.visaAndraPost(post.id) },
                                     onTaBort = { viewModel.taBortPost(post.id) },
+                                    onKopiera = { viewModel.visaKopieraPost(post.id) },
                                     onTillbaka = viewModel::stangPostDetalj,
                                     bildFilnamn = bilder,
                                     bildUri = viewModel::bildUri,

@@ -301,4 +301,5 @@
     <string name="kommande_rubrik">The next twelve months</string>
     <string name="kommande_tomt">No recurring tasks yet. Add them under To do.</string>
     <string name="kommande_forsenad">Overdue, due %1$s</string>
+    <string name="knapp_kopiera_post">Copy to new entry</string>
 </resources>
