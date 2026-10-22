@@ -198,4 +198,13 @@ class VerktygApiTest {
             beraknaFondplanSvar(FondplanRequest(2026, 3, 0, 300_000, avsattningOkningProcent = 11.0))
         }
     }
+
+    @Test
+    fun kontrollerFangarTroligaInmatningsfel() {
+        assertTrue(beraknaNyckeltalSvar(NyckeltalRequest(listOf(exempel))).ar.single().kontroller.isEmpty())
+        val tusental = beraknaNyckeltalSvar(NyckeltalRequest(listOf(exempel.copy(arsavgifter = 4_200))))
+        assertTrue(tusental.ar.single().kontroller.any { "tusental" in it })
+        val utanYta = beraknaNyckeltalSvar(NyckeltalRequest(listOf(exempel.copy(kvmBostadsratt = 0))))
+        assertTrue(utanYta.ar.single().kontroller.any { "Ytan" in it })
+    }
 }

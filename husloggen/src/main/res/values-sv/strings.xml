@@ -47,6 +47,7 @@
     <string name="matare_enhet_etikett">Enhet: %1$s</string>
     <string name="matare_avlasningar_rubrik">Avläsningar</string>
     <string name="matare_arsforbrukning_rubrik">Förbrukning per kalenderår</string>
+    <string name="matare_prognos">Prognos för %1$s: cirka %2$s %3$s, räknat på avläsningarna hittills.</string>
     <string name="matare_arsforbrukning_rad">%1$s: %2$s %3$s</string>
     <string name="avlasning_varde_rad">%1$s %2$s</string>
     <string name="avlasning_forbrukning_rad">+%1$s %2$s sedan förra</string>

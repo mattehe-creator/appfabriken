@@ -47,6 +47,7 @@
     <string name="matare_enhet_etikett">Unit: %1$s</string>
     <string name="matare_avlasningar_rubrik">Readings</string>
     <string name="matare_arsforbrukning_rubrik">Consumption per calendar year</string>
+    <string name="matare_prognos">Forecast for %1$s: about %2$s %3$s, based on readings so far.</string>
     <string name="matare_arsforbrukning_rad">%1$s: %2$s %3$s</string>
     <string name="avlasning_varde_rad">%1$s %2$s</string>
     <string name="avlasning_forbrukning_rad">+%1$s %2$s since previous</string>

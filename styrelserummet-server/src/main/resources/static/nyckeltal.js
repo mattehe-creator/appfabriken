@@ -201,6 +201,16 @@ function visa(json) {
     });
     kropp.appendChild(tr);
   }
+  const kontroll = document.getElementById("kontroller");
+  kontroll.replaceChildren();
+  json.ar.forEach((a) => {
+    (a.kontroller || []).forEach((m) => {
+      const li = document.createElement("li");
+      li.textContent = `${a.ar}: ${m}`;
+      kontroll.appendChild(li);
+    });
+  });
+  kontroll.hidden = kontroll.childElementCount === 0;
   document.getElementById("anmarkning").textContent = json.anmarkning;
   if (window.nyckeltalCsvUrl) URL.revokeObjectURL(window.nyckeltalCsvUrl);
   window.nyckeltalCsvUrl = URL.createObjectURL(new Blob(["\uFEFF" + (json.csv || "")], { type: "text/csv;charset=utf-8" }));

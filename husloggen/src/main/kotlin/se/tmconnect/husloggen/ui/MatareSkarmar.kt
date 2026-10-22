@@ -50,6 +50,7 @@ import se.tmconnect.husloggen.regler.AvlasningFel
 import se.tmconnect.husloggen.regler.MatareFel
 import se.tmconnect.husloggen.regler.beraknaArsforbrukning
 import se.tmconnect.husloggen.regler.jamforArsforbrukning
+import se.tmconnect.husloggen.regler.arsprognos
 import se.tmconnect.husloggen.regler.beraknaAvlasningarMedForbrukning
 import se.tmconnect.husloggen.regler.formateraMatareVarde
 import se.tmconnect.karna.format.formateraDatum
@@ -132,6 +133,7 @@ fun MatareDetaljSkarm(
 ) {
     val medForbrukning = remember(avlasningar) { beraknaAvlasningarMedForbrukning(avlasningar) }
     val arsSumma = remember(medForbrukning) { beraknaArsforbrukning(medForbrukning) }
+    val prognos = remember(avlasningar, idag) { arsprognos(avlasningar, idag.year, idag) }
     var visarTaBort by remember { mutableStateOf(false) }
 
     if (visarTaBort) {
@@ -213,6 +215,19 @@ fun MatareDetaljSkarm(
                 }
                 TextButton(onClick = { visarTaBort = true }, modifier = Modifier.tryckyta48()) {
                     Text(text = stringResource(R.string.ta_bort_matare))
+                }
+            }
+            if (prognos != null) {
+                item {
+                    Text(
+                        text = stringResource(
+                            R.string.matare_prognos,
+                            idag.year.toString(),
+                            formateraMatareVarde(prognos),
+                            matare.enhet,
+                        ),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
                 }
             }
             if (arsSumma.isNotEmpty()) {
