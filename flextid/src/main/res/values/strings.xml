@@ -159,4 +159,7 @@
     <string name="saldo_tak">Maximum plus (hours, optional)</string>
     <string name="saldo_golv">Maximum minus (hours, optional)</string>
     <string name="saldo_grans_hjalp">For example 40 or 40:00. Leave empty if you have no limit.</string>
+    <string name="dela_vecka">Share week</string>
+    <string name="dela_vecka_rubrik">Week %1$d</string>
+    <string name="dela_vecka_summa">Total</string>
 </resources>

@@ -60,6 +60,8 @@ import se.tmconnect.flextid.R
 import se.tmconnect.flextid.regler.DagTyp
 import se.tmconnect.flextid.regler.SemesterSammanfattning
 import se.tmconnect.flextid.regler.PeriodSammanfattning
+import se.tmconnect.flextid.regler.VeckoTextTexter
+import se.tmconnect.flextid.regler.veckoText
 import se.tmconnect.flextid.regler.SaldoStatus
 import se.tmconnect.flextid.regler.saldoStatus
 import se.tmconnect.flextid.regler.dagensUtfall
@@ -387,6 +389,7 @@ internal fun VeckaInnehall(
     onDagClick: (LocalDate) -> Unit,
     sammanfattning: PeriodSammanfattning? = null,
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     val slut = veckaAnkar.plusDays(6)
     val veckosumma = rader.sumOf { it.utfallMin }
     Row(
@@ -430,6 +433,30 @@ internal fun VeckaInnehall(
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 8.dp),
         )
+    }
+    val veckoNummer = veckaAnkar.get(java.time.temporal.WeekFields.ISO.weekOfWeekBasedYear())
+    val rubrik = stringResource(R.string.dela_vecka_rubrik, veckoNummer)
+    val summaEtikett = stringResource(R.string.dela_vecka_summa)
+    val veckodagar = DayOfWeek.entries.associateWith { stringResource(veckodagStringRes(it)) }
+    val typer = DagTyp.entries.associateWith { stringResource(dagTypStringRes(it)) }
+    val delaRubrik = stringResource(R.string.dela_vecka)
+    TextButton(
+        onClick = {
+            val text = veckoText(
+                dagar = rader.mapNotNull { it.dag },
+                mandag = veckaAnkar,
+                texter = VeckoTextTexter(rubrik, veckodagar, typer, summaEtikett),
+                locale = locale,
+            )
+            val skicka = android.content.Intent(android.content.Intent.ACTION_SEND)
+                .setType("text/plain")
+                .putExtra(android.content.Intent.EXTRA_SUBJECT, rubrik)
+                .putExtra(android.content.Intent.EXTRA_TEXT, text)
+            context.startActivity(android.content.Intent.createChooser(skicka, delaRubrik))
+        },
+        modifier = Modifier.tryckyta48(),
+    ) {
+        Text(delaRubrik)
     }
     LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         items(rader) { rad ->
