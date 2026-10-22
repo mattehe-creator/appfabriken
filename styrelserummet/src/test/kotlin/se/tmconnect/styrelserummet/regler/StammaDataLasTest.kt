@@ -2,7 +2,6 @@ package se.tmconnect.styrelserummet.regler
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.time.LocalDate
 import kotlin.test.assertEquals
 
 class StammaDataLasTest {
