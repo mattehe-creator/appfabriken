@@ -1,10 +1,5 @@
 # Uppgift: midsommarafton som helgdag
 
-## Vad som saknades
-- `Helgdagar.kt` ändrades inte: midsommarafton ingår inte i `arSvenskHelgdag`.
-- `HelgdagarMidsommarTest.kt` committades tom (0 rader kod) — inga JUnit-tester mot exemplen i uppgiften.
-- Bygget kan bli grönt utan att uppgiften är utförd.
-
 uppdrag: uppdrag/2026-10-22-styrelserummet-stammotidplan.md
 försök: 2
 beror-på: 2026-10-22-styrelserummet-stamma-02-helgdag-roda-dagar.md
@@ -37,3 +32,5 @@ Kör:
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (lokal modell levererade tom testfil; Cursor implementerade Helgdagar, HelgdagarMidsommarTest och uppdaterade assert i HelgdagarRodDagTest)
