@@ -51,3 +51,5 @@ Kör:
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (Cursor implementerade Overlatelseavgift.kt och OverlatelseavgiftBeraknaTest.kt; lokal modell levererade ingen kod)
