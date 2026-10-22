@@ -1,7 +1,12 @@
 # Uppgift: Kommande jobb per månad
 
+## Vad som saknades (försök 1)
+- Grenen innehöll ingen kod för denna uppgift — bara flytt av uppgiftsfil till `uppgifter/pagar/`.
+- Lägg till `data class KommandeJobb`, funktionen `kommandePerManad` i `Kommande.kt` (behåll `forekomster` oförändrad).
+- Ersätt eller utöka `KommandeTest.kt` med minst ett test som bygger uppgifter A/B/C enligt exemplen nedan och assertar hela kartan (månader, datum, `forsenad`, sortering) mot listorna i exemplen.
+
 uppdrag: uppdrag/claude/2026-10-22-husloggen-kommande.md
-försök: 1
+försök: 2
 beror-på: 2026-10-22-husloggen-kommande-01-forekomster-f2.md
 
 ## Ändra bara dessa filer
@@ -12,11 +17,9 @@ beror-på: 2026-10-22-husloggen-kommande-01-forekomster-f2.md
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/data/Uppgift.kt
 
 ## Uppgift
-```kotlin
 data class KommandeJobb(val uppgiftId: Long, val namn: String, val datum: LocalDate, val forsenad: Boolean)
 
 fun kommandePerManad(uppgifter: List<Uppgift>, idag: LocalDate, manader: Int = 12): Map<YearMonth, List<KommandeJobb>>
-```
 
 - Intervallet är `idag` till och med `idag.plusMonths(manader).minusDays(1)`.
 - För varje uppgift: `forekomster(it.senastGjord, it.startDatum, it.intervallManader, idag, slut)`. Varje datum blir ett `KommandeJobb`; `forsenad` är sant om datumet ligger före `idag`.
@@ -33,9 +36,14 @@ Idag 2026-10-22. Uppgifter: A "Rensa hängrännor" senast 2025-10-01 intervall 1
 - september 2027: [B 2027-09-15]
 - oktober 2027: [A 2027-10-01]
 
+I test: skapa tre `Uppgift` med lämpliga `id`, `namn`, `senastGjord`, `startDatum`, `intervallManader` och jämför `kommandePerManad(lista, LocalDate.of(2026, 10, 22))` mot förväntade nycklar och listor ovan (använd `org.junit.Assert.assertEquals`).
+
 ## Test som ska gå igenom
 gradle :husloggen:testDebugUnitTest --tests "*KommandeTest"
 
+Använd `org.junit.Test` och `org.junit.Assert` (inte `kotlin.test`).
+
 ## Gör inte
 - Ändra andra filer eller `forekomster`.
+- Lämna filerna utan ny kod.
 - Lägga till beroenden.
