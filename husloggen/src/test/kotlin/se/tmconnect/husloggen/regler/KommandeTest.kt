@@ -1,8 +1,10 @@
 package se.tmconnect.husloggen.regler
 
 import java.time.LocalDate
+import java.time.YearMonth
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import se.tmconnect.husloggen.data.Uppgift
 
 class KommandeTest {
 
@@ -85,5 +87,67 @@ class KommandeTest {
             LocalDate.of(2026, 3, 1),
             LocalDate.of(2027, 2, 28),
         )
+    }
+
+    @Test
+    fun `kommandePerManad grupperar och sorterar enligt exemplen A B C`() {
+        val idag = LocalDate.of(2026, 10, 22)
+        val uppgifter =
+            listOf(
+                Uppgift(
+                    id = 1L,
+                    namn = "Rensa hängrännor",
+                    senastGjord = LocalDate.of(2025, 10, 1),
+                    startDatum = LocalDate.of(2025, 10, 1),
+                    intervallManader = 12,
+                ),
+                Uppgift(
+                    id = 2L,
+                    namn = "Byta filter",
+                    senastGjord = LocalDate.of(2026, 9, 15),
+                    startDatum = LocalDate.of(2026, 9, 15),
+                    intervallManader = 3,
+                ),
+                Uppgift(
+                    id = 3L,
+                    namn = "Sotning",
+                    senastGjord = null,
+                    startDatum = LocalDate.of(2027, 3, 1),
+                    intervallManader = 24,
+                ),
+            )
+
+        val result = kommandePerManad(uppgifter, idag)
+
+        val expected =
+            mapOf(
+                YearMonth.of(2026, 10) to
+                    listOf(
+                        KommandeJobb(1L, "Rensa hängrännor", LocalDate.of(2026, 10, 1), true),
+                    ),
+                YearMonth.of(2026, 12) to
+                    listOf(
+                        KommandeJobb(2L, "Byta filter", LocalDate.of(2026, 12, 15), false),
+                    ),
+                YearMonth.of(2027, 3) to
+                    listOf(
+                        KommandeJobb(3L, "Sotning", LocalDate.of(2027, 3, 1), false),
+                        KommandeJobb(2L, "Byta filter", LocalDate.of(2027, 3, 15), false),
+                    ),
+                YearMonth.of(2027, 6) to
+                    listOf(
+                        KommandeJobb(2L, "Byta filter", LocalDate.of(2027, 6, 15), false),
+                    ),
+                YearMonth.of(2027, 9) to
+                    listOf(
+                        KommandeJobb(2L, "Byta filter", LocalDate.of(2027, 9, 15), false),
+                    ),
+                YearMonth.of(2027, 10) to
+                    listOf(
+                        KommandeJobb(1L, "Rensa hängrännor", LocalDate.of(2027, 10, 1), false),
+                    ),
+            )
+
+        assertEquals(expected, result)
     }
 }
