@@ -42,3 +42,5 @@ gradle :styrelserummet:testDebugUnitTest --tests "*FondplanCsvTest"
 - Ändra `CsvExport.kt` eller `Fondplan.kt`.
 - Lägga till beroenden.
 - Använda `kotlin.test`.
+
+utfall: godkänd 2026-10-22 (hela implementationen — PR #485 hade ingen kod)
