@@ -35,3 +35,5 @@ gradle :styrelserummet:test --tests "*StammaTidplanCsvTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #589). Ersatt av 2026-10-22-styrelserummet-stamma-18-tidplan-csv-f2.md
