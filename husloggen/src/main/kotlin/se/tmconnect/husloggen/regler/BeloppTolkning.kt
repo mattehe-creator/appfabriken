@@ -3,6 +3,15 @@ package se.tmconnect.husloggen.regler
 private const val MAX_KRONOR = 99_999_999L
 private const val MAX_ORE = MAX_KRONOR * 100
 
+/** Valfritt heltal öre: tom sträng → null, negativt eller ogiltigt → null. */
+fun tolkaValfrittOreHeltal(text: String): Long? {
+    val trimmed = text.trim()
+    if (trimmed.isEmpty()) return null
+    val varde = trimmed.toLongOrNull() ?: return null
+    if (varde < 0) return null
+    return varde
+}
+
 fun tolkaBeloppTillOre(text: String): Long? {
     val trimmed = text.trim()
     if (trimmed.isEmpty()) return null

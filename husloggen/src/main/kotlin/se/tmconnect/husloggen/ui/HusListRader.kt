@@ -50,6 +50,7 @@ private fun appfabrikStatusFran(status: UppgiftStatus): AppfabrikStatus =
 @Composable
 fun UppgiftListRad(
     uppgift: Uppgift,
+    senasteKostnadOre: Long?,
     onClick: () -> Unit,
     onMarkeraGjord: () -> Unit,
     modifier: Modifier = Modifier,

@@ -68,6 +68,7 @@ import se.tmconnect.husloggen.regler.valideraMatare
 import se.tmconnect.husloggen.regler.beloppOreTillFaltText
 import se.tmconnect.husloggen.regler.sorteraUppgifter
 import se.tmconnect.husloggen.regler.tolkaBeloppTillOre
+import se.tmconnect.husloggen.regler.tolkaValfrittOreHeltal
 import se.tmconnect.husloggen.regler.valideraPost
 import se.tmconnect.husloggen.regler.valideraUppgift
 import se.tmconnect.husloggen.paminnelse.HusPaminnelseKalla
@@ -98,6 +99,7 @@ data class MatareFormularTillstand(
     val redigerarId: Long = 0L,
     val namn: String = "",
     val enhet: String = "",
+    val prisOrePerEnhetText: String = "",
     val anteckning: String = "",
     val valideringsFel: MatareFel? = null,
 )
@@ -1015,6 +1017,25 @@ class HusViewModel(
         uppdateraMatareFormular { it.copy(anteckning = text) }
     }
 
+    fun uppdateraMatarePrisOrePerEnhet(text: String) {
+        uppdateraMatareFormular { it.copy(prisOrePerEnhetText = text, valideringsFel = null) }
+    }
+
+    fun visaAndraMatare(matareId: Long) {
+        viewModelScope.launch {
+            val rad = repository.hamtaMatare(matareId) ?: return@launch
+            _matareDetaljId.value = null
+            _matareFormular.value =
+                MatareFormularTillstand(
+                    redigerarId = rad.id,
+                    namn = rad.namn,
+                    enhet = rad.enhet,
+                    prisOrePerEnhetText = rad.prisOrePerEnhet?.toString().orEmpty(),
+                    anteckning = rad.anteckning.orEmpty(),
+                )
+        }
+    }
+
     fun appliceraMatareForslag(namn: String, enhet: String) {
         uppdateraMatareFormular {
             it.copy(namn = namn, enhet = enhet, valideringsFel = null)
@@ -1028,6 +1049,13 @@ class HusViewModel(
             _matareFormular.value = tillstand.copy(valideringsFel = fel)
             return
         }
+        val prisOgiltigt =
+            tillstand.prisOrePerEnhetText.trim().isNotEmpty() &&
+                tolkaValfrittOreHeltal(tillstand.prisOrePerEnhetText) == null
+        if (prisOgiltigt) {
+            _matareFormular.value = tillstand.copy(valideringsFel = MatareFel.PrisOgiltigt)
+            return
+        }
         viewModelScope.launch {
             val befintlig =
                 if (tillstand.redigerarId != 0L) repository.hamtaMatare(tillstand.redigerarId) else null
@@ -1039,6 +1067,7 @@ class HusViewModel(
                     namn = tillstand.namn.trim(),
                     enhet = tillstand.enhet.trim(),
                     anteckning = tillstand.anteckning.trim().ifEmpty { null },
+                    prisOrePerEnhet = tolkaValfrittOreHeltal(tillstand.prisOrePerEnhetText),
                     skapad = befintlig?.skapad ?: System.currentTimeMillis(),
                 ),
             )

@@ -34,6 +34,7 @@ import se.tmconnect.husloggen.regler.arStodjerGransbelopp
 import se.tmconnect.husloggen.regler.grupperaPerAr
 import se.tmconnect.husloggen.regler.kanVaraForbattring
 import se.tmconnect.husloggen.regler.postBeloppForSammanstallningOre
+import se.tmconnect.husloggen.regler.KommandeKostnad
 import se.tmconnect.husloggen.regler.summeraPerAr
 import se.tmconnect.karna.format.formateraDatum
 import se.tmconnect.karna.format.formateraPrisKr
@@ -41,6 +42,7 @@ import se.tmconnect.karna.format.formateraPrisKr
 @Composable
 fun SammanstallningSkarm(
     poster: List<Post>,
+    kommandeKostnad: KommandeKostnad,
     forsaljningsAr: Int,
     onForsaljningsArAndras: (Int) -> Unit,
     locale: Locale,
@@ -63,6 +65,49 @@ fun SammanstallningSkarm(
         contentPadding = PaddingValues(bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        item(key = "kommande-kostnad") {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = stringResource(R.string.sammanstallning_kommande_kostnad_rubrik),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    val totaltKommande = kommandeKostnad.antalMedKostnad + kommandeKostnad.antalUtanKostnad
+                    if (totaltKommande == 0) {
+                        Text(
+                            text = stringResource(R.string.sammanstallning_kommande_kostnad_ingen),
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(top = 8.dp),
+                        )
+                    } else {
+                        if (kommandeKostnad.antalMedKostnad > 0) {
+                            Text(
+                                text = stringResource(
+                                    R.string.sammanstallning_kommande_kostnad_summa,
+                                    formateraPrisKr(kommandeKostnad.summaOre, locale),
+                                ),
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(top = 8.dp),
+                            )
+                        }
+                        Text(
+                            text = stringResource(
+                                R.string.sammanstallning_kommande_kostnad_forklaring,
+                                kommandeKostnad.antalMedKostnad,
+                                kommandeKostnad.antalUtanKostnad,
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 4.dp),
+                        )
+                    }
+                }
+            }
+        }
+
         item(key = "forsaljningsar") {
             Row(
                 modifier = Modifier.fillMaxWidth(),

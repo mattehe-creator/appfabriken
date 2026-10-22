@@ -56,7 +56,10 @@ import se.tmconnect.husloggen.export.husHistorikPdfFilnamn
 import se.tmconnect.husloggen.export.skatteKallorText
 import se.tmconnect.husloggen.export.sakerhetskopiaFilnamn
 import se.tmconnect.husloggen.regler.ForbattringMojlighet
+import se.tmconnect.husloggen.regler.kommandePerManad
 import se.tmconnect.husloggen.regler.postBeloppForSammanstallningOre
+import se.tmconnect.husloggen.regler.senasteKostnadPerUppgift
+import se.tmconnect.husloggen.regler.uppskattadKostnadKommande
 import se.tmconnect.karna.format.formateraDatum
 import se.tmconnect.karna.format.formateraPrisKr
 import java.util.Locale
@@ -277,6 +280,13 @@ class MainActivity : ComponentActivity() {
                 val dokumentOgiltigTypText = stringResource(R.string.dokument_ogiltig_typ)
                 val dokumentKundeInteLaggasTillText = stringResource(R.string.dokument_kunde_inte_laggas_till)
                 val idag = LocalDate.now()
+                val senasteKostnadPerUppgiftMap = remember(poster) { senasteKostnadPerUppgift(poster) }
+                val kommandeKostnad = remember(uppgifter, senasteKostnadPerUppgiftMap, idag) {
+                    uppskattadKostnadKommande(
+                        kommandePerManad(uppgifter, idag),
+                        senasteKostnadPerUppgiftMap,
+                    )
+                }
                 val snackbarHostState = remember { SnackbarHostState() }
 
                 LaunchedEffect(viewModel) {
@@ -395,6 +405,7 @@ class MainActivity : ComponentActivity() {
                                 tillstand = matareFormular!!,
                                 onNamnAndras = viewModel::uppdateraMatareNamn,
                                 onEnhetAndras = viewModel::uppdateraMatareEnhet,
+                                onPrisOrePerEnhetAndras = viewModel::uppdateraMatarePrisOrePerEnhet,
                                 onAnteckningAndras = viewModel::uppdateraMatareAnteckning,
                                 onValjForslag = viewModel::appliceraMatareForslag,
                                 onSpara = viewModel::sparaMatareFormular,
@@ -418,6 +429,7 @@ class MainActivity : ComponentActivity() {
                                             avlasningCsvFilnamn(matareRad.namn, idag),
                                         )
                                     },
+                                    onAndraMatare = { viewModel.visaAndraMatare(matareRad.id) },
                                     onTaBortMatare = { viewModel.taBortMatare(matareRad.id) },
                                 )
                             } else {
@@ -491,6 +503,7 @@ class MainActivity : ComponentActivity() {
                             val tillstand = formular!!
                             UppgiftFormularSkarm(
                                 tillstand = tillstand,
+                                senasteKostnadOre = senasteKostnadPerUppgiftMap[tillstand.redigerarId],
                                 onNamnAndras = viewModel::uppdateraFormularNamn,
                                 onIntervallAndras = viewModel::uppdateraFormularIntervall,
                                 onStartdatumAndras = viewModel::uppdateraFormularStartdatum,
@@ -598,6 +611,8 @@ class MainActivity : ComponentActivity() {
                                 onExportHistorikCsv = {
                                     createHistorikCsvContract.launch(husHistorikCsvFilnamn(idag))
                                 },
+                                senasteKostnadPerUppgift = senasteKostnadPerUppgiftMap,
+                                kommandeKostnad = kommandeKostnad,
                             )
                         }
                     }

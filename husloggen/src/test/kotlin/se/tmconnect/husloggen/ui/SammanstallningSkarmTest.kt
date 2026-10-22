@@ -22,6 +22,7 @@ import org.robolectric.annotation.Config
 import se.tmconnect.husloggen.R
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.PostTyp
+import se.tmconnect.husloggen.regler.KommandeKostnad
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28], qualifiers = "sv-rSE")
@@ -80,6 +81,7 @@ class SammanstallningSkarmTest {
                 Box(modifier = Modifier.fillMaxSize()) {
                     SammanstallningSkarm(
                         poster = poster,
+                        kommandeKostnad = KommandeKostnad(0, 0, 0),
                         forsaljningsAr = 2026,
                         onForsaljningsArAndras = {},
                         locale = Locale.forLanguageTag("sv-SE"),
@@ -136,6 +138,7 @@ class SammanstallningSkarmTest {
                 Box(modifier = Modifier.fillMaxSize()) {
                     SammanstallningSkarm(
                         poster = poster,
+                        kommandeKostnad = KommandeKostnad(290_000, 3, 1),
                         forsaljningsAr = 2026,
                         onForsaljningsArAndras = {},
                         locale = Locale.US,

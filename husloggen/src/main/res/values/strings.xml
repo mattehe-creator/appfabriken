@@ -35,6 +35,7 @@
     <string name="tom_matare">No meters yet. Add electricity, water, heating or other readings you track yourself.</string>
     <string name="tom_avlasningar">No readings yet.</string>
     <string name="ny_matare_rubrik">New meter</string>
+    <string name="andra_matare_rubrik">Edit meter</string>
     <string name="ny_avlasning_rubrik">New reading</string>
     <string name="falt_enhet">Unit</string>
     <string name="falt_avlasning_varde">Reading</string>
@@ -42,6 +43,11 @@
     <string name="falt_forbrukning">Consumption since previous</string>
     <string name="fel_matare_namn_saknas">Enter a name</string>
     <string name="fel_matare_enhet_saknas">Enter a unit</string>
+    <string name="fel_matare_pris_ogiltigt">Enter a whole number of öre, or leave empty</string>
+    <string name="falt_matare_pris_ore">Price (öre per unit)</string>
+    <string name="falt_matare_pris_ore_hjalp">Optional. Example: 150 öre per kWh. Used to estimate cost from consumption.</string>
+    <string name="matare_pris_etikett">Price: %1$s öre per %2$s</string>
+    <string name="avlasning_kostnad_rad">Cost: %1$s</string>
     <string name="fel_avlasning_varde">Invalid reading</string>
     <string name="fel_avlasning_datum">There is already a reading on this date</string>
     <string name="matare_enhet_etikett">Unit: %1$s</string>
@@ -91,6 +97,7 @@
     <string name="knapp_andra">Edit</string>
     <string name="ny_uppgift_rubrik">New task</string>
     <string name="andra_uppgift_rubrik">Edit task</string>
+    <string name="uppgift_senaste_kostnad">Last cost: %1$s</string>
     <string name="spara">Save</string>
     <string name="avbryt">Cancel</string>
     <string name="ta_bort">Delete</string>
@@ -206,6 +213,10 @@
     <string name="auto_kor_nu">Copy now</string>
     <string name="flik_sammanstallning">Summary</string>
     <string name="sammanstallning_rubrik">Summary</string>
+    <string name="sammanstallning_kommande_kostnad_rubrik">Estimated costs next 12 months</string>
+    <string name="sammanstallning_kommande_kostnad_summa">About %1$s</string>
+    <string name="sammanstallning_kommande_kostnad_forklaring">%1$d upcoming tasks with a known last cost, %2$d without.</string>
+    <string name="sammanstallning_kommande_kostnad_ingen">No upcoming tasks in the next 12 months.</string>
     <string name="sammanstallning_forsaljningsar">Sale year</string>
     <string name="sammanstallning_ar_summa">%1$s</string>
     <string name="sammanstallning_typ_summa">%1$s: %2$s</string>
