@@ -39,6 +39,7 @@ function visaBetalning() {
   document.getElementById("betal-sektion").hidden = !kraver;
   document.getElementById("csv").hidden = !!kraver;
   document.getElementById("skrivUt").hidden = !!kraver;
+  document.getElementById("plan-csv").hidden = !!kraver;
   if (kraver) {
     document.getElementById("betal-text").textContent =
       `Granska och rätta utkastet här utan kostnad. CSV och utskrift för revisorn kostar ${betalning.prisKr} kr för det här utkastet. Du betalar hos Stripe och får ett kvitto till föreningens e-post.`;
@@ -99,6 +100,7 @@ async function hamta() {
   document.getElementById("tabell-sektion").hidden = false;
   document.getElementById("jamforelse-sektion").hidden = false;
   document.getElementById("csv").href = `/api/jobb/${id}.csv`;
+  document.getElementById("plan-csv").href = `/api/jobb/${id}/plan.csv`;
   document.getElementById("skrivUt").onclick = () => window.open(`/j/${id}/utskrift`, "_blank", "noopener");
 }
 
