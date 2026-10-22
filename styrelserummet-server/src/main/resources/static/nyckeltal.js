@@ -202,5 +202,8 @@ function visa(json) {
     kropp.appendChild(tr);
   }
   document.getElementById("anmarkning").textContent = json.anmarkning;
+  if (window.nyckeltalCsvUrl) URL.revokeObjectURL(window.nyckeltalCsvUrl);
+  window.nyckeltalCsvUrl = URL.createObjectURL(new Blob(["\uFEFF" + (json.csv || "")], { type: "text/csv;charset=utf-8" }));
+  document.getElementById("csv").href = window.nyckeltalCsvUrl;
   document.getElementById("resultat").hidden = false;
 }

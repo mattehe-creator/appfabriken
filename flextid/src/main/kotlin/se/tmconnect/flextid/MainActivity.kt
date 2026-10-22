@@ -33,6 +33,8 @@ import se.tmconnect.flextid.export.ManadsCsvTexter
 import se.tmconnect.flextid.export.manadsCsvFilnamn
 import se.tmconnect.flextid.export.manadsPdfFilnamn
 import se.tmconnect.flextid.export.manadsRapportTexter
+import se.tmconnect.flextid.ui.helgdagNamnRes
+import se.tmconnect.flextid.regler.DagTyp
 import se.tmconnect.flextid.export.normaltidManadEtikett
 import se.tmconnect.flextid.export.skrivManadsPdf
 import se.tmconnect.flextid.paminnelse.FlextidPaminnelseInstallningarLager
@@ -104,7 +106,17 @@ class MainActivity : ComponentActivity() {
                                     getString(R.string.csv_arbetad),
                                     getString(R.string.csv_utfall),
                                     getString(R.string.csv_typ),
+                                    getString(R.string.csv_helgdag),
                                 ),
+                            typEtiketter =
+                                mapOf(
+                                    DagTyp.ARBETE to getString(R.string.dagtyp_arbete),
+                                    DagTyp.LEDIG to getString(R.string.dagtyp_ledig),
+                                    DagTyp.SEMESTER to getString(R.string.dagtyp_semester),
+                                    DagTyp.SJUK to getString(R.string.dagtyp_sjuk),
+                                    DagTyp.HELGDAG to getString(R.string.dagtyp_helgdag),
+                                ),
+                            helgdagNamn = { h -> helgdagNamnRes(h.namn)?.let { getString(it) } ?: h.namn },
                         )
                     val csv = viewModel.skapaManadsCsv(texter, locale)
                     skrivCsvMedBom(out, csv)
