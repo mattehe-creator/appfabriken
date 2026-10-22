@@ -51,3 +51,5 @@ Skriv minst två `@Test` med `org.junit.Test` och `org.junit.Assert.assertEquals
 - Ändra andra filer.
 - Lägga till beroenden.
 - Använda `kotlin.test`.
+
+utfall: godkänd 2026-10-22 (Cursor implementerade ArsOversikt och tester — lokala modellens försök 2 var tomma filer)
