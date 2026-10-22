@@ -167,4 +167,11 @@
     <string name="csv_manad">Månad</string>
     <string name="csv_saldo">Saldo</string>
     <string name="exportera_ars_csv">Årsöversikt (CSV)</string>
+    <string name="ars_oversikt_rubrik">Årsöversikt</string>
+    <string name="ars_oversikt_ar">Årsöversikt %1$d</string>
+    <string name="ars_oversikt_oppna">Visa årsöversikt</string>
+    <string name="ars_prognos_rubrik">Uppskattat saldo vid årets slut</string>
+    <string name="ars_prognos_forklaring">Bygger på ditt saldo i dag och hur utfallet utvecklats hittills i år, projicerat resten av året i samma takt.</string>
+    <string name="ars_prognos_ingen_data">För lite underlag än (minst 30 dagar av året krävs).</string>
+    <string name="navigera_tillbaka">Tillbaka</string>
 </resources>

@@ -119,20 +119,43 @@ fun FlextidStartSkarm(
     val aftnarLediga by viewModel.aftnarLediga.collectAsState()
     val semesterdagarPerAr by viewModel.semesterdagarPerAr.collectAsState()
     val semesterarStartmanad by viewModel.semesterarStartmanad.collectAsState()
+    val arsOversiktTillstand by viewModel.arsOversiktTillstand.collectAsState()
+    var visaArsOversikt by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.app_name)) },
+                title = {
+                    Text(
+                        if (visaArsOversikt) {
+                            stringResource(R.string.ars_oversikt_ar, arsOversiktTillstand.ar)
+                        } else {
+                            stringResource(R.string.app_name)
+                        },
+                    )
+                },
+                navigationIcon = {
+                    if (visaArsOversikt) {
+                        IconButton(onClick = { visaArsOversikt = false }) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.navigera_tillbaka),
+                            )
+                        }
+                    }
+                },
             )
         },
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    selected = flik == FlextidFlik.IDAG,
-                    onClick = { flik = FlextidFlik.IDAG },
+                    selected = flik == FlextidFlik.IDAG && !visaArsOversikt,
+                    onClick = {
+                        visaArsOversikt = false
+                        flik = FlextidFlik.IDAG
+                    },
                     icon = {
                         Icon(
                             Icons.Default.Home,
@@ -142,8 +165,11 @@ fun FlextidStartSkarm(
                     label = { Text(stringResource(R.string.flik_idag)) },
                 )
                 NavigationBarItem(
-                    selected = flik == FlextidFlik.VECKA,
-                    onClick = { flik = FlextidFlik.VECKA },
+                    selected = flik == FlextidFlik.VECKA && !visaArsOversikt,
+                    onClick = {
+                        visaArsOversikt = false
+                        flik = FlextidFlik.VECKA
+                    },
                     icon = {
                         Icon(
                             Icons.AutoMirrored.Filled.List,
@@ -153,8 +179,11 @@ fun FlextidStartSkarm(
                     label = { Text(stringResource(R.string.flik_vecka)) },
                 )
                 NavigationBarItem(
-                    selected = flik == FlextidFlik.INSTALLNINGAR,
-                    onClick = { flik = FlextidFlik.INSTALLNINGAR },
+                    selected = flik == FlextidFlik.INSTALLNINGAR && !visaArsOversikt,
+                    onClick = {
+                        visaArsOversikt = false
+                        flik = FlextidFlik.INSTALLNINGAR
+                    },
                     icon = {
                         Icon(
                             Icons.Default.Settings,
@@ -173,8 +202,14 @@ fun FlextidStartSkarm(
                     .padding(padding)
                     .padding(horizontal = 16.dp),
         ) {
-            when (flik) {
-                FlextidFlik.IDAG ->
+            when {
+                visaArsOversikt ->
+                    ArsOversiktInnehall(
+                        tillstand = arsOversiktTillstand,
+                        locale = locale,
+                        onExporteraCsv = onExporteraArsCsv,
+                    )
+                flik == FlextidFlik.IDAG ->
                     IdagInnehall(
                         saldo = saldo,
                         dag = idagDag,
@@ -190,7 +225,7 @@ fun FlextidStartSkarm(
                         onRastChange = viewModel::uppdateraIdagRast,
                         onRedigera = { viewModel.oppnaDagFormular(LocalDate.now()) },
                     )
-                FlextidFlik.VECKA ->
+                flik == FlextidFlik.VECKA ->
                     VeckaInnehall(
                         veckaAnkar = veckaAnkar,
                         rader = veckaRader,
@@ -201,7 +236,7 @@ fun FlextidStartSkarm(
                         onDennaVecka = viewModel::gaTillDennaVecka,
                         onDagClick = viewModel::oppnaDagFormular,
                     )
-                FlextidFlik.INSTALLNINGAR ->
+                flik == FlextidFlik.INSTALLNINGAR ->
                     InstallningarInnehall(
                         installning = installning,
                         exportArManad = exportArManad,
@@ -222,6 +257,10 @@ fun FlextidStartSkarm(
                         onExportManad = viewModel::sattExportArManad,
                         onExporteraCsv = onExporteraCsv,
                         onExporteraArsCsv = onExporteraArsCsv,
+                        onVisaArsOversikt = {
+                            flik = FlextidFlik.INSTALLNINGAR
+                            visaArsOversikt = true
+                        },
                         onExporteraPdf = onExporteraPdf,
                         onExporteraJson = onExporteraSakerhetskopia,
                         onImporteraJson = onImporteraSakerhetskopia,
@@ -525,6 +564,7 @@ internal fun InstallningarInnehall(
     onExportManad: (YearMonth) -> Unit,
     onExporteraCsv: () -> Unit,
     onExporteraArsCsv: () -> Unit = {},
+    onVisaArsOversikt: () -> Unit = {},
     onExporteraPdf: () -> Unit,
     onExporteraJson: () -> Unit,
     onImporteraJson: () -> Unit,
@@ -752,6 +792,15 @@ internal fun InstallningarInnehall(
                         label = { Text(stringResource(temaStringRes(lage))) },
                     )
                 }
+            }
+        }
+        item {
+            Text(stringResource(R.string.ars_oversikt_rubrik), style = MaterialTheme.typography.titleMedium)
+            OutlinedButton(
+                onClick = onVisaArsOversikt,
+                modifier = Modifier.tryckyta48().fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.ars_oversikt_oppna))
             }
         }
         item {
