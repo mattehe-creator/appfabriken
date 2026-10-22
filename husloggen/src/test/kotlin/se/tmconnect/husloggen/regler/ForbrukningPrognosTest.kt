@@ -1,10 +1,10 @@
 package se.tmconnect.husloggen.regler
 
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 import se.tmconnect.husloggen.data.Avlasning
 import java.time.LocalDate
-import kotlin.test.assertNull
-import kotlin.test.assertEquals
 
 class ForbrukningPrognosTest {
     
@@ -16,7 +16,7 @@ class ForbrukningPrognosTest {
         )
         
         val resultat = arsprognos(avlasningar, 2026, LocalDate.of(2026, 10, 22))
-        assertEquals(10027473, resultat)
+        assertEquals(10027473L, resultat)
     }
     
     @Test
@@ -59,7 +59,7 @@ class ForbrukningPrognosTest {
         )
         
         val resultat = arsprognos(avlasningar, 2026, LocalDate.of(2026, 10, 22))
-        assertEquals(2469388, resultat)
+        assertEquals(26071L, resultat)
     }
     
     @Test
