@@ -7,12 +7,12 @@ fun senasteStammodag(arsslut: LocalDate): LocalDate {
 }
 
 fun tidigasteKallelsedag(stammodatum: LocalDate): LocalDate {
-    return stammodatum.minusWeeks(6)
+    return stammodatum.minusWeeks(6L)
 }
 
 fun senasteKallelsedag(stammodatum: LocalDate, veckorForeStamma: Int): LocalDate {
     if (veckorForeStamma !in 2..6) {
         throw IllegalArgumentException("Antal veckor före stämman måste vara mellan 2 och 6")
     }
-    return stammodatum.minusWeeks(veckorForeStamma)
+    return stammodatum.minusWeeks(veckorForeStamma.toLong())
 }
