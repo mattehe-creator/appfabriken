@@ -52,3 +52,5 @@ Minst två `@Test` (JUnit 4: `org.junit.Test`, `org.junit.Assert.assertEquals`):
 ## Gör inte
 - Ändra andra filer.
 - Använda flyttal eller `kotlin.test`.
+
+utfall: godkänd 2026-10-22 (hela NyckeltalRader.kt och NyckeltalRaderTest.kt; tomma filer från lokal modell försök 2)
