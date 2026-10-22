@@ -41,3 +41,5 @@ gradle :styrelserummet:testDebugUnitTest --tests "*AvskrivningsplanCsvTest"
 - Ändra `CsvExport.kt`.
 - Lägga till beroenden.
 - Använda `kotlin.test`.
+
+utfall: godkänd 2026-10-22 (hela implementationen — PR hade bara uppgiftsflytt)
