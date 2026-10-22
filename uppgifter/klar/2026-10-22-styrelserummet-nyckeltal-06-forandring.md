@@ -33,3 +33,5 @@ gradle :styrelserummet:test --tests "*NyckeltalForandringTest"
 ## Gör inte
 - Ändra andra filer.
 - Använda flyttal.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #495). Ersatt av 2026-10-22-styrelserummet-nyckeltal-06-forandring-f2.md
