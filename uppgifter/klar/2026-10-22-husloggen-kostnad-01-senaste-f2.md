@@ -51,3 +51,5 @@ gradle :husloggen:testDebugUnitTest --tests "*UppgiftKostnadTest"
 ## Gör inte
 - Ändra andra filer.
 - Lämna tomma källfiler.
+
+utfall: godkänd 2026-10-22 (lokal modell levererade ingen kod; Cursor implementerade UppgiftKostnad.kt och UppgiftKostnadTest.kt)
