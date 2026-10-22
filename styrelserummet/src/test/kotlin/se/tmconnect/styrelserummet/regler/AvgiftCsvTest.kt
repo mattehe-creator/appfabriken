@@ -1,42 +1,38 @@
 package se.tmconnect.styrelserummet.regler
 
-import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 class AvgiftCsvTest {
-    
+
     @Test
-    fun `test both lists not empty`() {
+    fun badaListorGerLagenhetOchTrappaEnligtExempel() {
         val result = avgiftCsv(listOf(2_485_000, 2_485_000), listOf(4_456_667, 4_970_000))
-        val expected = "Lägenhet;Per år;Per månad\n1;2485000;207083\n2;2485000;207083\n\nÅr;Årsavgifter\n1;4456667\n2;4970000\n"
+        val expected =
+            "Lägenhet;Per år;Per månad\n1;2485000;207083\n2;2485000;207083\n\nÅr;Årsavgifter\n1;4456667\n2;4970000\n"
         assertEquals(expected, result)
     }
-    
+
     @Test
-    fun `test only trap list not empty`() {
+    fun baraTrappaEnligtExempel() {
         val result = avgiftCsv(emptyList(), listOf(100))
-        val expected = "År;Årsavgifter\n1;100\n"
-        assertEquals(expected, result)
+        assertEquals("År;Årsavgifter\n1;100\n", result)
     }
-    
+
     @Test
-    fun `test both lists empty`() {
-        val result = avgiftCsv(emptyList(), emptyList())
-        val expected = ""
-        assertEquals(expected, result)
+    fun badaTommaGerTomStrang() {
+        assertEquals("", avgiftCsv(emptyList(), emptyList()))
     }
-    
+
     @Test
-    fun `test only lag list not empty`() {
-        val result = avgiftCsv(listOf(1000000), listOf())
-        val expected = "Lägenhet;Per år;Per månad\n1;1000000;41667\n"
-        assertEquals(expected, result)
+    fun baraLagenhetGerManadsbeloppFranFormeln() {
+        val result = avgiftCsv(listOf(1_000_000), emptyList())
+        assertEquals("Lägenhet;Per år;Per månad\n1;1000000;83333\n", result)
     }
-    
+
     @Test
-    fun `test multiple trap values`() {
+    fun fleraTrappstegNumreras() {
         val result = avgiftCsv(emptyList(), listOf(100, 200, 300))
-        val expected = "År;Årsavgifter\n1;100\n2;200\n3;300\n"
-        assertEquals(expected, result)
+        assertEquals("År;Årsavgifter\n1;100\n2;200\n3;300\n", result)
     }
 }

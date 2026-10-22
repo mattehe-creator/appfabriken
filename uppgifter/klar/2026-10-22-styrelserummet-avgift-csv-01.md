@@ -40,3 +40,5 @@ gradle :styrelserummet:test --tests "*AvgiftCsvTest"
 
 ## Gör inte
 - Ändra andra filer.
+
+utfall: godkänd 2026-10-22 (JUnit 4 i test; rätt månadsbelopp i extra testfall)
