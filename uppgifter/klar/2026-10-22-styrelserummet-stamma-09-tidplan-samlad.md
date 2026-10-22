@@ -48,3 +48,5 @@ gradle :styrelserummet:test --tests "*StammotidplanTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (fel sökväg, kotlin.test, tom testfil, fel datum i tester, saknad implementation i modulen)
