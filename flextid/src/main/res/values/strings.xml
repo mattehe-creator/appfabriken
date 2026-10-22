@@ -167,5 +167,12 @@
     <string name="csv_manad">Month</string>
     <string name="csv_saldo">Balance</string>
     <string name="exportera_ars_csv">Year overview (CSV)</string>
+    <string name="ars_oversikt_rubrik">Year overview</string>
+    <string name="ars_oversikt_ar">Year overview %1$d</string>
+    <string name="ars_oversikt_oppna">Open year overview</string>
+    <string name="ars_prognos_rubrik">Estimated balance at year end</string>
+    <string name="ars_prognos_forklaring">Based on your flex balance today and how your outcome has developed so far this year, projected to the rest of the year at the same pace.</string>
+    <string name="ars_prognos_ingen_data">Not enough data yet (needs at least 30 days of the year).</string>
+    <string name="navigera_tillbaka">Back</string>
     <string name="saldo_vid_arsslut">At the same pace: %1$s at year end</string>
 </resources>

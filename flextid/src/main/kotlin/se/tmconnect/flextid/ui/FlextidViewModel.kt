@@ -1,5 +1,6 @@
 package se.tmconnect.flextid.ui
 
+import se.tmconnect.flextid.regler.ManadsRad
 import se.tmconnect.flextid.regler.saldoVidArssluten
 import se.tmconnect.flextid.regler.arsOversikt
 import se.tmconnect.flextid.regler.arsOversiktCsv
@@ -85,6 +86,13 @@ data class VeckaDagRad(
     val dag: Dag?,
     val arbetadeMin: Int,
     val utfallMin: Int,
+)
+
+data class ArsOversiktTillstand(
+    val ar: Int,
+    val rader: List<ManadsRad>,
+    val prognosMin: Int?,
+    val arArInnevarandeAr: Boolean,
 )
 
 data class DagFormularTillstand(
@@ -267,6 +275,34 @@ class FlextidViewModel(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             YearMonth.now(),
+        )
+
+    val arsOversiktTillstand =
+        combine(repository.observeraAllaDagar(), installning, exportArManad, saldo) { dagar, inst, arManad, saldoNu ->
+            val ar = arManad.year
+            val idag = LocalDate.now()
+            val rader = arsOversikt(dagar, ar, inst)
+            val arArInnevarandeAr = ar == idag.year
+            val prognosMin =
+                if (arArInnevarandeAr) {
+                    val utfallIAr =
+                        dagar
+                            .filter { it.datum.year == ar && !it.datum.isAfter(idag) }
+                            .sumOf { dagensUtfall(it, inst.normaltidMinPerDag, inst.arbetsdagarMask) }
+                    saldoVidArssluten(saldoNu, utfallIAr, idag)
+                } else {
+                    null
+                }
+            ArsOversiktTillstand(ar, rader, prognosMin, arArInnevarandeAr)
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            ArsOversiktTillstand(
+                ar = YearMonth.now().year,
+                rader = emptyList(),
+                prognosMin = null,
+                arArInnevarandeAr = true,
+            ),
         )
 
     init {
