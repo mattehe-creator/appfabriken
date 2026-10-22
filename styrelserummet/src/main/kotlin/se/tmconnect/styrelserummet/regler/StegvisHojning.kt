@@ -20,19 +20,28 @@ fun stegvisHojning(nuvarande: Long, mal: Long, antalAr: Int): List<Long>? {
 
 // Hjälpfunktion för avrundning: halva bort från noll
 fun avrundaHalvaBortFranNoll(x: Long): Long {
-    val absX = kotlin.math.abs(x)
-    val decimalPart = absX % 1000
-    val integerPart = absX / 1000
+    // För att korrekt avrunda halva bort från noll, behöver vi hantera decimaler korrekt
+    // Vi multiplicerar med 1000 för att få enkla heltal för avrundning
+    val scaledValue = x * 1000
     
-    // Om decimaldelen är 500 eller mer, avrunda upp (bort från noll)
+    // Om det är negativt, gör om till positivt för beräkning
+    val absScaled = kotlin.math.abs(scaledValue)
+    
+    // Hitta resten vid division med 1000
+    val remainder = absScaled % 1000
+    
+    // Om resten är >= 500, avrunda upp (bort från noll)
     // Annars avrunda ned
-    return if (decimalPart >= 500) {
-        if (x >= 0) {
-            (integerPart + 1) * 1000
-        } else {
-            (integerPart + 1) * 1000 * -1
-        }
+    val roundedScaled = if (remainder >= 500) {
+        (absScaled / 1000) + 1
     } else {
-        integerPart * 1000
+        absScaled / 1000
+    }
+    
+    // Om originalvärdet var negativt, gör om tillbaka till negativt
+    return if (x < 0) {
+        -roundedScaled
+    } else {
+        roundedScaled
     }
 }
