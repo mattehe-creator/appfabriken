@@ -42,3 +42,5 @@ Lägg till minst ett `@Test` (JUnit 4: `org.junit.Test`, `org.junit.Assert.asser
 ## Gör inte
 - Ändra andra filer eller befintliga funktioner (`avrundaKvot`, skuldsättning m.m.).
 - Använda flyttal eller `kotlin.test`.
+
+utfall: godkänd 2026-10-22 (hela implementationen i Nyckeltal.kt och NyckeltalTest.kt; lokal modell levererade ingen kod)
