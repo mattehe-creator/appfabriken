@@ -33,12 +33,13 @@ fun tidplan(
 ): Stammotidplan
 ```
 
-`kallelsefristVeckor` är tillåtna värden för **senaste** kallelse (t.ex. `2..4` om stadgar tillåter 2 veckor, `4..4` om bara lagens normalfrist). Använd **högsta** talet i intervallet som `veckorForeStamma` till `senasteKallelsedag` (senaste möjliga utskicksdag). `stammaInomLagligFrist` = `!stammodatum.isAfter(senasteStammodag(arsslut))`.
+`kallelsefristVeckor` är tillåtna värden för antal veckor före stämman som kallelsen senast får utfärdas (t.ex. `2..4` om stadgar tillåter 2 veckor, `4..4` om bara lagens normalfrist). Använd det **lägsta** talet i intervallet (`kallelsefristVeckor.first`) som `veckorForeStamma` till `senasteKallelsedag`, eftersom färre veckor före stämman ger senaste möjliga utskicksdag. `stammaInomLagligFrist` = `!stammodatum.isAfter(senasteStammodag(arsslut))`.
 
 `kallelsefristVeckor` utanför 2..6 → `IllegalArgumentException`. Tomt intervall → `IllegalArgumentException`.
 
 ## Exempel
-- arsslut 2025-12-31, stamma 2026-05-15, kallelse 4..6 → senaste kallelse med 4 veckor = 2026-04-17, stammaInomLagligFrist true
+- arsslut 2025-12-31, stamma 2026-05-15, kallelse 4..6 → lägsta är 4 veckor, senaste kallelse 2026-04-17, stammaInomLagligFrist true
+- stamma 2026-05-15, kallelse 2..4 → senaste kallelse 2026-05-01
 - stamma 2026-08-01, samma arsslut → stammaInomLagligFrist false
 
 ## Test som ska gå igenom
