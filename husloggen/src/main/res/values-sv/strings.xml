@@ -282,4 +282,5 @@
     <string name="butik_punkt_1">Påminnelser före varje återkommande jobb</string>
     <string name="butik_punkt_2">Kvitton och kostnader per år, PDF vid försäljning</string>
     <string name="butik_punkt_3">Offline. Inget konto, ingen reklam</string>
+    <string name="matare_forandring">(%1$s %% mot året innan)</string>
 </resources>

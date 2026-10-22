@@ -286,4 +286,5 @@
     <string name="butik_punkt_1">Reminders before every recurring job</string>
     <string name="butik_punkt_2">Receipts and costs per year, PDF for the sale</string>
     <string name="butik_punkt_3">Offline. No account, no ads</string>
+    <string name="matare_forandring">(%1$s %% vs. previous year)</string>
 </resources>
