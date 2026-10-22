@@ -45,3 +45,5 @@ gradle :flextid:testDebugUnitTest --tests "*ArsOversiktTest"
 
 ## Gör inte
 - Ändra andra filer.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #536). Ersatt av 2026-10-22-flextid-ar-01-oversikt-f2.md
