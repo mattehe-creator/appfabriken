@@ -24,22 +24,19 @@ fun avrundaHalvaBortFranNoll(x: Long): Long {
     // Vi multiplicerar med 1000 för att få enkla heltal för avrundning
     val scaledValue = x * 1000
     
-    // Om det är negativt, gör om till positivt för beräkning
-    val absScaled = kotlin.math.abs(scaledValue)
-    
     // Hitta resten vid division med 1000
-    val remainder = absScaled % 1000
+    val remainder = kotlin.math.abs(scaledValue) % 1000
     
     // Om resten är >= 500, avrunda upp (bort från noll)
     // Annars avrunda ned
     val roundedScaled = if (remainder >= 500) {
-        (absScaled / 1000) + 1
+        (kotlin.math.abs(scaledValue) / 1000) + 1
     } else {
-        absScaled / 1000
+        kotlin.math.abs(scaledValue) / 1000
     }
     
     // Om originalvärdet var negativt, gör om tillbaka till negativt
-    return if (x < 0) {
+    return if (scaledValue < 0) {
         -roundedScaled
     } else {
         roundedScaled
