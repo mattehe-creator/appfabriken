@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-22-styrelserummet-stammotidplan.md
 försök: 1
-beror-på: 2026-10-22-styrelserummet-stamma-03-midsommarafton.md
+beror-på: 2026-10-22-styrelserummet-stamma-03-midsommarafton-f2.md
 
 ## Ändra bara dessa filer
 - styrelserummet/src/main/kotlin/se/tmconnect/styrelserummet/regler/Helgdagar.kt
