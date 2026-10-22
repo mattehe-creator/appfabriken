@@ -56,3 +56,29 @@ fun fondUtveckling(
     }
     return resultat
 }
+
+fun forstaUnderskottsar(utveckling: List<FondAr>): Int? =
+    utveckling.firstOrNull { it.utgaende < 0 }?.ar
+
+fun minstaAvsattningUtanUnderskott(
+    atgarder: List<PlaneradAtgard>,
+    franAr: Int,
+    antalAr: Int,
+    ingaendeFond: Long,
+): Long {
+    val uttagPerAr = summaPerAr(atgarder, franAr, antalAr)
+    var kum = 0L
+    var maxKrav = 0L
+    for (k in 1..antalAr) {
+        kum += uttagPerAr[k - 1]
+        val krav = if (kum > ingaendeFond) {
+            (kum - ingaendeFond + k - 1) / k
+        } else {
+            0L
+        }
+        if (krav > maxKrav) {
+            maxKrav = krav
+        }
+    }
+    return maxKrav
+}

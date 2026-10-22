@@ -41,3 +41,5 @@ Lägg minst två `@Test` med `org.junit.Test` och `org.junit.Assert.assertEquals
 ## Gör inte
 - Ändra andra filer eller signaturer på befintliga funktioner (`summaPerAr`, `jamnAvsattning`, `fondUtveckling`).
 - Använda flyttal eller `kotlin.test`.
+
+utfall: godkänd 2026-10-22 (Cursor implementerade forstaUnderskottsar, minstaAvsattningUtanUnderskott och tester — lokal modell levererade ingen kod)
