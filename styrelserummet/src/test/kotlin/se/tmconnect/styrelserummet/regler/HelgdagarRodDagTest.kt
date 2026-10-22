@@ -18,7 +18,7 @@ class HelgdagarRodDagTest {
         // Nationaldag 2026-06-06
         assertTrue(arSvenskHelgdag(LocalDate.of(2026, 6, 6)))
         
-        // Midsommarafton 2026-06-19 (inte en helgdag)
-        assertFalse(arSvenskHelgdag(LocalDate.of(2026, 6, 19)))
+        // Midsommarafton 2026-06-19
+        assertTrue(arSvenskHelgdag(LocalDate.of(2026, 6, 19)))
     }
 }

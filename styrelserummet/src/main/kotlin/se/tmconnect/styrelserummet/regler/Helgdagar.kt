@@ -44,6 +44,7 @@ fun arSvenskHelgdag(d: LocalDate): Boolean {
         paskdagen(ar), // Påskdagen
         paskdagen(ar).plusDays(1), // Annandag påsk
         paskdagen(ar).plusDays(39), // Kristi himmelsfärdsdag
+        forstaLordagenFran(LocalDate.of(ar, 6, 20)).minusDays(1), // Midsommarafton
         forstaLordagenFran(LocalDate.of(ar, 6, 20)), // Midsommardagen
         forstaLordagenFran(LocalDate.of(ar, 10, 31)), // Alla helgons dag
     )
