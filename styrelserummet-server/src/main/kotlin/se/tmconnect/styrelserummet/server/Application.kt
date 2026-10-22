@@ -33,6 +33,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.json.Json
 import se.tmconnect.styrelserummet.regler.avskrivningsplanCsv
+import se.tmconnect.styrelserummet.regler.avskrivningsplanPerGrupp
 import se.tmconnect.styrelserummet.tolking.Tolkare
 import se.tmconnect.styrelserummet.tolking.anthropicTolkareFranMiljo
 import java.nio.file.Files
@@ -204,7 +205,13 @@ fun Application.module(miljo: ServerMiljo) {
             lagring.uppdateraAktivitet(id)
             val visning = tillVisning(utkast)
             call.respondText(
-                utskriftHtml(meta.forening, utkast.arsslut, visning.utskrift, planForUtkast(utkast)),
+                utskriftHtml(
+                    meta.forening,
+                    utkast.arsslut,
+                    visning.utskrift,
+                    planForUtkast(utkast),
+                    avskrivningsplanPerGrupp(utkast.komponenter.map { franDto(it) }, utkast.arsslut + 1, PLAN_ANTAL_AR),
+                ),
                 ContentType.Text.Html,
             )
         }
