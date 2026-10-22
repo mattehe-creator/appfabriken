@@ -31,3 +31,5 @@ gradle :styrelserummet:test --tests "*StammotidplanHandlingarTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (JUnit 4-import i StammotidplanHandlingarTest.kt i stället för kotlin.test)

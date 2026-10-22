@@ -16,3 +16,11 @@ fun senasteKallelsedag(stammodatum: LocalDate, veckorForeStamma: Int): LocalDate
     }
     return stammodatum.minusWeeks(veckorForeStamma.toLong())
 }
+
+fun senasteRevisionTillStyrelsen(stammodatum: LocalDate): LocalDate {
+    return stammodatum.minusWeeks(3L)
+}
+
+fun forstaDagArsredovisningTillganglig(stammodatum: LocalDate): LocalDate {
+    return stammodatum.minusWeeks(2L)
+}
