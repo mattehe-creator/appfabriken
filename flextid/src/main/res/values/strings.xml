@@ -153,4 +153,10 @@
     <string name="ruta_klar">Done for today</string>
     <string name="ruta_lagg_till">Add Clock in to Quick Settings</string>
     <string name="ruta_lagg_till_text">Clock in and out from Quick Settings without opening the app.</string>
+    <string name="saldo_over_taket">Above your limit of %1$s</string>
+    <string name="saldo_under_golvet">Below your floor of %1$s</string>
+    <string name="saldo_granser_rubrik">Balance limits</string>
+    <string name="saldo_tak">Maximum plus (hours, optional)</string>
+    <string name="saldo_golv">Maximum minus (hours, optional)</string>
+    <string name="saldo_grans_hjalp">For example 40 or 40:00. Leave empty if you have no limit.</string>
 </resources>

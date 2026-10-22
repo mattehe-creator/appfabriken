@@ -225,6 +225,12 @@ class FlextidViewModel(
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
+    val saldoTakMin =
+        uiInstallningarLager.saldoTakMin.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    val saldoGolvMin =
+        uiInstallningarLager.saldoGolvMin.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
     val veckaSammanfattning =
         combine(_veckaAnkar, repository.observeraAllaDagar(), installning, aftnarLediga) { ankar, alla, inst, aftnar ->
             periodSammanfattning(alla, ankar, sondagISammaVecka(ankar), inst, aftnar)
@@ -462,6 +468,19 @@ class FlextidViewModel(
                 FlextidPaminnelseKalla.UNIKT_JOBB_NAMN,
             )
         }
+    }
+
+    /** Texten är timmar, med eller utan minuter ("40" eller "40:00"). Tom text tar bort gränsen. */
+    fun sattSaldoGranser(takText: String, golvText: String) {
+        fun tolka(t: String): Int? {
+            val r = t.trim().removePrefix("+").removePrefix("-").removePrefix("\u2212")
+            if (r.isEmpty()) return null
+            val delar = r.split(":")
+            val h = delar[0].toIntOrNull() ?: return null
+            val m = delar.getOrNull(1)?.toIntOrNull() ?: 0
+            return h * 60 + m
+        }
+        viewModelScope.launch { uiInstallningarLager.sattSaldoGranser(tolka(takText), tolka(golvText)?.let { -it }) }
     }
 
     fun sattAftnarLediga(lediga: Boolean) {

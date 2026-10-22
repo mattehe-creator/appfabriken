@@ -60,6 +60,8 @@ import se.tmconnect.flextid.R
 import se.tmconnect.flextid.regler.DagTyp
 import se.tmconnect.flextid.regler.SemesterSammanfattning
 import se.tmconnect.flextid.regler.PeriodSammanfattning
+import se.tmconnect.flextid.regler.SaldoStatus
+import se.tmconnect.flextid.regler.saldoStatus
 import se.tmconnect.flextid.regler.dagensUtfall
 import se.tmconnect.flextid.regler.gaHemTid
 import se.tmconnect.flextid.regler.gaHemTidForNollsaldo
@@ -108,6 +110,8 @@ fun FlextidStartSkarm(
     val stamplaInPaminnelseMin by viewModel.stamplaInPaminnelseMinEfterMidnatt.collectAsState()
     val semester by viewModel.semester.collectAsState()
     val veckaSammanfattning by viewModel.veckaSammanfattning.collectAsState()
+    val saldoTak by viewModel.saldoTakMin.collectAsState()
+    val saldoGolv by viewModel.saldoGolvMin.collectAsState()
     val manadSammanfattning by viewModel.manadSammanfattning.collectAsState()
     val aftnarLediga by viewModel.aftnarLediga.collectAsState()
     val semesterdagarPerAr by viewModel.semesterdagarPerAr.collectAsState()
@@ -175,6 +179,8 @@ fun FlextidStartSkarm(
                         installning = installning,
                         semester = semester,
                         manad = manadSammanfattning,
+                        saldoTakMin = saldoTak,
+                        saldoGolvMin = saldoGolv,
                         locale = locale,
                         onStamplaIn = viewModel::stamplaIn,
                         onStamplaUt = viewModel::stamplaUt,
@@ -221,6 +227,9 @@ fun FlextidStartSkarm(
                         onAftnarLediga = viewModel::sattAftnarLediga,
                         onSemesterdagarPerAr = viewModel::sattSemesterdagarPerAr,
                         onSemesterarKalenderar = viewModel::sattSemesterarKalenderar,
+                        saldoTakMin = saldoTak,
+                        saldoGolvMin = saldoGolv,
+                        onSaldoGranser = viewModel::sattSaldoGranser,
                     )
             }
         }
@@ -251,6 +260,8 @@ internal fun IdagInnehall(
     onRastChange: (Int) -> Unit,
     onRedigera: () -> Unit,
     manad: PeriodSammanfattning? = null,
+    saldoTakMin: Int? = null,
+    saldoGolvMin: Int? = null,
 ) {
     var rastText by remember(dag?.rastMin) { mutableStateOf((dag?.rastMin ?: standardRast).toString()) }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -258,6 +269,21 @@ internal fun IdagInnehall(
             text = stringResource(R.string.saldo_rubrik, formateraSaldoMinuter(saldo, locale)),
             style = MaterialTheme.typography.headlineSmall,
         )
+        when (saldoStatus(saldo, saldoTakMin, saldoGolvMin)) {
+            SaldoStatus.OVER_TAKET ->
+                Text(
+                    text = stringResource(R.string.saldo_over_taket, formateraSaldoMinuter(saldoTakMin ?: 0, locale)),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            SaldoStatus.UNDER_GOLVET ->
+                Text(
+                    text = stringResource(R.string.saldo_under_golvet, formateraSaldoMinuter(saldoGolvMin ?: 0, locale)),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            SaldoStatus.INOM -> Unit
+        }
         Text(
             text = formateraDatum(LocalDate.now(), locale),
             style = MaterialTheme.typography.bodyLarge,
@@ -478,7 +504,12 @@ internal fun InstallningarInnehall(
     onAftnarLediga: (Boolean) -> Unit = {},
     onSemesterdagarPerAr: (String) -> Unit = {},
     onSemesterarKalenderar: (Boolean) -> Unit = {},
+    saldoTakMin: Int? = null,
+    saldoGolvMin: Int? = null,
+    onSaldoGranser: (String, String) -> Unit = { _, _ -> },
 ) {
+    var takText by remember(saldoTakMin) { mutableStateOf(saldoTakMin?.let { formateraMinuterSomTid(it, locale) } ?: "") }
+    var golvText by remember(saldoGolvMin) { mutableStateOf(saldoGolvMin?.let { formateraMinuterSomTid(-it, locale) } ?: "") }
     var semesterdagarText by remember(semesterdagarPerAr) { mutableStateOf(semesterdagarPerAr.toString()) }
     var normaltid by remember(installning.normaltidMinPerDag) {
         mutableStateOf(installning.normaltidMinPerDag.toString())
@@ -564,6 +595,34 @@ internal fun InstallningarInnehall(
                     )
                 }
             }
+        }
+        item {
+            Text(stringResource(R.string.saldo_granser_rubrik), style = MaterialTheme.typography.titleMedium)
+        }
+        item {
+            OutlinedTextField(
+                value = takText,
+                onValueChange = {
+                    takText = it
+                    onSaldoGranser(takText, golvText)
+                },
+                label = { Text(stringResource(R.string.saldo_tak)) },
+                supportingText = { Text(stringResource(R.string.saldo_grans_hjalp)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+        item {
+            OutlinedTextField(
+                value = golvText,
+                onValueChange = {
+                    golvText = it
+                    onSaldoGranser(takText, golvText)
+                },
+                label = { Text(stringResource(R.string.saldo_golv)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
         item {
             Text(stringResource(R.string.semester_rubrik), style = MaterialTheme.typography.titleMedium)

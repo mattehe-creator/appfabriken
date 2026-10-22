@@ -153,4 +153,10 @@
     <string name="ruta_klar">Klar för idag</string>
     <string name="ruta_lagg_till">Lägg till Stämpla i snabbinställningarna</string>
     <string name="ruta_lagg_till_text">Stämpla in och ut från snabbinställningarna utan att öppna appen.</string>
+    <string name="saldo_over_taket">Över ditt tak på %1$s</string>
+    <string name="saldo_under_golvet">Under ditt golv på %1$s</string>
+    <string name="saldo_granser_rubrik">Gränser för saldot</string>
+    <string name="saldo_tak">Tak för plus (timmar, valfritt)</string>
+    <string name="saldo_golv">Golv för minus (timmar, valfritt)</string>
+    <string name="saldo_grans_hjalp">Till exempel 40 eller 40:00. Lämna tomt om du inte har någon gräns.</string>
 </resources>
