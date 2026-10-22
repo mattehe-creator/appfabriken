@@ -41,3 +41,5 @@ Använd `org.junit.Test` och `org.junit.Assert.assertEquals` (se `MatareForbrukn
 - Ändra andra filer.
 - Använda flyttal.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (hela implementationen — tomma filer från lokal modell på försök 2)
