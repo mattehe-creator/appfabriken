@@ -159,4 +159,7 @@
     <string name="saldo_tak">Tak för plus (timmar, valfritt)</string>
     <string name="saldo_golv">Golv för minus (timmar, valfritt)</string>
     <string name="saldo_grans_hjalp">Till exempel 40 eller 40:00. Lämna tomt om du inte har någon gräns.</string>
+    <string name="dela_vecka">Dela veckan</string>
+    <string name="dela_vecka_rubrik">Vecka %1$d</string>
+    <string name="dela_vecka_summa">Summa</string>
 </resources>
