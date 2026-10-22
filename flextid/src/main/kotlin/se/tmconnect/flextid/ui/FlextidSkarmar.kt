@@ -59,6 +59,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import se.tmconnect.flextid.R
 import se.tmconnect.flextid.regler.DagTyp
 import se.tmconnect.flextid.regler.SemesterSammanfattning
+import se.tmconnect.flextid.regler.PeriodSammanfattning
 import se.tmconnect.flextid.regler.dagensUtfall
 import se.tmconnect.flextid.regler.gaHemTid
 import se.tmconnect.flextid.regler.gaHemTidForNollsaldo
@@ -106,6 +107,8 @@ fun FlextidStartSkarm(
     val stamplaInPaminnelse by viewModel.stamplaInPaminnelsePa.collectAsState()
     val stamplaInPaminnelseMin by viewModel.stamplaInPaminnelseMinEfterMidnatt.collectAsState()
     val semester by viewModel.semester.collectAsState()
+    val veckaSammanfattning by viewModel.veckaSammanfattning.collectAsState()
+    val manadSammanfattning by viewModel.manadSammanfattning.collectAsState()
     val aftnarLediga by viewModel.aftnarLediga.collectAsState()
     val semesterdagarPerAr by viewModel.semesterdagarPerAr.collectAsState()
     val semesterarStartmanad by viewModel.semesterarStartmanad.collectAsState()
@@ -171,6 +174,7 @@ fun FlextidStartSkarm(
                         standardRast = installning.standardRastMin,
                         installning = installning,
                         semester = semester,
+                        manad = manadSammanfattning,
                         locale = locale,
                         onStamplaIn = viewModel::stamplaIn,
                         onStamplaUt = viewModel::stamplaUt,
@@ -181,6 +185,7 @@ fun FlextidStartSkarm(
                     VeckaInnehall(
                         veckaAnkar = veckaAnkar,
                         rader = veckaRader,
+                        sammanfattning = veckaSammanfattning,
                         locale = locale,
                         onForegaende = viewModel::foregaendeVecka,
                         onNasta = viewModel::nastaVecka,
@@ -245,6 +250,7 @@ internal fun IdagInnehall(
     onStamplaUt: () -> Unit,
     onRastChange: (Int) -> Unit,
     onRedigera: () -> Unit,
+    manad: PeriodSammanfattning? = null,
 ) {
     var rastText by remember(dag?.rastMin) { mutableStateOf((dag?.rastMin ?: standardRast).toString()) }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -313,6 +319,19 @@ internal fun IdagInnehall(
         OutlinedButton(onClick = onRedigera, modifier = Modifier.tryckyta48()) {
             Text(stringResource(R.string.redigera_dag))
         }
+        manad?.let { m ->
+            Text(
+                text = stringResource(
+                    R.string.manad_arbetat,
+                    YearMonth.now().month.getDisplayName(java.time.format.TextStyle.FULL_STANDALONE, locale)
+                        .replaceFirstChar { it.titlecase(locale) },
+                    formateraMinuterSomTid(m.arbetadMin, locale),
+                    formateraMinuterSomTid(m.normaltidMin, locale),
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+        }
         semester?.let { sem ->
             Text(
                 text = stringResource(
@@ -340,6 +359,7 @@ internal fun VeckaInnehall(
     onNasta: () -> Unit,
     onDennaVecka: () -> Unit,
     onDagClick: (LocalDate) -> Unit,
+    sammanfattning: PeriodSammanfattning? = null,
 ) {
     val slut = veckaAnkar.plusDays(6)
     val veckosumma = rader.sumOf { it.utfallMin }
@@ -374,6 +394,17 @@ internal fun VeckaInnehall(
         style = MaterialTheme.typography.bodyLarge,
         modifier = Modifier.padding(vertical = 8.dp),
     )
+    sammanfattning?.let { v ->
+        Text(
+            text = stringResource(
+                R.string.vecka_arbetat,
+                formateraMinuterSomTid(v.arbetadMin, locale),
+                formateraMinuterSomTid(v.normaltidMin, locale),
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 8.dp),
+        )
+    }
     LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         items(rader) { rad ->
             VeckaRad(rad, locale, onClick = { onDagClick(rad.datum) })

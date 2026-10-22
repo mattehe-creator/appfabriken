@@ -49,6 +49,7 @@ import se.tmconnect.flextid.regler.dagensUtfall
 import se.tmconnect.flextid.regler.SEMESTERAR_STARTMANAD_STANDARD
 import se.tmconnect.flextid.regler.SEMESTERDAGAR_STANDARD
 import se.tmconnect.flextid.regler.semesterSammanfattning
+import se.tmconnect.flextid.regler.periodSammanfattning
 import se.tmconnect.flextid.regler.kanLaggaTillDagPost
 import se.tmconnect.flextid.regler.mandagISammaVecka
 import se.tmconnect.flextid.regler.sondagISammaVecka
@@ -223,6 +224,18 @@ class FlextidViewModel(
                 startManad = startManad,
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    val veckaSammanfattning =
+        combine(_veckaAnkar, repository.observeraAllaDagar(), installning, aftnarLediga) { ankar, alla, inst, aftnar ->
+            periodSammanfattning(alla, ankar, sondagISammaVecka(ankar), inst, aftnar)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    val manadSammanfattning =
+        combine(repository.observeraAllaDagar(), installning, aftnarLediga) { alla, inst, aftnar ->
+            val manad = YearMonth.now()
+            periodSammanfattning(alla, manad.atDay(1), manad.atEndOfMonth(), inst, aftnar)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
 
     val exportArManad =
         uiInstallningarLager.exportArManad.stateIn(

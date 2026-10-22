@@ -144,4 +144,6 @@
     <string name="butik_punkt_1">När normaltiden är fylld, på minuten</string>
     <string name="butik_punkt_2">Svenska helgdagar och semesterdagar inbyggda</string>
     <string name="butik_punkt_3">Offline. Inget konto, ingen reklam</string>
+    <string name="vecka_arbetat">Arbetat %1$s av %2$s</string>
+    <string name="manad_arbetat">%1$s: arbetat %2$s av %3$s</string>
 </resources>

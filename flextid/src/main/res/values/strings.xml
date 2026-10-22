@@ -144,4 +144,6 @@
     <string name="butik_punkt_1">When your normal hours are done, to the minute</string>
     <string name="butik_punkt_2">Swedish public holidays and vacation days built in</string>
     <string name="butik_punkt_3">Offline. No account, no ads</string>
+    <string name="vecka_arbetat">Worked %1$s of %2$s</string>
+    <string name="manad_arbetat">%1$s: worked %2$s of %3$s</string>
 </resources>
