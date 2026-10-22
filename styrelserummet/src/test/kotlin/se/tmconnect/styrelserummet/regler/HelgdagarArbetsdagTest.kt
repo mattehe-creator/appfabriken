@@ -1,9 +1,9 @@
 package se.tmconnect.styrelserummet.regler
 
 import java.time.LocalDate
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 
 class HelgdagarArbetsdagTest {
     
@@ -39,11 +39,10 @@ class HelgdagarArbetsdagTest {
     
     @Test
     fun testNarmasteArbetsdagIllegalArgumentException() {
-        assertFailsWith<IllegalArgumentException> {
+        assertThrows(IllegalArgumentException::class.java) {
             narmasteArbetsdag(LocalDate.of(2026, 4, 7), 0)
         }
-        
-        assertFailsWith<IllegalArgumentException> {
+        assertThrows(IllegalArgumentException::class.java) {
             narmasteArbetsdag(LocalDate.of(2026, 4, 7), 2)
         }
     }
