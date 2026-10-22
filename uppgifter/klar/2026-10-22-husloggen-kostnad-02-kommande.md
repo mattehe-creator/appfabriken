@@ -37,3 +37,5 @@ gradle :husloggen:testDebugUnitTest --tests "*KommandeKostnadTest"
 
 ## Gör inte
 - Ändra andra filer.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #538). Ersatt av 2026-10-22-husloggen-kostnad-02-kommande-f2.md
