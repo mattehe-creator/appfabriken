@@ -297,4 +297,5 @@
     <string name="kommande_rubrik">De närmaste tolv månaderna</string>
     <string name="kommande_tomt">Inga återkommande uppgifter ännu. Lägg till dem under Att göra.</string>
     <string name="kommande_forsenad">Försenad, skulle gjorts %1$s</string>
+    <string name="knapp_kopiera_post">Kopiera till ny post</string>
 </resources>

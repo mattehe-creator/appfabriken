@@ -51,6 +51,7 @@ fun PostDetaljSkarm(
     uppgiftNamn: String?,
     onAndra: () -> Unit,
     onTaBort: () -> Unit,
+    onKopiera: () -> Unit = {},
     onTillbaka: () -> Unit,
     bildFilnamn: List<String> = emptyList(),
     bildUri: (String) -> Uri = { Uri.EMPTY },
@@ -175,6 +176,14 @@ fun PostDetaljSkarm(
                     .tryckyta48(),
             ) {
                 Text(text = stringResource(R.string.knapp_andra))
+            }
+            OutlinedButton(
+                onClick = onKopiera,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .tryckyta48(),
+            ) {
+                Text(text = stringResource(R.string.knapp_kopiera_post))
             }
             OutlinedButton(
                 onClick = { visarTaBort = true },

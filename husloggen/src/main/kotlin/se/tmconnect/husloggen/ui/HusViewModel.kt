@@ -137,6 +137,18 @@ data class PostFormularTillstand(
     val planeradKostnadIdEfterSparad: Long? = null,
 )
 
+/** Formulär för en ny post som kopierar [post]: dagens datum, inga bilder, inte kopplad till en uppgift. */
+fun kopieraPostTillFormular(post: Post, idag: LocalDate): PostFormularTillstand =
+    PostFormularTillstand(
+        vad = post.vad,
+        datum = idag,
+        typ = post.typ,
+        beloppText = post.beloppOre?.let { beloppOreTillFaltText(it) }.orEmpty(),
+        rotRutAvdragText = post.rotRutAvdragOre?.let { beloppOreTillFaltText(it) }.orEmpty(),
+        utforare = post.utforare.orEmpty(),
+        anteckning = post.anteckning.orEmpty(),
+    )
+
 data class PlanFormularTillstand(
     val redigerarId: Long = 0L,
     val titel: String = "",
@@ -600,6 +612,16 @@ class HusViewModel(
                 anteckning = post.anteckning.orEmpty(),
                 bildFilnamn = bilder,
             )
+        }
+    }
+
+    /** Ny post med samma innehåll som en befintlig, men dagens datum och utan bilder. */
+    fun visaKopieraPost(postId: Long) {
+        viewModelScope.launch {
+            val post = repository.hamtaPost(postId) ?: return@launch
+            _postDetaljId.value = null
+            nollstallBildSession(emptyList())
+            _postFormular.value = kopieraPostTillFormular(post, idag)
         }
     }
 
