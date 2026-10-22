@@ -52,3 +52,5 @@ Använd `org.junit.Test` och `org.junit.Assert.assertEquals` (se `NastaDatumTest
 ## Gör inte
 - Ändra andra filer eller `nastaDatum`.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (hela implementationen — lokal modell committade ingen kod)
