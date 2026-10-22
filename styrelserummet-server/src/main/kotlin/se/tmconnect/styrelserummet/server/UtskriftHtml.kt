@@ -1,9 +1,17 @@
 package se.tmconnect.styrelserummet.server
 
+import se.tmconnect.styrelserummet.regler.GruppPlan
 import se.tmconnect.styrelserummet.regler.PlanAr
 import se.tmconnect.styrelserummet.regler.kronor
 
-fun utskriftHtml(forening: String, arsslut: Int, rader: List<UtskriftsRadDto>, plan: List<PlanAr> = emptyList()): String {
+fun utskriftHtml(
+    forening: String,
+    arsslut: Int,
+    rader: List<UtskriftsRadDto>,
+    plan: List<PlanAr> = emptyList(),
+    gruppPlan: List<GruppPlan> = emptyList(),
+): String {
+    val gruppHtml = gruppPlanHtml(gruppPlan, plan.firstOrNull()?.ar)
     val tbody =
         rader.joinToString("") { rad ->
             val klass = if (rad.arSumma) " class=\"summa\"" else ""
@@ -77,7 +85,7 @@ fun utskriftHtml(forening: String, arsslut: Int, rader: List<UtskriftsRadDto>, p
                   $tbody
                 </tbody>
               </table>
-            </div>${if (planHtml.isEmpty()) "" else "\n            $planHtml"}
+            </div>${if (planHtml.isEmpty()) "" else "\n            $planHtml"}${if (gruppHtml.isEmpty()) "" else "\n            $gruppHtml"}
           </div>
           <script src="/utskrift.js"></script>
         </body>
@@ -90,3 +98,25 @@ private fun htmlEsc(s: String): String =
         .replace("<", "&lt;")
         .replace(">", "&gt;")
         .replace("\"", "&quot;")
+
+/** Avskrivning per komponentgrupp, de fem första åren i planen (fler kolumner får inte plats på A4). */
+private fun gruppPlanHtml(gruppPlan: List<GruppPlan>, forstaAr: Int?): String {
+    if (gruppPlan.isEmpty() || forstaAr == null) return ""
+    val antal = minOf(5, gruppPlan.first().avskrivningPerAr.size)
+    if (antal == 0) return ""
+    val rubriker = (0 until antal).joinToString("") { "<th class=\"tal\">${forstaAr + it}</th>" }
+    val rader = gruppPlan.joinToString("") { g ->
+        val celler = g.avskrivningPerAr.take(antal).joinToString("") { "<td class=\"tal\">${htmlEsc(kronor(it))}</td>" }
+        "<tr><td>${htmlEsc(g.grupp.svNamn)}</td>$celler</tr>"
+    }
+    return """
+        <h2>Avskrivning per grupp</h2>
+        <div class="tabellram">
+          <table>
+            <caption>Avskrivning per komponentgrupp — utkast</caption>
+            <thead><tr><th>Grupp</th>$rubriker</tr></thead>
+            <tbody>$rader</tbody>
+          </table>
+        </div>
+    """.trimIndent()
+}
