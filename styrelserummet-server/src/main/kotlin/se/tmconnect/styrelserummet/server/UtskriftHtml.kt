@@ -1,6 +1,9 @@
 package se.tmconnect.styrelserummet.server
 
-fun utskriftHtml(forening: String, arsslut: Int, rader: List<UtskriftsRadDto>): String {
+import se.tmconnect.styrelserummet.regler.PlanAr
+import se.tmconnect.styrelserummet.regler.kronor
+
+fun utskriftHtml(forening: String, arsslut: Int, rader: List<UtskriftsRadDto>, plan: List<PlanAr> = emptyList()): String {
     val tbody =
         rader.joinToString("") { rad ->
             val klass = if (rad.arSumma) " class=\"summa\"" else ""
@@ -15,6 +18,32 @@ fun utskriftHtml(forening: String, arsslut: Int, rader: List<UtskriftsRadDto>): 
             </tr>
             """.trimIndent()
         }
+    
+    val planHtml = if (plan.isNotEmpty()) {
+        val planTbody = plan.joinToString("") { planRad ->
+            """
+            <tr>
+              <td>${planRad.ar}</td>
+              <td class="tal">${htmlEsc(kronor(planRad.avskrivning))}</td>
+              <td class="tal">${htmlEsc(kronor(planRad.bokfortVarde))}</td>
+            </tr>
+            """.trimIndent()
+        }
+        
+        """
+        <h2>Avskrivningsplan</h2>
+        <div class="tabellram">
+          <table>
+            <caption>Avskrivningsplan — utkast</caption>
+            <thead><tr><th>År</th><th class="tal">Avskrivning</th><th class="tal">Bokfört värde vid årets slut</th></tr></thead>
+            <tbody>$planTbody</tbody>
+          </table>
+        </div>
+        """.trimIndent()
+    } else {
+        ""
+    }
+    
     return """
         <!DOCTYPE html>
         <html lang="sv">
@@ -48,7 +77,7 @@ fun utskriftHtml(forening: String, arsslut: Int, rader: List<UtskriftsRadDto>): 
                   $tbody
                 </tbody>
               </table>
-            </div>
+            </div>${if (planHtml.isEmpty()) "" else "\n            $planHtml"}
           </div>
           <script src="/utskrift.js"></script>
         </body>
