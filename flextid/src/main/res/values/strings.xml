@@ -163,4 +163,5 @@
     <string name="dela_vecka_rubrik">Week %1$d</string>
     <string name="dela_vecka_summa">Total</string>
     <string name="csv_helgdag">Public holiday</string>
+    <string name="samma_tider_som">Same times as %1$s (%2$s–%3$s)</string>
 </resources>
