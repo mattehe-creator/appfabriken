@@ -164,4 +164,7 @@
     <string name="dela_vecka_summa">Summa</string>
     <string name="csv_helgdag">Helgdag</string>
     <string name="samma_tider_som">Samma tider som %1$s (%2$s–%3$s)</string>
+    <string name="csv_manad">Månad</string>
+    <string name="csv_saldo">Saldo</string>
+    <string name="exportera_ars_csv">Årsöversikt (CSV)</string>
 </resources>

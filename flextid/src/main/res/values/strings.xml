@@ -164,4 +164,7 @@
     <string name="dela_vecka_summa">Total</string>
     <string name="csv_helgdag">Public holiday</string>
     <string name="samma_tider_som">Same times as %1$s (%2$s–%3$s)</string>
+    <string name="csv_manad">Month</string>
+    <string name="csv_saldo">Balance</string>
+    <string name="exportera_ars_csv">Year overview (CSV)</string>
 </resources>

@@ -124,6 +124,21 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    private val skapaArsCsvContract =
+        registerForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri ->
+            if (uri != null) {
+                viewModel.skrivTillUri(uri) { out ->
+                    val rubriker = listOf(
+                        getString(R.string.csv_manad),
+                        getString(R.string.csv_arbetad),
+                        getString(R.string.csv_utfall),
+                        getString(R.string.csv_saldo),
+                    )
+                    skrivCsvMedBom(out, viewModel.skapaArsCsv(rubriker, Locale.getDefault()))
+                }
+            }
+        }
+
     private val skapaPdfContract =
         registerForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
             if (uri != null) {
@@ -230,6 +245,9 @@ class MainActivity : ComponentActivity() {
                             onExporteraCsv = {
                                 val arManad = viewModel.exportArManad.value
                                 skapaCsvContract.launch(manadsCsvFilnamn(arManad))
+                            },
+                            onExporteraArsCsv = {
+                                skapaArsCsvContract.launch("flextid-ar-${viewModel.exportArManad.value.year}.csv")
                             },
                             onExporteraPdf = {
                                 val arManad = viewModel.exportArManad.value

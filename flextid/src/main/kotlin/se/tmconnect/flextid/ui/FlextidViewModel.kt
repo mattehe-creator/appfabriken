@@ -1,5 +1,7 @@
 package se.tmconnect.flextid.ui
 
+import se.tmconnect.flextid.regler.arsOversikt
+import se.tmconnect.flextid.regler.arsOversiktCsv
 import se.tmconnect.flextid.regler.senasteArbetsdagFore
 import android.app.Activity
 import android.content.Context
@@ -557,6 +559,16 @@ class FlextidViewModel(
                 else -> _meddelanden.emit(FlextidMeddelande.ImportFel)
             }
         }
+    }
+
+    /** Årsöversikt för året i exportvalet: en rad per månad med saldo vid månadens slut. */
+    suspend fun skapaArsCsv(rubriker: List<String>, locale: Locale): String {
+        val ar = exportArManad.value.year
+        val rader = arsOversikt(repository.hamtaAllaDagar(), ar, installning.value)
+        val manadsnamn = java.time.Month.entries.map {
+            it.getDisplayName(java.time.format.TextStyle.FULL_STANDALONE, locale)
+        }
+        return arsOversiktCsv(rader, rubriker, manadsnamn, locale)
     }
 
     suspend fun skapaManadsCsv(texter: ManadsCsvTexter, locale: Locale): String {
