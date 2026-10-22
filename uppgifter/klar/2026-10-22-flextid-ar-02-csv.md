@@ -41,3 +41,5 @@ gradle :flextid:testDebugUnitTest --tests "*ArsOversiktCsvTest"
 
 ## Gör inte
 - Ändra andra filer.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #540). Ersatt av 2026-10-22-flextid-ar-02-csv-f2.md
