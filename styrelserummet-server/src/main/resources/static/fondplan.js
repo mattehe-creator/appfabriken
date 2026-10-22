@@ -64,12 +64,14 @@ document.getElementById("fond-form").addEventListener("submit", async (e) => {
   }
   const avs = tal(document.getElementById("avsattning").value);
   const pris = procent(document.getElementById("prisupprakning").value);
+  const okning = procent(document.getElementById("avsattning-okning").value);
   const body = {
     franAr: tal(document.getElementById("franAr").value),
     antalAr: tal(document.getElementById("antalAr").value),
     ingaendeFond: tal(document.getElementById("fond").value) || 0,
     arligAvsattning: avs === null || Number.isNaN(avs) ? null : avs,
     arligPrisupprakningProcent: pris === null || Number.isNaN(pris) ? null : pris,
+    avsattningOkningProcent: okning === null || Number.isNaN(okning) ? null : okning,
     atgarder,
   };
   svar.textContent = "Räknar…";
