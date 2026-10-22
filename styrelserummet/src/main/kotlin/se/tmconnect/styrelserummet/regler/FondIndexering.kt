@@ -12,7 +12,7 @@ fun indexeratBelopp(belopp: Long, ar: Int, basAr: Int, okningTiondelsProcent: In
     var result = belopp
     for (i in 0 until (ar - basAr)) {
         // Använd formeln: v = (v * (1000 + t) * 2 + 1000) / 2000
-        // Detta är en avrundningsformel som ger samma resultat som (v * (1000 + t) + 500) / 1000
+        // som är en avrundningsformel för att undvika flyttal
         result = (result * (1000 + okningTiondelsProcent) * 2 + 1000) / 2000
     }
     
