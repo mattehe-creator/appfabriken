@@ -32,6 +32,7 @@ import io.ktor.server.routing.routing
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.json.Json
+import se.tmconnect.styrelserummet.regler.avskrivningsplanCsv
 import se.tmconnect.styrelserummet.tolking.Tolkare
 import se.tmconnect.styrelserummet.tolking.anthropicTolkareFranMiljo
 import java.nio.file.Files
@@ -189,7 +190,7 @@ fun Application.module(miljo: ServerMiljo) {
             lagring.uppdateraAktivitet(id)
             val visning = tillVisning(utkast)
             call.respondText(
-                utskriftHtml(meta.forening, utkast.arsslut, visning.utskrift),
+                utskriftHtml(meta.forening, utkast.arsslut, visning.utskrift, planForUtkast(utkast)),
                 ContentType.Text.Html,
             )
         }
@@ -307,6 +308,25 @@ fun Application.module(miljo: ServerMiljo) {
                 lagring.uppdateraAktivitet(id)
                 val csv = tillCsv(utkast.komponenter, utkast.arsslut)
                 call.response.header(HttpHeaders.ContentDisposition, "attachment; filename=\"komponentlista.csv\"")
+                call.respondText(csv, ContentType.parse("text/csv; charset=utf-8"))
+            }
+
+            get("/{id}/plan.csv") {
+                val id = call.parameters["id"] ?: throw FelBegaran(Felkoder.SAKNAR_JOBB_ID)
+                if (!arGiltigtJobbId(id)) throw FelBegaran(Felkoder.OGILIG_LANK)
+                val utkast = lagring.lasUtkast(id)
+                    ?: return@get call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.JOBB_SAKNAS)))
+                val planMeta = lagring.lasMeta(id)
+                    ?: return@get call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.JOBB_SAKNAS)))
+                if (!farLamnaUt(betalKonfig, medBetalning(planMeta))) {
+                    return@get call.respond(
+                        HttpStatusCode.PaymentRequired,
+                        mapOf("fel" to felText(Felkoder.BETALNING_KRAVS)),
+                    )
+                }
+                lagring.uppdateraAktivitet(id)
+                val csv = avskrivningsplanCsv(planForUtkast(utkast))
+                call.response.header(HttpHeaders.ContentDisposition, "attachment; filename=\"avskrivningsplan.csv\"")
                 call.respondText(csv, ContentType.parse("text/csv; charset=utf-8"))
             }
 
