@@ -47,3 +47,5 @@ Använd `org.junit.Test` och `org.junit.Assert` (inte `kotlin.test`).
 - Ändra andra filer eller `forekomster`.
 - Lämna filerna utan ny kod.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (hela implementationen — lokal modell committade ingen kod)
