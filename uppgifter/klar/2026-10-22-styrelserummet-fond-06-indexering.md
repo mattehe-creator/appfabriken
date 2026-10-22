@@ -38,3 +38,5 @@ gradle :styrelserummet:test --tests "*FondIndexeringTest"
 ## Gör inte
 - Ändra andra filer.
 - Använda flyttal.
+
+utfall: godkänd 2026-10-22 (JUnit-import och indexeradeAtgarder-tester)
