@@ -26,3 +26,5 @@ gradle :styrelserummet:test --tests "*HelgdagarMidsommarTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-22 (Helgdagar.kt oförändrad; HelgdagarMidsommarTest.kt tom). Försök 2 i granskning/2026-10-22-styrelserummet-stamma-03-midsommarafton.md.
