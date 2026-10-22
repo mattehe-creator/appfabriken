@@ -8,6 +8,7 @@ private val sitemapSidor = listOf(
     "/fondplan",
     "/rantor",
     "/protokoll",
+    "/avgift",
     "/integritet",
 )
 
