@@ -43,3 +43,5 @@ gradle :styrelserummet:test --tests "*HelgdagarTabellTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Använda kotlin.test; använd org.junit.
+
+utfall: godkänd 2026-10-22 (lokal modell lämnade ingen testkod på försök 2; Cursor skrev HelgdagarTabellTest.kt enligt uppgifter/MALL.md)
