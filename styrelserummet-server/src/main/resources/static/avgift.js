@@ -18,10 +18,27 @@ function andelstal() {
   return tal.every(Number.isSafeInteger) ? tal : null;
 }
 
+function fyllTabell(sel, rader) {
+  const kropp = document.querySelector(`${sel} tbody`);
+  kropp.replaceChildren();
+  rader.forEach((rad) => {
+    const tr = document.createElement("tr");
+    rad.forEach((t, i) => {
+      const td = document.createElement(i === 0 ? "th" : "td");
+      if (i === 0) td.scope = "row"; else td.className = "tal";
+      td.textContent = t;
+      tr.appendChild(td);
+    });
+    kropp.appendChild(tr);
+  });
+  document.querySelector(`${sel}-ram`).hidden = rader.length === 0;
+}
+
 document.getElementById("exempel").addEventListener("click", () => {
   const v = (id, x) => { document.getElementById(id).value = x; };
   v("drift", "3100000"); v("kapital", "1520000"); v("avsattning", "600000");
   v("ovriga", "250000"); v("nuvarande", "4200000"); v("kvm", "5200");
+  v("antal-ar", "3");
   v("andelstal", "0,0215\n0,0184\n0,0231\n0,0198");
 });
 
@@ -45,7 +62,7 @@ document.getElementById("avgift-form").addEventListener("submit", async (e) => {
     return;
   }
   svar.textContent = "Räknar…";
-  const res = await fetch("/api/avgift", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...body, andelstal: andelar }) });
+  const res = await fetch("/api/avgift", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...body, andelstal: andelar, antalAr: tal("antal-ar") || 0 }) });
   const json = await res.json().catch(() => ({}));
   if (!res.ok) {
     svar.textContent = json.fel || "Det gick inte att räkna.";
@@ -64,6 +81,7 @@ document.getElementById("avgift-form").addEventListener("submit", async (e) => {
     li.textContent = t;
     ul.appendChild(li);
   });
+  fyllTabell("#trappa", (json.trappa || []).map((t) => [`År ${t.ar}`, t.arsavgifter, t.perKvmManad, t.hojning]));
   const kropp = document.querySelector("#lagenheter tbody");
   kropp.replaceChildren();
   (json.lagenheter || []).forEach((l) => {
