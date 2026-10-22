@@ -51,3 +51,16 @@ fun arSvenskHelgdag(d: LocalDate): Boolean {
     
     return (fasta + rorliga).contains(d)
 }
+
+fun narmasteArbetsdag(d: LocalDate, riktning: Int): LocalDate {
+    if (riktning != 1 && riktning != -1) {
+        throw IllegalArgumentException("Riktning måste vara 1 (framåt) eller -1 (bakåt)")
+    }
+    
+    var datum = d
+    while (arSvenskHelgdag(datum) || datum.dayOfWeek.value > 5) { // > 5 means weekend (saturday=6, sunday=7)
+        datum = datum.plusDays(riktning.toLong())
+    }
+    
+    return datum
+}
