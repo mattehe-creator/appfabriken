@@ -543,6 +543,28 @@ internal fun InstallningarInnehall(
                 onAndras = onAftnarLediga,
             )
         }
+        if (se.tmconnect.flextid.ruta.kanBeOmRuta()) {
+            item {
+                val context = androidx.compose.ui.platform.LocalContext.current
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    OutlinedButton(
+                        onClick = {
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                                se.tmconnect.flextid.ruta.beOmAttLaggaTillRuta(context)
+                            }
+                        },
+                        modifier = Modifier.tryckyta48(),
+                    ) {
+                        Text(stringResource(R.string.ruta_lagg_till))
+                    }
+                    Text(
+                        text = stringResource(R.string.ruta_lagg_till_text),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        }
         item {
             Text(stringResource(R.string.semester_rubrik), style = MaterialTheme.typography.titleMedium)
         }
