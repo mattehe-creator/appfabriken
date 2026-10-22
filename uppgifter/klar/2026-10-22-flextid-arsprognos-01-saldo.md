@@ -34,3 +34,5 @@ gradle :flextid:testDebugUnitTest --tests "*SaldoPrognosTest"
 ## Gör inte
 - Ändra andra filer.
 - Använda flyttal.
+
+utfall: godkänd 2026-10-22 (JUnit 4 i test, lengthOfYear för dagar kvar)
