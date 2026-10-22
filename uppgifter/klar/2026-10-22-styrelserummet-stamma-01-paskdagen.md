@@ -32,3 +32,5 @@ gradle :styrelserummet:test --tests "*HelgdagarPaskTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (inget)
