@@ -205,6 +205,10 @@ fun beraknaNyckeltalSvar(req: NyckeltalRequest): NyckeltalSvar {
 @Serializable
 data class AtgardDto(val ar: Int, val belopp: Long, val beskrivning: String = "")
 
+/** Underhållsplanens åtgärder ur ett jobb, för att fylla i Fondplan. */
+@Serializable
+data class JobbAtgarder(val franAr: Int, val atgarder: List<AtgardDto>)
+
 @Serializable
 data class FondplanRequest(
     val franAr: Int,

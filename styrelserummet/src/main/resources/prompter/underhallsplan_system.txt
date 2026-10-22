@@ -13,3 +13,5 @@ Grupper (exakt sträng): STOMME, FASAD, TAK, FONSTER_DORRAR, STAMMAR, EL, VARME,
 Sakerhet: HOG, MEDEL eller LAG.
 
 Anmärkningar ska vara på svenska.
+
+Ta också ut planerade åtgärder per år med kostnad till fältet atgarder. Hitta inte på år eller belopp.

@@ -5,4 +5,6 @@ Underhållsplan (maskad text):
 {{TEXT}}
 
 Returnera JSON:
-{"komponenter":[{"namn":"text","grupp":"STOMME|FASAD|TAK|FONSTER_DORRAR|STAMMAR|EL|VARME|VENTILATION|HISS|TVATTSTUGA|MARK_OCH_GARAGE|OVRIGT","anskaffningsvarde":null,"anskaffningsar":null,"nyttjandeperiodAr":null,"kalla":"fil, sida","sakerhet":"HOG|MEDEL|LAG"}],"anmarkningar":["text"]}
+{"komponenter":[{"namn":"text","grupp":"STOMME|FASAD|TAK|FONSTER_DORRAR|STAMMAR|EL|VARME|VENTILATION|HISS|TVATTSTUGA|MARK_OCH_GARAGE|OVRIGT","anskaffningsvarde":null,"anskaffningsar":null,"nyttjandeperiodAr":null,"kalla":"fil, sida","sakerhet":"HOG|MEDEL|LAG"}],"anmarkningar":["text"],"atgarder":[{"ar":2028,"belopp":600000,"beskrivning":"Byte av fönster"}]}
+
+"atgarder" är underhållsplanens planerade åtgärder med år och beräknad kostnad i hela kronor, precis som de står i planen. Ta bara med åtgärder där både år och belopp står i texten. Lämna listan tom om planen saknar sådana uppgifter.

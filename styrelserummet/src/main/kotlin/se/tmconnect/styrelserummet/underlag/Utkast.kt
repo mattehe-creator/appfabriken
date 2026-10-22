@@ -5,6 +5,7 @@ import se.tmconnect.styrelserummet.modell.Komponent
 import se.tmconnect.styrelserummet.modell.Komponentgrupp
 import se.tmconnect.styrelserummet.modell.Sakerhet
 import se.tmconnect.styrelserummet.regler.Avstamning
+import se.tmconnect.styrelserummet.regler.PlaneradAtgard
 import se.tmconnect.styrelserummet.regler.fordela
 import se.tmconnect.styrelserummet.regler.lasNyttjandeperioderFranResurs
 import se.tmconnect.styrelserummet.regler.stamAv
@@ -21,6 +22,7 @@ data class Utkast(
     val arsredovisning: ArsredovisningUtdrag,
     val avstamning: Avstamning?,
     val anmarkningar: List<String>,
+    val atgarder: List<PlaneradAtgard> = emptyList(),
 )
 
 class ByggUtkast(
@@ -48,6 +50,7 @@ class ByggUtkast(
         val sidor = delaUpp(sidorLista, maxTeckenPerAnrop)
         val anmarkningar = mutableListOf<String>()
         val forslag = mutableListOf<ForslagKomponent>()
+        val atgarder = linkedSetOf<PlaneradAtgard>()
 
         sidor.forEach { del ->
             val json = tolkare.foreslaKomponenter(
@@ -61,6 +64,7 @@ class ByggUtkast(
             val resultat = tolkaForslag(json, underhallsplanFilnamn)
             anmarkningar += resultat.anmarkningar
             forslag += resultat.komponenter
+            resultat.atgarder.forEach { atgarder += PlaneradAtgard(it.ar, it.belopp, it.beskrivning) }
         }
 
         var komponenter = forslag.mapNotNull { f ->
@@ -136,6 +140,7 @@ class ByggUtkast(
             arsredovisning = arsData,
             avstamning = avstamning,
             anmarkningar = anmarkningar,
+            atgarder = atgarder.sortedBy { it.ar }.take(MAX_ATGARDER_PER_SVAR),
         )
         return utkast.copy(anmarkningar = anmarkningarFor(utkast, tabell, nuAr))
     }

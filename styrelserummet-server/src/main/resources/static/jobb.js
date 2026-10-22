@@ -99,6 +99,14 @@ async function hamta() {
   visaTabell(visning?.komponenter || utkast.komponenter);
   document.getElementById("tabell-sektion").hidden = false;
   document.getElementById("jamforelse-sektion").hidden = false;
+  const atgarder = utkast.atgarder || [];
+  if (atgarder.length) {
+    const summa = atgarder.reduce((s, a) => s + a.belopp, 0);
+    document.getElementById("fond-text").textContent =
+      `Tolkningen hittade ${atgarder.length} planerade åtgärder på sammanlagt ${summa.toLocaleString("sv-SE")} kr. Kontrollera dem mot planen. Fondplanen visar vilken årlig avsättning som räcker.`;
+    document.getElementById("fond-lank").href = `/fondplan?jobb=${encodeURIComponent(id)}`;
+    document.getElementById("fond-sektion").hidden = false;
+  }
   document.getElementById("csv").href = `/api/jobb/${id}.csv`;
   document.getElementById("plan-csv").href = `/api/jobb/${id}/plan.csv`;
   document.getElementById("skrivUt").onclick = () => window.open(`/j/${id}/utskrift`, "_blank", "noopener");

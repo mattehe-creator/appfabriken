@@ -35,6 +35,7 @@ data class UtkastDto(
     val komponenter: List<KomponentDto>,
     val avstamning: AvstamningDto,
     val anmarkningar: List<String>,
+    val atgarder: List<AtgardDto> = emptyList(),
 )
 
 fun tillDto(k: Komponent): KomponentDto =
@@ -79,5 +80,6 @@ fun tillUtkastDto(utkast: Utkast, arsslut: Int): UtkastDto {
             stammer = avst.stammer,
         ),
         anmarkningar = utkast.anmarkningar,
+        atgarder = utkast.atgarder.map { AtgardDto(it.ar, it.belopp, it.beskrivning) },
     )
 }

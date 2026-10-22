@@ -34,7 +34,7 @@ class AnthropicTolkare(
             .replace("{{TEXT}}", underhallsplanUtdrag)
         val body = buildJsonObject {
             put("model", JsonPrimitive(modell))
-            put("max_tokens", JsonPrimitive(4096))
+            put("max_tokens", JsonPrimitive(8192))
             put("system", JsonPrimitive(system))
             put(
                 "messages",

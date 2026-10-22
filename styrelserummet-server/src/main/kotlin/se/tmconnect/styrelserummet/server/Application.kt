@@ -332,6 +332,15 @@ fun Application.module(miljo: ServerMiljo) {
                 call.respondText(csv, ContentType.parse("text/csv; charset=utf-8"))
             }
 
+            get("/{id}/atgarder") {
+                val id = call.parameters["id"] ?: throw FelBegaran(Felkoder.SAKNAR_JOBB_ID)
+                if (!arGiltigtJobbId(id)) throw FelBegaran(Felkoder.OGILIG_LANK)
+                val utkast = lagring.lasUtkast(id)
+                    ?: return@get call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.JOBB_SAKNAS)))
+                lagring.uppdateraAktivitet(id)
+                call.respond(JobbAtgarder(franAr = utkast.arsslut + 1, atgarder = utkast.atgarder))
+            }
+
             get("/{id}/plan.csv") {
                 val id = call.parameters["id"] ?: throw FelBegaran(Felkoder.SAKNAR_JOBB_ID)
                 if (!arGiltigtJobbId(id)) throw FelBegaran(Felkoder.OGILIG_LANK)
