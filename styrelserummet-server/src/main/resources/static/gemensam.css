@@ -141,6 +141,9 @@ table { border-collapse: collapse; width: 100%; min-width: 40rem; font-variant-n
 th, td { padding: 0.5rem 0.75rem; border-top: 1px solid var(--linje); text-align: left; vertical-align: top; }
 th { font-family: var(--mono); font-size: 0.76rem; text-transform: uppercase; color: var(--dampad); }
 td.tal, th.tal { text-align: right; }
+.forandring { color: var(--text-mjuk, #555); font-size: 0.92em; white-space: nowrap; }
+details.jamforelse { margin: 1rem 0; }
+details.jamforelse > summary { cursor: pointer; font-weight: 600; }
 tr.osaker { background: color-mix(in srgb, var(--stampel-bg) 60%, transparent); }
 tr.uppskattning { background: color-mix(in srgb, var(--stampel-bg) 40%, transparent); }
 .knapp-rad { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
