@@ -77,7 +77,22 @@ class UiInstallningarLager(private val context: Context) {
         }
     }
 
+    /** Tak för plussaldo och golv för minussaldo i minuter (golvet lagras som positivt tal). Null = ingen gräns. */
+    val saldoTakMin: Flow<Int?> = context.flextidUiDataStore.data.map { prefs -> prefs[SALDO_TAK_MIN]?.takeIf { it > 0 } }
+    val saldoGolvMin: Flow<Int?> = context.flextidUiDataStore.data.map { prefs -> prefs[SALDO_GOLV_MIN]?.takeIf { it > 0 }?.let { -it } }
+
+    suspend fun sattSaldoGranser(takMin: Int?, golvMin: Int?) {
+        context.flextidUiDataStore.edit { prefs ->
+            if (takMin != null && takMin > 0) prefs[SALDO_TAK_MIN] = takMin.coerceAtMost(MAX_GRANS_MIN) else prefs.remove(SALDO_TAK_MIN)
+            val golv = golvMin?.let { kotlin.math.abs(it) }
+            if (golv != null && golv > 0) prefs[SALDO_GOLV_MIN] = golv.coerceAtMost(MAX_GRANS_MIN) else prefs.remove(SALDO_GOLV_MIN)
+        }
+    }
+
     companion object {
+        const val MAX_GRANS_MIN = 500 * 60
+        private val SALDO_TAK_MIN = intPreferencesKey("saldo_tak_min")
+        private val SALDO_GOLV_MIN = intPreferencesKey("saldo_golv_min")
         const val MAX_SEMESTERDAGAR = 60
         private val AFTNAR_LEDIGA = booleanPreferencesKey("aftnar_lediga")
         private val SEMESTERDAGAR_PER_AR = intPreferencesKey("semesterdagar_per_ar")
