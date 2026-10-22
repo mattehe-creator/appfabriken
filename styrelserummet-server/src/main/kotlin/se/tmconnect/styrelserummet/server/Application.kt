@@ -158,6 +158,20 @@ fun Application.module(miljo: ServerMiljo) {
             )
         }
 
+        get("/avgift") {
+            call.respondText(
+                javaClass.classLoader.getResource("static/avgift.html")!!.readText(),
+                ContentType.Text.Html,
+            )
+        }
+
+        post("/api/avgift") {
+            kontrolleraVerktygGrans(call, verktygGrans, miljo.proxyPaa)
+            val raw = call.taEmotVerktygJson()
+            val req = tolkaVerktygJson<AvgiftRequest>(raw)
+            call.respond(beraknaAvgiftSvar(req))
+        }
+
         get("/rantor") {
             call.respondText(
                 javaClass.classLoader.getResource("static/rantor.html")!!.readText(),

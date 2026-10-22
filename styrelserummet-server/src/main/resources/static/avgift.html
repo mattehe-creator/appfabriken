@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Avgiftskalkyl för bostadsrättsförening — Styrelserummet</title>
+  <meta name="description" content="Räkna ut vilka årsavgifter föreningens budget kräver: drift, räntor och amortering, avsättning till underhåll, minus övriga intäkter. Gratis, inget sparas.">
+  <link rel="canonical" href="/avgift">
+  <meta property="og:title" content="Avgiftskalkyl för bostadsrättsförening — Styrelserummet">
+  <meta property="og:description" content="Räkna ut vilka årsavgifter föreningens budget kräver: drift, räntor och amortering, avsättning till underhåll, minus övriga intäkter. Gratis, inget sparas.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="/gemensam.css">
+</head>
+<body>
+  <div class="ram">
+    <div class="topp">
+      <a class="marke" href="/">Styrelserummet</a>
+      <span class="stampel">Utkast</span>
+    </div>
+    <header class="hjalte">
+      <span class="etikett">Gratis verktyg</span>
+      <h1>Vilken avgift kräver budgeten?</h1>
+      <p class="ingress">Fyll i budgetens kostnader och intäkter för året. Ni ser vilka årsavgifter som behövs, per kvadratmeter och månad, och hur mycket det skiljer mot i dag. Ingenting sparas.</p>
+    </header>
+
+    <form id="avgift-form">
+      <div class="falt"><label for="drift">Driftkostnader (kr per år)</label><input id="drift" inputmode="numeric" aria-describedby="drift-hjalp"><p class="hjalp" id="drift-hjalp">El, värme, vatten, försäkring, förvaltning, löpande underhåll med mera.</p></div>
+      <div class="falt"><label for="kapital">Räntor och amortering (kr per år)</label><input id="kapital" inputmode="numeric"></div>
+      <div class="falt"><label for="avsattning">Avsättning till underhållsfonden (kr per år)</label><input id="avsattning" inputmode="numeric"></div>
+      <div class="falt"><label for="ovriga">Övriga intäkter (kr per år)</label><input id="ovriga" inputmode="numeric" aria-describedby="ovriga-hjalp"><p class="hjalp" id="ovriga-hjalp">Hyror för lokaler, p-platser, förråd.</p></div>
+      <div class="falt"><label for="nuvarande">Dagens årsavgifter (kr per år)</label><input id="nuvarande" inputmode="numeric"></div>
+      <div class="falt"><label for="kvm">Kvm upplåtna med bostadsrätt</label><input id="kvm" inputmode="numeric"></div>
+      <div class="knapp-rad">
+        <button class="knapp" type="submit">Räkna</button>
+        <button class="knapp sekundar" type="button" id="exempel">Fyll i exempel</button>
+      </div>
+      <p id="svar" class="svar" role="status" aria-live="polite"></p>
+    </form>
+
+    <section id="resultat" class="yta" hidden>
+      <ul class="sammanfattning" id="sammanfattning"></ul>
+      <p id="anmarkning" class="hjalp"></p>
+      <p class="hjalp"><a href="/fondplan">Räkna avsättningen med Fondplan</a> · <a href="/rantor">Vad kostar en högre ränta?</a></p>
+    </section>
+
+    <footer>
+      <a href="/">Komponentlista enligt K3</a>
+      <a href="/nyckeltal">Nyckeltal</a>
+      <a href="/fondplan">Fondplan</a>
+      <a href="/rantor">Räntor</a>
+      <a href="/protokoll">Protokoll</a>
+      <a href="/integritet">Integritet</a>
+      <span>Styrelserummet är en tjänst från TM Connect.</span>
+    </footer>
+  </div>
+  <script src="/avgift.js"></script>
+</body>
+</html>
