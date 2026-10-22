@@ -1,54 +1,44 @@
 package se.tmconnect.styrelserummet.regler
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 class FondIndexeringTest {
-    
+
     @Test
-    fun testIndexeratBelopp() {
-        assertEquals(104040, indexeratBelopp(100000, 2028, 2026, 20))
-        assertEquals(649460, indexeratBelopp(600000, 2030, 2026, 20))
-        assertEquals(100000, indexeratBelopp(100000, 2026, 2026, 20))
-        assertEquals(128010, indexeratBelopp(100000, 2036, 2026, 25))
-        assertEquals(100000, indexeratBelopp(100000, 2025, 2026, 20))
+    fun `indexeratBelopp enligt uppgiftens exempel`() {
+        assertEquals(104_040L, indexeratBelopp(100_000, 2028, 2026, 20))
+        assertEquals(649_460L, indexeratBelopp(600_000, 2030, 2026, 20))
+        assertEquals(100_000L, indexeratBelopp(100_000, 2026, 2026, 20))
+        assertEquals(128_010L, indexeratBelopp(100_000, 2036, 2026, 25))
+        assertEquals(100_000L, indexeratBelopp(100_000, 2025, 2026, 20))
     }
-    
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `indexeratBelopp kastar vid okning over 200`() {
+        indexeratBelopp(100_000, 2026, 2026, 201)
+    }
+
     @Test
-    fun testIndexeratBeloppMedFelaktigOkning() {
-        assertFailsWith<IllegalArgumentException> {
-            indexeratBelopp(100000, 2026, 2026, 201)
+    fun `indexeradeAtgarder uppräknar belopp och behåller ar och beskrivning`() {
+        val atgarder = listOf(
+            PlaneradAtgard(2026, 100_000, "Tak"),
+            PlaneradAtgard(2028, 600_000, "Fönster"),
+            PlaneradAtgard(2030, 200_000, "Ventilation"),
+        )
+        val basAr = 2026
+        val okning = 20
+
+        val indexerade = indexeradeAtgarder(atgarder, basAr, okning)
+
+        assertEquals(3, indexerade.size)
+        for (i in atgarder.indices) {
+            assertEquals(atgarder[i].ar, indexerade[i].ar)
+            assertEquals(atgarder[i].beskrivning, indexerade[i].beskrivning)
+            assertEquals(
+                indexeratBelopp(atgarder[i].belopp, atgarder[i].ar, basAr, okning),
+                indexerade[i].belopp,
+            )
         }
-    }
-    
-    @Test
-    fun testIndexeradeAtgarder() {
-        val atgarder = listOf(
-            PlaneradAtgard(2026, 100000, "Atgard 1"),
-            PlaneradAtgard(2027, 200000, "Atgard 2"),
-            PlaneradAtgard(2028, 300000, "Atgard 3")
-        )
-        
-        val indexerade = indexeradeAtgarder(atgarder, 2026, 20)
-        
-        assertEquals(100000, indexerade[0].belopp)
-        assertEquals(200000, indexerade[1].belopp)
-        assertEquals(300000, indexerade[2].belopp)
-    }
-    
-    @Test
-    fun testIndexeradeAtgarderMedPrisokning() {
-        val atgarder = listOf(
-            PlaneradAtgard(2026, 100000, "Atgard 1"),
-            PlaneradAtgard(2027, 100000, "Atgard 2"),
-            PlaneradAtgard(2028, 100000, "Atgard 3")
-        )
-        
-        val indexerade = indexeradeAtgarder(atgarder, 2026, 20)
-        
-        assertEquals(100000, indexerade[0].belopp) // 2026
-        assertEquals(120000, indexerade[1].belopp) // 2027
-        assertEquals(144000, indexerade[2].belopp) // 2028
     }
 }
