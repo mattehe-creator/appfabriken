@@ -53,3 +53,5 @@ gradle :styrelserummet:test --tests "*NyckeltalKontrollTest"
 - Ändra andra filer.
 - Använda flyttal.
 - Committa enbart uppgiftsflytt utan kod.
+
+utfall: godkänd 2026-10-22 (hela implementationen i NyckeltalKontroll.kt och NyckeltalKontrollTest.kt)
