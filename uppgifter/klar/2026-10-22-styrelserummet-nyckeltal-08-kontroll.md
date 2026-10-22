@@ -37,3 +37,5 @@ gradle :styrelserummet:test --tests "*NyckeltalKontrollTest"
 ## Gör inte
 - Ändra andra filer.
 - Använda flyttal.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #533). Ersatt av 2026-10-22-styrelserummet-nyckeltal-08-kontroll-f2.md
