@@ -1,9 +1,9 @@
 package se.tmconnect.styrelserummet.regler
 
 import java.time.LocalDate
-import kotlin.test.Test
-import kotlin.test.assertTrue
-import kotlin.test.assertFalse
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Test
 
 class HelgdagarRodDagTest {
     
