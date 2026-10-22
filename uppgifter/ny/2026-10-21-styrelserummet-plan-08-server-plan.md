@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/claude/2026-10-21-styrelserummet-avskrivningsplan.md
 försök: 1
-beror-på: 2026-10-21-styrelserummet-plan-06-csv.md
+beror-på: 2026-10-21-styrelserummet-plan-06-csv-f2.md
 
 ## Ändra bara dessa filer
 - styrelserummet-server/src/main/kotlin/se/tmconnect/styrelserummet/server/PlanForUtkast.kt (ny)

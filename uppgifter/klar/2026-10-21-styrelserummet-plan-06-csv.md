@@ -35,3 +35,5 @@ gradle :styrelserummet:test --tests "*AvskrivningsplanCsvTest"
 - Ändra andra filer.
 - Ändra `CsvExport.kt`.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #479). Ersatt av 2026-10-21-styrelserummet-plan-06-csv-f2.md
