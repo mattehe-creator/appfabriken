@@ -282,6 +282,15 @@
     <string name="butik_punkt_1">Påminnelser före varje återkommande jobb</string>
     <string name="butik_punkt_2">Kvitton och kostnader per år, PDF vid försäljning</string>
     <string name="butik_punkt_3">Offline. Inget konto, ingen reklam</string>
+<<<<<<< HEAD
     <string name="reklamation_etikett">Reklamera fel i arbetet</string>
     <string name="reklamation_varde">Senast %1$s, och inom rimlig tid efter att du märkt felet (konsumenttjänstlagen 17 §, arbete på byggnad). Information, inte juridisk rådgivning.</string>
+=======
+    <string name="logg_sok">Sök i loggen</string>
+    <string name="logg_filter_alla">Alla</string>
+    <string name="logg_filter_underhall">Underhåll</string>
+    <string name="logg_filter_reparation">Reparation</string>
+    <string name="logg_filter_ombyggnad">Ombyggnad</string>
+    <string name="logg_inga_traffar">Inga poster matchar sökningen.</string>
+>>>>>>> 9cb893e (Husloggen: sök och filter på typ i loggen)
 </resources>

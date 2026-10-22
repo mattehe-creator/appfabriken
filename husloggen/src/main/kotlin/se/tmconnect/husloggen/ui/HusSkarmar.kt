@@ -2,6 +2,8 @@ package se.tmconnect.husloggen.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.layout.Box
@@ -31,6 +33,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import se.tmconnect.husloggen.regler.filtreraPoster
+import se.tmconnect.husloggen.data.PostTyp
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.FilterChip
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -431,7 +439,12 @@ private fun LoggFlik(
         return
     }
 
-    val grupperadePoster = grupperaPerAr(poster)
+    var sok by rememberSaveable { mutableStateOf("") }
+    var typFilter by rememberSaveable { mutableStateOf<String?>(null) }
+    val filtrerade = remember(poster, sok, typFilter) {
+        filtreraPoster(poster, sok, typFilter?.let { PostTyp.valueOf(it) })
+    }
+    val grupperadePoster = grupperaPerAr(filtrerade)
 
     LazyColumn(
         modifier = Modifier
@@ -444,6 +457,43 @@ private fun LoggFlik(
                 arPro = arPro,
                 onVisaProDialog = onVisaProDialog,
             )
+        }
+        item(key = "sok") {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = sok,
+                    onValueChange = { sok = it },
+                    label = { Text(stringResource(R.string.logg_sok)) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.horizontalScroll(rememberScrollState()),
+                ) {
+                    FilterChip(
+                        selected = typFilter == null,
+                        onClick = { typFilter = null },
+                        label = { Text(stringResource(R.string.logg_filter_alla)) },
+                    )
+                    PostTyp.entries.forEach { typ ->
+                        FilterChip(
+                            selected = typFilter == typ.name,
+                            onClick = { typFilter = if (typFilter == typ.name) null else typ.name },
+                            label = { Text(stringResource(postTypKortRes(typ))) },
+                        )
+                    }
+                }
+            }
+        }
+        if (filtrerade.isEmpty()) {
+            item(key = "inga-traffar") {
+                Text(
+                    text = stringResource(R.string.logg_inga_traffar),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(vertical = 16.dp),
+                )
+            }
         }
         grupperadePoster.forEach { arGrupp ->
             item {
@@ -678,3 +728,10 @@ fun InstallningarSkarm(
         }
     }
 }
+
+private fun postTypKortRes(typ: PostTyp): Int =
+    when (typ) {
+        PostTyp.UNDERHALL -> R.string.logg_filter_underhall
+        PostTyp.REPARATION -> R.string.logg_filter_reparation
+        PostTyp.OMBYGGNAD -> R.string.logg_filter_ombyggnad
+    }
