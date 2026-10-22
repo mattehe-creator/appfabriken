@@ -483,7 +483,12 @@ class FlextidViewModel(
             SakerhetskopiaInnehall(
                 version = se.tmconnect.flextid.export.FLEXTID_SAKERHETSKOPIA_VERSION,
                 skapad = DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.now()),
-                installning = installningTillSakerhetskopia(inst, stamplaInMin),
+                installning =
+                    installningTillSakerhetskopia(inst, stamplaInMin).copy(
+                        aftnarLediga = uiInstallningarLager.aftnarLediga.first(),
+                        semesterdagarPerAr = uiInstallningarLager.semesterdagarPerAr.first(),
+                        semesterarStartmanad = uiInstallningarLager.semesterarStartmanad.first(),
+                    ),
                 dagar = dagar.map { dagTillSakerhetskopia(it) },
             )
         return skrivSakerhetskopiaJson(innehall)
@@ -500,6 +505,10 @@ class FlextidViewModel(
                     paminnelseInstallningar.sattStamplaInPaminnelseMinEfterMidnatt(
                         las.innehall.installning.stamplaInPaminnelseMinEfterMidnatt,
                     )
+                    uiInstallningarLager.sattAftnarLediga(las.innehall.installning.aftnarLediga)
+                    uiInstallningarLager.sattSemesterdagarPerAr(las.innehall.installning.semesterdagarPerAr)
+                    uiInstallningarLager.sattSemesterarStartmanad(las.innehall.installning.semesterarStartmanad)
+                    synkaPaminnelseJobb()
                     _meddelanden.emit(FlextidMeddelande.Importerat)
                 }
                 else -> _meddelanden.emit(FlextidMeddelande.ImportFel)

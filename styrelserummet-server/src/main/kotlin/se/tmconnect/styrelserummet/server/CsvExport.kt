@@ -1,7 +1,6 @@
 package se.tmconnect.styrelserummet.server
 
-import se.tmconnect.styrelserummet.modell.Komponent
-import se.tmconnect.styrelserummet.regler.avskrivningFor
+import se.tmconnect.styrelserummet.regler.bokfortVarde
 import se.tmconnect.styrelserummet.underlag.UTKAST_RAD
 
 fun tillCsv(komponenter: List<KomponentDto>, arsslut: Int): String {
@@ -35,17 +34,6 @@ fun tillCsv(komponenter: List<KomponentDto>, arsslut: Int): String {
         add(csvFalt(UTKAST_RAD))
     }
     return rader.joinToString("\n")
-}
-
-private fun bokfortVarde(k: Komponent, arsslut: Int): Long {
-    if (arsslut < k.anskaffningsar) {
-        return k.anskaffningsvarde
-    }
-    var avskrivet = 0L
-    for (ar in k.anskaffningsar..arsslut) {
-        avskrivet += avskrivningFor(k, ar)
-    }
-    return (k.anskaffningsvarde - avskrivet).coerceAtLeast(k.restvarde)
 }
 
 private fun csvFalt(text: String): String {

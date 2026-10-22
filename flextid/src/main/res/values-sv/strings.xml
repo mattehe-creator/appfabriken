@@ -140,4 +140,8 @@
     <string name="aftnar_lediga_rubrik">Aftnar är lediga</string>
     <string name="aftnar_lediga_beskrivning">Midsommar-, jul- och nyårsafton räknas som lediga för påminnelser. Röda dagar är alltid lediga.</string>
     <string name="pdf_normaltid_manad">Normaltid i månaden (%1$d arbetsdagar)</string>
+    <string name="butik_rubrik">Stämpla, se saldot och när du kan gå hem</string>
+    <string name="butik_punkt_1">När normaltiden är fylld, på minuten</string>
+    <string name="butik_punkt_2">Svenska helgdagar och semesterdagar inbyggda</string>
+    <string name="butik_punkt_3">Offline. Inget konto, ingen reklam</string>
 </resources>

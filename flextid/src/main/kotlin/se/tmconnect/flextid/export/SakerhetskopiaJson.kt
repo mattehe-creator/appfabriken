@@ -58,6 +58,9 @@ fun lasSakerhetskopiaJson(json: String): SakerhetskopiaJsonLasResult {
                     arbetsdagarMask = 31,
                     stamplaInPaminnelseMinEfterMidnatt =
                         normaliseraStamplaInPaminnelseMinEfterMidnatt(null),
+                    aftnarLediga = true,
+                    semesterdagarPerAr = 25,
+                    semesterarStartmanad = 4,
                 )
             }
         val dagarLista = rot.lista("dagar")?.element ?: emptyList()
@@ -87,12 +90,19 @@ private fun lasInstallning(obj: JsonObjekt, version: Int): SakerhetskopiaInstall
     val ingang = obj.heltal("ingangssaldoMin") ?: 0
     val mask = obj.heltal("arbetsdagarMask") ?: 31
     val stamplaInMin = obj.heltal("stamplaInPaminnelseMinEfterMidnatt")
+    val aftnarLediga = obj.boolskt("aftnarLediga") ?: true
+    val semesterdagarPerAr = (obj.heltal("semesterdagarPerAr") ?: 25).coerceIn(0, 60)
+    val semesterarStartmanadRaw = obj.heltal("semesterarStartmanad") ?: 4
+    val semesterarStartmanad = if (semesterarStartmanadRaw == 1) 1 else 4
     return SakerhetskopiaInstallning(
         normaltidMinPerDag = normaltid,
         standardRastMin = rast,
         ingangssaldoMin = ingang,
         arbetsdagarMask = mask,
         stamplaInPaminnelseMinEfterMidnatt = normaliseraStamplaInPaminnelseMinEfterMidnatt(stamplaInMin),
+        aftnarLediga = aftnarLediga,
+        semesterdagarPerAr = semesterdagarPerAr,
+        semesterarStartmanad = semesterarStartmanad,
     )
 }
 
@@ -130,6 +140,10 @@ private fun skrivInstallningObjekt(installning: SakerhetskopiaInstallning): Stri
         append("\"arbetsdagarMask\":").append(installning.arbetsdagarMask).append(',')
         append("\"stamplaInPaminnelseMinEfterMidnatt\":")
             .append(installning.stamplaInPaminnelseMinEfterMidnatt)
+            .append(',')
+        append("\"aftnarLediga\":").append(installning.aftnarLediga).append(',')
+        append("\"semesterdagarPerAr\":").append(installning.semesterdagarPerAr).append(',')
+        append("\"semesterarStartmanad\":").append(installning.semesterarStartmanad)
         append('}')
     }
 
@@ -173,10 +187,19 @@ private data class JsonStrang(val varde: String) : JsonVarde
 
 private data class JsonNummer(val varde: Long) : JsonVarde
 
+private data class JsonBool(val varde: Boolean) : JsonVarde
+
 private class JsonObjekt(val falt: Map<String, JsonVarde>) : JsonVarde {
     fun strang(namn: String): String? = (falt[namn] as? JsonStrang)?.varde
 
     fun heltal(namn: String): Int? = (falt[namn] as? JsonNummer)?.varde?.toInt()
+
+    fun boolskt(namn: String): Boolean? =
+        when (val varde = falt[namn]) {
+            is JsonBool -> varde.varde
+            is JsonStrang -> varde.varde == "true"
+            else -> null
+        }
 
     fun objekt(namn: String): JsonObjekt? = falt[namn] as? JsonObjekt
 
@@ -260,8 +283,16 @@ private class JsonLasare(private val text: String) {
             '{' -> lasObjekt()
             '[' -> lasLista()
             '-', in '0'..'9' -> lasNummer()
+            't' -> lasNyckelord("true")?.let { JsonBool(true) }
+            'f' -> lasNyckelord("false")?.let { JsonBool(false) }
             else -> null
         }
+    }
+
+    private fun lasNyckelord(nyckelord: String): Unit? {
+        if (!text.regionMatches(i, nyckelord, 0, nyckelord.length)) return null
+        i += nyckelord.length
+        return Unit
     }
 
     private fun lasNummer(): JsonNummer? {

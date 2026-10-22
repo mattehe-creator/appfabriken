@@ -140,4 +140,8 @@
     <string name="aftnar_lediga_rubrik">Holiday eves are days off</string>
     <string name="aftnar_lediga_beskrivning">Midsummer, Christmas and New Year\'s Eve count as days off for reminders. Public holidays are always days off.</string>
     <string name="pdf_normaltid_manad">Normal hours this month (%1$d working days)</string>
+    <string name="butik_rubrik">Clock in, see your balance, know when to go home</string>
+    <string name="butik_punkt_1">When your normal hours are done, to the minute</string>
+    <string name="butik_punkt_2">Swedish public holidays and vacation days built in</string>
+    <string name="butik_punkt_3">Offline. No account, no ads</string>
 </resources>
