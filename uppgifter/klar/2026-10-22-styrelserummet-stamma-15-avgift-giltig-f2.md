@@ -55,3 +55,7 @@ Kör:
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (hela implementationen — lokal modell försök 2 tom testfil)
+
+utfall: godkänd 2026-10-22 (hela implementationen — lokal modell försök 2 tom testfil)
