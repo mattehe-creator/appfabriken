@@ -2,6 +2,7 @@ package se.tmconnect.styrelserummet.regler
 
 import org.junit.Test
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import java.lang.IllegalArgumentException
 
 class FondplanTest {
@@ -112,5 +113,29 @@ class FondplanTest {
         } catch (e: IllegalArgumentException) {
             // Expected
         }
+    }
+
+    @Test
+    fun `test forstaUnderskottsar`() {
+        val atgarder = exempelAtgarder()
+        assertEquals(
+            2028,
+            forstaUnderskottsar(fondUtveckling(atgarder, 2026, 5, 180_000L, 300_000L)),
+        )
+        assertNull(forstaUnderskottsar(fondUtveckling(atgarder, 2026, 5, 240_000L, 300_000L)))
+    }
+
+    @Test
+    fun `test minstaAvsattningUtanUnderskott`() {
+        val atgarder = exempelAtgarder()
+        assertEquals(233_334L, minstaAvsattningUtanUnderskott(atgarder, 2026, 5, 300_000L))
+        assertEquals(0L, minstaAvsattningUtanUnderskott(atgarder, 2026, 5, 5_000_000L))
+
+        val utvecklingMin = fondUtveckling(atgarder, 2026, 5, 233_334L, 300_000L)
+        assertNull(forstaUnderskottsar(utvecklingMin))
+        assertEquals(
+            2028,
+            forstaUnderskottsar(fondUtveckling(atgarder, 2026, 5, 233_333L, 300_000L)),
+        )
     }
 }
