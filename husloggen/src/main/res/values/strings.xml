@@ -295,4 +295,9 @@
     <string name="logg_filter_ombyggnad">Building</string>
     <string name="logg_inga_traffar">No entries match the search.</string>
     <string name="matare_forandring">(%1$s %% vs. previous year)</string>
+    <string name="mer_kommande_titel">Year ahead</string>
+    <string name="mer_kommande_text">Jobs in the next twelve months</string>
+    <string name="kommande_rubrik">The next twelve months</string>
+    <string name="kommande_tomt">No recurring tasks yet. Add them under To do.</string>
+    <string name="kommande_forsenad">Overdue, due %1$s</string>
 </resources>
