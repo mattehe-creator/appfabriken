@@ -35,3 +35,5 @@ gradle :styrelserummet:test --tests "*NyckeltalTest"
 ## Gör inte
 - Ändra andra filer eller tidigare funktioner.
 - Använda flyttal.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #481). Ersatt av 2026-10-22-styrelserummet-nyckeltal-04-ranta-energi-f2.md
