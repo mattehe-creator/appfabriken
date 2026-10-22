@@ -814,6 +814,31 @@ internal fun DagFormularDialog(
         title = { Text(formateraDatum(tillstand.datum, locale)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                val forslagDatum = tillstand.forslagDatum
+                if (forslagDatum != null && tillstand.typ == DagTyp.ARBETE && tillstand.startText.isBlank() && tillstand.slutText.isBlank()) {
+                    TextButton(
+                        onClick = {
+                            onAndra(
+                                tillstand.copy(
+                                    startText = tillstand.forslagStart,
+                                    slutText = tillstand.forslagSlut,
+                                    rastText = tillstand.forslagRast,
+                                    fel = null,
+                                ),
+                            )
+                        },
+                        modifier = Modifier.heightIn(min = 48.dp),
+                    ) {
+                        Text(
+                            stringResource(
+                                R.string.samma_tider_som,
+                                formateraDatum(forslagDatum, locale),
+                                tillstand.forslagStart,
+                                tillstand.forslagSlut,
+                            ),
+                        )
+                    }
+                }
                 OutlinedTextField(
                     value = tillstand.startText,
                     onValueChange = { onAndra(tillstand.copy(startText = it, fel = null)) },

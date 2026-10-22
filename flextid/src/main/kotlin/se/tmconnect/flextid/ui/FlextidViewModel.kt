@@ -1,5 +1,6 @@
 package se.tmconnect.flextid.ui
 
+import se.tmconnect.flextid.regler.senasteArbetsdagFore
 import android.app.Activity
 import android.content.Context
 import android.net.Uri
@@ -91,6 +92,11 @@ data class DagFormularTillstand(
     val typ: DagTyp = DagTyp.ARBETE,
     val anteckning: String = "",
     val fel: TidValideringFel? = null,
+    /** Tider från senaste arbetsdagen, för knappen "Samma tider som …". Bara för nya dagar. */
+    val forslagDatum: LocalDate? = null,
+    val forslagStart: String = "",
+    val forslagSlut: String = "",
+    val forslagRast: String = "",
 )
 
 class FlextidViewModel(
@@ -356,6 +362,7 @@ class FlextidViewModel(
                 return@launch
             }
             val dag = repository.hamtaDag(datum)
+            val forslag = if (dag == null) senasteArbetsdagFore(repository.hamtaAllaDagar(), datum) else null
             _dagFormular.value =
                 DagFormularTillstand(
                     datum = datum,
@@ -364,6 +371,10 @@ class FlextidViewModel(
                     rastText = (dag?.rastMin ?: installning.value.standardRastMin).toString(),
                     typ = dag?.typ ?: DagTyp.ARBETE,
                     anteckning = dag?.anteckning ?: "",
+                    forslagDatum = forslag?.datum,
+                    forslagStart = forslag?.start?.toString()?.substring(0, 5) ?: "",
+                    forslagSlut = forslag?.slut?.toString()?.substring(0, 5) ?: "",
+                    forslagRast = forslag?.rastMin?.toString() ?: "",
                 )
         }
     }
