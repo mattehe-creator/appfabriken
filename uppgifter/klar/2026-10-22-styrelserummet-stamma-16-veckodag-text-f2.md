@@ -37,3 +37,5 @@ Skriv minst ett test (gärna tre `assertEquals` för datumen ovan) med JUnit 4: 
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (Cursor implementerade StammaUtskrift.kt och StammaVeckodagTest.kt; lokal modell levererade ingen kod)
