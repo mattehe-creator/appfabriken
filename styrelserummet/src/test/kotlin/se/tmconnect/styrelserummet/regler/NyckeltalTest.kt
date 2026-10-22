@@ -56,4 +56,30 @@ class NyckeltalTest {
         assertNull(skuldsattningPerKvm(nollKvm))
         assertNull(skuldsattningPerKvmBostadsratt(nollKvm))
     }
+
+    @Test
+    fun justeratResultatOchSparandePerKvmExempel() {
+        val u = NyckeltalUnderlag(
+            arsavgifter = 4_200_000,
+            rantebarandeSkulder = 38_000_000,
+            aretsResultat = -350_000,
+            avskrivningar = 1_600_000,
+            utrangeringar = 0,
+            planeratUnderhall = 450_000,
+            justeringar = 0,
+            energikostnad = 1_150_000,
+            rorelseintakter = 4_600_000,
+            kvmBostadsratt = 5_200,
+            kvmHyresratt = 300,
+        )
+        assertEquals(1_700_000L, justeratResultat(u))
+        assertEquals(309L, sparandePerKvm(u))
+
+        val medJustering = u.copy(justeringar = -2_000_000)
+        assertEquals(-300_000L, justeratResultat(medJustering))
+        assertEquals(-55L, sparandePerKvm(medJustering))
+
+        val nollKvm = u.copy(kvmBostadsratt = 0, kvmHyresratt = 0)
+        assertNull(sparandePerKvm(nollKvm))
+    }
 }

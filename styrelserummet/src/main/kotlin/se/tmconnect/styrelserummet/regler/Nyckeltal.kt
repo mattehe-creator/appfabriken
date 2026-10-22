@@ -43,3 +43,16 @@ fun skuldsattningPerKvmBostadsratt(u: NyckeltalUnderlag): Long? {
     if (u.kvmBostadsratt <= 0) return null
     return avrundaKvot(u.rantebarandeSkulder, u.kvmBostadsratt)
 }
+
+fun justeratResultat(u: NyckeltalUnderlag): Long =
+    u.aretsResultat +
+        u.avskrivningar +
+        u.utrangeringar +
+        u.planeratUnderhall +
+        u.justeringar
+
+fun sparandePerKvm(u: NyckeltalUnderlag): Long? {
+    val yta = totalYta(u)
+    if (yta <= 0) return null
+    return avrundaKvot(justeratResultat(u), yta)
+}
