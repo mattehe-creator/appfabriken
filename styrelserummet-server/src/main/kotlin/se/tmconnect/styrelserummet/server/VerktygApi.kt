@@ -212,8 +212,8 @@ data class FondplanRequest(
     val ingaendeFond: Long = 0,
     val arligAvsattning: Long? = null,
     val arligPrisupprakningProcent: Double? = null,
-    val avsattningOkningProcent: Double? = null,
     val atgarder: List<AtgardDto> = emptyList(),
+    val avsattningOkningProcent: Double? = null,
 )
 
 @Serializable
