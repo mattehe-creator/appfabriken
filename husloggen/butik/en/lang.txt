@@ -1,7 +1,7 @@
 House Log keeps track of your home's upkeep: what needs doing, what has been done and what it cost. Everything stays on your phone, no account needed.
 
 To do
-Add recurring jobs, such as changing filters, clearing gutters or servicing the heat pump, with an interval in months. The app works out the next date and reminds you ahead of time. Ready-made suggestions help you get started. Mark a job as done with one tap: it goes into the log and the next date moves forward.
+Add recurring jobs, such as changing filters, clearing gutters or servicing the heat pump, with an interval in months. The app works out the next date and reminds you ahead of time. Ready-made suggestions help you get started. Mark a job as done with one tap: it goes into the log and the next date moves forward. Year ahead shows every job in the next twelve months, month by month.
 
 Log and receipts
 Record work done and expenses with date, amount, type and notes. Photograph the receipt or add pictures, several per entry. Search the log by keyword and filter by type. For work done by a contractor in Sweden, the entry shows how long you can complain about faults under the Consumer Services Act.

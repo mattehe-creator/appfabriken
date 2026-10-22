@@ -1,7 +1,7 @@
 Husloggen håller ordning på husets underhåll: vad som ska göras, vad som är gjort och vad det kostade. Allt på telefonen, utan konto.
 
 Att göra
-Lägg in det som återkommer, till exempel byta filter, rensa hängrännor eller serva värmepumpen, med ett intervall i månader. Appen räknar ut nästa datum och påminner dig i förväg. Färdiga förslag finns att utgå från. Markera som gjord med ett tryck, så hamnar arbetet i loggen och nästa datum flyttas fram.
+Lägg in det som återkommer, till exempel byta filter, rensa hängrännor eller serva värmepumpen, med ett intervall i månader. Appen räknar ut nästa datum och påminner dig i förväg. Färdiga förslag finns att utgå från. Markera som gjord med ett tryck, så hamnar arbetet i loggen och nästa datum flyttas fram. Kommande år visar alla jobb de närmaste tolv månaderna, månad för månad.
 
 Logg och kvitton
 Spara utfört arbete och utgifter med datum, belopp, typ och anteckningar. Fota kvittot eller lägg till bilder, flera per post. Ange rot- eller rutavdraget, så räknas det bort i sammanställningen. Sök i loggen på ord och filtrera på typ. Har en hantverkare gjort jobbet visar posten hur länge du kan reklamera fel enligt konsumenttjänstlagen.
