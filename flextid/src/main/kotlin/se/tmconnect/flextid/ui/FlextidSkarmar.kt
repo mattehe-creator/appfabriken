@@ -112,6 +112,7 @@ fun FlextidStartSkarm(
     val stamplaInPaminnelse by viewModel.stamplaInPaminnelsePa.collectAsState()
     val stamplaInPaminnelseMin by viewModel.stamplaInPaminnelseMinEfterMidnatt.collectAsState()
     val semester by viewModel.semester.collectAsState()
+    val saldoVidArsslut by viewModel.saldoVidArsslut.collectAsState()
     val veckaSammanfattning by viewModel.veckaSammanfattning.collectAsState()
     val saldoTak by viewModel.saldoTakMin.collectAsState()
     val saldoGolv by viewModel.saldoGolvMin.collectAsState()
@@ -216,6 +217,7 @@ fun FlextidStartSkarm(
                         standardRast = installning.standardRastMin,
                         installning = installning,
                         semester = semester,
+                        saldoVidArsslut = saldoVidArsslut,
                         manad = manadSammanfattning,
                         saldoTakMin = saldoTak,
                         saldoGolvMin = saldoGolv,
@@ -305,6 +307,7 @@ internal fun IdagInnehall(
     manad: PeriodSammanfattning? = null,
     saldoTakMin: Int? = null,
     saldoGolvMin: Int? = null,
+    saldoVidArsslut: Int? = null,
 ) {
     var rastText by remember(dag?.rastMin) { mutableStateOf((dag?.rastMin ?: standardRast).toString()) }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -398,6 +401,14 @@ internal fun IdagInnehall(
                     formateraMinuterSomTid(m.normaltidMin, locale),
                 ),
                 style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+        }
+        saldoVidArsslut?.let { prognos ->
+            Text(
+                text = stringResource(R.string.saldo_vid_arsslut, formateraSaldoMinuter(prognos, locale)),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp),
             )
         }

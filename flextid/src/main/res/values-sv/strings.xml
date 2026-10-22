@@ -174,4 +174,5 @@
     <string name="ars_prognos_forklaring">Bygger på ditt saldo i dag och hur utfallet utvecklats hittills i år, projicerat resten av året i samma takt.</string>
     <string name="ars_prognos_ingen_data">För lite underlag än (minst 30 dagar av året krävs).</string>
     <string name="navigera_tillbaka">Tillbaka</string>
+    <string name="saldo_vid_arsslut">Med samma takt: %1$s vid årets slut</string>
 </resources>
