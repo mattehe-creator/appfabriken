@@ -37,3 +37,5 @@ gradle :husloggen:testDebugUnitTest --tests "*LoggFilterTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (JUnit-assertioner i LoggFilterTest)
