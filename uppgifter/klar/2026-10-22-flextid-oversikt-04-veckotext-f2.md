@@ -58,3 +58,5 @@ gradle :flextid:testDebugUnitTest --tests "*VeckoTextTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Lämna filerna tomma — både implementation och minst ett test måste finnas.
+
+utfall: godkänd 2026-10-22 (hel implementation — lokala modellen lämnade tomma filer igen)
