@@ -41,3 +41,5 @@ gradle :styrelserummet:test --tests "*NyckeltalRaderTest"
 ## Gör inte
 - Ändra andra filer.
 - Använda flyttal.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #486). Ersatt av 2026-10-22-styrelserummet-nyckeltal-05-sammanstallning-f2.md
