@@ -9,6 +9,7 @@ import se.tmconnect.styrelserummet.regler.arsavgiftPerKvmBostadsratt
 import se.tmconnect.styrelserummet.regler.arsavgiftsandelTiondelsProcent
 import se.tmconnect.styrelserummet.regler.energikostnadPerKvm
 import se.tmconnect.styrelserummet.regler.fondUtveckling
+import se.tmconnect.styrelserummet.regler.fondUtvecklingStigande
 import se.tmconnect.styrelserummet.regler.fondplanCsv
 import se.tmconnect.styrelserummet.regler.forandringTiondelsProcent
 import se.tmconnect.styrelserummet.regler.formateraForandring
@@ -211,6 +212,7 @@ data class FondplanRequest(
     val ingaendeFond: Long = 0,
     val arligAvsattning: Long? = null,
     val arligPrisupprakningProcent: Double? = null,
+    val avsattningOkningProcent: Double? = null,
     val atgarder: List<AtgardDto> = emptyList(),
 )
 
@@ -228,10 +230,10 @@ data class FondplanSvar(
     val anmarkning: String,
 )
 
-private fun prisupprakningTiondelar(procent: Double?): Int {
+private fun prisupprakningTiondelar(procent: Double?, namn: String = "Prisuppräkningen"): Int {
     if (procent == null) return 0
     if (procent < 0 || procent > 10) {
-        throw VerktygFel("Prisuppräkningen ska vara mellan 0 och 10 procent.")
+        throw VerktygFel("$namn ska vara mellan 0 och 10 procent.")
     }
     return kotlin.math.round(procent * 10).toInt()
 }
@@ -256,7 +258,14 @@ fun beraknaFondplanSvar(req: FondplanRequest): FondplanSvar {
     val jamn = jamnAvsattning(atgarder, req.franAr, req.antalAr, req.ingaendeFond)
     val minsta = minstaAvsattningUtanUnderskott(atgarder, req.franAr, req.antalAr, req.ingaendeFond)
     val vald = req.arligAvsattning ?: minsta
-    val utv: List<FondAr> = fondUtveckling(atgarder, req.franAr, req.antalAr, vald, req.ingaendeFond)
+    val okningTiondelar =
+        if (req.arligAvsattning == null) 0 else prisupprakningTiondelar(req.avsattningOkningProcent, "Ökningen av avsättningen")
+    val utv: List<FondAr> =
+        if (okningTiondelar == 0) {
+            fondUtveckling(atgarder, req.franAr, req.antalAr, vald, req.ingaendeFond)
+        } else {
+            fondUtvecklingStigande(atgarder, req.franAr, req.antalAr, vald, okningTiondelar, req.ingaendeFond)
+        }
     return FondplanSvar(
         jamnAvsattning = kronor(jamn),
         minstaAvsattning = kronor(minsta),

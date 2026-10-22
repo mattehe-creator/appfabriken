@@ -185,4 +185,16 @@ class VerktygApiTest {
     }
 
     private fun kronorText(v: Long) = se.tmconnect.styrelserummet.regler.kronor(v)
+
+    @Test
+    fun fondplanStigandeAvsattning() {
+        val svar = beraknaFondplanSvar(
+            FondplanRequest(2026, 3, 0, 300_000, avsattningOkningProcent = 2.0, atgarder = listOf(AtgardDto(2028, 900_000))),
+        )
+        assertEquals(kronorText(312_120), svar.utveckling[2].avsattning)
+        assertEquals(kronorText(18_120), svar.utveckling[2].utgaende)
+        assertThrows(VerktygFel::class.java) {
+            beraknaFondplanSvar(FondplanRequest(2026, 3, 0, 300_000, avsattningOkningProcent = 11.0))
+        }
+    }
 }
