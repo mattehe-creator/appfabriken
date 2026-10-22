@@ -51,3 +51,5 @@ Skriv minst tre `@Test` med `org.junit.Test` och `org.junit.Assert.assertEquals`
 - Ändra andra filer.
 - Lägga till beroenden.
 - Använda `kotlin.test`.
+
+utfall: godkänd 2026-10-22 (hel implementation — lokal modell committade enbart «Uppgift startad» igen)
