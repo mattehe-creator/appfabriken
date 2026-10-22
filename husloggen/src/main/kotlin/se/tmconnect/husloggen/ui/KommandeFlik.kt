@@ -1,5 +1,8 @@
 package se.tmconnect.husloggen.ui
 
+import se.tmconnect.husloggen.regler.uppskattadKostnadKommande
+import se.tmconnect.karna.format.formateraPrisKr
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,8 +33,10 @@ fun KommandeFlik(
     locale: Locale,
     contentPadding: PaddingValues,
     onOppnaUppgift: (Long) -> Unit,
+    senasteKostnad: Map<Long, Long> = emptyMap(),
 ) {
     val perManad = remember(uppgifter) { kommandePerManad(uppgifter, LocalDate.now()) }
+    val kostnad = remember(perManad, senasteKostnad) { uppskattadKostnadKommande(perManad, senasteKostnad) }
     val dagFormat = remember(locale) { DateTimeFormatter.ofPattern("d MMMM", locale) }
     LazyColumn(contentPadding = contentPadding) {
         item {
@@ -40,6 +45,27 @@ fun KommandeFlik(
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             )
+        }
+        if (kostnad.antalMedKostnad > 0) {
+            item(key = "kostnad") {
+                Text(
+                    text = stringResource(R.string.kommande_kostnad, formateraPrisKr(kostnad.summaOre, locale)),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+                if (kostnad.antalUtanKostnad > 0) {
+                    Text(
+                        text = pluralStringResource(
+                            R.plurals.kommande_utan_kostnad,
+                            kostnad.antalUtanKostnad,
+                            kostnad.antalUtanKostnad,
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    )
+                }
+            }
         }
         if (perManad.isEmpty()) {
             item {
