@@ -41,3 +41,5 @@ gradle :styrelserummet:test --tests "*StammaTidplanRaderTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #585). Ersatt av 2026-10-22-styrelserummet-stamma-17-tidplan-rader-f2.md
