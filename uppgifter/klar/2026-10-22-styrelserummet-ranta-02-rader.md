@@ -41,3 +41,5 @@ gradle :styrelserummet:test --tests "*RantescenarioRaderTest"
 ## Gör inte
 - Ändra andra filer.
 - Använda flyttal.
+
+utfall: utförd av Claude 2026-10-22 (datorn användes)

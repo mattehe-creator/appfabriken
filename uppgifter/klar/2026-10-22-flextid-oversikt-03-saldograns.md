@@ -39,3 +39,5 @@ gradle :flextid:testDebugUnitTest --tests "*SaldoGransTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: utförd av Claude 2026-10-22 (datorn användes)
