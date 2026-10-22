@@ -5,6 +5,10 @@ object Felmeddelanden {
         when (kod) {
             Felkoder.FOR_MANGA_JOBB ->
                 "För många jobb från samma adress. Vänta en timme och försök igen."
+            Felkoder.FOR_MANGA_VERKTYG ->
+                "För många förfrågningar till verktyget från samma adress. Vänta en timme och försök igen."
+            Felkoder.FOR_STOR_VERKTYGSFORFRAGAN ->
+                "Förfrågan är för stor. Högst 64 kB."
             Felkoder.FOR_MANGA_FILER -> "Högst 10 filer per jobb."
             Felkoder.FOR_STORA_FILER -> "Filerna får vara högst 25 MB tillsammans."
             Felkoder.INTE_PDF -> "Bara PDF-filer kan laddas upp."

@@ -20,6 +20,10 @@ sealed class ServerFel {
 
     data class ForMangaJobb(val kanForsokaIgenEpochMs: Long) : ServerFel()
 
+    data object ForMangaVerktygAnrop : ServerFel()
+
+    data object ForStorVerktygsforfragan : ServerFel()
+
     data object Okant : ServerFel()
 }
 
@@ -49,6 +53,10 @@ fun felTillMeddelande(fel: ServerFel): String =
             val formatter = DateTimeFormatter.ofPattern("HH:mm")
             "Du har skickat för många jobb. Gränsen är fem jobb per timme. Försök igen klockan ${tid.format(formatter)}."
         }
+        ServerFel.ForMangaVerktygAnrop ->
+            felText(Felkoder.FOR_MANGA_VERKTYG)
+        ServerFel.ForStorVerktygsforfragan ->
+            felText(Felkoder.FOR_STOR_VERKTYGSFORFRAGAN)
         ServerFel.Okant ->
             "Ett okänt fel uppstod. Försök igen och kontakta support om felet kvarstår."
     }
@@ -58,7 +66,8 @@ fun felTillHttpStatus(fel: ServerFel): Int =
         ServerFel.IngenLasbarText, ServerFel.KrypteradPdf -> 400
         ServerFel.ForStorFil -> 413
         ServerFel.IntePdf -> 415
-        is ServerFel.ForMangaJobb -> 429
+        is ServerFel.ForMangaJobb, ServerFel.ForMangaVerktygAnrop -> 429
+        ServerFel.ForStorVerktygsforfragan -> 413
         ServerFel.AiOgiltigtSvar -> 502
         ServerFel.AiTimeout -> 504
         ServerFel.Okant -> 500
@@ -74,6 +83,8 @@ fun loggJobbFel(jobbId: String, fel: ServerFel, tidMs: Long): String {
             ServerFel.AiTimeout -> "AiTimeout"
             ServerFel.AiOgiltigtSvar -> "AiOgiltigtSvar"
             is ServerFel.ForMangaJobb -> "ForMangaJobb"
+            ServerFel.ForMangaVerktygAnrop -> "ForMangaVerktygAnrop"
+            ServerFel.ForStorVerktygsforfragan -> "ForStorVerktygsforfragan"
             ServerFel.Okant -> "Okant"
         }
     return "$jobbId $felKod $tidMs"

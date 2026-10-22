@@ -9,6 +9,8 @@ fun serverFelTillKod(fel: ServerFel): String =
         ServerFel.AiTimeout -> Felkoder.AI_TIDSGRANS
         ServerFel.AiOgiltigtSvar -> Felkoder.AI_OGILTIGT_SVAR
         is ServerFel.ForMangaJobb -> Felkoder.FOR_MANGA_JOBB
+        ServerFel.ForMangaVerktygAnrop -> Felkoder.FOR_MANGA_VERKTYG
+        ServerFel.ForStorVerktygsforfragan -> Felkoder.FOR_STOR_VERKTYGSFORFRAGAN
         ServerFel.Okant -> Felkoder.INTERNT_FEL
     }
 
