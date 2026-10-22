@@ -50,3 +50,5 @@ Använd `org.junit.Test` och `org.junit.Assert` (inte `kotlin.test`). Minst ett 
 - Ändra andra filer.
 - Använda flyttal.
 - Lämna filerna tomma eller uteblivna.
+
+utfall: godkänd 2026-10-22 (Cursor skapade Avgiftskalkyl.kt och AvgiftskalkylTest.kt; lokala modellen levererade ingen kod)
