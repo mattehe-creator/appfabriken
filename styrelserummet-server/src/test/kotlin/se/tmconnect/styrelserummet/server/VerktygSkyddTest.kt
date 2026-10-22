@@ -118,7 +118,7 @@ class VerktygSkyddTest {
     fun integritetNamnerVerktygen() = testApplication {
         application { module(testMiljo()) }
         val html = client.get("/integritet").bodyAsText()
-        assertTrue(html.contains("Nyckeltal och Fondplan"))
+        assertTrue(html.contains("Nyckeltal, Fondplan och Räntor"))
         assertTrue(html.contains("räknar i minnet"))
     }
 
