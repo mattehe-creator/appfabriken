@@ -42,3 +42,5 @@ gradle :styrelserummet:test --tests "*OverlatelseavgiftBeraknaTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #583). Ersatt av 2026-10-22-styrelserummet-stamma-14-avgift-berakna-f2.md
