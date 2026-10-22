@@ -1,8 +1,8 @@
 package se.tmconnect.styrelserummet.regler
 
-import org.junit.jupiter.api.Test
 import java.time.LocalDate
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 class StammotidplanGransfallTest {
 
@@ -39,10 +39,11 @@ class StammotidplanGransfallTest {
     }
 
     @Test
-    fun `kallelsefristVeckor 2..2 ger senaste kallelse två veckor före stämman`() {
+    fun `kallelsefristVeckor 2 ger senaste kallelse två veckor före stämman`() {
+        val arsslut = LocalDate.of(2024, 8, 31)
         val stammodatum = LocalDate.of(2025, 2, 28)
         val expected = LocalDate.of(2025, 2, 14)
-        val actual = senasteKallelsedag(stammodatum, 2)
-        assertEquals(expected, actual)
+        val plan = tidplan(arsslut, stammodatum, 2..2)
+        assertEquals(expected, plan.senasteKallelsedag)
     }
 }
