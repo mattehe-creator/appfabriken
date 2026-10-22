@@ -3,6 +3,7 @@ package se.tmconnect.styrelserummet.server
 import kotlinx.serialization.Serializable
 import se.tmconnect.styrelserummet.regler.FondAr
 import se.tmconnect.styrelserummet.regler.NyckeltalRad
+import se.tmconnect.styrelserummet.regler.nyckeltalCsv
 import se.tmconnect.styrelserummet.regler.NyckeltalUnderlag
 import se.tmconnect.styrelserummet.regler.PlaneradAtgard
 import se.tmconnect.styrelserummet.regler.arsavgiftPerKvmBostadsratt
@@ -81,7 +82,7 @@ data class NyckeltalRadDto(val etikett: String, val varde: String, val forandrin
 data class NyckeltalSvarAr(val ar: Int, val rader: List<NyckeltalRadDto>)
 
 @Serializable
-data class NyckeltalSvar(val ar: List<NyckeltalSvarAr>, val anmarkning: String)
+data class NyckeltalSvar(val ar: List<NyckeltalSvarAr>, val anmarkning: String, val csv: String = "")
 
 private fun kontrolleraBelopp(namn: String, v: Long, tillatNegativt: Boolean) {
     if (v > MAX_BELOPP || v < -MAX_BELOPP) throw VerktygFel("$namn är orimligt stort.")
@@ -199,6 +200,7 @@ fun beraknaNyckeltalSvar(req: NyckeltalRequest): NyckeltalSvar {
     return NyckeltalSvar(
         ar = ar,
         anmarkning = "Utkast enligt definitionerna i BFNAR 2023:1. Kontrollera mot bokslutet; föreningen och revisorn ansvarar för förvaltningsberättelsen.",
+        csv = nyckeltalCsv(ar.map { a -> a.ar to a.rader.map { NyckeltalRad(it.etikett, it.varde) } }),
     )
 }
 

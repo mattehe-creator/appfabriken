@@ -162,4 +162,5 @@
     <string name="dela_vecka">Dela veckan</string>
     <string name="dela_vecka_rubrik">Vecka %1$d</string>
     <string name="dela_vecka_summa">Summa</string>
+    <string name="csv_helgdag">Helgdag</string>
 </resources>

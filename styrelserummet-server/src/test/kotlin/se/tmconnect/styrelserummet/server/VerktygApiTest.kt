@@ -38,6 +38,7 @@ class VerktygApiTest {
         assertEquals("309 kr/kvm", rader["Sparande per kvm"])
         assertEquals("9,0", rader["Räntekänslighet"])
         assertEquals("91,3 %", rader["Årsavgifternas andel av totala rörelseintäkter"])
+        assertTrue(svar.csv.startsWith("nyckeltal;2025"))
     }
 
     @Test

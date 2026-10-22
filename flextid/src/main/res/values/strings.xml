@@ -162,4 +162,5 @@
     <string name="dela_vecka">Share week</string>
     <string name="dela_vecka_rubrik">Week %1$d</string>
     <string name="dela_vecka_summa">Total</string>
+    <string name="csv_helgdag">Public holiday</string>
 </resources>
