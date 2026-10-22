@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 class FondIndexeringTest {
     
     @Test
-    fun `test indexeratBelopp`() {
+    fun testIndexeratBelopp() {
         assertEquals(104040, indexeratBelopp(100000, 2028, 2026, 20))
         assertEquals(649460, indexeratBelopp(600000, 2030, 2026, 20))
         assertEquals(100000, indexeratBelopp(100000, 2026, 2026, 20))
@@ -16,14 +16,14 @@ class FondIndexeringTest {
     }
     
     @Test
-    fun `test indexeratBelopp med felaktig okning`() {
+    fun testIndexeratBeloppMedFelaktigOkning() {
         assertThrows<IllegalArgumentException> {
             indexeratBelopp(100000, 2026, 2026, 201)
         }
     }
     
     @Test
-    fun `test indexeradeAtgarder`() {
+    fun testIndexeradeAtgarder() {
         val atgarder = listOf(
             PlaneradAtgard(2026, 100000, "Atgard 1"),
             PlaneradAtgard(2027, 200000, "Atgard 2"),
@@ -38,7 +38,7 @@ class FondIndexeringTest {
     }
     
     @Test
-    fun `test indexeradeAtgarder med prisökning`() {
+    fun testIndexeradeAtgarderMedPrisokning() {
         val atgarder = listOf(
             PlaneradAtgard(2026, 100000, "Atgard 1"),
             PlaneradAtgard(2027, 100000, "Atgard 2"),
