@@ -41,3 +41,5 @@ Kör:
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (Cursor implementerade hela uppgiften efter tom försök 2)

@@ -64,3 +64,19 @@ fun lasStammaData(rader: List<String>): Map<String, StammaRad> {
     
     return resultat
 }
+
+fun prisbasbeloppFor(ar: Int, data: Map<String, StammaRad>): Long? {
+    val rad = data["prisbasbelopp_$ar"] ?: return null
+    if (rad.typ != "prisbasbelopp" || rad.enhet != "kr") {
+        return null
+    }
+    return rad.varde
+}
+
+fun lasStammaDataFranResurs(): Map<String, StammaRad> {
+    val resource = checkNotNull(StammaRad::class.java.getResourceAsStream("/stamma.csv")) {
+        "stamma.csv saknas"
+    }
+    val rader = resource.bufferedReader().readLines()
+    return lasStammaData(rader)
+}
