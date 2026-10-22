@@ -1,13 +1,13 @@
 Flextime keeps track of your working hours and flextime balance, with no account and no internet.
 
 Clock in and out
-One tap when you arrive and one when you leave. Your break is filled in automatically and can be changed. Forgot to clock in? Fix the day afterwards.
+One tap when you arrive and one when you leave, in the app or straight from Quick Settings with the Clock in tile. Your break is filled in automatically and can be changed. Forgot to clock in? Fix the day afterwards.
 
 When can I go home?
 During the day the app shows when your normal hours are done, and when your balance reaches zero if you are ahead or behind.
 
 Balance and week
-Set your own normal hours and working weekdays. The app calculates your balance and shows the week day by day. Days off, vacation, sick days and holidays are one choice away.
+Set your own normal hours and working weekdays. The app calculates your balance and shows the week day by day. Days off, vacation, sick days and holidays are one choice away. The week and month show hours worked against normal hours, and you can share the week as text with any app. Set a maximum plus and minus for your balance and the app tells you when you are outside them.
 
 Swedish public holidays and vacation
 Swedish public holidays are built in and shown in the week, and you get no clock-in reminder on them. Midsummer, Christmas and New Year's Eve can count as days off. The app shows vacation days taken, planned and left in the vacation year.
