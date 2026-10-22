@@ -40,3 +40,5 @@ gradle :husloggen:testDebugUnitTest --tests "*KommandeKostnadTest"
 
 ## Gör inte
 - Ändra andra filer.
+
+utfall: godkänd 2026-10-22 (hela implementationen — tomma filer vid försök 2)
