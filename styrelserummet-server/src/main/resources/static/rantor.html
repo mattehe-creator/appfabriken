@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Räntehöjning och avgift i bostadsrättsförening — Styrelserummet</title>
+  <meta name="description" content="Vad betyder en högre ränta för föreningens avgifter? Se kostnaden per år, per kvm och månad och i procent av årsavgifterna. Gratis, inget sparas.">
+  <link rel="canonical" href="/rantor">
+  <meta property="og:title" content="Räntehöjning och avgift i bostadsrättsförening — Styrelserummet">
+  <meta property="og:description" content="Vad betyder en högre ränta för föreningens avgifter? Se kostnaden per år, per kvm och månad och i procent av årsavgifterna. Gratis, inget sparas.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="/gemensam.css">
+</head>
+<body>
+  <div class="ram">
+    <div class="topp">
+      <a class="marke" href="/">Styrelserummet</a>
+      <span class="stampel">Utkast</span>
+    </div>
+    <header class="hjalte">
+      <span class="etikett">Gratis verktyg</span>
+      <h1>Vad kostar en högre ränta?</h1>
+      <p class="ingress">Fyll i föreningens räntebärande skulder och årsavgifter. Ni ser vad en räntehöjning kostar per år, per kvadratmeter och månad, och hur mycket avgifterna skulle behöva höjas för att täcka den. Ingenting sparas.</p>
+    </header>
+
+    <form id="rantor-form">
+      <div class="falt">
+        <label for="skulder">Räntebärande skulder (kr)</label>
+        <input id="skulder" inputmode="numeric" required>
+      </div>
+      <div class="falt">
+        <label for="arsavgifter">Årsavgifter per år (kr)</label>
+        <input id="arsavgifter" inputmode="numeric" required>
+      </div>
+      <div class="falt">
+        <label for="kvm">Kvm upplåtna med bostadsrätt (valfritt)</label>
+        <input id="kvm" inputmode="numeric">
+      </div>
+      <div class="knapp-rad">
+        <button class="knapp" type="submit">Räkna</button>
+        <button class="knapp sekundar" type="button" id="exempel">Fyll i exempel</button>
+      </div>
+      <p id="svar" class="svar" role="status" aria-live="polite"></p>
+    </form>
+
+    <section id="resultat" hidden>
+      <div class="tabellram">
+        <table id="tabell">
+          <caption>Räntehöjning — utkast</caption>
+          <thead><tr><th scope="col">Höjning</th><th scope="col" class="tal">Per år</th><th scope="col" class="tal">Per kvm och månad</th><th scope="col" class="tal">Av årsavgifterna</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p id="anmarkning" class="hjalp"></p>
+    </section>
+
+    <footer>
+      <a href="/">Komponentlista enligt K3</a>
+      <a href="/nyckeltal">Nyckeltal</a>
+      <a href="/fondplan">Fondplan</a>
+      <a href="/integritet">Integritet</a>
+      <span>Styrelserummet är en tjänst från TM Connect.</span>
+    </footer>
+  </div>
+  <script src="/rantor.js"></script>
+</body>
+</html>
