@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 fun saldoVidArssluten(saldoNuMin: Int, utfallIArMin: Int, idag: LocalDate): Int? {
     val dagarHittills = idag.dayOfYear
-    val dagarKvar = 365 - dagarHittills
+    val dagarKvar = idag.lengthOfYear() - dagarHittills
     
     // Färre än 30 dagar hittills → null (för lite underlag)
     if (dagarHittills < 30) {
