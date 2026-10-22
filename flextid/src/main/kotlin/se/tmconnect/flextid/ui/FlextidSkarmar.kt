@@ -91,6 +91,7 @@ fun FlextidStartSkarm(
     onStamplaUtPaminnelse: (Boolean) -> Unit,
     onStamplaInPaminnelse: (Boolean) -> Unit,
     onExporteraCsv: () -> Unit,
+    onExporteraArsCsv: () -> Unit = {},
     onExporteraPdf: () -> Unit,
     onExporteraSakerhetskopia: () -> Unit,
     onImporteraSakerhetskopia: () -> Unit,
@@ -220,6 +221,7 @@ fun FlextidStartSkarm(
                         onTema = viewModel::sattTemaLage,
                         onExportManad = viewModel::sattExportArManad,
                         onExporteraCsv = onExporteraCsv,
+                        onExporteraArsCsv = onExporteraArsCsv,
                         onExporteraPdf = onExporteraPdf,
                         onExporteraJson = onExporteraSakerhetskopia,
                         onImporteraJson = onImporteraSakerhetskopia,
@@ -522,6 +524,7 @@ internal fun InstallningarInnehall(
     onTema: (TemaLage) -> Unit,
     onExportManad: (YearMonth) -> Unit,
     onExporteraCsv: () -> Unit,
+    onExporteraArsCsv: () -> Unit = {},
     onExporteraPdf: () -> Unit,
     onExporteraJson: () -> Unit,
     onImporteraJson: () -> Unit,
@@ -788,6 +791,15 @@ internal fun InstallningarInnehall(
                 ) {
                     Text(stringResource(R.string.exportera_pdf))
                 }
+            }
+            OutlinedButton(
+                onClick = {
+                    onExportManad(YearMonth.of(exportAr, exportManad.coerceIn(1, 12)))
+                    onExporteraArsCsv()
+                },
+                modifier = Modifier.tryckyta48().fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.exportera_ars_csv))
             }
             OutlinedButton(onClick = onExporteraJson, modifier = Modifier.tryckyta48()) {
                 Text(stringResource(R.string.exportera_sakerhetskopia))
