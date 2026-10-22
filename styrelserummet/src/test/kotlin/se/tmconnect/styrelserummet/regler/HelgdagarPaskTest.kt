@@ -2,7 +2,7 @@ package se.tmconnect.styrelserummet.regler
 
 import org.junit.Test
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
+import org.junit.Assert.fail
 import java.time.LocalDate
 
 class HelgdagarPaskTest {
@@ -24,7 +24,18 @@ class HelgdagarPaskTest {
 
     @Test
     fun `paskdagen utanför giltigt intervall`() {
-        assertThrows<IllegalArgumentException> { paskdagen(1899) }
-        assertThrows<IllegalArgumentException> { paskdagen(2201) }
+        try {
+            paskdagen(1899)
+            fail("Expected IllegalArgumentException was not thrown")
+        } catch (e: IllegalArgumentException) {
+            // Expected
+        }
+        
+        try {
+            paskdagen(2201)
+            fail("Expected IllegalArgumentException was not thrown")
+        } catch (e: IllegalArgumentException) {
+            // Expected
+        }
     }
 }
