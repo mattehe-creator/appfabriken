@@ -7,6 +7,7 @@ private val sitemapSidor = listOf(
     "/nyckeltal",
     "/fondplan",
     "/rantor",
+    "/protokoll",
     "/integritet",
 )
 

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Protokoll för styrelsemöte i bostadsrättsförening — Styrelserummet</title>
+  <meta name="description" content="Skriv protokollet från styrelsemötet direkt i webbläsaren: paragrafer, beslut, justering. Skriv ut eller spara som PDF. Gratis, inget sparas och inget skickas.">
+  <link rel="canonical" href="/protokoll">
+  <meta property="og:title" content="Protokoll för styrelsemöte i bostadsrättsförening — Styrelserummet">
+  <meta property="og:description" content="Skriv protokollet från styrelsemötet direkt i webbläsaren: paragrafer, beslut, justering. Skriv ut eller spara som PDF. Gratis, inget sparas och inget skickas.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="/gemensam.css">
+</head>
+<body>
+  <div class="ram">
+    <div class="topp">
+      <a class="marke" href="/">Styrelserummet</a>
+      <span class="stampel">Gratis</span>
+    </div>
+    <header class="hjalte">
+      <span class="etikett">Gratis verktyg</span>
+      <h1>Protokoll från styrelsemöte</h1>
+      <p class="ingress">Fyll i mötet och punkterna. Standardparagraferna (öppnande, justerare, dagordning, avslutning) läggs till av sig själva. Allt stannar i din webbläsare: inget skickas till oss och inget sparas.</p>
+    </header>
+
+    <form id="protokoll-form">
+      <div class="falt"><label for="forening">Föreningens namn</label><input id="forening" autocomplete="organization"></div>
+      <div class="falt"><label for="motesnr">Mötets nummer eller rubrik (valfritt)</label><input id="motesnr" placeholder="Styrelsemöte nr 7"></div>
+      <div class="falt"><label for="datum">Datum och tid</label><input id="datum" placeholder="2026-11-12 kl. 18.30"></div>
+      <div class="falt"><label for="plats">Plats</label><input id="plats" placeholder="Föreningslokalen"></div>
+      <div class="falt"><label for="narvarande">Närvarande ledamöter (en per rad)</label><textarea id="narvarande" rows="4"></textarea></div>
+      <div class="falt"><label for="ovriga">Övriga närvarande (valfritt)</label><textarea id="ovriga" rows="2"></textarea></div>
+      <div class="falt"><label for="ordforande">Mötesordförande</label><input id="ordforande"></div>
+      <div class="falt"><label for="sekreterare">Protokollförare</label><input id="sekreterare"></div>
+      <div class="falt"><label for="justerare">Justerare</label><input id="justerare"></div>
+
+      <h2>Punkter</h2>
+      <div id="punkter"></div>
+      <div class="knapp-rad">
+        <button class="knapp sekundar" type="button" id="ny-punkt">Lägg till punkt</button>
+        <button class="knapp sekundar" type="button" id="exempel">Fyll i exempel</button>
+      </div>
+      <div class="falt"><label for="nasta">Nästa möte (valfritt)</label><input id="nasta" placeholder="2026-12-10 kl. 18.30"></div>
+      <div class="knapp-rad">
+        <button class="knapp" type="submit">Visa protokollet</button>
+      </div>
+    </form>
+
+    <article id="protokoll" class="protokoll" hidden></article>
+    <div class="knapp-rad" id="protokoll-knappar" hidden>
+      <button class="knapp" type="button" id="skriv-ut">Skriv ut eller spara som PDF</button>
+      <button class="knapp sekundar" type="button" id="kopiera">Kopiera som text</button>
+      <p id="kopiera-status" class="hjalp" role="status" aria-live="polite"></p>
+    </div>
+
+    <footer>
+      <a href="/">Komponentlista enligt K3</a>
+      <a href="/nyckeltal">Nyckeltal</a>
+      <a href="/fondplan">Fondplan</a>
+      <a href="/rantor">Räntor</a>
+      <a href="/integritet">Integritet</a>
+      <span>Styrelserummet är en tjänst från TM Connect.</span>
+    </footer>
+  </div>
+  <script src="/protokoll.js"></script>
+</body>
+</html>

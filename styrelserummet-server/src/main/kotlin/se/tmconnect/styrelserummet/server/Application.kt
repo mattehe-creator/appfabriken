@@ -151,6 +151,13 @@ fun Application.module(miljo: ServerMiljo) {
             call.respond(beraknaNyckeltalSvar(req))
         }
 
+        get("/protokoll") {
+            call.respondText(
+                javaClass.classLoader.getResource("static/protokoll.html")!!.readText(),
+                ContentType.Text.Html,
+            )
+        }
+
         get("/rantor") {
             call.respondText(
                 javaClass.classLoader.getResource("static/rantor.html")!!.readText(),

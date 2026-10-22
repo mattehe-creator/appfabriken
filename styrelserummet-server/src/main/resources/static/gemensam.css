@@ -158,3 +158,13 @@ footer { font-size: 0.85rem; color: var(--dampad); display: grid; gap: 0.4rem; b
 /* Utskriftssidan (/j/{id}/utskrift). Inline-stil blockeras av CSP, därför här. */
 .stampel-rad { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
 .meta { color: var(--dampad); margin: 0 0 1rem; }
+
+/* Protokollverktyget. */
+.protokoll { background: var(--yta, #fff); padding: 1.5rem; border-radius: 12px; }
+.protokoll h3 { margin: 1.25rem 0 0.25rem; font-size: 1.05rem; }
+.underskrifter { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 1.5rem; margin-top: 2.5rem; }
+.underskrift p { margin: 0.2rem 0; }
+@media print {
+  #protokoll-form, .hjalte, #protokoll-knappar { display: none; }
+  .protokoll { padding: 0; }
+}
