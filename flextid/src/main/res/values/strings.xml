@@ -146,4 +146,11 @@
     <string name="butik_punkt_3">Offline. No account, no ads</string>
     <string name="vecka_arbetat">Worked %1$s of %2$s</string>
     <string name="manad_arbetat">%1$s: worked %2$s of %3$s</string>
+    <string name="ruta_namn">Clock in</string>
+    <string name="ruta_stampla_in">Clock in</string>
+    <string name="ruta_stampla_ut">Clock out</string>
+    <string name="ruta_in_sedan">In %1$s</string>
+    <string name="ruta_klar">Done for today</string>
+    <string name="ruta_lagg_till">Add Clock in to Quick Settings</string>
+    <string name="ruta_lagg_till_text">Clock in and out from Quick Settings without opening the app.</string>
 </resources>

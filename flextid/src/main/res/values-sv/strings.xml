@@ -146,4 +146,11 @@
     <string name="butik_punkt_3">Offline. Inget konto, ingen reklam</string>
     <string name="vecka_arbetat">Arbetat %1$s av %2$s</string>
     <string name="manad_arbetat">%1$s: arbetat %2$s av %3$s</string>
+    <string name="ruta_namn">Stämpla</string>
+    <string name="ruta_stampla_in">Stämpla in</string>
+    <string name="ruta_stampla_ut">Stämpla ut</string>
+    <string name="ruta_in_sedan">In %1$s</string>
+    <string name="ruta_klar">Klar för idag</string>
+    <string name="ruta_lagg_till">Lägg till Stämpla i snabbinställningarna</string>
+    <string name="ruta_lagg_till_text">Stämpla in och ut från snabbinställningarna utan att öppna appen.</string>
 </resources>
