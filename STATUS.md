@@ -34,6 +34,8 @@ Val och omfång i IDEURVAL.md (omprövning 2026-10-16), regler i `husloggen/APP.
 9. Mörkt läge, välkomstskärm, butiksmaterial, skärmbilder, Data safety och integritetspolicy. Klart 2026-10-21 (Claude): butikstexter sv/en, Data safety, funktionsgrafik, skärmbilder, policy som webbsida (publiceras när GitHub Pages är påslaget). Navigeringen har fyra knappar (Att göra, Logg, Översikt, Mer).
 10. Mattias provar på telefon.
 
+2026-10-22 (Claude): sök och filter i loggen, jämförelse mot året innan och årsprognos för mätare, Kommande år. Köat: senaste kostnad per uppgift och uppskattad kostnad för kommande tolv månader.
+
 ## Nu: Styrelserummet (webbtjänst för bostadsrättsföreningar)
 
 Mattias 2026-10-19: bygg tjänsten istället för att vänta på landningssidans test. Första produkten är K3-komponentlistan ur underhållsplan och årsredovisning (utkast till revisor). Egna regler i `styrelserummet/APP.md` (webb, INTERNET; CLAUDE.md punkt 5 och 6 gäller Android-apparna). Landningssidan `webb/k3/sida.html` ligger kvar och mäter intresset under tiden.
@@ -43,13 +45,14 @@ Mattias 2026-10-19: bygg tjänsten istället för att vänta på landningssidans
 3. Webbtjänsten: mergad (PR #287, uppdraget `2026-10-19-styrelserummet-webb-server`): Ktor-server, uppladdning, redigerbar tabell, CSV, utskrift, `/integritet`, Dockerfile, `styrelserummet/DRIFT.md`. De lokala uppgifterna 01, 02, 03, 06 och 07 är klara och mergade. Dubbletten #290 stängd, #279 stängd.
    Före driftsättning: `2026-10-20-styrelserummet-driftklar` mergat (PR #292, 2026-10-20); klientadressen läses från sista adressen i `X-Forwarded-For` (PR #293, mergad). Robusthetsuppdraget (tåligare läsning av riktiga handlingar) är klart: 26 lokala uppgifter mergade natten 20-21 oktober. Nästa: `2026-10-21-styrelserummet-kvalitet` (gruppering på namn, formatering, sammanfattning i klartext, jämförelse mot föregående år, utskriftsdata, felmeddelanden) skickat 2026-10-21 så att kön inte står tom. Kvar är Mattias steg (FRAGOR.md) och att provköra med riktig API-nyckel och riktiga handlingar (proxyadress, säkerhetshuvuden, `/halsa`, inga länkar i loggar). Bakgrund: servern ser bara proxyns adress bakom en värd, så gränsen 5 jobb per IP och timme måste läsa `X-Forwarded-For` från värdens proxy, annars delar alla besökare på gränsen. Oanvända beroenden (`ktor-server-cors`, `call-logging`) tas bort. Kontrollera att länkarna (hemliga) inte hamnar i loggar.
    Läget 2026-10-21 kväll: kvalitet, gränsfall, felhantering och kopplingen av kvalitetsfunktionerna är mergade (249 klara uppgifter, kön tom). Nästa: `2026-10-21-styrelserummet-provklar` (miljökontroll vid start, kontrast, påhittade handlingar genom hela flödet, lagringens robusthet, dataminimering, kostnadsskydd) skickat så att kön inte står tom i natt och så att den första riktiga provkörningen går att lita på.
+   2026-10-22 dag (Claude): avgiftskalkyl `/avgift` (#531), kontroll av underlaget på nyckeltalssidan (#535).
    2026-10-22 natt (Claude): betalning med Stripe Checkout byggd och mergad (av tills nyckel finns, se DRIFT.md); utskriften rättad för CSP; pris på startsidan. Gratisverktygen Nyckeltal och Fondplan mergade (#490, skydd och SEO #491). Avskrivningsplanen finns i utskriften och som CSV (#492). Värd (Fly.io, Stockholm) beslutad men inte incheckad, väntar på Mattias.
    2026-10-21 kväll (Claude): avskrivningsplan tio år framåt, utrangering vid utbyte och plan som CSV, som uppgifter för den lokala modellen; Claude kopplar in planen i utskrift och CSV-rutt.
 4. Därefter, Mattias (se FRAGOR.md): bolagsuppgifter till integritetssidan, värd (konto), `ANTHROPIC_API_KEY` som hemlighet, betalkonto, domän. Betalning blir eget uppdrag.
 
 ## Nu: Flextid (app 3, byggd av Cursor 2026-10-18)
 
-Grund, Pro, påminnelser, PDF och butiksmaterial finns. 2026-10-21/22 (Claude): svenska helgdagar, gå hem-tid, semesterår och månadens normaltid mergade (PR #448); saldot rör sig inte under en påbörjad dag. Vecka och månad visar arbetat av normaltid (#493). Release-bygget provkört. Publiceringsguide i `flextid/butik/PUBLICERA.md`. Integritetspolicy skriven. Kvar: Mattias provar på telefon; appnamn och applicationId vid publicering.
+Grund, Pro, påminnelser, PDF och butiksmaterial finns. 2026-10-21/22 (Claude): svenska helgdagar, gå hem-tid, semesterår och månadens normaltid mergade (PR #448); saldot rör sig inte under en påbörjad dag. Vecka och månad visar arbetat av normaltid (#493). Release-bygget provkört. 2026-10-22: årsöversikt per månad (saldo vid månadens slut, CSV) köad för den lokala modellen. Publiceringsguide i `flextid/butik/PUBLICERA.md`. Integritetspolicy skriven. Kvar: Mattias provar på telefon; appnamn och applicationId vid publicering.
 
 ## Pausat (Mattias 2026-10-19)
 
