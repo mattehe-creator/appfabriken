@@ -1,5 +1,6 @@
 package se.tmconnect.flextid.ui
 
+import se.tmconnect.flextid.regler.saldoVidArssluten
 import se.tmconnect.flextid.regler.arsOversikt
 import se.tmconnect.flextid.regler.arsOversiktCsv
 import se.tmconnect.flextid.regler.senasteArbetsdagFore
@@ -216,6 +217,16 @@ class FlextidViewModel(
             SharingStarted.WhileSubscribed(5_000),
             SEMESTERAR_STARTMANAD_STANDARD,
         )
+
+    /** Saldo vid årets slut om årets takt håller i sig; null tidigt på året. */
+    val saldoVidArsslut =
+        combine(repository.observeraAllaDagar(), installning, saldo) { alla, inst, saldoNu ->
+            val idag = LocalDate.now()
+            val utfallIAr = alla
+                .filter { it.datum.year == idag.year && !it.datum.isAfter(idag) }
+                .sumOf { dagensUtfall(it, inst.normaltidMinPerDag, inst.arbetsdagarMask) }
+            saldoVidArssluten(saldoNu, utfallIAr, idag)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val semester =
         combine(

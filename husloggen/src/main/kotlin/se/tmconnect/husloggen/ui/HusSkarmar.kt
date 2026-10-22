@@ -1,5 +1,6 @@
 package se.tmconnect.husloggen.ui
 
+import se.tmconnect.husloggen.regler.senasteKostnadPerUppgift
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
@@ -224,6 +225,7 @@ fun HusStartSkarm(
             }
         },
     ) { innerPadding ->
+        val senasteKostnad = remember(poster) { senasteKostnadPerUppgift(poster) }
         when (HusFlik.entries[valdFlik]) {
             HusFlik.ATT_GORA -> AttGoraFlik(
                 uppgifter = uppgifter,
@@ -234,6 +236,7 @@ fun HusStartSkarm(
                 paminnelserPa = paminnelserPa,
                 onPaminnelserAndras = onPaminnelserAndras,
                 behorighetNekad = behorighetNekad,
+                senasteKostnad = senasteKostnad,
             )
             HusFlik.LOGG -> LoggFlik(
                 poster = poster,
@@ -270,6 +273,7 @@ fun HusStartSkarm(
             }
             HusFlik.KOMMANDE -> KommandeFlik(
                 uppgifter = uppgifter,
+                senasteKostnad = senasteKostnad,
                 locale = locale,
                 contentPadding = innerPadding,
                 onOppnaUppgift = onOppnaUppgift,
@@ -310,6 +314,7 @@ private fun AttGoraFlik(
     paminnelserPa: Boolean = false,
     onPaminnelserAndras: (Boolean) -> Unit = {},
     behorighetNekad: Boolean = false,
+    senasteKostnad: Map<Long, Long> = emptyMap(),
 ) {
     Column(
         modifier = Modifier
@@ -343,6 +348,7 @@ private fun AttGoraFlik(
                         uppgift = uppgift,
                         onClick = { onOppnaUppgift(uppgift.id) },
                         onMarkeraGjord = { onMarkeraGjord(uppgift.id) },
+                        senastKostnadOre = senasteKostnad[uppgift.id],
                     )
                 }
             }

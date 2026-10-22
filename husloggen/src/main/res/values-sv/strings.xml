@@ -298,4 +298,10 @@
     <string name="kommande_tomt">Inga återkommande uppgifter ännu. Lägg till dem under Att göra.</string>
     <string name="kommande_forsenad">Försenad, skulle gjorts %1$s</string>
     <string name="knapp_kopiera_post">Kopiera till ny post</string>
+    <string name="uppgift_senast_kostnad">Senast: %1$s</string>
+    <string name="kommande_kostnad">Cirka %1$s de kommande tolv månaderna, räknat på vad varje jobb kostade senast.</string>
+    <plurals name="kommande_utan_kostnad">
+        <item quantity="one">%d jobb saknar tidigare kostnad och räknas inte med.</item>
+        <item quantity="other">%d jobb saknar tidigare kostnad och räknas inte med.</item>
+    </plurals>
 </resources>
