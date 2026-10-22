@@ -128,3 +128,18 @@ function visa(json, provad) {
   document.getElementById("anmarkning").textContent = json.anmarkning;
   document.getElementById("resultat").hidden = false;
 }
+
+// Fyll i åtgärderna från ett K3-utkast när sidan öppnas med ?jobb=ID.
+(async () => {
+  const jobb = new URLSearchParams(location.search).get("jobb");
+  if (!jobb || !/^[0-9a-f]{32}$/.test(jobb)) return;
+  const res = await fetch(`/api/jobb/${encodeURIComponent(jobb)}/atgarder`).catch(() => null);
+  if (!res || !res.ok) return;
+  const json = await res.json().catch(() => null);
+  if (!json || !Array.isArray(json.atgarder) || !json.atgarder.length) return;
+  document.getElementById("franAr").value = String(json.franAr);
+  tbody.replaceChildren();
+  json.atgarder.forEach((a) => nyRad(a.ar, a.belopp, a.beskrivning || ""));
+  const svar = document.getElementById("svar");
+  svar.textContent = `${json.atgarder.length} åtgärder hämtade från utkastet. Fyll i fondens storlek och tryck Räkna.`;
+})();

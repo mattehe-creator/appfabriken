@@ -23,10 +23,30 @@ data class ForslagKomponent(
     val sakerhet: Sakerhet,
 )
 
+/** En åtgärd i underhållsplanen: år, kostnad i hela kronor och kort beskrivning. */
+data class ForslagAtgard(val ar: Int, val belopp: Long, val beskrivning: String)
+
 data class ForslagResultat(
     val komponenter: List<ForslagKomponent>,
     val anmarkningar: List<String>,
+    val atgarder: List<ForslagAtgard> = emptyList(),
 )
+
+const val MAX_ATGARDER_PER_SVAR = 300
+
+/** Läser fältet "atgarder" om det finns. Rader som inte går att lita på hoppas över tyst. */
+fun tolkaAtgarder(root: JsonObject): List<ForslagAtgard> {
+    val lista = root["atgarder"] as? kotlinx.serialization.json.JsonArray ?: return emptyList()
+    return lista.mapNotNull { element ->
+        val obj = element as? JsonObject ?: return@mapNotNull null
+        val ar = (obj["ar"] as? JsonPrimitive)?.contentOrNull?.trim()?.toIntOrNull() ?: return@mapNotNull null
+        val belopp = (obj["belopp"] as? JsonPrimitive)?.contentOrNull?.replace(" ", "")?.toLongOrNull()
+            ?: return@mapNotNull null
+        if (ar !in 1990..2100 || belopp <= 0 || belopp > 1_000_000_000_000L) return@mapNotNull null
+        val text = (obj["beskrivning"] as? JsonPrimitive)?.contentOrNull?.trim().orEmpty().take(200)
+        ForslagAtgard(ar, belopp, text)
+    }.take(MAX_ATGARDER_PER_SVAR)
+}
 
 private val json = Json {
     ignoreUnknownKeys = true
@@ -51,7 +71,7 @@ fun tolkaForslag(jsonText: String, filnamn: String): ForslagResultat {
     val lista = root["komponenter"]?.jsonArray
     if (lista == null) {
         anmarkningar += "Saknar fältet komponenter i svaret för $filnamn."
-        return ForslagResultat(komponenter, anmarkningar)
+        return ForslagResultat(komponenter, anmarkningar, tolkaAtgarder(root))
     }
     lista.forEachIndexed { index, element ->
         when (val parsed = parseKomponent(element, filnamn, index + 1, anmarkningar)) {
@@ -59,7 +79,7 @@ fun tolkaForslag(jsonText: String, filnamn: String): ForslagResultat {
             is ParseResult.Skip -> anmarkningar += parsed.orsak
         }
     }
-    return ForslagResultat(komponenter, anmarkningar)
+    return ForslagResultat(komponenter, anmarkningar, tolkaAtgarder(root))
 }
 
 private fun forberedJsonText(raw: String): String {
