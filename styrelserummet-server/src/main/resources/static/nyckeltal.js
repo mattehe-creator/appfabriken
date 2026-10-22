@@ -52,6 +52,24 @@ FALT.forEach(([nyckel, etikett]) => {
   tbody.appendChild(tr);
 });
 
+const foregaendeKropp = document.querySelector("#foregaende-underlag tbody");
+FALT.forEach(([nyckel, etikett]) => {
+  const tr = document.createElement("tr");
+  const th = document.createElement("th");
+  th.scope = "row";
+  th.textContent = etikett;
+  tr.appendChild(th);
+  const td = document.createElement("td");
+  td.className = "tal";
+  const input = document.createElement("input");
+  input.inputMode = NEGATIVA.has(nyckel) ? "text" : "numeric";
+  input.dataset.falt = nyckel;
+  input.setAttribute("aria-label", `${etikett}, föregående år`);
+  td.appendChild(input);
+  tr.appendChild(td);
+  foregaendeKropp.appendChild(tr);
+});
+
 function tal(text) {
   const rensad = String(text).replace(/\s| /g, "").replace("−", "-").replace(",", ".");
   if (rensad === "") return null;
@@ -79,6 +97,23 @@ function lasAr() {
   return resultat;
 }
 
+function lasForegaende() {
+  const detalj = document.getElementById("foregaende-detalj");
+  if (!detalj.open) return null;
+  const rad = {};
+  let nagot = false;
+  let fel = null;
+  foregaendeKropp.querySelectorAll("input").forEach((input) => {
+    const v = tal(input.value);
+    if (v === null) return;
+    if (Number.isNaN(v)) fel = `Ogiltigt tal: ${input.getAttribute("aria-label")}`;
+    rad[input.dataset.falt] = v;
+    nagot = true;
+  });
+  if (fel) throw new Error(fel);
+  return nagot ? rad : null;
+}
+
 document.getElementById("exempel").addEventListener("click", () => {
   const ex = {
     arsavgifter: 4200000, rorelseintakter: 4600000, rantebarandeSkulder: 38000000, aretsResultat: -350000,
@@ -95,8 +130,10 @@ document.getElementById("nyckeltal-form").addEventListener("submit", async (e) =
   const svar = document.getElementById("svar");
   svar.classList.remove("fel");
   let ar;
+  let foregaendeAr;
   try {
     ar = lasAr();
+    foregaendeAr = lasForegaende();
   } catch (err) {
     svar.textContent = err.message;
     svar.classList.add("fel");
@@ -111,7 +148,7 @@ document.getElementById("nyckeltal-form").addEventListener("submit", async (e) =
   const res = await fetch("/api/nyckeltal", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ar }),
+    body: JSON.stringify(foregaendeAr ? { ar, foregaendeAr } : { ar }),
   });
   const json = await res.json().catch(() => ({}));
   if (!res.ok) {
@@ -151,7 +188,15 @@ function visa(json) {
     json.ar.forEach((a) => {
       const td = document.createElement("td");
       td.className = "tal";
-      td.textContent = a.rader[r].varde;
+      const rad = a.rader[r];
+      td.textContent = rad.varde;
+      if (rad.forandring) {
+        const span = document.createElement("span");
+        span.className = "forandring";
+        span.textContent = ` ${rad.forandring}`;
+        span.setAttribute("aria-label", `Förändring mot föregående år: ${rad.forandring}`);
+        td.appendChild(span);
+      }
       tr.appendChild(td);
     });
     kropp.appendChild(tr);

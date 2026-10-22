@@ -14,6 +14,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import se.tmconnect.styrelserummet.regler.indexeratBelopp
 
 class VerktygApiTest {
     private val exempel = NyckeltalArDto(
@@ -62,7 +63,7 @@ class VerktygApiTest {
 
     @Test
     fun fondplanMinstaAvsattning() {
-        val svar = beraknaFondplanSvar(FondplanRequest(2026, 5, 300_000, null, atgarder))
+        val svar = beraknaFondplanSvar(FondplanRequest(2026, 5, 300_000, null, atgarder = atgarder))
         assertEquals(kronorText(233_334), svar.minstaAvsattning)
         assertEquals(kronorText(180_000), svar.jamnAvsattning)
         assertNull(svar.forstaUnderskottsar)
@@ -72,11 +73,83 @@ class VerktygApiTest {
 
     @Test
     fun fondplanProvadAvsattningMedUnderskott() {
-        val svar = beraknaFondplanSvar(FondplanRequest(2026, 5, 300_000, 180_000, atgarder))
+        val svar = beraknaFondplanSvar(FondplanRequest(2026, 5, 300_000, 180_000, null, atgarder))
         assertEquals(2028, svar.forstaUnderskottsar)
         assertTrue(svar.utveckling.single { it.ar == 2028 }.underskott)
         assertThrows(VerktygFel::class.java) { beraknaFondplanSvar(FondplanRequest(2026, 0)) }
         assertThrows(VerktygFel::class.java) { beraknaFondplanSvar(FondplanRequest(2026, 5, arligAvsattning = -1)) }
+    }
+
+    @Test
+    fun fondplanUtanPrisupprakningOforandrad() {
+        val utan = beraknaFondplanSvar(FondplanRequest(2026, 5, atgarder = listOf(AtgardDto(2028, 900_000))))
+        val medNoll = beraknaFondplanSvar(
+            FondplanRequest(2026, 5, arligPrisupprakningProcent = 0.0, atgarder = listOf(AtgardDto(2028, 900_000))),
+        )
+        assertEquals(utan.minstaAvsattning, medNoll.minstaAvsattning)
+        assertEquals(kronorText(900_000), utan.utveckling.single { it.ar == 2028 }.uttag)
+    }
+
+    @Test
+    fun fondplanMedPrisupprakning() {
+        val uppraknat = indexeratBelopp(900_000, 2028, 2026, 20)
+        val svar = beraknaFondplanSvar(
+            FondplanRequest(2026, 5, arligPrisupprakningProcent = 2.0, atgarder = listOf(AtgardDto(2028, 900_000))),
+        )
+        assertEquals(kronorText(uppraknat), svar.utveckling.single { it.ar == 2028 }.uttag)
+        assertTrue(svar.anmarkning.contains("2 %"))
+    }
+
+    @Test
+    fun fondplanPrisupprakningUtanforIntervall() {
+        assertThrows(VerktygFel::class.java) {
+            beraknaFondplanSvar(FondplanRequest(2026, 5, arligPrisupprakningProcent = 10.1))
+        }
+    }
+
+    @Test
+    fun nyckeltalUtanForegaendeArHarIngenForandring() {
+        val svar = beraknaNyckeltalSvar(NyckeltalRequest(listOf(exempel)))
+        assertTrue(svar.ar.single().rader.all { it.forandring == null })
+    }
+
+    @Test
+    fun nyckeltalMedForegaendeArVisarForandring() {
+        val foreOkning = NyckeltalForegaendeDto(
+            arsavgifter = 4_200_000,
+            rantebarandeSkulder = 38_000_000,
+            aretsResultat = -510_000,
+            avskrivningar = 1_600_000,
+            planeratUnderhall = 450_000,
+            energikostnad = 1_150_000,
+            rorelseintakter = 4_600_000,
+            kvmBostadsratt = 5_200,
+            kvmHyresratt = 300,
+        )
+        val svarOkning = beraknaNyckeltalSvar(NyckeltalRequest(listOf(exempel), foreOkning))
+        val sparande = svarOkning.ar.single().rader.single { it.etikett == "Sparande per kvm" }
+        assertEquals("+10,4 %", sparande.forandring)
+
+        val nuMinskning = exempel.copy(rantebarandeSkulder = 37_800_000)
+        val foreMinskning = NyckeltalForegaendeDto(
+            arsavgifter = 4_200_000,
+            rantebarandeSkulder = 39_900_000,
+            aretsResultat = -350_000,
+            avskrivningar = 1_600_000,
+            planeratUnderhall = 450_000,
+            energikostnad = 1_150_000,
+            rorelseintakter = 4_600_000,
+            kvmBostadsratt = 5_200,
+            kvmHyresratt = 300,
+        )
+        val svarMinskning = beraknaNyckeltalSvar(NyckeltalRequest(listOf(nuMinskning), foreMinskning))
+        val ranta = svarMinskning.ar.single().rader.single { it.etikett == "Räntekänslighet" }
+        assertEquals("\u22125,3 %", ranta.forandring)
+
+        val foreNollKvm = foreOkning.copy(kvmBostadsratt = 0, kvmHyresratt = 0)
+        val svarStreck = beraknaNyckeltalSvar(NyckeltalRequest(listOf(exempel), foreNollKvm))
+        val arsavgift = svarStreck.ar.single().rader.first { it.etikett.startsWith("Årsavgift per kvm") }
+        assertEquals("\u2013", arsavgift.forandring)
     }
 
     @Test
@@ -103,6 +176,12 @@ class VerktygApiTest {
             setBody("inte json")
         }
         assertEquals(HttpStatusCode.BadRequest, trasig.status)
+        val forHogPris = client.post("/api/fondplan") {
+            contentType(ContentType.Application.Json)
+            setBody("""{"franAr":2026,"antalAr":5,"arligPrisupprakningProcent":11}""")
+        }
+        assertEquals(HttpStatusCode.BadRequest, forHogPris.status)
+        assertTrue(forHogPris.bodyAsText().contains("\"fel\""))
     }
 
     private fun kronorText(v: Long) = se.tmconnect.styrelserummet.regler.kronor(v)

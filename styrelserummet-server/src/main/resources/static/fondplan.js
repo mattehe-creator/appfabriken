@@ -8,6 +8,13 @@ function tal(text) {
   return Number.isFinite(v) ? Math.round(v) : NaN;
 }
 
+function procent(text) {
+  const rensad = String(text).replace(/\s| /g, "").replace("−", "-").replace(",", ".");
+  if (rensad === "") return null;
+  const v = Number(rensad);
+  return Number.isFinite(v) ? v : NaN;
+}
+
 function nyRad(ar = "", belopp = "", text = "") {
   const tr = document.createElement("tr");
   const n = tbody.children.length + 1;
@@ -56,11 +63,13 @@ document.getElementById("fond-form").addEventListener("submit", async (e) => {
     atgarder.push({ ar, belopp, beskrivning });
   }
   const avs = tal(document.getElementById("avsattning").value);
+  const pris = procent(document.getElementById("prisupprakning").value);
   const body = {
     franAr: tal(document.getElementById("franAr").value),
     antalAr: tal(document.getElementById("antalAr").value),
     ingaendeFond: tal(document.getElementById("fond").value) || 0,
     arligAvsattning: avs === null || Number.isNaN(avs) ? null : avs,
+    arligPrisupprakningProcent: pris === null || Number.isNaN(pris) ? null : pris,
     atgarder,
   };
   svar.textContent = "Räknar…";
