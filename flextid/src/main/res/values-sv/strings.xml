@@ -167,4 +167,5 @@
     <string name="csv_manad">Månad</string>
     <string name="csv_saldo">Saldo</string>
     <string name="exportera_ars_csv">Årsöversikt (CSV)</string>
+    <string name="saldo_vid_arsslut">Med samma takt: %1$s vid årets slut</string>
 </resources>

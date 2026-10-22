@@ -167,4 +167,5 @@
     <string name="csv_manad">Month</string>
     <string name="csv_saldo">Balance</string>
     <string name="exportera_ars_csv">Year overview (CSV)</string>
+    <string name="saldo_vid_arsslut">At the same pace: %1$s at year end</string>
 </resources>

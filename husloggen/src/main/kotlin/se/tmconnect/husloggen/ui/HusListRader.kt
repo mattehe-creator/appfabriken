@@ -54,6 +54,7 @@ fun UppgiftListRad(
     onClick: () -> Unit,
     onMarkeraGjord: () -> Unit,
     modifier: Modifier = Modifier,
+    senastKostnadOre: Long? = null,
 ) {
     val locale = LocalConfiguration.current.locales[0]
     val idag = LocalDate.now()
@@ -102,12 +103,9 @@ fun UppgiftListRad(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 2.dp),
                 )
-                senasteKostnadOre?.let { ore ->
+                if (senastKostnadOre != null) {
                     Text(
-                        text = stringResource(
-                            R.string.uppgift_senaste_kostnad,
-                            formateraPrisKr(ore, locale),
-                        ),
+                        text = stringResource(R.string.uppgift_senast_kostnad, formateraPrisKr(senastKostnadOre, locale)),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 2.dp),

@@ -313,4 +313,10 @@
     <string name="kommande_tomt">No recurring tasks yet. Add them under To do.</string>
     <string name="kommande_forsenad">Overdue, due %1$s</string>
     <string name="knapp_kopiera_post">Copy to new entry</string>
+    <string name="uppgift_senast_kostnad">Last time: %1$s</string>
+    <string name="kommande_kostnad">About %1$s over the next twelve months, based on what each job cost last time.</string>
+    <plurals name="kommande_utan_kostnad">
+        <item quantity="one">%d job has no earlier cost and is not included.</item>
+        <item quantity="other">%d jobs have no earlier cost and are not included.</item>
+    </plurals>
 </resources>
