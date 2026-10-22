@@ -90,7 +90,7 @@ class HusDatabasMigrationTest {
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
             .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5,
-                        skapaMigration5Till6(context))
+                        skapaMigration5Till6(context), MIGRATION_6_7)
             .allowMainThreadQueries()
             .build()
 
@@ -165,7 +165,7 @@ class HusDatabasMigrationTest {
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
             .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5,
-                        skapaMigration5Till6(context))
+                        skapaMigration5Till6(context), MIGRATION_6_7)
             .allowMainThreadQueries()
             .build()
 
@@ -250,7 +250,7 @@ class HusDatabasMigrationTest {
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
             .addMigrations(MIGRATION_3_4, MIGRATION_4_5,
-                        skapaMigration5Till6(context))
+                        skapaMigration5Till6(context), MIGRATION_6_7)
             .allowMainThreadQueries()
             .build()
 
@@ -358,7 +358,7 @@ class HusDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_4_5, skapaMigration5Till6(context))
+            .addMigrations(MIGRATION_4_5, skapaMigration5Till6(context), MIGRATION_6_7)
             .allowMainThreadQueries()
             .build()
 
@@ -373,6 +373,82 @@ class HusDatabasMigrationTest {
         assertEquals(bostadId, dao.hamtaPlaneradKostnad(1)!!.bostadId)
 
         databas.close()
+        context.deleteDatabase(TEST_DB)
+    }
+
+    @Test
+    fun migration6Till7LaggerTillPrisPaMatare() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        context.deleteDatabase(TEST_DB)
+
+        val config = SupportSQLiteOpenHelper.Configuration.builder(context)
+            .name(TEST_DB)
+            .callback(
+                object : SupportSQLiteOpenHelper.Callback(6) {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        db.execSQL(
+                            """
+                            CREATE TABLE IF NOT EXISTS matare (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                bostad_id INTEGER NOT NULL,
+                                namn TEXT NOT NULL,
+                                enhet TEXT NOT NULL,
+                                anteckning TEXT,
+                                skapad INTEGER NOT NULL
+                            )
+                            """.trimIndent(),
+                        )
+                        db.execSQL(
+                            """
+                            INSERT INTO matare (id, bostad_id, namn, enhet, skapad)
+                            VALUES (1, 1, 'El', 'kWh', 1700000000000)
+                            """.trimIndent(),
+                        )
+                    }
+
+                    override fun onUpgrade(
+                        db: SupportSQLiteDatabase,
+                        oldVersion: Int,
+                        newVersion: Int,
+                    ) = Unit
+                },
+            )
+            .build()
+        val openHelper = FrameworkSQLiteOpenHelperFactory().create(config)
+        val db = openHelper.writableDatabase
+        MIGRATION_6_7.migrate(db)
+
+        var harPrisKolumn = false
+        db.query("PRAGMA table_info(matare)").use { cursor ->
+            val nameIndex = cursor.getColumnIndex("name")
+            while (cursor.moveToNext()) {
+                if (cursor.getString(nameIndex) == "pris_ore_per_enhet") {
+                    harPrisKolumn = true
+                }
+            }
+        }
+        assertEquals(true, harPrisKolumn)
+
+        var sparadPris: Long? = -1L
+        db.query("SELECT pris_ore_per_enhet FROM matare WHERE id = 1").use { cursor ->
+            assertEquals(true, cursor.moveToFirst())
+            sparadPris =
+                if (cursor.isNull(0)) {
+                    null
+                } else {
+                    cursor.getLong(0)
+                }
+        }
+        assertNull(sparadPris)
+
+        db.execSQL("UPDATE matare SET pris_ore_per_enhet = 150 WHERE id = 1")
+        db.query("SELECT pris_ore_per_enhet FROM matare WHERE id = 1").use { cursor ->
+            assertEquals(true, cursor.moveToFirst())
+            assertEquals(150L, cursor.getLong(0))
+        }
+
+        db.close()
+        openHelper.close()
         context.deleteDatabase(TEST_DB)
     }
 }

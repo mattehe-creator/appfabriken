@@ -50,6 +50,7 @@ private fun appfabrikStatusFran(status: UppgiftStatus): AppfabrikStatus =
 @Composable
 fun UppgiftListRad(
     uppgift: Uppgift,
+    senasteKostnadOre: Long?,
     onClick: () -> Unit,
     onMarkeraGjord: () -> Unit,
     modifier: Modifier = Modifier,
@@ -101,6 +102,17 @@ fun UppgiftListRad(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 2.dp),
                 )
+                senasteKostnadOre?.let { ore ->
+                    Text(
+                        text = stringResource(
+                            R.string.uppgift_senaste_kostnad,
+                            formateraPrisKr(ore, locale),
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 2.dp),
+                    )
+                }
             }
 
             IconButton(

@@ -16,7 +16,7 @@ import androidx.room.TypeConverters
         Dokument::class,
         PlaneradKostnad::class,
     ],
-    version = 6,
+    version = 7,
     exportSchema = true,
 )
 @TypeConverters(Konverterare::class)
@@ -43,6 +43,7 @@ abstract class HusDatabas : RoomDatabase() {
                         MIGRATION_3_4,
                         MIGRATION_4_5,
                         skapaMigration5Till6(appContext),
+                        MIGRATION_6_7,
                     )
                     .addCallback(skapaBostadSeedCallback(appContext))
                     .build().also { instans = it }

@@ -82,6 +82,12 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
     }
 }
 
+val MIGRATION_6_7 = object : Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE matare ADD COLUMN pris_ore_per_enhet INTEGER")
+    }
+}
+
 fun skapaMigration5Till6(context: Context): Migration =
     object : Migration(5, 6) {
         override fun migrate(db: SupportSQLiteDatabase) {

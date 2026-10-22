@@ -35,6 +35,7 @@
     <string name="tom_matare">Inga mätare ännu. Lägg till el, vatten, värme eller annat du läser av själv.</string>
     <string name="tom_avlasningar">Inga avläsningar ännu.</string>
     <string name="ny_matare_rubrik">Ny mätare</string>
+    <string name="andra_matare_rubrik">Ändra mätare</string>
     <string name="ny_avlasning_rubrik">Ny avläsning</string>
     <string name="falt_enhet">Enhet</string>
     <string name="falt_avlasning_varde">Avläsning</string>
@@ -42,6 +43,11 @@
     <string name="falt_forbrukning">Förbrukning sedan förra</string>
     <string name="fel_matare_namn_saknas">Ange ett namn</string>
     <string name="fel_matare_enhet_saknas">Ange en enhet</string>
+    <string name="fel_matare_pris_ogiltigt">Ange ett heltal öre, eller lämna tomt</string>
+    <string name="falt_matare_pris_ore">Pris (öre per enhet)</string>
+    <string name="falt_matare_pris_ore_hjalp">Valfritt. Exempel: 150 öre per kWh. Används för att uppskatta kostnad utifrån förbrukning.</string>
+    <string name="matare_pris_etikett">Pris: %1$s öre per %2$s</string>
+    <string name="avlasning_kostnad_rad">Kostnad: %1$s</string>
     <string name="fel_avlasning_varde">Ogiltig avläsning</string>
     <string name="fel_avlasning_datum">Det finns redan en avläsning detta datum</string>
     <string name="matare_enhet_etikett">Enhet: %1$s</string>
@@ -91,6 +97,7 @@
     <string name="knapp_andra">Ändra</string>
     <string name="ny_uppgift_rubrik">Ny uppgift</string>
     <string name="andra_uppgift_rubrik">Ändra uppgift</string>
+    <string name="uppgift_senaste_kostnad">Senaste kostnad: %1$s</string>
     <string name="spara">Spara</string>
     <string name="avbryt">Avbryt</string>
     <string name="ta_bort">Ta bort</string>
@@ -205,6 +212,10 @@
     <string name="auto_kor_nu">Kopiera nu</string>
     <string name="flik_sammanstallning">Sammanställning</string>
     <string name="sammanstallning_rubrik">Sammanställning</string>
+    <string name="sammanstallning_kommande_kostnad_rubrik">Uppskattade kostnader kommande 12 månader</string>
+    <string name="sammanstallning_kommande_kostnad_summa">Cirka %1$s</string>
+    <string name="sammanstallning_kommande_kostnad_forklaring">%1$d kommande uppgifter med känd senaste kostnad, %2$d utan.</string>
+    <string name="sammanstallning_kommande_kostnad_ingen">Inga kommande uppgifter inom 12 månader.</string>
     <string name="sammanstallning_forsaljningsar">Försäljningsår</string>
     <string name="sammanstallning_ar_summa">%1$s</string>
     <string name="sammanstallning_typ_summa">%1$s: %2$s</string>

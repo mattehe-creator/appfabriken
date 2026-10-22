@@ -66,6 +66,7 @@ import se.tmconnect.husloggen.data.PlaneradKostnad
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.husloggen.regler.grupperaPerAr
+import se.tmconnect.husloggen.regler.KommandeKostnad
 import se.tmconnect.husloggen.regler.kommandePerManad
 import se.tmconnect.karna.format.formateraPrisKr
 import se.tmconnect.karna.tema.TemaLage
@@ -106,6 +107,8 @@ fun HusStartSkarm(
     onForsaljningsArAndras: (Int) -> Unit = {},
     onExportHistorikPdf: () -> Unit = {},
     onExportHistorikCsv: () -> Unit = {},
+    senasteKostnadPerUppgift: Map<Long, Long> = emptyMap(),
+    kommandeKostnad: KommandeKostnad = KommandeKostnad(0, 0, 0),
     startFlik: HusFlik = HusFlik.ATT_GORA,
     modifier: Modifier = Modifier,
 ) {
@@ -227,6 +230,7 @@ fun HusStartSkarm(
         when (HusFlik.entries[valdFlik]) {
             HusFlik.ATT_GORA -> AttGoraFlik(
                 uppgifter = uppgifter,
+                senasteKostnadPerUppgift = senasteKostnadPerUppgift,
                 contentPadding = innerPadding,
                 onNyUppgift = onNyUppgift,
                 onOppnaUppgift = onOppnaUppgift,
@@ -287,6 +291,7 @@ fun HusStartSkarm(
             HusFlik.SAMMANSTALLNING -> {
                 SammanstallningSkarm(
                     poster = poster,
+                    kommandeKostnad = kommandeKostnad,
                     forsaljningsAr = forsaljningsAr,
                     onForsaljningsArAndras = onForsaljningsArAndras,
                     locale = locale,
@@ -303,6 +308,7 @@ fun HusStartSkarm(
 @Composable
 private fun AttGoraFlik(
     uppgifter: List<Uppgift>,
+    senasteKostnadPerUppgift: Map<Long, Long>,
     contentPadding: PaddingValues,
     onNyUppgift: () -> Unit,
     onOppnaUppgift: (Long) -> Unit,
@@ -341,6 +347,7 @@ private fun AttGoraFlik(
                 items(uppgifter, key = { it.id }) { uppgift ->
                     UppgiftListRad(
                         uppgift = uppgift,
+                        senasteKostnadOre = senasteKostnadPerUppgift[uppgift.id],
                         onClick = { onOppnaUppgift(uppgift.id) },
                         onMarkeraGjord = { onMarkeraGjord(uppgift.id) },
                     )

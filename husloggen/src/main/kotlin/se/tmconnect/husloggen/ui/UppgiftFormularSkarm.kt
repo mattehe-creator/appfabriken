@@ -16,6 +16,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -34,11 +35,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import se.tmconnect.husloggen.R
+import se.tmconnect.karna.format.formateraPrisKr
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UppgiftFormularSkarm(
     tillstand: UppgiftFormularTillstand,
+    senasteKostnadOre: Long? = null,
     onNamnAndras: (String) -> Unit,
     onIntervallAndras: (String) -> Unit,
     onStartdatumAndras: (LocalDate) -> Unit,
@@ -158,6 +161,17 @@ fun UppgiftFormularSkarm(
                 onNamnAndras = onNamnAndras,
                 fel = tillstand.valideringsFel,
             )
+
+            senasteKostnadOre?.let { ore ->
+                Text(
+                    text = stringResource(
+                        R.string.uppgift_senaste_kostnad,
+                        formateraPrisKr(ore, locale),
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
 
             UppgiftIntervallFalt(
                 intervallText = tillstand.intervallText,

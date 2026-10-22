@@ -52,7 +52,9 @@ import se.tmconnect.husloggen.regler.beraknaArsforbrukning
 import se.tmconnect.husloggen.regler.jamforArsforbrukning
 import se.tmconnect.husloggen.regler.arsprognos
 import se.tmconnect.husloggen.regler.beraknaAvlasningarMedForbrukning
+import se.tmconnect.husloggen.regler.forbrukningKostnadOre
 import se.tmconnect.husloggen.regler.formateraMatareVarde
+import se.tmconnect.karna.format.formateraPrisKr
 import se.tmconnect.karna.format.formateraDatum
 
 @Composable
@@ -128,6 +130,7 @@ fun MatareDetaljSkarm(
     onTillbaka: () -> Unit,
     onNyAvlasning: () -> Unit,
     onExportCsv: () -> Unit,
+    onAndraMatare: () -> Unit,
     onTaBortMatare: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -213,6 +216,16 @@ fun MatareDetaljSkarm(
                         modifier = Modifier.padding(top = 4.dp),
                     )
                 }
+                matare.prisOrePerEnhet?.let { pris ->
+                    Text(
+                        text = stringResource(R.string.matare_pris_etikett, pris, matare.enhet),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+                TextButton(onClick = onAndraMatare, modifier = Modifier.tryckyta48()) {
+                    Text(text = stringResource(R.string.andra_matare_rubrik))
+                }
                 TextButton(onClick = { visarTaBort = true }, modifier = Modifier.tryckyta48()) {
                     Text(text = stringResource(R.string.ta_bort_matare))
                 }
@@ -271,7 +284,7 @@ fun MatareDetaljSkarm(
                 }
             } else {
                 items(medForbrukning.reversed(), key = { it.avlasning.id }) { rad ->
-                    AvlasningRad(rad, matare.enhet, locale)
+                    AvlasningRad(rad, matare.enhet, matare.prisOrePerEnhet, locale)
                 }
             }
         }
@@ -282,6 +295,7 @@ fun MatareDetaljSkarm(
 private fun AvlasningRad(
     rad: se.tmconnect.husloggen.regler.AvlasningMedForbrukning,
     enhet: String,
+    prisOrePerEnhet: Long?,
     locale: Locale,
 ) {
     Column(
@@ -311,6 +325,18 @@ private fun AvlasningRad(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            prisOrePerEnhet?.let { pris ->
+                forbrukningKostnadOre(forbrukning, pris)?.let { kostnadOre ->
+                    Text(
+                        text = stringResource(
+                            R.string.avlasning_kostnad_rad,
+                            formateraPrisKr(kostnadOre, locale),
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
         }
     }
 }
@@ -321,12 +347,19 @@ fun MatareFormularSkarm(
     tillstand: MatareFormularTillstand,
     onNamnAndras: (String) -> Unit,
     onEnhetAndras: (String) -> Unit,
+    onPrisOrePerEnhetAndras: (String) -> Unit,
     onAnteckningAndras: (String) -> Unit,
     onValjForslag: (String, String) -> Unit,
     onSpara: () -> Unit,
     onStang: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val titel =
+        if (tillstand.redigerarId == 0L) {
+            stringResource(R.string.ny_matare_rubrik)
+        } else {
+            stringResource(R.string.andra_matare_rubrik)
+        }
     val forslag =
         listOf(
             stringResource(R.string.matare_forslag_el) to stringResource(R.string.matare_enhet_kwh),
@@ -340,7 +373,7 @@ fun MatareFormularSkarm(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(R.string.ny_matare_rubrik)) },
+                title = { Text(text = titel) },
                 navigationIcon = {
                     IconButton(onClick = onStang, modifier = Modifier.tryckyta48()) {
                         Icon(
@@ -389,6 +422,20 @@ fun MatareFormularSkarm(
                 supportingText = {
                     if (tillstand.valideringsFel == MatareFel.EnhetSaknas) {
                         Text(text = stringResource(R.string.fel_matare_enhet_saknas))
+                    }
+                },
+            )
+            OutlinedTextField(
+                value = tillstand.prisOrePerEnhetText,
+                onValueChange = onPrisOrePerEnhetAndras,
+                label = { Text(text = stringResource(R.string.falt_matare_pris_ore)) },
+                modifier = Modifier.fillMaxWidth(),
+                isError = tillstand.valideringsFel == MatareFel.PrisOgiltigt,
+                supportingText = {
+                    if (tillstand.valideringsFel == MatareFel.PrisOgiltigt) {
+                        Text(text = stringResource(R.string.fel_matare_pris_ogiltigt))
+                    } else {
+                        Text(text = stringResource(R.string.falt_matare_pris_ore_hjalp))
                     }
                 },
             )

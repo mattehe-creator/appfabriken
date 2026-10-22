@@ -260,6 +260,7 @@ abstract class ButikSkarmbilderBas {
         captureSkarm("04-sammanstallning.png") {
             SammanstallningSkarm(
                 poster = exempelPoster(),
+                kommandeKostnad = se.tmconnect.husloggen.regler.KommandeKostnad(0, 0, 0),
                 forsaljningsAr = 2026,
                 onForsaljningsArAndras = {},
                 locale = locale,

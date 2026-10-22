@@ -14,9 +14,6 @@ beror-på: ingen
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/regler/MatareKostnad.kt (ny)
 - husloggen/src/test/kotlin/se/tmconnect/husloggen/regler/MatareKostnadTest.kt (ny)
 
-## Läs som förebild (ändra inte)
-- husloggen/src/main/kotlin/se/tmconnect/husloggen/regler/ForbrukningPrognos.kt
-
 ## Uppgift
 fun forbrukningKostnadOre(forbrukningTusendel: Long, prisOrePerEnhet: Long): Long?
 
@@ -39,3 +36,5 @@ gradle :husloggen:testDebugUnitTest --tests "*MatareKostnadTest"
 ## Gör inte
 - Ändra andra filer.
 - Använda flyttal.
+
+utfall: godkänd av Cursor i samband med uppdrag 2026-10-22-husloggen-kostnader-ui (PR cursor/kostnader-i-husloggen)
