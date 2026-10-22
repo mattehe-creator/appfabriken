@@ -32,3 +32,5 @@ gradle :styrelserummet:test --tests "*StammotidplanSenasteTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (JUnit 4-import i testet)
