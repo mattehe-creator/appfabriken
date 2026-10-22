@@ -1,9 +1,9 @@
 package se.tmconnect.styrelserummet.regler
 
 import java.time.LocalDate
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import org.junit.Assert.assertEquals
+import org.junit.Assert.fail
+import org.junit.Test
 
 class StammotidplanKallelseTest {
 
@@ -34,11 +34,17 @@ class StammotidplanKallelseTest {
     @Test
     fun testSenasteKallelsedagMedOgiltigtAntalVeckor() {
         val stammodatum = LocalDate.of(2026, 5, 15)
-        assertFailsWith<IllegalArgumentException> {
+        try {
             senasteKallelsedag(stammodatum, 1)
+            fail("Expected IllegalArgumentException was not thrown")
+        } catch (e: IllegalArgumentException) {
+            // Expected
         }
-        assertFailsWith<IllegalArgumentException> {
+        try {
             senasteKallelsedag(stammodatum, 7)
+            fail("Expected IllegalArgumentException was not thrown")
+        } catch (e: IllegalArgumentException) {
+            // Expected
         }
     }
 }

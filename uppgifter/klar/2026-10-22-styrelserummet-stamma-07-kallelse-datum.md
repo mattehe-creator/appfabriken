@@ -33,3 +33,5 @@ gradle :styrelserummet:test --tests "*StammotidplanKallelseTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (StammotidplanKallelseTest: kotlin.test → JUnit 4)
