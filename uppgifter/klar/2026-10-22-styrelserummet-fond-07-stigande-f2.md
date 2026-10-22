@@ -48,3 +48,5 @@ Använd `org.junit.Test` och `org.junit.Assert.assertEquals` (inte `kotlin.test`
 ## Gör inte
 - Ändra andra filer.
 - Använda flyttal.
+
+utfall: överflödig, Claude gjorde uppgiften och den är mergad på main

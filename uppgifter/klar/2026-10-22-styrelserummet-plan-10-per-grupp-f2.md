@@ -41,3 +41,5 @@ Använd `org.junit.Test` och `org.junit.Assert`, inte kotlin.test.
 - Ändra andra filer.
 - Använda flyttal.
 - Lägga till beroenden.
+
+utfall: överflödig, Claude gjorde uppgiften och den är mergad på main
