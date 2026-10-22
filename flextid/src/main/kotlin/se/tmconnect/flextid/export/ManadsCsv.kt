@@ -5,15 +5,20 @@ import java.time.YearMonth
 import java.util.Locale
 import se.tmconnect.flextid.data.Dag
 import se.tmconnect.flextid.data.Installning
+import se.tmconnect.flextid.regler.DagTyp
+import se.tmconnect.flextid.regler.Helgdag
 import se.tmconnect.flextid.regler.arbetadeMinuter
 import se.tmconnect.flextid.regler.dagensUtfall
 import se.tmconnect.flextid.regler.formateraMinuterSomTid
 import se.tmconnect.flextid.regler.formateraTid
+import se.tmconnect.flextid.regler.helgdagPa
 import se.tmconnect.karna.export.csvDokument
 import se.tmconnect.karna.export.csvRad
 
 data class ManadsCsvTexter(
     val rubriker: List<String>,
+    val typEtiketter: Map<DagTyp, String> = emptyMap(),
+    val helgdagNamn: (Helgdag) -> String = { it.namn },
 )
 
 fun manadsCsvFilnamn(arManad: YearMonth): String =
@@ -46,7 +51,8 @@ fun byggManadsCsv(
                         dag.rastMin.toString(),
                         formateraMinuterSomTid(arbetat, locale),
                         formateraSaldoCell(utfall, locale),
-                        dag.typ.name,
+                        texter.typEtiketter[dag.typ] ?: dag.typ.name,
+                        helgdagPa(dag.datum, medAftnar = true)?.let(texter.helgdagNamn) ?: "",
                     ),
                 ),
             )
