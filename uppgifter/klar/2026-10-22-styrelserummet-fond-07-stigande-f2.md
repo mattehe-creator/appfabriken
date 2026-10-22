@@ -48,3 +48,5 @@ Använd `org.junit.Test` och `org.junit.Assert.assertEquals` (inte `kotlin.test`
 ## Gör inte
 - Ändra andra filer.
 - Använda flyttal.
+
+utfall: godkänd 2026-10-22 (Cursor implementerade FondStigande.kt och FondStigandeTest.kt efter underkänt försök 2 utan kod)
