@@ -39,3 +39,5 @@ Skriv testklassen med `import org.junit.Test` och `import org.junit.Assert.asser
 - Ändra andra filer.
 - Använda flyttal.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (hela implementationen; lokala modellen flyttade bara uppgiftsfilen)
