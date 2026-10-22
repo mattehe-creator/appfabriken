@@ -39,3 +39,5 @@ gradle :styrelserummet:test --tests "*StammaCsvTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (StammaCsvTest.kt: org.junit i stället för JUnit Jupiter/kotlin.test)
