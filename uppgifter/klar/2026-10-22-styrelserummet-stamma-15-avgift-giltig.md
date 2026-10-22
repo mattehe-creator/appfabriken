@@ -34,3 +34,5 @@ gradle :styrelserummet:test --tests "*OverlatelseavgiftGiltigTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #587). Ersatt av 2026-10-22-styrelserummet-stamma-15-avgift-giltig-f2.md
