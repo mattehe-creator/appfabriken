@@ -4,13 +4,13 @@ To do
 Add recurring jobs, such as changing filters, clearing gutters or servicing the heat pump, with an interval in months. The app works out the next date and reminds you ahead of time. Ready-made suggestions help you get started. Mark a job as done with one tap: it goes into the log and the next date moves forward.
 
 Log and receipts
-Record work done and expenses with date, amount, type and notes. Photograph the receipt or add pictures, several per entry.
+Record work done and expenses with date, amount, type and notes. Photograph the receipt or add pictures, several per entry. Search the log by keyword and filter by type. For work done by a contractor in Sweden, the entry shows how long you can complain about faults under the Consumer Services Act.
 
 A record for when you sell
 The summary shows expenses per year and type, separating maintenance and repairs from new building, extensions and conversions. Create a PDF with the history of the house to hand to the buyer or estate agent, or export as CSV. For Swedish homeowners the app explains how the Swedish Tax Agency treats improvement costs and ROT/RUT deductions, without giving tax advice.
 
 More in the app
-Meters for electricity, water and heating with consumption between readings. Documents such as manuals, drawings and inspection reports. Several homes, for example a house and a holiday cottage. Planned future costs. Dark mode.
+Meters for electricity, water and heating with consumption between readings and a comparison with the year before. Documents such as manuals, drawings and inspection reports. Several homes, for example a house and a holiday cottage. Planned future costs. Dark mode.
 
 Your data stays with you
 House Log has no internet permission, no accounts, no ads and no analytics. Back up to a file or folder you choose, manually or automatically, and restore it on a new phone.
