@@ -41,3 +41,5 @@ gradle :styrelserummet-server:test --tests "*UtskriftPlanTest"
 ## Gör inte
 - Ändra andra filer (Claude kopplar in planen i rutten).
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #487). Ersatt av 2026-10-21-styrelserummet-plan-09-utskrift-f2.md
