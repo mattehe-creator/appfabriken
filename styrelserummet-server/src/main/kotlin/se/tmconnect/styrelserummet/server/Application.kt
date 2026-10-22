@@ -150,6 +150,20 @@ fun Application.module(miljo: ServerMiljo) {
             call.respond(beraknaNyckeltalSvar(req))
         }
 
+        get("/rantor") {
+            call.respondText(
+                javaClass.classLoader.getResource("static/rantor.html")!!.readText(),
+                ContentType.Text.Html,
+            )
+        }
+
+        post("/api/rantor") {
+            kontrolleraVerktygGrans(call, verktygGrans, miljo.proxyPaa)
+            val raw = call.taEmotVerktygJson()
+            val req = tolkaVerktygJson<RantorRequest>(raw)
+            call.respond(beraknaRantorSvar(req))
+        }
+
         post("/api/fondplan") {
             kontrolleraVerktygGrans(call, verktygGrans, miljo.proxyPaa)
             val raw = call.taEmotVerktygJson()
