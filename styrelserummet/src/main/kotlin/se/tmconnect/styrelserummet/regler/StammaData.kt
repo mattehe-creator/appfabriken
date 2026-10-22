@@ -58,7 +58,7 @@ fun lasStammaData(rader: List<String>): Map<String, StammaRad> {
             throw IllegalArgumentException("Tom källa. Rad: $rad")
         }
         
-        val nyckel = "$typ_$ar"
+        val nyckel = "${typ}_${ar}"
         resultat[nyckel] = StammaRad(typ, ar, varde, enhet, kalla)
     }
     
