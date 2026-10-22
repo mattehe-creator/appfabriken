@@ -36,3 +36,5 @@ gradle :styrelserummet:test --tests "*AndelstalTest"
 ## Gör inte
 - Ändra andra filer.
 - Använda flyttal.
+
+utfall: godkänd 2026-10-22 (flytt från rot, JUnit 4, negativa andelstal)
