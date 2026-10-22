@@ -24,3 +24,29 @@ fun paskdagen(ar: Int): LocalDate {
 
     return LocalDate.of(ar, manad, dag)
 }
+
+fun forstaLordagenFran(datum: LocalDate): LocalDate =
+    datum.with(java.time.temporal.TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SATURDAY))
+
+fun arSvenskHelgdag(d: LocalDate): Boolean {
+    val ar = d.year
+    val fasta = listOf(
+        LocalDate.of(ar, 1, 1), // Nyårsdagen
+        LocalDate.of(ar, 1, 6), // Trettondedag jul
+        LocalDate.of(ar, 5, 1), // Första maj
+        LocalDate.of(ar, 6, 6), // Sveriges nationaldag
+        LocalDate.of(ar, 12, 25), // Juldagen
+        LocalDate.of(ar, 12, 26), // Annandag jul
+    )
+    
+    val rorliga = listOf(
+        paskdagen(ar).minusDays(2), // Långfredag
+        paskdagen(ar), // Påskdagen
+        paskdagen(ar).plusDays(1), // Annandag påsk
+        paskdagen(ar).plusDays(39), // Kristi himmelsfärdsdag
+        forstaLordagenFran(LocalDate.of(ar, 6, 20)), // Midsommardagen
+        forstaLordagenFran(LocalDate.of(ar, 10, 31)), // Alla helgons dag
+    )
+    
+    return (fasta + rorliga).contains(d)
+}
