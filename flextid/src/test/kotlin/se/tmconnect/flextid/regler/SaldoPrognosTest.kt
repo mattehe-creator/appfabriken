@@ -1,8 +1,8 @@
 package se.tmconnect.flextid.regler
 
-import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class SaldoPrognosTest {
     
@@ -27,8 +27,7 @@ class SaldoPrognosTest {
         )
         
         // idag 2026-01-29 (dag 29) → null
-        assertEquals(
-            null,
+        assertNull(
             saldoVidArssluten(10, 3, LocalDate.of(2026, 1, 29))
         )
         
