@@ -41,6 +41,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.FilterChip
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -65,10 +66,11 @@ import se.tmconnect.husloggen.data.PlaneradKostnad
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.husloggen.regler.grupperaPerAr
+import se.tmconnect.husloggen.regler.kommandePerManad
 import se.tmconnect.karna.format.formateraPrisKr
 import se.tmconnect.karna.tema.TemaLage
 
-enum class HusFlik { ATT_GORA, LOGG, PLAN, MATARE, DOKUMENT, SAMMANSTALLNING, MER }
+enum class HusFlik { ATT_GORA, LOGG, PLAN, MATARE, DOKUMENT, SAMMANSTALLNING, MER, KOMMANDE }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -216,7 +218,7 @@ fun HusStartSkarm(
                         modifier = Modifier.tryckyta48(),
                     )
                 }
-                HusFlik.SAMMANSTALLNING, HusFlik.MER -> {
+                HusFlik.SAMMANSTALLNING, HusFlik.MER, HusFlik.KOMMANDE -> {
                     // Ingen flytande knapp i sammanställningen eller under Mer
                 }
             }
@@ -266,7 +268,16 @@ fun HusStartSkarm(
                     onOppnaDokument = onOppnaDokument,
                 )
             }
+            HusFlik.KOMMANDE -> KommandeFlik(
+                uppgifter = uppgifter,
+                locale = locale,
+                contentPadding = innerPadding,
+                onOppnaUppgift = onOppnaUppgift,
+            )
             HusFlik.MER -> MerFlik(
+                antalKommande = remember(uppgifter) {
+                    kommandePerManad(uppgifter, java.time.LocalDate.now()).values.sumOf { it.size }
+                },
                 antalPlanerade = planeradeKostnader.size,
                 antalMatare = matare.size,
                 antalDokument = dokument.size,

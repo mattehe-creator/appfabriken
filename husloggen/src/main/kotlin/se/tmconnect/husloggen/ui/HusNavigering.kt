@@ -30,7 +30,7 @@ import androidx.compose.ui.semantics.Role
 import se.tmconnect.husloggen.R
 
 /** Flikar som nås via Mer. Bakåt från dem går till Mer. */
-val MER_FLIKAR = setOf(HusFlik.PLAN, HusFlik.MATARE, HusFlik.DOKUMENT)
+val MER_FLIKAR = setOf(HusFlik.PLAN, HusFlik.MATARE, HusFlik.DOKUMENT, HusFlik.KOMMANDE)
 
 /** Vilken knapp i navigeringsfältet som är markerad för en flik. */
 fun navigeringsknappFor(flik: HusFlik): HusFlik =
@@ -83,6 +83,7 @@ private data class MerRad(
 
 @Composable
 fun MerFlik(
+    antalKommande: Int = 0,
     antalPlanerade: Int,
     antalMatare: Int,
     antalDokument: Int,
@@ -90,6 +91,7 @@ fun MerFlik(
     onValjFlik: (HusFlik) -> Unit,
 ) {
     val rader = listOf(
+        MerRad(HusFlik.KOMMANDE, Icons.Filled.DateRange, R.string.mer_kommande_titel, R.string.mer_kommande_text, antalKommande),
         MerRad(HusFlik.PLAN, Icons.Filled.ShoppingCart, R.string.mer_plan_titel, R.string.mer_plan_text, antalPlanerade),
         MerRad(HusFlik.MATARE, Icons.Filled.Build, R.string.flik_matare, R.string.mer_matare_text, antalMatare),
         MerRad(HusFlik.DOKUMENT, Icons.Filled.Info, R.string.flik_dokument, R.string.mer_dokument_text, antalDokument),

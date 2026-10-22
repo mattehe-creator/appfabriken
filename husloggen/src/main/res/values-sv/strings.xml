@@ -291,4 +291,9 @@
     <string name="logg_filter_ombyggnad">Ombyggnad</string>
     <string name="logg_inga_traffar">Inga poster matchar sökningen.</string>
     <string name="matare_forandring">(%1$s %% mot året innan)</string>
+    <string name="mer_kommande_titel">Kommande år</string>
+    <string name="mer_kommande_text">Jobben de närmaste tolv månaderna</string>
+    <string name="kommande_rubrik">De närmaste tolv månaderna</string>
+    <string name="kommande_tomt">Inga återkommande uppgifter ännu. Lägg till dem under Att göra.</string>
+    <string name="kommande_forsenad">Försenad, skulle gjorts %1$s</string>
 </resources>
