@@ -37,3 +37,5 @@ gradle :husloggen:testDebugUnitTest --tests "*LoggFilterTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: utförd av Claude 2026-10-22 (på grenen som kopplar in den)
