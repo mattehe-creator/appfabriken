@@ -41,3 +41,5 @@ gradle :styrelserummet:test --tests "*FondStigandeTest"
 ## Gör inte
 - Ändra andra filer.
 - Använda flyttal.
+
+utfall: utförd av Claude 2026-10-22 (på grenen som kopplar in den)

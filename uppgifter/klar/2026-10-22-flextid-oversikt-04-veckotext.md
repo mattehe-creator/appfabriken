@@ -54,3 +54,5 @@ gradle :flextid:testDebugUnitTest --tests "*VeckoTextTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #502). Ersatt av 2026-10-22-flextid-oversikt-04-veckotext-f2.md

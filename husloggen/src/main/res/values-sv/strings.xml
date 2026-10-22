@@ -282,4 +282,6 @@
     <string name="butik_punkt_1">Påminnelser före varje återkommande jobb</string>
     <string name="butik_punkt_2">Kvitton och kostnader per år, PDF vid försäljning</string>
     <string name="butik_punkt_3">Offline. Inget konto, ingen reklam</string>
+    <string name="reklamation_etikett">Reklamera fel i arbetet</string>
+    <string name="reklamation_varde">Senast %1$s, och inom rimlig tid efter att du märkt felet (konsumenttjänstlagen 17 §, arbete på byggnad). Information, inte juridisk rådgivning.</string>
 </resources>

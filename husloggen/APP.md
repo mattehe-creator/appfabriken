@@ -51,3 +51,7 @@ Vid vinstberäkning vid försäljning räknas bara den del av utgiften som ägar
 ## Inte i 1.0
 
 Plan för framtida kostnader, delning, widgets.
+
+## Reklamationstid för utfört arbete (kontrollerad 2026-10-22)
+
+Konsumenttjänstlagen (1985:716) 17 §: fel i arbete på byggnad eller annan fast egendom får reklameras senast tio år efter att uppdraget avslutades (tre år för annat arbete), och alltid inom skälig tid efter att felet märktes. På poster med en utförare visar appen sista dagen (postens datum plus tio år), bara i Sverige och som information. Regeln ligger i `regler/Reklamationstid.kt`.
