@@ -286,4 +286,6 @@
     <string name="butik_punkt_1">Reminders before every recurring job</string>
     <string name="butik_punkt_2">Receipts and costs per year, PDF for the sale</string>
     <string name="butik_punkt_3">Offline. No account, no ads</string>
+    <string name="reklamation_etikett">Complaints about the work</string>
+    <string name="reklamation_varde">By %1$s, and within a reasonable time after you noticed the fault (Swedish Consumer Services Act, section 17, work on buildings). Information, not legal advice.</string>
 </resources>

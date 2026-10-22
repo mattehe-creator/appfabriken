@@ -38,6 +38,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import se.tmconnect.husloggen.R
+import se.tmconnect.husloggen.regler.sistaReklamationsdag
+import se.tmconnect.husloggen.regler.visaReklamationstid
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.karna.format.formateraDatum
 import se.tmconnect.karna.format.formateraPrisKr
@@ -136,6 +138,15 @@ fun PostDetaljSkarm(
                 PostDetaljRad(
                     etikett = stringResource(R.string.falt_utforare),
                     varde = it,
+                )
+            }
+            if (visaReklamationstid(post.utforare, locale.country)) {
+                PostDetaljRad(
+                    etikett = stringResource(R.string.reklamation_etikett),
+                    varde = stringResource(
+                        R.string.reklamation_varde,
+                        formateraDatum(sistaReklamationsdag(post.datum), locale),
+                    ),
                 )
             }
             PostDetaljRad(
