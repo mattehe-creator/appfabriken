@@ -3,6 +3,7 @@ package se.tmconnect.styrelserummet.server
 import org.junit.Test
 import org.junit.Assert
 import se.tmconnect.styrelserummet.regler.PlanAr
+import se.tmconnect.styrelserummet.regler.kronor
 
 class UtskriftPlanTest {
     
@@ -19,6 +20,6 @@ class UtskriftPlanTest {
         
         Assert.assertTrue(html.contains("Avskrivningsplan"))
         Assert.assertTrue(html.contains("<td>2026</td>"))
-        Assert.assertTrue(html.contains("60\u00A0000 kr")) // 60 000 kr formaterat med mellanslag
+        Assert.assertTrue(html.contains(kronor(60_000L)))
     }
 }

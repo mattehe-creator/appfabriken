@@ -77,8 +77,7 @@ fun utskriftHtml(forening: String, arsslut: Int, rader: List<UtskriftsRadDto>, p
                   $tbody
                 </tbody>
               </table>
-            </div>
-            $planHtml
+            </div>${if (planHtml.isEmpty()) "" else "\n            $planHtml"}
           </div>
           <script src="/utskrift.js"></script>
         </body>

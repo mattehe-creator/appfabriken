@@ -47,3 +47,5 @@ Skriv klassen `UtskriftPlanTest` med `org.junit.Test` och `org.junit.Assert` (in
 ## Gör inte
 - Ändra andra filer (Claude kopplar in planen i rutten).
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (byte-identisk HTML vid tom plan; test använder kronor())
