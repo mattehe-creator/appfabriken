@@ -16,32 +16,32 @@ class LoggFilterTest {
         )
         
         // Testa ("värmepump", null) → [1]
-        val result1 = filtreraPoster(poster, "värmepump", null)
-        assert(result1.size == 1)
-        assert(result1[0].id == 1L)
+        val resultat1 = filtreraPoster(poster, "värmepump", null)
+        assert(resultat1.size == 1)
+        assert(resultat1[0].id == 1L)
         
         // Testa ("VÄRME kyl", null) → [1]
-        val result2 = filtreraPoster(poster, "VÄRME kyl", null)
-        assert(result2.size == 1)
-        assert(result2[0].id == 1L)
+        val resultat2 = filtreraPoster(poster, "VÄRME kyl", null)
+        assert(resultat2.size == 1)
+        assert(resultat2[0].id == 1L)
         
         // Testa ("byggfirma", OMBYGGNAD) → [3]
-        val result3 = filtreraPoster(poster, "byggfirma", PostTyp.OMBYGGNAD)
-        assert(result3.size == 1)
-        assert(result3[0].id == 3L)
+        val resultat3 = filtreraPoster(poster, "byggfirma", PostTyp.OMBYGGNAD)
+        assert(resultat3.size == 1)
+        assert(resultat3[0].id == 3L)
         
         // Testa ("", UNDERHALL) → [2]
-        val result4 = filtreraPoster(poster, "", PostTyp.UNDERHALL)
-        assert(result4.size == 1)
-        assert(result4[0].id == 2L)
+        val resultat4 = filtreraPoster(poster, "", PostTyp.UNDERHALL)
+        assert(resultat4.size == 1)
+        assert(resultat4[0].id == 2L)
         
         // Testa ("lager fasad", null) → [2]
-        val result5 = filtreraPoster(poster, "lager fasad", null)
-        assert(result5.size == 1)
-        assert(result5[0].id == 2L)
+        val resultat5 = filtreraPoster(poster, "lager fasad", null)
+        assert(resultat5.size == 1)
+        assert(resultat5[0].id == 2L)
         
         // Testa ("altan", REPARATION) → []
-        val result6 = filtreraPoster(poster, "altan", PostTyp.REPARATION)
-        assert(result6.isEmpty())
+        val resultat6 = filtreraPoster(poster, "altan", PostTyp.REPARATION)
+        assert(resultat6.isEmpty())
     }
 }
