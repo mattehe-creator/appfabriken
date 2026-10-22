@@ -82,4 +82,27 @@ class NyckeltalTest {
         val nollKvm = u.copy(kvmBostadsratt = 0, kvmHyresratt = 0)
         assertNull(sparandePerKvm(nollKvm))
     }
+
+    @Test
+    fun rantaEnergiOchArsavgiftsandelExempel() {
+        val u = NyckeltalUnderlag(
+            arsavgifter = 4_200_000,
+            rantebarandeSkulder = 38_000_000,
+            aretsResultat = -350_000,
+            avskrivningar = 1_600_000,
+            utrangeringar = 0,
+            planeratUnderhall = 450_000,
+            justeringar = 0,
+            energikostnad = 1_150_000,
+            rorelseintakter = 4_600_000,
+            kvmBostadsratt = 5_200,
+            kvmHyresratt = 300,
+        )
+        assertEquals(90L, rantekanslighetTiondelar(u))
+        assertEquals(209L, energikostnadPerKvm(u))
+        assertEquals(913L, arsavgiftsandelTiondelsProcent(u))
+
+        val nollArsavgifter = u.copy(arsavgifter = 0)
+        assertNull(rantekanslighetTiondelar(nollArsavgifter))
+    }
 }

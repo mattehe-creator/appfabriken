@@ -56,3 +56,19 @@ fun sparandePerKvm(u: NyckeltalUnderlag): Long? {
     if (yta <= 0) return null
     return avrundaKvot(justeratResultat(u), yta)
 }
+
+fun rantekanslighetTiondelar(u: NyckeltalUnderlag): Long? {
+    if (u.arsavgifter <= 0) return null
+    return avrundaKvot(u.rantebarandeSkulder * 10, u.arsavgifter)
+}
+
+fun energikostnadPerKvm(u: NyckeltalUnderlag): Long? {
+    val yta = totalYta(u)
+    if (yta <= 0) return null
+    return avrundaKvot(u.energikostnad, yta)
+}
+
+fun arsavgiftsandelTiondelsProcent(u: NyckeltalUnderlag): Long? {
+    if (u.rorelseintakter <= 0) return null
+    return avrundaKvot(u.arsavgifter * 1000, u.rorelseintakter)
+}
