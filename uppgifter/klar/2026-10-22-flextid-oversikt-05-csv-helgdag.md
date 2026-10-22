@@ -33,3 +33,5 @@ gradle :flextid:testDebugUnitTest --tests "*ManadsCsv*"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #514). Ersatt av 2026-10-22-flextid-oversikt-05-csv-helgdag-f2.md
