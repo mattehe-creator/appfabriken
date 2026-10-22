@@ -3,6 +3,8 @@ package se.tmconnect.styrelserummet.server
 const val MAX_FILER = 10
 const val MAX_BYTES_PER_JOBB = 25 * 1024 * 1024
 const val MAX_JOBB_PER_IP_TIMME = 5
+const val MAX_VERKTYG_ANROP_PER_IP_TIMME = 60
+const val MAX_VERKTYG_KROPP_BYTES = 64 * 1024
 const val RENSA_EFTER_DAGAR = 30
 const val MAX_TECKEN_TILL_TOLKNING = 400_000
 

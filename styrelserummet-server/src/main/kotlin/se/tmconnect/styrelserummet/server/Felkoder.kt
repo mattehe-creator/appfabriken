@@ -2,6 +2,8 @@ package se.tmconnect.styrelserummet.server
 
 object Felkoder {
     const val FOR_MANGA_JOBB = "FOR_MANGA_JOBB"
+    const val FOR_MANGA_VERKTYG = "FOR_MANGA_VERKTYG"
+    const val FOR_STOR_VERKTYGSFORFRAGAN = "FOR_STOR_VERKTYGSFORFRAGAN"
     const val FOR_MANGA_FILER = "FOR_MANGA_FILER"
     const val FOR_STORA_FILER = "FOR_STORA_FILER"
     const val INTE_PDF = "INTE_PDF"
@@ -30,6 +32,8 @@ object Felkoder {
 
     fun allaKoder(): Set<String> = setOf(
         FOR_MANGA_JOBB,
+        FOR_MANGA_VERKTYG,
+        FOR_STOR_VERKTYGSFORFRAGAN,
         FOR_MANGA_FILER,
         FOR_STORA_FILER,
         INTE_PDF,

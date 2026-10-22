@@ -65,11 +65,13 @@ fun ApplicationCall.klientIp(proxyPaa: Boolean): String =
 fun Application.module(miljo: ServerMiljo) {
     val lagring = JobbLagring(miljo.dataRot)
     val ipGrans = IpGrans(miljo.dataRot)
+    val verktygGrans = VerktygAnropsGrans()
     val scope = CoroutineScope(SupervisorJob())
     val ko = JobbKo(lagring, miljo.tolkare, scope = scope, synkron = miljo.synkronJobb)
     rensaGamlaJobb(lagring)
     val betalKonfig = miljo.betalning
     val betalare: Betalare? = miljo.betalare ?: if (betalKonfig.aktiv) StripeBetalare(betalKonfig) else null
+    val publikBas = publikBasUrl(betalKonfig)
 
     /** Har kunden betalat men inte kommit tillbaka till sidan? Fråga Stripe en gång per hämtning. */
     fun medBetalning(meta: JobbMeta): JobbMeta {
@@ -113,6 +115,19 @@ fun Application.module(miljo: ServerMiljo) {
             call.respondText("ok")
         }
 
+        get("/robots.txt") {
+            call.respondText(robotsTxt(publikBas), ContentType.Text.Plain)
+        }
+
+        get("/sitemap.xml") {
+            val sitemap = sitemapXml(publikBas)
+            if (sitemap == null) {
+                call.respond(HttpStatusCode.NotFound)
+            } else {
+                call.respondText(sitemap.second, ContentType.Application.Xml)
+            }
+        }
+
         get("/nyckeltal") {
             call.respondText(
                 javaClass.classLoader.getResource("static/nyckeltal.html")!!.readText(),
@@ -128,12 +143,16 @@ fun Application.module(miljo: ServerMiljo) {
         }
 
         post("/api/nyckeltal") {
-            val req = runCatching { call.receive<NyckeltalRequest>() }.getOrElse { throw VerktygFel("Uppgifterna kunde inte läsas.") }
+            kontrolleraVerktygGrans(call, verktygGrans, miljo.proxyPaa)
+            val raw = call.taEmotVerktygJson()
+            val req = tolkaVerktygJson<NyckeltalRequest>(raw)
             call.respond(beraknaNyckeltalSvar(req))
         }
 
         post("/api/fondplan") {
-            val req = runCatching { call.receive<FondplanRequest>() }.getOrElse { throw VerktygFel("Uppgifterna kunde inte läsas.") }
+            kontrolleraVerktygGrans(call, verktygGrans, miljo.proxyPaa)
+            val raw = call.taEmotVerktygJson()
+            val req = tolkaVerktygJson<FondplanRequest>(raw)
             call.respond(beraknaFondplanSvar(req))
         }
 
@@ -387,8 +406,6 @@ fun Application.module(miljo: ServerMiljo) {
 }
 
 class FelBegaran(val kod: String) : Exception(felText(kod))
-
-private class ServerFelBegaran(val fel: ServerFel) : Exception()
 
 fun main() {
     val miljo = miljoFranEnv()
