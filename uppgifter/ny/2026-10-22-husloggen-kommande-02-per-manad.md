@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/claude/2026-10-22-husloggen-kommande.md
 försök: 1
-beror-på: 2026-10-22-husloggen-kommande-01-forekomster.md
+beror-på: 2026-10-22-husloggen-kommande-01-forekomster-f2.md
 
 ## Ändra bara dessa filer
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/regler/Kommande.kt

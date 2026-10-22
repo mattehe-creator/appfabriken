@@ -48,3 +48,5 @@ gradle :husloggen:testDebugUnitTest --tests "*KommandeTest"
 ## Gör inte
 - Ändra andra filer eller `nastaDatum`.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #501). Ersatt av 2026-10-22-husloggen-kommande-01-forekomster-f2.md
