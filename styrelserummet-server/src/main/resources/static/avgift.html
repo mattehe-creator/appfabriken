@@ -30,6 +30,7 @@
       <div class="falt"><label for="ovriga">Övriga intäkter (kr per år)</label><input id="ovriga" inputmode="numeric" aria-describedby="ovriga-hjalp"><p class="hjalp" id="ovriga-hjalp">Hyror för lokaler, p-platser, förråd.</p></div>
       <div class="falt"><label for="nuvarande">Dagens årsavgifter (kr per år)</label><input id="nuvarande" inputmode="numeric"></div>
       <div class="falt"><label for="kvm">Kvm upplåtna med bostadsrätt</label><input id="kvm" inputmode="numeric"></div>
+      <div class="falt"><label for="andelstal">Andelstal per lägenhet (valfritt, ett per rad)</label><textarea id="andelstal" rows="6" aria-describedby="andelstal-hjalp"></textarea><p class="hjalp" id="andelstal-hjalp">Kopiera kolumnen ur lägenhetsförteckningen. Decimaler går bra. Summan behöver inte vara 1 eller 100.</p></div>
       <div class="knapp-rad">
         <button class="knapp" type="submit">Räkna</button>
         <button class="knapp sekundar" type="button" id="exempel">Fyll i exempel</button>
@@ -39,6 +40,13 @@
 
     <section id="resultat" class="yta" hidden>
       <ul class="sammanfattning" id="sammanfattning"></ul>
+      <div class="tabellram" id="lagenheter-ram" hidden>
+        <table id="lagenheter">
+          <caption>Avgift per lägenhet</caption>
+          <thead><tr><th scope="col">Rad</th><th scope="col" class="tal">Per år</th><th scope="col" class="tal">Per månad</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
       <p id="anmarkning" class="hjalp"></p>
       <p class="hjalp"><a href="/fondplan">Räkna avsättningen med Fondplan</a> · <a href="/rantor">Vad kostar en högre ränta?</a></p>
     </section>
