@@ -37,3 +37,5 @@ gradle :styrelserummet-server:test --tests "*PlanForUtkastTest"
 ## Gör inte
 - Ändra andra filer (rutter och utskrift kopplar Claude in).
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-22 (flytt från repots rot, JUnit 4, exempelvärden och tredje testfall)

@@ -2,7 +2,6 @@ package se.tmconnect.styrelserummet.server
 
 import se.tmconnect.styrelserummet.regler.PlanAr
 import se.tmconnect.styrelserummet.regler.avskrivningsplan
-import se.tmconnect.styrelserummet.modell.Komponent
 
 const val PLAN_ANTAL_AR = 10
 
