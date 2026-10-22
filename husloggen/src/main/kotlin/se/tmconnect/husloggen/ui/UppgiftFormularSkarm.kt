@@ -34,11 +34,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import se.tmconnect.husloggen.R
+import se.tmconnect.karna.format.formateraPrisKr
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UppgiftFormularSkarm(
     tillstand: UppgiftFormularTillstand,
+    senasteKostnadOre: Long? = null,
     onNamnAndras: (String) -> Unit,
     onIntervallAndras: (String) -> Unit,
     onStartdatumAndras: (LocalDate) -> Unit,
@@ -158,6 +160,16 @@ fun UppgiftFormularSkarm(
                 onNamnAndras = onNamnAndras,
                 fel = tillstand.valideringsFel,
             )
+
+            senasteKostnadOre?.let { ore ->
+                Text(
+                    text = stringResource(
+                        R.string.uppgift_senaste_kostnad,
+                        formateraPrisKr(ore, locale),
+                    ),
+                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                )
+            }
 
             UppgiftIntervallFalt(
                 intervallText = tillstand.intervallText,

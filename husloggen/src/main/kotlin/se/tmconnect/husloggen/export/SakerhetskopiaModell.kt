@@ -60,6 +60,7 @@ data class SakerhetskopiaMatare(
     val namn: String,
     val enhet: String,
     val anteckning: String? = null,
+    val prisOrePerEnhet: Long? = null,
     val bostadIndex: Int = 0,
 )
 
@@ -266,6 +267,7 @@ fun matareTillSakerhetskopia(matare: Matare, bostadIdTillIndex: Map<Long, Int>):
         namn = matare.namn,
         enhet = matare.enhet,
         anteckning = matare.anteckning,
+        prisOrePerEnhet = matare.prisOrePerEnhet,
         bostadIndex = bostadIdTillIndex.getValue(matare.bostadId),
     )
 
@@ -275,6 +277,7 @@ fun sakerhetskopiaMatareTillMatare(export: SakerhetskopiaMatare, bostadId: Long)
         namn = export.namn.trim(),
         enhet = export.enhet.trim(),
         anteckning = export.anteckning?.trim()?.takeIf { it.isNotEmpty() },
+        prisOrePerEnhet = export.prisOrePerEnhet,
     )
 
 fun avlasningTillSakerhetskopia(avlasning: Avlasning, matareIdTillIndex: Map<Long, Int>): SakerhetskopiaAvlasning =
@@ -292,7 +295,10 @@ fun sakerhetskopiaAvlasningTillAvlasning(export: SakerhetskopiaAvlasning, matare
     )
 
 fun arSakerhetskopiaMatareLik(a: SakerhetskopiaMatare, b: SakerhetskopiaMatare): Boolean =
-    a.namn == b.namn && a.enhet == b.enhet && a.anteckning == b.anteckning
+    a.namn == b.namn &&
+        a.enhet == b.enhet &&
+        a.anteckning == b.anteckning &&
+        a.prisOrePerEnhet == b.prisOrePerEnhet
 
 fun arSakerhetskopiaAvlasningLik(a: SakerhetskopiaAvlasning, b: SakerhetskopiaAvlasning): Boolean =
     a.matareIndex == b.matareIndex && a.datum == b.datum && a.vardeTusendel == b.vardeTusendel

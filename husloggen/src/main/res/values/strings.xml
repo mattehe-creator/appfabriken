@@ -35,6 +35,8 @@
     <string name="tom_matare">No meters yet. Add electricity, water, heating or other readings you track yourself.</string>
     <string name="tom_avlasningar">No readings yet.</string>
     <string name="ny_matare_rubrik">New meter</string>
+    <string name="andra_matare_rubrik">Edit meter</string>
+    <string name="andra_matare">Edit</string>
     <string name="ny_avlasning_rubrik">New reading</string>
     <string name="falt_enhet">Unit</string>
     <string name="falt_avlasning_varde">Reading</string>
@@ -42,6 +44,10 @@
     <string name="falt_forbrukning">Consumption since previous</string>
     <string name="fel_matare_namn_saknas">Enter a name</string>
     <string name="fel_matare_enhet_saknas">Enter a unit</string>
+    <string name="falt_matare_pris">Price per unit (öre)</string>
+    <string name="falt_matare_pris_hjalp">Optional, for example 150 for 1.50 kr per kWh</string>
+    <string name="fel_matare_pris_ogiltigt">Enter the price as whole öre, for example 150</string>
+    <string name="matare_pris_etikett">Price: %1$s öre per %2$s</string>
     <string name="fel_avlasning_varde">Invalid reading</string>
     <string name="fel_avlasning_datum">There is already a reading on this date</string>
     <string name="matare_enhet_etikett">Unit: %1$s</string>
@@ -51,6 +57,7 @@
     <string name="matare_arsforbrukning_rad">%1$s: %2$s %3$s</string>
     <string name="avlasning_varde_rad">%1$s %2$s</string>
     <string name="avlasning_forbrukning_rad">+%1$s %2$s since previous</string>
+    <string name="avlasning_forbrukning_kostnad_rad">≈ %1$s</string>
     <string name="avlasning_lagre_varde_titel">Lower than last reading?</string>
     <string name="avlasning_lagre_varde_text">The value is lower than the previous reading. Has the meter been reset or replaced?</string>
     <string name="spara_anda">Save anyway</string>
@@ -110,6 +117,7 @@
     <string name="fel_intervall_saknas">Enter interval in months</string>
     <string name="fel_intervall_ogiltigt">Interval must be 1–120 months</string>
     <string name="markera_gjord">Mark as done</string>
+    <string name="uppgift_senaste_kostnad">Last time: %1$s</string>
     <string name="uppgift_markerad_gjord">Task marked as done</string>
     <string name="bekrafta_ta_bort_uppgift_titel">Delete task?</string>
     <string name="bekrafta_ta_bort_uppgift_text">The task will be deleted. Log entries are kept.</string>
@@ -205,6 +213,9 @@
     <string name="auto_byt_mapp">Change folder</string>
     <string name="auto_kor_nu">Copy now</string>
     <string name="flik_sammanstallning">Summary</string>
+    <string name="oversikt_kommande_kostnad_rubrik">Estimated cost for the next 12 months</string>
+    <string name="oversikt_kommande_kostnad_summa">%1$s (%2$d tasks)</string>
+    <string name="oversikt_kommande_kostnad_saknas">%1$d tasks have no cost history</string>
     <string name="sammanstallning_rubrik">Summary</string>
     <string name="sammanstallning_forsaljningsar">Sale year</string>
     <string name="sammanstallning_ar_summa">%1$s</string>

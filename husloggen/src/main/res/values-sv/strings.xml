@@ -35,6 +35,8 @@
     <string name="tom_matare">Inga mätare ännu. Lägg till el, vatten, värme eller annat du läser av själv.</string>
     <string name="tom_avlasningar">Inga avläsningar ännu.</string>
     <string name="ny_matare_rubrik">Ny mätare</string>
+    <string name="andra_matare_rubrik">Ändra mätare</string>
+    <string name="andra_matare">Ändra</string>
     <string name="ny_avlasning_rubrik">Ny avläsning</string>
     <string name="falt_enhet">Enhet</string>
     <string name="falt_avlasning_varde">Avläsning</string>
@@ -42,6 +44,10 @@
     <string name="falt_forbrukning">Förbrukning sedan förra</string>
     <string name="fel_matare_namn_saknas">Ange ett namn</string>
     <string name="fel_matare_enhet_saknas">Ange en enhet</string>
+    <string name="falt_matare_pris">Pris per enhet (öre)</string>
+    <string name="falt_matare_pris_hjalp">Valfritt, till exempel 150 för 1,50 kr per kWh</string>
+    <string name="fel_matare_pris_ogiltigt">Ange priset som hela ören, till exempel 150</string>
+    <string name="matare_pris_etikett">Pris: %1$s öre per %2$s</string>
     <string name="fel_avlasning_varde">Ogiltig avläsning</string>
     <string name="fel_avlasning_datum">Det finns redan en avläsning detta datum</string>
     <string name="matare_enhet_etikett">Enhet: %1$s</string>
@@ -51,6 +57,7 @@
     <string name="matare_arsforbrukning_rad">%1$s: %2$s %3$s</string>
     <string name="avlasning_varde_rad">%1$s %2$s</string>
     <string name="avlasning_forbrukning_rad">+%1$s %2$s sedan förra</string>
+    <string name="avlasning_forbrukning_kostnad_rad">≈ %1$s</string>
     <string name="avlasning_lagre_varde_titel">Lägre än förra avläsningen?</string>
     <string name="avlasning_lagre_varde_text">Värdet är lägre än föregående avläsning. Har mätaren nollställts eller bytts?</string>
     <string name="spara_anda">Spara ändå</string>
@@ -110,6 +117,7 @@
     <string name="fel_intervall_saknas">Ange intervall i månader</string>
     <string name="fel_intervall_ogiltigt">Intervall ska vara 1–120 månader</string>
     <string name="markera_gjord">Markera som gjord</string>
+    <string name="uppgift_senaste_kostnad">Senast: %1$s</string>
     <string name="uppgift_markerad_gjord">Uppgiften är markerad som gjord</string>
     <string name="bekrafta_ta_bort_uppgift_titel">Ta bort uppgift?</string>
     <string name="bekrafta_ta_bort_uppgift_text">Uppgiften tas bort. Poster i loggen behålls.</string>
@@ -204,6 +212,9 @@
     <string name="auto_byt_mapp">Byt mapp</string>
     <string name="auto_kor_nu">Kopiera nu</string>
     <string name="flik_sammanstallning">Sammanställning</string>
+    <string name="oversikt_kommande_kostnad_rubrik">Uppskattad kostnad kommande 12 månader</string>
+    <string name="oversikt_kommande_kostnad_summa">%1$s (%2$d uppgifter)</string>
+    <string name="oversikt_kommande_kostnad_saknas">%1$d uppgifter saknar kostnadshistorik</string>
     <string name="sammanstallning_rubrik">Sammanställning</string>
     <string name="sammanstallning_forsaljningsar">Försäljningsår</string>
     <string name="sammanstallning_ar_summa">%1$s</string>

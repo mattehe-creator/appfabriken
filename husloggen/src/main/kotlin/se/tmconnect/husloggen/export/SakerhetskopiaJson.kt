@@ -129,6 +129,7 @@ private fun skrivMatareObjekt(matare: SakerhetskopiaMatare): String =
         laggTillFalt("namn", jsonStrang(matare.namn))
         laggTillFalt("enhet", jsonStrang(matare.enhet))
         matare.anteckning?.let { laggTillFalt("anteckning", jsonStrang(it)) }
+        matare.prisOrePerEnhet?.let { laggTillFalt("prisOrePerEnhet", it.toString()) }
         laggTillFalt("bostadIndex", matare.bostadIndex.toString())
         append('}')
     }
@@ -361,10 +362,12 @@ private fun lasUppgiftObjekt(falt: Map<String, Any?>): SakerhetskopiaUppgift? {
 private fun lasMatareObjekt(falt: Map<String, Any?>): SakerhetskopiaMatare? {
     val namn = falt["namn"] as? String ?: return null
     val enhet = falt["enhet"] as? String ?: return null
+    val prisOrePerEnhet = (falt["prisOrePerEnhet"] as? Number)?.toLong()
     return SakerhetskopiaMatare(
         namn = namn,
         enhet = enhet,
         anteckning = falt["anteckning"] as? String,
+        prisOrePerEnhet = prisOrePerEnhet,
         bostadIndex = lasBostadIndex(falt),
     )
 }

@@ -64,6 +64,7 @@ import se.tmconnect.husloggen.regler.beraknaAvlasningarMedForbrukning
 import se.tmconnect.husloggen.regler.foregaendeAvlasning
 import se.tmconnect.husloggen.regler.tolkaMatareVardeTillTusendel
 import se.tmconnect.husloggen.regler.valideraAvlasning
+import se.tmconnect.husloggen.regler.tolkaPrisOrePerEnhet
 import se.tmconnect.husloggen.regler.valideraMatare
 import se.tmconnect.husloggen.regler.beloppOreTillFaltText
 import se.tmconnect.husloggen.regler.sorteraUppgifter
@@ -98,6 +99,7 @@ data class MatareFormularTillstand(
     val redigerarId: Long = 0L,
     val namn: String = "",
     val enhet: String = "",
+    val prisOrePerEnhetText: String = "",
     val anteckning: String = "",
     val valideringsFel: MatareFel? = null,
 )
@@ -1015,6 +1017,10 @@ class HusViewModel(
         uppdateraMatareFormular { it.copy(anteckning = text) }
     }
 
+    fun uppdateraMatarePris(text: String) {
+        uppdateraMatareFormular { it.copy(prisOrePerEnhetText = text, valideringsFel = null) }
+    }
+
     fun appliceraMatareForslag(namn: String, enhet: String) {
         uppdateraMatareFormular {
             it.copy(namn = namn, enhet = enhet, valideringsFel = null)
@@ -1023,7 +1029,7 @@ class HusViewModel(
 
     fun sparaMatareFormular() {
         val tillstand = _matareFormular.value ?: return
-        val fel = valideraMatare(tillstand.namn, tillstand.enhet)
+        val fel = valideraMatare(tillstand.namn, tillstand.enhet, tillstand.prisOrePerEnhetText)
         if (fel != null) {
             _matareFormular.value = tillstand.copy(valideringsFel = fel)
             return
@@ -1032,6 +1038,7 @@ class HusViewModel(
             val befintlig =
                 if (tillstand.redigerarId != 0L) repository.hamtaMatare(tillstand.redigerarId) else null
             val bostadId = valdBostadId.value ?: befintlig?.bostadId ?: repository.hamtaForvaldBostadId()
+            val prisOrePerEnhet = tolkaPrisOrePerEnhet(tillstand.prisOrePerEnhetText)
             repository.sparaMatare(
                 Matare(
                     id = tillstand.redigerarId,
@@ -1039,10 +1046,26 @@ class HusViewModel(
                     namn = tillstand.namn.trim(),
                     enhet = tillstand.enhet.trim(),
                     anteckning = tillstand.anteckning.trim().ifEmpty { null },
+                    prisOrePerEnhet = prisOrePerEnhet,
                     skapad = befintlig?.skapad ?: System.currentTimeMillis(),
                 ),
             )
             _matareFormular.value = null
+        }
+    }
+
+    fun visaAndraMatare(matareId: Long) {
+        viewModelScope.launch {
+            val rad = repository.hamtaMatare(matareId) ?: return@launch
+            _matareDetaljId.value = null
+            _matareFormular.value =
+                MatareFormularTillstand(
+                    redigerarId = rad.id,
+                    namn = rad.namn,
+                    enhet = rad.enhet,
+                    prisOrePerEnhetText = rad.prisOrePerEnhet?.toString().orEmpty(),
+                    anteckning = rad.anteckning.orEmpty(),
+                )
         }
     }
 

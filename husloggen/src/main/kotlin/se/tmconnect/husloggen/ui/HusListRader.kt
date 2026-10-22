@@ -50,11 +50,12 @@ private fun appfabrikStatusFran(status: UppgiftStatus): AppfabrikStatus =
 @Composable
 fun UppgiftListRad(
     uppgift: Uppgift,
+    senasteKostnadOre: Long?,
+    locale: java.util.Locale,
     onClick: () -> Unit,
     onMarkeraGjord: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val locale = LocalConfiguration.current.locales[0]
     val idag = LocalDate.now()
     val nasta = nastaDatum(uppgift.senastGjord, uppgift.startDatum, uppgift.intervallManader)
     val status = uppgiftStatus(nasta, idag)
@@ -101,6 +102,17 @@ fun UppgiftListRad(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 2.dp),
                 )
+                senasteKostnadOre?.let { ore ->
+                    Text(
+                        text = stringResource(
+                            R.string.uppgift_senaste_kostnad,
+                            formateraPrisKr(ore, locale),
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 2.dp),
+                    )
+                }
             }
 
             IconButton(

@@ -67,6 +67,8 @@ import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.husloggen.regler.grupperaPerAr
 import se.tmconnect.husloggen.regler.kommandePerManad
+import se.tmconnect.husloggen.regler.senasteKostnadPerUppgift
+import java.time.LocalDate
 import se.tmconnect.karna.format.formateraPrisKr
 import se.tmconnect.karna.tema.TemaLage
 
@@ -120,6 +122,8 @@ fun HusStartSkarm(
     }
     val locale = LocalConfiguration.current.locales[0]
     val visaSkatteInfo = locale.country.equals("SE", ignoreCase = true)
+    val senasteKostnad = remember(poster) { senasteKostnadPerUppgift(poster) }
+    val idag = remember { LocalDate.now() }
 
     Scaffold(
         modifier = modifier,
@@ -227,6 +231,8 @@ fun HusStartSkarm(
         when (HusFlik.entries[valdFlik]) {
             HusFlik.ATT_GORA -> AttGoraFlik(
                 uppgifter = uppgifter,
+                senasteKostnad = senasteKostnad,
+                locale = locale,
                 contentPadding = innerPadding,
                 onNyUppgift = onNyUppgift,
                 onOppnaUppgift = onOppnaUppgift,
@@ -287,6 +293,9 @@ fun HusStartSkarm(
             HusFlik.SAMMANSTALLNING -> {
                 SammanstallningSkarm(
                     poster = poster,
+                    uppgifter = uppgifter,
+                    idag = idag,
+                    senasteKostnad = senasteKostnad,
                     forsaljningsAr = forsaljningsAr,
                     onForsaljningsArAndras = onForsaljningsArAndras,
                     locale = locale,
@@ -303,6 +312,8 @@ fun HusStartSkarm(
 @Composable
 private fun AttGoraFlik(
     uppgifter: List<Uppgift>,
+    senasteKostnad: Map<Long, Long>,
+    locale: Locale,
     contentPadding: PaddingValues,
     onNyUppgift: () -> Unit,
     onOppnaUppgift: (Long) -> Unit,
@@ -341,6 +352,8 @@ private fun AttGoraFlik(
                 items(uppgifter, key = { it.id }) { uppgift ->
                     UppgiftListRad(
                         uppgift = uppgift,
+                        senasteKostnadOre = senasteKostnad[uppgift.id],
+                        locale = locale,
                         onClick = { onOppnaUppgift(uppgift.id) },
                         onMarkeraGjord = { onMarkeraGjord(uppgift.id) },
                     )

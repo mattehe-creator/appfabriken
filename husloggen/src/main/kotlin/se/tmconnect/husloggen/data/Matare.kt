@@ -26,5 +26,7 @@ data class Matare(
     val namn: String,
     val enhet: String,
     val anteckning: String? = null,
+    @ColumnInfo(name = "pris_ore_per_enhet")
+    val prisOrePerEnhet: Long? = null,
     val skapad: Long = System.currentTimeMillis(),
 )

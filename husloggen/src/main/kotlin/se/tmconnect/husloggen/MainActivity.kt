@@ -57,6 +57,7 @@ import se.tmconnect.husloggen.export.skatteKallorText
 import se.tmconnect.husloggen.export.sakerhetskopiaFilnamn
 import se.tmconnect.husloggen.regler.ForbattringMojlighet
 import se.tmconnect.husloggen.regler.postBeloppForSammanstallningOre
+import se.tmconnect.husloggen.regler.senasteKostnadPerUppgift
 import se.tmconnect.karna.format.formateraDatum
 import se.tmconnect.karna.format.formateraPrisKr
 import java.util.Locale
@@ -240,6 +241,7 @@ class MainActivity : ComponentActivity() {
                 var valdBildIndex by remember { mutableStateOf(0) }
                 val uppgifter by viewModel.uppgifter.collectAsState()
                 val poster by viewModel.poster.collectAsState()
+                val senasteKostnad = remember(poster) { senasteKostnadPerUppgift(poster) }
                 val matare by viewModel.matare.collectAsState()
                 val dokument by viewModel.dokument.collectAsState()
                 val planeradeKostnader by viewModel.planeradeKostnader.collectAsState()
@@ -395,6 +397,7 @@ class MainActivity : ComponentActivity() {
                                 tillstand = matareFormular!!,
                                 onNamnAndras = viewModel::uppdateraMatareNamn,
                                 onEnhetAndras = viewModel::uppdateraMatareEnhet,
+                                onPrisAndras = viewModel::uppdateraMatarePris,
                                 onAnteckningAndras = viewModel::uppdateraMatareAnteckning,
                                 onValjForslag = viewModel::appliceraMatareForslag,
                                 onSpara = viewModel::sparaMatareFormular,
@@ -411,6 +414,7 @@ class MainActivity : ComponentActivity() {
                                     locale = locale,
                                     idag = idag,
                                     onTillbaka = viewModel::stangMatareDetalj,
+                                    onAndra = { viewModel.visaAndraMatare(matareRad.id) },
                                     onNyAvlasning = { viewModel.visaNyAvlasning(matareRad.id) },
                                     onExportCsv = {
                                         avlasningCsvMatareId = matareRad.id
@@ -491,6 +495,7 @@ class MainActivity : ComponentActivity() {
                             val tillstand = formular!!
                             UppgiftFormularSkarm(
                                 tillstand = tillstand,
+                                senasteKostnadOre = senasteKostnad[tillstand.redigerarId],
                                 onNamnAndras = viewModel::uppdateraFormularNamn,
                                 onIntervallAndras = viewModel::uppdateraFormularIntervall,
                                 onStartdatumAndras = viewModel::uppdateraFormularStartdatum,

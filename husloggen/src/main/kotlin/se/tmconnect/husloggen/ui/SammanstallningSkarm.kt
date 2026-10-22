@@ -26,9 +26,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import java.time.LocalDate
 import java.util.Locale
 import se.tmconnect.husloggen.R
 import se.tmconnect.husloggen.data.Post
+import se.tmconnect.husloggen.data.Uppgift
+import se.tmconnect.husloggen.regler.kommandePerManad
+import se.tmconnect.husloggen.regler.uppskattadKostnadKommande
 import se.tmconnect.husloggen.regler.ForbattringMojlighet
 import se.tmconnect.husloggen.regler.arStodjerGransbelopp
 import se.tmconnect.husloggen.regler.grupperaPerAr
@@ -41,6 +45,9 @@ import se.tmconnect.karna.format.formateraPrisKr
 @Composable
 fun SammanstallningSkarm(
     poster: List<Post>,
+    uppgifter: List<Uppgift> = emptyList(),
+    idag: LocalDate = LocalDate.now(),
+    senasteKostnad: Map<Long, Long> = emptyMap(),
     forsaljningsAr: Int,
     onForsaljningsArAndras: (Int) -> Unit,
     locale: Locale,
@@ -49,6 +56,10 @@ fun SammanstallningSkarm(
     onExportPdf: () -> Unit = {},
     onExportCsv: () -> Unit = {},
 ) {
+    val kommandeKostnad =
+        remember(uppgifter, senasteKostnad, idag) {
+            uppskattadKostnadKommande(kommandePerManad(uppgifter, idag), senasteKostnad)
+        }
     val grupperadePoster = grupperaPerAr(poster)
     val summeringar = summeraPerAr(poster)
     val listState = rememberLazyListState()
@@ -63,6 +74,44 @@ fun SammanstallningSkarm(
         contentPadding = PaddingValues(bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        if (kommandeKostnad.antalMedKostnad + kommandeKostnad.antalUtanKostnad > 0) {
+            item(key = "kommande-kostnad") {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = stringResource(R.string.oversikt_kommande_kostnad_rubrik),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Text(
+                            text = stringResource(
+                                R.string.oversikt_kommande_kostnad_summa,
+                                formateraPrisKr(kommandeKostnad.summaOre, locale),
+                                kommandeKostnad.antalMedKostnad,
+                            ),
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(top = 4.dp),
+                        )
+                        if (kommandeKostnad.antalUtanKostnad > 0) {
+                            Text(
+                                text = stringResource(
+                                    R.string.oversikt_kommande_kostnad_saknas,
+                                    kommandeKostnad.antalUtanKostnad,
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 4.dp),
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
         item(key = "forsaljningsar") {
             Row(
                 modifier = Modifier.fillMaxWidth(),
