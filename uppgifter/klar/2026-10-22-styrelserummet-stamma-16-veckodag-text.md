@@ -31,3 +31,5 @@ gradle :styrelserummet:test --tests "*StammaVeckodagTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-22 av Cursor (PR #580). Ersatt av 2026-10-22-styrelserummet-stamma-16-veckodag-text-f2.md
