@@ -94,6 +94,9 @@ fun Application.module(miljo: ServerMiljo) {
                 mapOf("fel" to felText(serverFelTillKod(cause.fel))),
             )
         }
+        exception<VerktygFel> { call, cause ->
+            call.respond(HttpStatusCode.BadRequest, mapOf("fel" to (cause.message ?: felText(Felkoder.INTERNT_FEL))))
+        }
         exception<Throwable> { call, _ ->
             call.respond(HttpStatusCode.InternalServerError, mapOf("fel" to felText(Felkoder.INTERNT_FEL)))
         }
@@ -108,6 +111,30 @@ fun Application.module(miljo: ServerMiljo) {
     routing {
         get("/halsa") {
             call.respondText("ok")
+        }
+
+        get("/nyckeltal") {
+            call.respondText(
+                javaClass.classLoader.getResource("static/nyckeltal.html")!!.readText(),
+                ContentType.Text.Html,
+            )
+        }
+
+        get("/fondplan") {
+            call.respondText(
+                javaClass.classLoader.getResource("static/fondplan.html")!!.readText(),
+                ContentType.Text.Html,
+            )
+        }
+
+        post("/api/nyckeltal") {
+            val req = runCatching { call.receive<NyckeltalRequest>() }.getOrElse { throw VerktygFel("Uppgifterna kunde inte läsas.") }
+            call.respond(beraknaNyckeltalSvar(req))
+        }
+
+        post("/api/fondplan") {
+            val req = runCatching { call.receive<FondplanRequest>() }.getOrElse { throw VerktygFel("Uppgifterna kunde inte läsas.") }
+            call.respond(beraknaFondplanSvar(req))
         }
 
         get("/api/betalning") {
