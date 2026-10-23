@@ -34,3 +34,5 @@ gradle :styrelserummet:test --tests "*ExempelTexterArTest"
 ## Gör inte
 - Ändra `HittaByggnadensVarde.kt`.
 - Lägga till riktiga revisorsnamn.
+
+utfall: underkänd 2026-10-23 av Cursor (PR #605). Försök 2 i granskning/2026-10-23-styrelserummet-exempel-07-texter-arsredovisning.md
