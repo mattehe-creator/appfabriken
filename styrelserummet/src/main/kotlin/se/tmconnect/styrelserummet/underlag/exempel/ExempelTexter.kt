@@ -91,6 +91,10 @@ fun arsredovisningSidor(): List<String> {
                     "för räkenskapsåret $RAKENSKAPSAR.",
             )
             appendLine()
+            appendLine(
+                "Verksamheten bedrivs i föreningens fastighet på Exempelvägen 1 i Teststad.",
+            )
+            appendLine()
             appendLine("Balansräkning")
             appendLine("Byggnader och mark")
             appendLine("$RAKENSKAPSAR ${RAKENSKAPSAR - 1}")
