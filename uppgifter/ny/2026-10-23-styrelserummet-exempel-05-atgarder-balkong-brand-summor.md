@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-23-styrelserummet-exempelhandlingar.md
 försök: 1
-beror-på: 2026-10-23-styrelserummet-exempel-04-atgarder-tvatt-mark-entré-garage.md
+beror-på: 2026-10-23-styrelserummet-exempel-04-atgarder-tvatt-mark-entre-garage.md
 
 ## Ändra bara dessa filer
 - styrelserummet/src/main/kotlin/se/tmconnect/styrelserummet/underlag/exempel/ExempelData.kt
