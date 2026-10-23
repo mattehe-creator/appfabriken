@@ -9,6 +9,8 @@
     <string name="idag_ut">Ut: %1$s</string>
     <string name="stampla_in">Stämpla in</string>
     <string name="stampla_ut">Stämpla ut</string>
+    <string name="genvag_redan_instamplad">Redan instämplad kl. %1$s</string>
+    <string name="genvag_ingen_instempling">Ingen instämpling idag</string>
     <string name="rast_min">Rast (minuter)</string>
     <string name="redigera_dag">Redigera dag</string>
     <string name="foregaende_vecka">Föregående vecka</string>

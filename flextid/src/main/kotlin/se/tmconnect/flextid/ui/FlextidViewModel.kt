@@ -79,6 +79,10 @@ sealed interface FlextidMeddelande {
     data object ImportFel : FlextidMeddelande
 
     data object GransUtanPro : FlextidMeddelande
+
+    data class RedanInstamplad(val start: LocalTime) : FlextidMeddelande
+
+    data object IngenInstempling : FlextidMeddelande
 }
 
 data class VeckaDagRad(
@@ -383,6 +387,45 @@ class FlextidViewModel(
                 }
                 is FlextidRepository.SparaDagResult.Fel ->
                     _meddelanden.emit(FlextidMeddelande.SlutForeStart)
+            }
+        }
+    }
+
+    fun genvagStamplaIn() {
+        viewModelScope.launch {
+            val inst = installning.value
+            when (
+                val resultat =
+                    repository.genvagStamplaIn(
+                        LocalDate.now(),
+                        LocalTime.now(),
+                        inst.standardRastMin,
+                        proKalla.arPro.value,
+                    )
+            ) {
+                FlextidRepository.GenvagStamplaInResult.Sparat -> _meddelanden.emit(FlextidMeddelande.Sparat)
+                is FlextidRepository.GenvagStamplaInResult.RedanInstamplad ->
+                    _meddelanden.emit(FlextidMeddelande.RedanInstamplad(resultat.start))
+                FlextidRepository.GenvagStamplaInResult.GransUtanPro -> {
+                    visaProDialog()
+                    _meddelanden.emit(FlextidMeddelande.GransUtanPro)
+                }
+            }
+        }
+    }
+
+    fun genvagStamplaUt() {
+        viewModelScope.launch {
+            when (repository.genvagStamplaUt(LocalDate.now(), LocalTime.now(), proKalla.arPro.value)) {
+                FlextidRepository.GenvagStamplaUtResult.Sparat -> _meddelanden.emit(FlextidMeddelande.Sparat)
+                FlextidRepository.GenvagStamplaUtResult.IngenInstempling ->
+                    _meddelanden.emit(FlextidMeddelande.IngenInstempling)
+                FlextidRepository.GenvagStamplaUtResult.SlutForeStart ->
+                    _meddelanden.emit(FlextidMeddelande.SlutForeStart)
+                FlextidRepository.GenvagStamplaUtResult.GransUtanPro -> {
+                    visaProDialog()
+                    _meddelanden.emit(FlextidMeddelande.GransUtanPro)
+                }
             }
         }
     }

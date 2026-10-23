@@ -4,8 +4,13 @@ import java.time.LocalDate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import java.time.LocalTime
+import se.tmconnect.flextid.regler.GenvagStamplaInBeslut
+import se.tmconnect.flextid.regler.GenvagStamplaUtBeslut
 import se.tmconnect.flextid.regler.TidValideringFel
 import se.tmconnect.flextid.regler.beraknaSaldo
+import se.tmconnect.flextid.regler.beslutGenvagStamplaIn
+import se.tmconnect.flextid.regler.beslutGenvagStamplaUt
 import se.tmconnect.flextid.regler.kanLaggaTillDagPost
 import se.tmconnect.flextid.regler.valideraTider
 
@@ -44,6 +49,24 @@ class FlextidRepository(private val dao: FlextidDao) {
         data class Fel(val fel: TidValideringFel) : SparaDagResult
 
         data object GransUtanPro : SparaDagResult
+    }
+
+    sealed interface GenvagStamplaInResult {
+        data object Sparat : GenvagStamplaInResult
+
+        data class RedanInstamplad(val start: LocalTime) : GenvagStamplaInResult
+
+        data object GransUtanPro : GenvagStamplaInResult
+    }
+
+    sealed interface GenvagStamplaUtResult {
+        data object Sparat : GenvagStamplaUtResult
+
+        data object IngenInstempling : GenvagStamplaUtResult
+
+        data object SlutForeStart : GenvagStamplaUtResult
+
+        data object GransUtanPro : GenvagStamplaUtResult
     }
 
     private suspend fun farSkapaNyDagPost(datum: LocalDate, arPro: Boolean): Boolean {
@@ -101,6 +124,33 @@ class FlextidRepository(private val dao: FlextidDao) {
             return SparaDagResult.GransUtanPro
         }
         return sparaDag(befintlig.copy(slut = tid), arPro)
+    }
+
+    suspend fun genvagStamplaIn(datum: LocalDate, nu: LocalTime, standardRastMin: Int, arPro: Boolean): GenvagStamplaInResult {
+        val befintlig = dao.hamtaDag(datum)
+        return when (val beslut = beslutGenvagStamplaIn(befintlig, nu)) {
+            is GenvagStamplaInBeslut.RedanInstamplad ->
+                GenvagStamplaInResult.RedanInstamplad(beslut.start)
+            is GenvagStamplaInBeslut.SparaStart ->
+                when (stamplaIn(datum, beslut.start, standardRastMin, arPro)) {
+                    SparaDagResult.Ok -> GenvagStamplaInResult.Sparat
+                    SparaDagResult.GransUtanPro -> GenvagStamplaInResult.GransUtanPro
+                    is SparaDagResult.Fel -> GenvagStamplaInResult.Sparat
+                }
+        }
+    }
+
+    suspend fun genvagStamplaUt(datum: LocalDate, nu: LocalTime, arPro: Boolean): GenvagStamplaUtResult {
+        val befintlig = dao.hamtaDag(datum)
+        return when (val beslut = beslutGenvagStamplaUt(befintlig, nu)) {
+            GenvagStamplaUtBeslut.IngenInstempling -> GenvagStamplaUtResult.IngenInstempling
+            is GenvagStamplaUtBeslut.SparaSlut ->
+                when (val sparat = stamplaUt(datum, beslut.slut, arPro)) {
+                    SparaDagResult.Ok -> GenvagStamplaUtResult.Sparat
+                    SparaDagResult.GransUtanPro -> GenvagStamplaUtResult.GransUtanPro
+                    is SparaDagResult.Fel -> GenvagStamplaUtResult.SlutForeStart
+                }
+        }
     }
 }
 
