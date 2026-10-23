@@ -32,3 +32,5 @@ gradle :styrelserummet:test --tests "*ExempelDataAtgarderGrupp1Test"
 ## Gör inte
 - Lägga till andra åtgärder än de fyra.
 - Ändra föreningskonstanterna.
+
+utfall: underkänd 2026-10-23 av Cursor (PR #594). Ersatt av 2026-10-23-styrelserummet-exempel-02-atgarder-tak-fasad-fonster-stammar-f2.md
