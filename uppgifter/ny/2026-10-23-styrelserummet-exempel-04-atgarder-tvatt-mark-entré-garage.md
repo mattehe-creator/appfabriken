@@ -21,7 +21,7 @@ Lägg till fyra åtgärder:
 Test `grupp3TackerTvattMarkEntreGarage`: namn, år och kostnad enligt tabellen; listan har nu 12 åtgärder.
 
 ## Exempel
-- Efter grupp 3: summan av alla kostnader i listan → `26_000_000`.
+- Efter grupp 3: summan av alla kostnader i listan → `26_800_000` (grupp 3 = 3_500_000).
 
 ## Test som ska gå igenom
 gradle :styrelserummet:test --tests "*ExempelDataAtgarderGrupp3Test"
