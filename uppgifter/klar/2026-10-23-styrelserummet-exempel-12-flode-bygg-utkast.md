@@ -30,3 +30,5 @@ gradle :styrelserummet:test --tests "*ExempelFlodeTest"
 ## Gör inte
 - Ändra produktionskod om testet redan går grönt.
 - Lägga in riktiga API-anrop.
+
+utfall: underkänd 2026-10-23 av Cursor (PR #614). Ersatt av 2026-10-23-styrelserummet-exempel-12-flode-bygg-utkast-f2.md
