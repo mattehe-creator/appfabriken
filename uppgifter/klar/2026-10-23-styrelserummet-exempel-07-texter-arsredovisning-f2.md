@@ -43,3 +43,5 @@ gradle :styrelserummet:testDebugUnitTest --tests "*ExempelTexterArTest"
 - Ändra `HittaByggnadensVarde.kt`.
 - Lägga till riktiga revisorsnamn.
 - Lämna testfilen tom eller utan asserts mot exemplen ovan.
+
+utfall: godkänd 2026-10-23 (Cursor implementerade hela uppgiften; lokal modell levererade ingen kod)
