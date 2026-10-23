@@ -38,6 +38,25 @@ fun underhallsplanSidor(): List<String> {
     return listOf(sida1, tabellRader, sida3)
 }
 
+fun arsredovisningSidor(): List<String> {
+    val byggnaderInnevarande = formatKronor(BYGGNADENS_VARDE)
+    val sida =
+        buildString {
+            appendLine("Förvaltningsberättelse")
+            appendLine()
+            appendLine(
+                "Styrelsen i $FORENING_NAMN avlägger härmed årsredovisning " +
+                    "för räkenskapsåret $RAKENSKAPSAR.",
+            )
+            appendLine()
+            appendLine("Balansräkning")
+            appendLine("Byggnader och mark")
+            appendLine("$RAKENSKAPSAR ${RAKENSKAPSAR - 1}")
+            appendLine("$byggnaderInnevarande 26 500 000")
+        }
+    return listOf(sida)
+}
+
 private fun formatKronor(kronor: Long): String {
     val text = kronor.toString()
     return text
