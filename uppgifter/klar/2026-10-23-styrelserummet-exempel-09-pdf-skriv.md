@@ -37,3 +37,5 @@ gradle :styrelserummet:test --tests "*ExempelPdfTest"
 ## Gör inte
 - Lägga till nya beroenden (PDFBox finns i `:styrelserummet`).
 - Spara filer på disk i testet (bara minne).
+
+utfall: underkänd 2026-10-23 av Cursor (PR #609). Ersatt av 2026-10-23-styrelserummet-exempel-09-pdf-skriv-f2.md
