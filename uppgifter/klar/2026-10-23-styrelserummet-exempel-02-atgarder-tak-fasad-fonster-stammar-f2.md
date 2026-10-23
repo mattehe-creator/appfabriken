@@ -47,3 +47,5 @@ gradle :styrelserummet:test --tests "*ExempelDataAtgarderGrupp1Test"
 - Lägga till andra åtgärder än de fyra.
 - Ändra föreningskonstanterna eller `exempelForening()`.
 - Lämna testfilen tom.
+
+utfall: godkänd 2026-10-23 (lokal modell levererade ingen kod; Cursor implementerade EXEMPEL_ATGARDER och ExempelDataAtgarderGrupp1Test.kt)
