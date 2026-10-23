@@ -69,3 +69,19 @@ fun tidplanRader(plan: Stammotidplan, kallelseVeckor: Int): List<StammaTabellRad
         ),
     )
 }
+
+const val STAMMA_RADGIVNING_RAD = "Allmän information, inte juridisk rådgivning. Kontrollera era stadgar."
+
+fun tidplanCsv(rader: List<StammaTabellRad>): String {
+    val dataRader = rader.map { rad ->
+        listOf(rad.etikett, rad.datum, rad.anmarkning, rad.kalla).joinToString(";") { csvFalt(it) }
+    }
+    return (listOf("etikett;datum;anmärkning;källa") + dataRader + STAMMA_RADGIVNING_RAD).joinToString("\n") + "\n"
+}
+
+private fun csvFalt(text: String): String {
+    if (text.none { it == ';' || it == '"' || it == '\n' || it == '\r' }) {
+        return text
+    }
+    return "\"" + text.replace("\"", "\"\"") + "\""
+}
