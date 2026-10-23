@@ -121,6 +121,20 @@ class ByggUtkast(
                             )
                         }
                     }
+                } else if (andelar.isNotEmpty()) {
+                    perGrupp.forEach { (grupp, lista) ->
+                        lista.distinctBy { it.namn }.forEach { f ->
+                            komponenter += Komponent(
+                                namn = f.namn,
+                                grupp = grupp,
+                                anskaffningsvarde = 0L,
+                                anskaffningsar = f.anskaffningsar ?: byggnadsar,
+                                nyttjandeperiodAr = f.nyttjandeperiodAr ?: tabell.find { it.grupp == grupp }?.forslagAr ?: 1,
+                                kalla = f.kalla,
+                                sakerhet = Sakerhet.UPPSKATTNING,
+                            )
+                        }
+                    }
                 }
             }
         }

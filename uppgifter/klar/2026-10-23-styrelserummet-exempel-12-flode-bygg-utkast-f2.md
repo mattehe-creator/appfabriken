@@ -43,3 +43,5 @@ gradle :styrelserummet:testDebugUnitTest --tests "*ExempelFlodeTest"
 - Ändra produktionskod om testet redan går grönt.
 - Lägga in riktiga API-anrop.
 - Använda `kotlin.test`.
+
+utfall: godkänd 2026-10-23 (implementerade ExempelFlodeTest; byggUtkast vid attFordela=0)
