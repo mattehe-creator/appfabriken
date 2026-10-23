@@ -50,9 +50,13 @@ import se.tmconnect.husloggen.ui.UppgiftFormularSkarm
 import se.tmconnect.karna.tema.AppfabrikTema
 import se.tmconnect.husloggen.export.AvlasningCsvTexter
 import se.tmconnect.husloggen.export.HusHistorikTexter
+import se.tmconnect.husloggen.export.KommandeUnderhallCsvTexter
 import se.tmconnect.husloggen.export.avlasningCsvFilnamn
 import se.tmconnect.husloggen.export.husHistorikCsvFilnamn
 import se.tmconnect.husloggen.export.husHistorikPdfFilnamn
+import se.tmconnect.husloggen.export.kommandeUnderhallCsvFilnamn
+import se.tmconnect.husloggen.regler.kommandeUnderhall
+import se.tmconnect.husloggen.ui.KommandeArSkarm
 import se.tmconnect.husloggen.export.skatteKallorText
 import se.tmconnect.husloggen.export.sakerhetskopiaFilnamn
 import se.tmconnect.husloggen.regler.ForbattringMojlighet
@@ -205,6 +209,14 @@ class MainActivity : ComponentActivity() {
         avlasningCsvMatareId = null
     }
 
+    private val createKommandeUnderhallCsvContract = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("text/csv"),
+    ) { uri: Uri? ->
+        if (uri != null) {
+            sparaKommandeUnderhallCsv(uri)
+        }
+    }
+
     private var behorighetNekad by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -231,6 +243,7 @@ class MainActivity : ComponentActivity() {
             }
             AppfabrikTema(morkt = morkt) {
                 var visaInstallningar by rememberSaveable { mutableStateOf(false) }
+                var visaKommandeAr by rememberSaveable { mutableStateOf(false) }
                 var oppnaAttGora by remember { mutableStateOf(skaOppnaAttGora) }
                 LaunchedEffect(skaOppnaAttGora) {
                     if (skaOppnaAttGora) {
@@ -557,6 +570,23 @@ class MainActivity : ComponentActivity() {
                                 onTittaRunt = viewModel::avslutaValkommen,
                             )
                         }
+                        visaKommandeAr -> {
+                            val locale = resources.configuration.locales[0]
+                            val grupper =
+                                remember(uppgifter, poster, idag) {
+                                    kommandeUnderhall(uppgifter, poster, idag)
+                                }
+                            KommandeArSkarm(
+                                grupper = grupper,
+                                locale = locale,
+                                onTillbaka = { visaKommandeAr = false },
+                                onExportCsv = {
+                                    createKommandeUnderhallCsvContract.launch(
+                                        kommandeUnderhallCsvFilnamn(idag),
+                                    )
+                                },
+                            )
+                        }
                         else -> {
                             HusStartSkarm(
                                 uppgifter = uppgifter,
@@ -611,6 +641,7 @@ class MainActivity : ComponentActivity() {
                                 onExportHistorikCsv = {
                                     createHistorikCsvContract.launch(husHistorikCsvFilnamn(idag))
                                 },
+                                onVisaKommandeAr = { visaKommandeAr = true },
                                 senasteKostnadPerUppgift = senasteKostnadPerUppgiftMap,
                                 kommandeKostnad = kommandeKostnad,
                             )
@@ -664,6 +695,21 @@ class MainActivity : ComponentActivity() {
             beloppEtikett = { post -> formateraPrisKr(postBeloppForSammanstallningOre(post), locale) },
         )
     }
+
+    private fun sparaKommandeUnderhallCsv(uri: Uri) {
+        val locale = resources.configuration.locales[0]
+        viewModel.sparaKommandeUnderhallCsv(uri, kommandeUnderhallCsvTexter(), locale)
+    }
+
+    private fun kommandeUnderhallCsvTexter(): KommandeUnderhallCsvTexter =
+        KommandeUnderhallCsvTexter(
+            kolumnAr = getString(R.string.kommande_ar_csv_kolumn_ar),
+            kolumnUppgift = getString(R.string.kommande_ar_csv_kolumn_uppgift),
+            kolumnDatum = getString(R.string.kommande_ar_csv_kolumn_datum),
+            kolumnKostnad = getString(R.string.kommande_ar_csv_kolumn_kostnad),
+            arSummaRubrik = { ar -> getString(R.string.kommande_ar_csv_ar_summa, ar) },
+            okandKostnad = getString(R.string.kommande_ar_csv_okand),
+        )
 
     private fun sparaHistorikCsv(uri: Uri) {
         val locale = resources.configuration.locales[0]

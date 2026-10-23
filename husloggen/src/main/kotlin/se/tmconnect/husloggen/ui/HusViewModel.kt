@@ -33,7 +33,12 @@ import se.tmconnect.husloggen.export.Sakerhetskopia
 import se.tmconnect.husloggen.export.SakerhetskopiaLasResult
 import se.tmconnect.husloggen.export.SakerhetskopiaPlanerare
 import se.tmconnect.husloggen.export.byggHusHistorik
+import se.tmconnect.husloggen.export.KommandeUnderhallCsvTexter
 import se.tmconnect.husloggen.export.husHistorikCsv
+import se.tmconnect.husloggen.export.kommandeUnderhallCsv
+import se.tmconnect.husloggen.regler.kommandeUnderhall
+import se.tmconnect.karna.format.formateraDatum
+import se.tmconnect.karna.format.formateraPrisKr
 import se.tmconnect.husloggen.export.skrivHusHistorikTillPdf
 import se.tmconnect.husloggen.regler.ForbattringMojlighet
 import se.tmconnect.husloggen.regler.standardForsaljningsar
@@ -974,6 +979,38 @@ class HusViewModel(
                     gransNej = texter.gransNej,
                 )
                 val csv = husHistorikCsv(data, texter)
+                withContext(Dispatchers.IO) {
+                    val stream = appContext.contentResolver.openOutputStream(uri)
+                        ?: throw java.io.IOException()
+                    stream.use { skrivCsvMedBom(it, csv) }
+                }
+                _meddelanden.emit(HusUiMeddelande.HistorikCsvSparad)
+            } catch (_: Exception) {
+                _meddelanden.emit(HusUiMeddelande.HistorikCsvMisslyckades)
+            }
+        }
+    }
+
+    fun sparaKommandeUnderhallCsv(
+        uri: Uri,
+        texter: KommandeUnderhallCsvTexter,
+        locale: Locale,
+    ) {
+        viewModelScope.launch {
+            try {
+                val grupper =
+                    kommandeUnderhall(
+                        uppgifter = uppgifter.value,
+                        loggposter = poster.value,
+                        idag = LocalDate.now(),
+                    )
+                val csv =
+                    kommandeUnderhallCsv(
+                        grupper = grupper,
+                        texter = texter,
+                        datumEtikett = { datum -> formateraDatum(datum, locale) },
+                        kostnadEtikett = { ore -> formateraPrisKr(ore, locale) },
+                    )
                 withContext(Dispatchers.IO) {
                     val stream = appContext.contentResolver.openOutputStream(uri)
                         ?: throw java.io.IOException()
