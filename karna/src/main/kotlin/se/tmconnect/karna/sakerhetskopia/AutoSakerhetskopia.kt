@@ -31,7 +31,8 @@ interface MappLagring {
     fun radera(post: MappPost): Boolean
 }
 
-fun autoFilnamn(datum: LocalDate, filPrefix: String): String = "$filPrefix$datum.zip"
+fun autoFilnamn(datum: LocalDate, filPrefix: String, filAndelse: String = ".zip"): String =
+    "$filPrefix$datum$filAndelse"
 
 private val INTERVALL_MARGINAL_MS = TimeUnit.HOURS.toMillis(2)
 
@@ -46,9 +47,10 @@ fun postAttRadera(
     poster: List<MappPost>,
     filPrefix: String,
     behall: Int = AUTO_BEHALL_ANTAL,
+    filAndelse: String = ".zip",
 ): List<MappPost> =
     poster
-        .filter { it.namn.startsWith(filPrefix) && it.namn.endsWith(".zip") }
+        .filter { it.namn.startsWith(filPrefix) && it.namn.endsWith(filAndelse) }
         .sortedWith(compareByDescending<MappPost> { datumNyckel(it.namn, filPrefix) }.thenByDescending { it.andrad })
         .drop(behall.coerceAtLeast(1))
 
@@ -57,8 +59,9 @@ fun kopiera(
     filPrefix: String,
     skrivZip: (OutputStream) -> Unit,
     idag: LocalDate,
+    filAndelse: String = ".zip",
 ): Boolean {
-    val namn = autoFilnamn(idag, filPrefix)
+    val namn = autoFilnamn(idag, filPrefix, filAndelse)
     val fore = lagring.lista()
     val foreIdn = fore.map { it.id }.toSet()
     val ut = lagring.skapa(namn) ?: return false
@@ -69,6 +72,6 @@ fun kopiera(
         return false
     }
     fore.filter { it.namn == namn }.forEach { lagring.radera(it) }
-    postAttRadera(lagring.lista(), filPrefix).forEach { lagring.radera(it) }
+    postAttRadera(lagring.lista(), filPrefix, filAndelse = filAndelse).forEach { lagring.radera(it) }
     return true
 }
