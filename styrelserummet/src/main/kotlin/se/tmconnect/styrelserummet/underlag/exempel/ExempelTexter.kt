@@ -3,7 +3,6 @@ package se.tmconnect.styrelserummet.underlag.exempel
 import se.tmconnect.styrelserummet.modell.Komponent
 import se.tmconnect.styrelserummet.modell.Komponentgrupp
 import se.tmconnect.styrelserummet.modell.Sakerhet
-import se.tmconnect.styrelserummet.regler.stamAv
 import se.tmconnect.styrelserummet.underlag.gissaGrupp
 
 fun exempelKomponenterFranPlan(): List<Komponent> {
@@ -17,6 +16,7 @@ fun exempelKomponenterFranPlan(): List<Komponent> {
             }
             
             val nyttjandeperiodAr = when (grupp) {
+                Komponentgrupp.STOMME -> 100
                 Komponentgrupp.TAK -> 50
                 Komponentgrupp.FASAD -> 40
                 Komponentgrupp.FONSTER_DORRAR -> 40

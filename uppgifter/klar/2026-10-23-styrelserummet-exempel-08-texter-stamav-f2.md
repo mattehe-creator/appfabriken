@@ -82,3 +82,5 @@ gradle :styrelserummet:testDebugUnitTest --tests "*ExempelTexterStamAvTest"
 - Ändra `stamAv`, modeller eller `ExempelData.kt`.
 - Lägga till balkongkomponent med uppskattat värde.
 - Committa enbart uppgiftsflytt eller tom testfil utan implementation.
+
+utfall: godkänd 2026-10-23 (STOMME-gren i when för exhaustive compile; borttagen oanvänd import stamAv)
