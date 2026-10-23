@@ -19,6 +19,24 @@ fun datumMedVeckodag(d: LocalDate): String {
 
 data class StammaTabellRad(val etikett: String, val datum: String, val anmarkning: String, val kalla: String)
 
+const val STAMMA_RADGIVNING_RAD = "Allmän information, inte juridisk rådgivning. Kontrollera era stadgar."
+
+private fun csvFalt(text: String): String {
+    if (text.none { it == ';' || it == '"' || it == '\n' || it == '\r' }) {
+        return text
+    }
+    return "\"" + text.replace("\"", "\"\"") + "\""
+}
+
+fun tidplanCsv(rader: List<StammaTabellRad>): String {
+    val header = "etikett;datum;anmärkning;källa"
+    val dataRader = rader.map { rad ->
+        listOf(rad.etikett, rad.datum, rad.anmarkning, rad.kalla)
+            .joinToString(";") { csvFalt(it) }
+    }
+    return (listOf(header) + dataRader + STAMMA_RADGIVNING_RAD).joinToString("\n") + "\n"
+}
+
 fun tidplanRader(plan: Stammotidplan, kallelseVeckor: Int): List<StammaTabellRad> {
     val efterLagfristRad1 = "Stämman ligger efter lagfrist"
     val efterLagfristRad2 = "Efter lagens senaste datum"

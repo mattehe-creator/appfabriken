@@ -53,3 +53,5 @@ Kör:
 - Ändra andra filer.
 - Lägga till beroenden.
 - Lägga filer i repots rot — all kod ska ligga under `styrelserummet/src/...`.
+
+utfall: godkänd 2026-10-22 (Cursor implementerade hela uppgiften eftersom försök 2 saknade kod)
