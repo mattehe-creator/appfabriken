@@ -27,3 +27,5 @@ gradle :styrelserummet:test --tests "*ExempelPdfExportTest"
 
 ## Gör inte
 - Skriva till filsystem (nästa uppgift).
+
+utfall: underkänd 2026-10-23 av Cursor (PR #613). Ersatt av 2026-10-23-styrelserummet-exempel-10-pdf-export-funktioner-f2.md
