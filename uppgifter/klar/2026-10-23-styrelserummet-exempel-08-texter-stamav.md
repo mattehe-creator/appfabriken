@@ -29,3 +29,5 @@ gradle :styrelserummet:test --tests "*ExempelTexterStamAvTest"
 ## Gör inte
 - Ändra `stamAv` eller modeller.
 - Lägga till balkongkomponent med uppskattat värde här (det kommer i flödestestet).
+
+utfall: underkänd 2026-10-23 av Cursor (PR #607). Ersatt av 2026-10-23-styrelserummet-exempel-08-texter-stamav-f2.md
