@@ -195,4 +195,9 @@
     <string name="ars_prognos_ingen_data">För lite underlag än (minst 30 dagar av året krävs).</string>
     <string name="navigera_tillbaka">Tillbaka</string>
     <string name="saldo_vid_arsslut">Med samma takt: %1$s vid årets slut</string>
+    <string name="ledighet_kort_flexdagar">Du kan ta ut %1$d flexdagar</string>
+    <string name="ledighet_kort_ingen_grans">Ingen gräns satt</string>
+    <string name="ledighet_kort_for_lagt">Saldo räcker inte för en hel flexdag</string>
+    <string name="ledighet_kort_tidigast">Tidigast ledig %1$s</string>
+    <string name="ledighet_planera_knapp">Planera ledig dag</string>
 </resources>

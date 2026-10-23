@@ -195,4 +195,9 @@
     <string name="ars_prognos_ingen_data">Not enough data yet (needs at least 30 days of the year).</string>
     <string name="navigera_tillbaka">Back</string>
     <string name="saldo_vid_arsslut">At the same pace: %1$s at year end</string>
+    <string name="ledighet_kort_flexdagar">You can take %1$d flex days off</string>
+    <string name="ledighet_kort_ingen_grans">No floor limit set</string>
+    <string name="ledighet_kort_for_lagt">Balance is not enough for a full flex day</string>
+    <string name="ledighet_kort_tidigast">Earliest leave: %1$s</string>
+    <string name="ledighet_planera_knapp">Plan flex day off</string>
 </resources>

@@ -120,6 +120,7 @@ fun FlextidStartSkarm(
     val veckaSammanfattning by viewModel.veckaSammanfattning.collectAsState()
     val saldoTak by viewModel.saldoTakMin.collectAsState()
     val saldoGolv by viewModel.saldoGolvMin.collectAsState()
+    val ledighetsKort by viewModel.ledighetsKort.collectAsState()
     val manadSammanfattning by viewModel.manadSammanfattning.collectAsState()
     val aftnarLediga by viewModel.aftnarLediga.collectAsState()
     val semesterdagarPerAr by viewModel.semesterdagarPerAr.collectAsState()
@@ -230,11 +231,13 @@ fun FlextidStartSkarm(
                         manad = manadSammanfattning,
                         saldoTakMin = saldoTak,
                         saldoGolvMin = saldoGolv,
+                        ledighetsKort = ledighetsKort,
                         locale = locale,
                         onStamplaIn = viewModel::stamplaIn,
                         onStamplaUt = viewModel::stamplaUt,
                         onRastChange = viewModel::uppdateraIdagRast,
                         onRedigera = { viewModel.oppnaDagFormular(LocalDate.now()) },
+                        onPlaneraLedig = viewModel::planeraLedigDag,
                         visaFyllVanligDag = visaFyllVanligDagKnapp,
                         onFyllVanligDag = viewModel::fyllVanligDagIdag,
                     )
@@ -327,6 +330,8 @@ internal fun IdagInnehall(
     saldoTakMin: Int? = null,
     saldoGolvMin: Int? = null,
     saldoVidArsslut: Int? = null,
+    ledighetsKort: LedighetsKortTillstand? = null,
+    onPlaneraLedig: (LocalDate) -> Unit = {},
     visaFyllVanligDag: Boolean = false,
     onFyllVanligDag: () -> Unit = {},
 ) {
@@ -350,6 +355,13 @@ internal fun IdagInnehall(
                     style = MaterialTheme.typography.bodyMedium,
                 )
             SaldoStatus.INOM -> Unit
+        }
+        ledighetsKort?.let { kort ->
+            LedighetsKort(
+                tillstand = kort,
+                locale = locale,
+                onPlaneraLedig = onPlaneraLedig,
+            )
         }
         Text(
             text = formateraDatum(LocalDate.now(), locale),
