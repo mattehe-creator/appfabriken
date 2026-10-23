@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="stampla_in"
+        android:enabled="true"
+        android:icon="@drawable/ic_ruta_stampla"
+        android:shortcutShortLabel="@string/stampla_in"
+        android:shortcutLongLabel="@string/stampla_in">
+        <intent
+            android:action="se.tmconnect.flextid.action.STAMPLA_IN"
+            android:targetPackage="se.tmconnect.flextid"
+            android:targetClass="se.tmconnect.flextid.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="stampla_ut"
+        android:enabled="true"
+        android:icon="@drawable/ic_ruta_stampla"
+        android:shortcutShortLabel="@string/stampla_ut"
+        android:shortcutLongLabel="@string/stampla_ut">
+        <intent
+            android:action="se.tmconnect.flextid.action.STAMPLA_UT"
+            android:targetPackage="se.tmconnect.flextid"
+            android:targetClass="se.tmconnect.flextid.MainActivity" />
+    </shortcut>
+</shortcuts>

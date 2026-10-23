@@ -52,6 +52,7 @@ import se.tmconnect.karna.export.skrivCsvMedBom
 import se.tmconnect.karna.tema.AppfabrikTema
 class MainActivity : ComponentActivity() {
     private var oppnaIdagVidStart = false
+    private var vantandeGenvag by mutableStateOf<VantandeGenvag?>(null)
     private var behorighetNekad by mutableStateOf(false)
     private var onPaminnelseGodkand: (() -> Unit)? = null
 
@@ -209,6 +210,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         hanteraPaminnelseIntent(intent)
+        registreraGenvagIntent(intent)
         enableEdgeToEdge()
         setContent {
             val temaLage by viewModel.temaLage.collectAsStateWithLifecycle()
@@ -239,6 +241,15 @@ class MainActivity : ComponentActivity() {
                     null
                 }
 
+            val snackbarLocale = Locale.getDefault()
+            LaunchedEffect(vantandeGenvag) {
+                when (vantandeGenvag) {
+                    VantandeGenvag.STAMPLA_IN -> viewModel.genvagStamplaIn()
+                    VantandeGenvag.STAMPLA_UT -> viewModel.genvagStamplaUt()
+                    null -> Unit
+                }
+                vantandeGenvag = null
+            }
             LaunchedEffect(Unit) {
                 viewModel.meddelanden.collect { meddelande ->
                     val text =
@@ -250,6 +261,12 @@ class MainActivity : ComponentActivity() {
                             FlextidMeddelande.SlutForeStart -> getString(R.string.fel_slut_fore_start)
                             FlextidMeddelande.ImportFel -> getString(R.string.meddelande_import_fel)
                             FlextidMeddelande.GransUtanPro -> getString(R.string.pro_grans_nadd)
+                            is FlextidMeddelande.RedanInstamplad ->
+                                getString(
+                                    R.string.genvag_redan_instamplad,
+                                    se.tmconnect.flextid.regler.formateraTid(meddelande.start, snackbarLocale),
+                                )
+                            FlextidMeddelande.IngenInstempling -> getString(R.string.genvag_ingen_instempling)
                         }
                     snackbarHostState.showSnackbar(text)
                 }
@@ -318,6 +335,25 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         hanteraPaminnelseIntent(intent)
+        registreraGenvagIntent(intent)
+    }
+
+    private enum class VantandeGenvag {
+        STAMPLA_IN,
+        STAMPLA_UT,
+    }
+
+    private fun registreraGenvagIntent(intent: Intent?) {
+        if (!GenvagIntent.arGenvag(intent)) return
+        oppnaIdagVidStart = true
+        viewModel.avslutaValkommen()
+        vantandeGenvag =
+            when {
+                GenvagIntent.arStamplaIn(intent) -> VantandeGenvag.STAMPLA_IN
+                GenvagIntent.arStamplaUt(intent) -> VantandeGenvag.STAMPLA_UT
+                else -> return
+            }
+        intent?.action = Intent.ACTION_MAIN
     }
 
     private fun hanteraPaminnelseIntent(intent: Intent?) {

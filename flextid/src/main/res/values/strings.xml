@@ -9,6 +9,8 @@
     <string name="idag_ut">Clock-out: %1$s</string>
     <string name="stampla_in">Clock in</string>
     <string name="stampla_ut">Clock out</string>
+    <string name="genvag_redan_instamplad">Already clocked in at %1$s</string>
+    <string name="genvag_ingen_instempling">No clock-in for today yet</string>
     <string name="rast_min">Break (minutes)</string>
     <string name="redigera_dag">Edit day</string>
     <string name="foregaende_vecka">Previous week</string>
