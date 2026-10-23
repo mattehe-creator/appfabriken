@@ -11,7 +11,9 @@ import se.tmconnect.flextid.regler.TidValideringFel
 import se.tmconnect.flextid.regler.beraknaSaldo
 import se.tmconnect.flextid.regler.beslutGenvagStamplaIn
 import se.tmconnect.flextid.regler.beslutGenvagStamplaUt
+import se.tmconnect.flextid.regler.dagsForslagVanligDag
 import se.tmconnect.flextid.regler.kanLaggaTillDagPost
+import se.tmconnect.flextid.regler.DagTyp
 import se.tmconnect.flextid.regler.valideraTider
 
 class FlextidRepository(private val dao: FlextidDao) {
@@ -57,6 +59,16 @@ class FlextidRepository(private val dao: FlextidDao) {
         data class RedanInstamplad(val start: LocalTime) : GenvagStamplaInResult
 
         data object GransUtanPro : GenvagStamplaInResult
+    }
+
+    sealed interface FyllVanligDagResult {
+        data object Sparat : FyllVanligDagResult
+
+        data object FinnsRedan : FyllVanligDagResult
+
+        data object IngetForslag : FyllVanligDagResult
+
+        data object GransUtanPro : FyllVanligDagResult
     }
 
     sealed interface GenvagStamplaUtResult {
@@ -124,6 +136,38 @@ class FlextidRepository(private val dao: FlextidDao) {
             return SparaDagResult.GransUtanPro
         }
         return sparaDag(befintlig.copy(slut = tid), arPro)
+    }
+
+    suspend fun fyllVanligDag(
+        datum: LocalDate,
+        arbetsdagarMask: Int,
+        vanligStart: LocalTime,
+        vanligSlut: LocalTime,
+        vanligRastMin: Int,
+        arPro: Boolean,
+    ): FyllVanligDagResult {
+        if (dao.hamtaDag(datum) != null) return FyllVanligDagResult.FinnsRedan
+        val forslag =
+            dagsForslagVanligDag(
+                datum,
+                arbetsdagarMask,
+                vanligStart,
+                vanligSlut,
+                vanligRastMin,
+            ) ?: return FyllVanligDagResult.IngetForslag
+        val dag =
+            Dag(
+                datum = datum,
+                start = forslag.start,
+                slut = forslag.slut,
+                rastMin = forslag.rastMin,
+                typ = DagTyp.ARBETE,
+            )
+        return when (sparaDag(dag, arPro)) {
+            SparaDagResult.Ok -> FyllVanligDagResult.Sparat
+            SparaDagResult.GransUtanPro -> FyllVanligDagResult.GransUtanPro
+            is SparaDagResult.Fel -> FyllVanligDagResult.IngetForslag
+        }
     }
 
     suspend fun genvagStamplaIn(datum: LocalDate, nu: LocalTime, standardRastMin: Int, arPro: Boolean): GenvagStamplaInResult {

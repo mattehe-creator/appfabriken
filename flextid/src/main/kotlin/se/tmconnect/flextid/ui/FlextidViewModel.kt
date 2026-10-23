@@ -59,6 +59,12 @@ import se.tmconnect.flextid.regler.ledighetsutrymme
 import se.tmconnect.flextid.regler.mandagISammaVecka
 import se.tmconnect.flextid.regler.sondagISammaVecka
 import se.tmconnect.flextid.regler.tidigasteLedigDag
+import se.tmconnect.flextid.regler.dagsForslagVanligDag
+import se.tmconnect.flextid.regler.localTimeTillMinuter
+import se.tmconnect.flextid.regler.minuterTillLocalTime
+import se.tmconnect.flextid.regler.STANDARD_VANLIG_RAST_MIN
+import se.tmconnect.flextid.regler.STANDARD_VANLIG_START_MIN
+import se.tmconnect.flextid.regler.STANDARD_VANLIG_SLUT_MIN
 import se.tmconnect.flextid.regler.tolkaTidText
 import se.tmconnect.karna.export.skrivCsvMedBom
 import se.tmconnect.karna.paminnelse.PaminnelsePlanerare
@@ -305,6 +311,39 @@ class FlextidViewModel(
             LedighetsKortTillstand(flexDagar = null, tidigasteLedig = null),
         )
 
+    val vanligStartMin =
+        uiInstallningarLager.vanligStartMin.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            STANDARD_VANLIG_START_MIN,
+        )
+
+    val vanligSlutMin =
+        uiInstallningarLager.vanligSlutMin.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            STANDARD_VANLIG_SLUT_MIN,
+        )
+
+    val vanligRastMin =
+        uiInstallningarLager.vanligRastMin.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            STANDARD_VANLIG_RAST_MIN,
+        )
+
+    val visaFyllVanligDagKnapp =
+        combine(idagDag, installning, vanligStartMin, vanligSlutMin, vanligRastMin) { dag, inst, startMin, slutMin, rastMin ->
+            if (dag != null) return@combine false
+            dagsForslagVanligDag(
+                LocalDate.now(),
+                inst.arbetsdagarMask,
+                minuterTillLocalTime(startMin),
+                minuterTillLocalTime(slutMin),
+                rastMin,
+            ) != null
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
     val veckaSammanfattning =
         combine(_veckaAnkar, repository.observeraAllaDagar(), installning, aftnarLediga) { ankar, alla, inst, aftnar ->
             periodSammanfattning(alla, ankar, sondagISammaVecka(ankar), inst, aftnar)
@@ -497,25 +536,78 @@ class FlextidViewModel(
                 return@launch
             }
             val dag = repository.hamtaDag(datum)
-            val forslag = if (dag == null) senasteArbetsdagFore(repository.hamtaAllaDagar(), datum) else null
+            val inst = installning.value
+            val vanligStart = minuterTillLocalTime(vanligStartMin.value)
+            val vanligSlut = minuterTillLocalTime(vanligSlutMin.value)
+            val vanligRast = vanligRastMin.value
+            val vanligtForslag =
+                if (dag == null) {
+                    dagsForslagVanligDag(
+                        datum,
+                        inst.arbetsdagarMask,
+                        vanligStart,
+                        vanligSlut,
+                        vanligRast,
+                    )
+                } else {
+                    null
+                }
+            val senasteForslag =
+                if (dag == null && vanligtForslag == null) {
+                    senasteArbetsdagFore(repository.hamtaAllaDagar(), datum)
+                } else {
+                    null
+                }
             _dagFormular.value =
                 DagFormularTillstand(
                     datum = datum,
-                    startText = dag?.start?.toString()?.substring(0, 5) ?: "",
-                    slutText = dag?.slut?.toString()?.substring(0, 5) ?: "",
-                    rastText = (dag?.rastMin ?: installning.value.standardRastMin).toString(),
+                    startText =
+                        dag?.start?.toString()?.substring(0, 5)
+                            ?: vanligtForslag?.start?.let { formateraTidKort(it) }
+                            ?: "",
+                    slutText =
+                        dag?.slut?.toString()?.substring(0, 5)
+                            ?: vanligtForslag?.slut?.let { formateraTidKort(it) }
+                            ?: "",
+                    rastText =
+                        (dag?.rastMin ?: vanligtForslag?.rastMin ?: inst.standardRastMin).toString(),
                     typ = dag?.typ ?: forvaldTyp ?: DagTyp.ARBETE,
                     anteckning = dag?.anteckning ?: "",
-                    forslagDatum = forslag?.datum,
-                    forslagStart = forslag?.start?.toString()?.substring(0, 5) ?: "",
-                    forslagSlut = forslag?.slut?.toString()?.substring(0, 5) ?: "",
-                    forslagRast = forslag?.rastMin?.toString() ?: "",
+                    forslagDatum = senasteForslag?.datum,
+                    forslagStart = senasteForslag?.start?.let { formateraTidKort(it) } ?: "",
+                    forslagSlut = senasteForslag?.slut?.let { formateraTidKort(it) } ?: "",
+                    forslagRast = senasteForslag?.rastMin?.toString() ?: "",
                 )
         }
     }
 
     fun planeraLedigDag(datum: LocalDate) {
         oppnaDagFormular(datum, forvaldTyp = DagTyp.LEDIG)
+    }
+
+    fun fyllVanligDagIdag() {
+        viewModelScope.launch {
+            val inst = installning.value
+            when (
+                repository.fyllVanligDag(
+                    LocalDate.now(),
+                    inst.arbetsdagarMask,
+                    minuterTillLocalTime(vanligStartMin.value),
+                    minuterTillLocalTime(vanligSlutMin.value),
+                    vanligRastMin.value,
+                    proKalla.arPro.value,
+                )
+            ) {
+                FlextidRepository.FyllVanligDagResult.Sparat -> _meddelanden.emit(FlextidMeddelande.Sparat)
+                FlextidRepository.FyllVanligDagResult.GransUtanPro -> {
+                    visaProDialog()
+                    _meddelanden.emit(FlextidMeddelande.GransUtanPro)
+                }
+                FlextidRepository.FyllVanligDagResult.FinnsRedan,
+                FlextidRepository.FyllVanligDagResult.IngetForslag,
+                -> Unit
+            }
+        }
     }
 
     fun stangDagFormular() {
@@ -571,6 +663,9 @@ class FlextidViewModel(
         rastText: String,
         ingangssaldoText: String,
         arbetsdagarMask: Int,
+        vanligStartText: String,
+        vanligSlutText: String,
+        vanligRastText: String,
     ) {
         viewModelScope.launch {
             val normaltid = normaltidText.toIntOrNull() ?: installning.value.normaltidMinPerDag
@@ -584,8 +679,20 @@ class FlextidViewModel(
                     arbetsdagarMask = arbetsdagarMask,
                 ),
             )
+            sparaVanligaTiderInternt(vanligStartText, vanligSlutText, vanligRastText)
             _meddelanden.emit(FlextidMeddelande.Sparat)
         }
+    }
+
+    private suspend fun sparaVanligaTiderInternt(startText: String, slutText: String, rastText: String) {
+        val startMin =
+            tolkaTidText(startText)?.let { localTimeTillMinuter(it) }
+                ?: vanligStartMin.value
+        val slutMin =
+            tolkaTidText(slutText)?.let { localTimeTillMinuter(it) }
+                ?: vanligSlutMin.value
+        val rastMin = rastText.toIntOrNull() ?: vanligRastMin.value
+        uiInstallningarLager.sattVanligaTider(startMin, slutMin, rastMin)
     }
 
     fun sattStamplaUtPaminnelse(pa: Boolean) {
@@ -773,6 +880,9 @@ class FlextidViewModel(
         }
         return trimmed.toIntOrNull()
     }
+
+    private fun formateraTidKort(tid: LocalTime): String =
+        String.format("%02d:%02d", tid.hour, tid.minute)
 }
 
 class FlextidViewModelFactory(

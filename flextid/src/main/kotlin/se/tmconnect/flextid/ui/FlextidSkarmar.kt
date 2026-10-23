@@ -127,6 +127,10 @@ fun FlextidStartSkarm(
     val semesterarStartmanad by viewModel.semesterarStartmanad.collectAsState()
     val arsOversiktTillstand by viewModel.arsOversiktTillstand.collectAsState()
     val autoBackup by viewModel.autoBackup.collectAsState()
+    val visaFyllVanligDagKnapp by viewModel.visaFyllVanligDagKnapp.collectAsState()
+    val vanligStartMin by viewModel.vanligStartMin.collectAsState()
+    val vanligSlutMin by viewModel.vanligSlutMin.collectAsState()
+    val vanligRastMin by viewModel.vanligRastMin.collectAsState()
     var visaArsOversikt by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -234,6 +238,8 @@ fun FlextidStartSkarm(
                         onRastChange = viewModel::uppdateraIdagRast,
                         onRedigera = { viewModel.oppnaDagFormular(LocalDate.now()) },
                         onPlaneraLedig = viewModel::planeraLedigDag,
+                        visaFyllVanligDag = visaFyllVanligDagKnapp,
+                        onFyllVanligDag = viewModel::fyllVanligDagIdag,
                     )
                 flik == FlextidFlik.VECKA ->
                     VeckaInnehall(
@@ -262,6 +268,9 @@ fun FlextidStartSkarm(
                         onStamplaUtPaminnelse = onStamplaUtPaminnelse,
                         onStamplaInPaminnelse = onStamplaInPaminnelse,
                         onStamplaInPaminnelseKlockslag = viewModel::sattStamplaInPaminnelseKlockslag,
+                        vanligStartMin = vanligStartMin,
+                        vanligSlutMin = vanligSlutMin,
+                        vanligRastMin = vanligRastMin,
                         onSpara = viewModel::sparaInstallning,
                         onTema = viewModel::sattTemaLage,
                         onExportManad = viewModel::sattExportArManad,
@@ -323,6 +332,8 @@ internal fun IdagInnehall(
     saldoVidArsslut: Int? = null,
     ledighetsKort: LedighetsKortTillstand? = null,
     onPlaneraLedig: (LocalDate) -> Unit = {},
+    visaFyllVanligDag: Boolean = false,
+    onFyllVanligDag: () -> Unit = {},
 ) {
     var rastText by remember(dag?.rastMin) { mutableStateOf((dag?.rastMin ?: standardRast).toString()) }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -412,6 +423,11 @@ internal fun IdagInnehall(
         )
         OutlinedButton(onClick = onRedigera, modifier = Modifier.tryckyta48()) {
             Text(stringResource(R.string.redigera_dag))
+        }
+        if (visaFyllVanligDag) {
+            OutlinedButton(onClick = onFyllVanligDag, modifier = Modifier.tryckyta48()) {
+                Text(stringResource(R.string.fyll_vanlig_dag))
+            }
         }
         manad?.let { m ->
             Text(
@@ -592,7 +608,7 @@ internal fun InstallningarInnehall(
     onStamplaUtPaminnelse: (Boolean) -> Unit,
     onStamplaInPaminnelse: (Boolean) -> Unit,
     onStamplaInPaminnelseKlockslag: (Int) -> Unit,
-    onSpara: (String, String, String, Int) -> Unit,
+    onSpara: (String, String, String, Int, String, String, String) -> Unit,
     onTema: (TemaLage) -> Unit,
     onExportManad: (YearMonth) -> Unit,
     onExporteraCsv: () -> Unit,
@@ -616,6 +632,9 @@ internal fun InstallningarInnehall(
     saldoTakMin: Int? = null,
     saldoGolvMin: Int? = null,
     onSaldoGranser: (String, String) -> Unit = { _, _ -> },
+    vanligStartMin: Int = se.tmconnect.flextid.regler.STANDARD_VANLIG_START_MIN,
+    vanligSlutMin: Int = se.tmconnect.flextid.regler.STANDARD_VANLIG_SLUT_MIN,
+    vanligRastMin: Int = se.tmconnect.flextid.regler.STANDARD_VANLIG_RAST_MIN,
 ) {
     var takText by remember(saldoTakMin) { mutableStateOf(saldoTakMin?.let { formateraMinuterSomTid(it, locale) } ?: "") }
     var golvText by remember(saldoGolvMin) { mutableStateOf(saldoGolvMin?.let { formateraMinuterSomTid(-it, locale) } ?: "") }
@@ -630,6 +649,13 @@ internal fun InstallningarInnehall(
         mutableStateOf(formateraMinuterSomTid(installning.ingangssaldoMin, locale))
     }
     var mask by remember(installning.arbetsdagarMask) { mutableIntStateOf(installning.arbetsdagarMask) }
+    var vanligStart by remember(vanligStartMin) {
+        mutableStateOf(formateraTid(minuterTillLocalTime(vanligStartMin), locale))
+    }
+    var vanligSlut by remember(vanligSlutMin) {
+        mutableStateOf(formateraTid(minuterTillLocalTime(vanligSlutMin), locale))
+    }
+    var vanligRast by remember(vanligRastMin) { mutableStateOf(vanligRastMin.toString()) }
     var exportAr by remember(exportArManad) { mutableIntStateOf(exportArManad.year) }
     var exportManad by remember(exportArManad) { mutableIntStateOf(exportArManad.monthValue) }
 
@@ -794,6 +820,44 @@ internal fun InstallningarInnehall(
             )
         }
         item {
+            Text(stringResource(R.string.vanliga_tider_rubrik), style = MaterialTheme.typography.titleMedium)
+        }
+        item {
+            Text(
+                text = stringResource(R.string.vanliga_tider_beskrivning),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        item {
+            OutlinedTextField(
+                value = vanligStart,
+                onValueChange = { vanligStart = it },
+                label = { Text(stringResource(R.string.vanlig_start_tid)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+            )
+        }
+        item {
+            OutlinedTextField(
+                value = vanligSlut,
+                onValueChange = { vanligSlut = it },
+                label = { Text(stringResource(R.string.vanlig_slut_tid)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+            )
+        }
+        item {
+            OutlinedTextField(
+                value = vanligRast,
+                onValueChange = { vanligRast = it },
+                label = { Text(stringResource(R.string.vanlig_rast_min)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+            )
+        }
+        item {
             Text(stringResource(R.string.arbetsdagar_rubrik), style = MaterialTheme.typography.titleMedium)
             DayOfWeek.entries.forEach { dag ->
                 val bit = veckodagBit(dag)
@@ -815,7 +879,7 @@ internal fun InstallningarInnehall(
         }
         item {
             Button(
-                onClick = { onSpara(normaltid, rast, ingang, mask) },
+                onClick = { onSpara(normaltid, rast, ingang, mask, vanligStart, vanligSlut, vanligRast) },
                 modifier = Modifier.tryckyta48(),
             ) {
                 Text(stringResource(R.string.spara))
