@@ -35,3 +35,5 @@ gradle :styrelserummet:test --tests "*ExempelTexterPlanTest"
 ## Gör inte
 - Implementera `arsredovisningSidor()` ännu.
 - Hårdkoda andra föreningar än `ExempelData`.
+
+utfall: underkänd 2026-10-23 av Cursor (PR #603). Ersatt av 2026-10-23-styrelserummet-exempel-06-texter-underhallsplan-f2.md
