@@ -4,9 +4,13 @@ import java.time.LocalDate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import se.tmconnect.flextid.regler.PlaneradStamplaIn
+import se.tmconnect.flextid.regler.PlaneradStamplaUt
 import se.tmconnect.flextid.regler.TidValideringFel
 import se.tmconnect.flextid.regler.beraknaSaldo
 import se.tmconnect.flextid.regler.kanLaggaTillDagPost
+import se.tmconnect.flextid.regler.planeraStamplaIn
+import se.tmconnect.flextid.regler.planeraStamplaUt
 import se.tmconnect.flextid.regler.valideraTider
 
 class FlextidRepository(private val dao: FlextidDao) {
@@ -44,6 +48,12 @@ class FlextidRepository(private val dao: FlextidDao) {
         data class Fel(val fel: TidValideringFel) : SparaDagResult
 
         data object GransUtanPro : SparaDagResult
+
+        data class RedanInstamplad(val start: java.time.LocalTime) : SparaDagResult
+
+        data object IngenInstampling : SparaDagResult
+
+        data class RedanUtstamplad(val slut: java.time.LocalTime) : SparaDagResult
     }
 
     private suspend fun farSkapaNyDagPost(datum: LocalDate, arPro: Boolean): Boolean {
@@ -83,24 +93,34 @@ class FlextidRepository(private val dao: FlextidDao) {
 
     suspend fun stamplaIn(datum: LocalDate, tid: java.time.LocalTime, standardRastMin: Int, arPro: Boolean): SparaDagResult {
         val befintlig = dao.hamtaDag(datum)
-        if (befintlig == null && !kanLaggaTillDagPost(dao.antalDagar(), arPro)) {
-            return SparaDagResult.GransUtanPro
+        return when (
+            val plan =
+                planeraStamplaIn(
+                    befintlig = befintlig,
+                    datum = datum,
+                    nu = tid,
+                    standardRastMin = standardRastMin,
+                    antalDagar = dao.antalDagar(),
+                    arPro = arPro,
+                )
+        ) {
+            is PlaneradStamplaIn.Spara -> {
+                dao.sparaDag(plan.dag)
+                SparaDagResult.Ok
+            }
+            is PlaneradStamplaIn.Oforandrad -> SparaDagResult.RedanInstamplad(plan.start)
+            PlaneradStamplaIn.GransUtanPro -> SparaDagResult.GransUtanPro
         }
-        val dag =
-            (befintlig ?: Dag(datum = datum, rastMin = standardRastMin)).copy(
-                start = tid,
-                typ = befintlig?.typ ?: se.tmconnect.flextid.regler.DagTyp.ARBETE,
-            )
-        dao.sparaDag(dag)
-        return SparaDagResult.Ok
     }
 
     suspend fun stamplaUt(datum: LocalDate, tid: java.time.LocalTime, arPro: Boolean): SparaDagResult {
-        val befintlig = dao.hamtaDag(datum) ?: Dag(datum = datum)
-        if (dao.hamtaDag(datum) == null && !kanLaggaTillDagPost(dao.antalDagar(), arPro)) {
-            return SparaDagResult.GransUtanPro
+        val befintlig = dao.hamtaDag(datum)
+        return when (val plan = planeraStamplaUt(befintlig = befintlig, nu = tid)) {
+            is PlaneradStamplaUt.Spara -> sparaDag(plan.dag, arPro)
+            PlaneradStamplaUt.IngenInstampling -> SparaDagResult.IngenInstampling
+            is PlaneradStamplaUt.Oforandrad -> SparaDagResult.RedanUtstamplad(plan.slut)
+            is PlaneradStamplaUt.OgiltigTid -> SparaDagResult.Fel(plan.fel)
         }
-        return sparaDag(befintlig.copy(slut = tid), arPro)
     }
 }
 

@@ -158,6 +158,15 @@
     <string name="butik_punkt_3">Offline. Inget konto, ingen reklam</string>
     <string name="vecka_arbetat">Arbetat %1$s av %2$s</string>
     <string name="manad_arbetat">%1$s: arbetat %2$s av %3$s</string>
+    <string name="shortcut_stampla_in">Stämpla in</string>
+    <string name="shortcut_stampla_in_lang">Stämpla in för idag</string>
+    <string name="shortcut_stampla_ut">Stämpla ut</string>
+    <string name="shortcut_stampla_ut_lang">Stämpla ut för idag</string>
+    <string name="meddelande_instamplad_kl">Instämplad kl. %1$s</string>
+    <string name="meddelande_utstamplad_kl">Utstämplad kl. %1$s</string>
+    <string name="meddelande_redan_instamplad_kl">Redan instämplad kl. %1$s</string>
+    <string name="meddelande_ingen_instampling">Ingen instämpling för idag.</string>
+    <string name="meddelande_redan_utstamplad_kl">Redan utstämplad kl. %1$s</string>
     <string name="ruta_namn">Stämpla</string>
     <string name="ruta_stampla_in">Stämpla in</string>
     <string name="ruta_stampla_ut">Stämpla ut</string>

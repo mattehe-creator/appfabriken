@@ -158,6 +158,15 @@
     <string name="butik_punkt_3">Offline. No account, no ads</string>
     <string name="vecka_arbetat">Worked %1$s of %2$s</string>
     <string name="manad_arbetat">%1$s: worked %2$s of %3$s</string>
+    <string name="shortcut_stampla_in">Clock in</string>
+    <string name="shortcut_stampla_in_lang">Clock in for today</string>
+    <string name="shortcut_stampla_ut">Clock out</string>
+    <string name="shortcut_stampla_ut_lang">Clock out for today</string>
+    <string name="meddelande_instamplad_kl">Clocked in at %1$s</string>
+    <string name="meddelande_utstamplad_kl">Clocked out at %1$s</string>
+    <string name="meddelande_redan_instamplad_kl">Already clocked in at %1$s</string>
+    <string name="meddelande_ingen_instampling">No clock-in for today yet.</string>
+    <string name="meddelande_redan_utstamplad_kl">Already clocked out at %1$s</string>
     <string name="ruta_namn">Clock in</string>
     <string name="ruta_stampla_in">Clock in</string>
     <string name="ruta_stampla_ut">Clock out</string>

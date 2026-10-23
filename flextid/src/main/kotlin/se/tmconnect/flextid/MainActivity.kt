@@ -36,6 +36,7 @@ import se.tmconnect.flextid.export.manadsPdfFilnamn
 import se.tmconnect.flextid.export.manadsRapportTexter
 import se.tmconnect.flextid.ui.helgdagNamnRes
 import se.tmconnect.flextid.regler.DagTyp
+import se.tmconnect.flextid.regler.formateraTid
 import se.tmconnect.flextid.export.normaltidManadEtikett
 import se.tmconnect.flextid.export.skrivManadsPdf
 import se.tmconnect.flextid.paminnelse.FlextidPaminnelseInstallningarLager
@@ -52,6 +53,7 @@ import se.tmconnect.karna.export.skrivCsvMedBom
 import se.tmconnect.karna.tema.AppfabrikTema
 class MainActivity : ComponentActivity() {
     private var oppnaIdagVidStart = false
+    private var pendingGenvagAtgard by mutableStateOf<GenvagIntent.Atgard?>(null)
     private var behorighetNekad by mutableStateOf(false)
     private var onPaminnelseGodkand: (() -> Unit)? = null
 
@@ -209,6 +211,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         hanteraPaminnelseIntent(intent)
+        hanteraGenvagIntent(intent)
         enableEdgeToEdge()
         setContent {
             val temaLage by viewModel.temaLage.collectAsStateWithLifecycle()
@@ -241,6 +244,7 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(Unit) {
                 viewModel.meddelanden.collect { meddelande ->
+                    val locale = Locale.getDefault()
                     val text =
                         when (meddelande) {
                             FlextidMeddelande.Sparat -> getString(R.string.meddelande_sparat)
@@ -250,8 +254,29 @@ class MainActivity : ComponentActivity() {
                             FlextidMeddelande.SlutForeStart -> getString(R.string.fel_slut_fore_start)
                             FlextidMeddelande.ImportFel -> getString(R.string.meddelande_import_fel)
                             FlextidMeddelande.GransUtanPro -> getString(R.string.pro_grans_nadd)
+                            is FlextidMeddelande.Instamplad ->
+                                getString(R.string.meddelande_instamplad_kl, formateraTid(meddelande.tid, locale))
+                            is FlextidMeddelande.Utstamplad ->
+                                getString(R.string.meddelande_utstamplad_kl, formateraTid(meddelande.tid, locale))
+                            is FlextidMeddelande.RedanInstamplad ->
+                                getString(R.string.meddelande_redan_instamplad_kl, formateraTid(meddelande.tid, locale))
+                            FlextidMeddelande.IngenInstampling -> getString(R.string.meddelande_ingen_instampling)
+                            is FlextidMeddelande.RedanUtstamplad ->
+                                getString(R.string.meddelande_redan_utstamplad_kl, formateraTid(meddelande.tid, locale))
                         }
                     snackbarHostState.showSnackbar(text)
+                }
+            }
+
+            LaunchedEffect(visaValkommen, pendingGenvagAtgard) {
+                val atgard = pendingGenvagAtgard ?: return@LaunchedEffect
+                if (visaValkommen) {
+                    viewModel.avslutaValkommen()
+                }
+                pendingGenvagAtgard = null
+                when (atgard) {
+                    GenvagIntent.Atgard.STAMPLA_IN -> viewModel.stamplaIn()
+                    GenvagIntent.Atgard.STAMPLA_UT -> viewModel.stamplaUt()
                 }
             }
 
@@ -318,6 +343,14 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         hanteraPaminnelseIntent(intent)
+        hanteraGenvagIntent(intent)
+    }
+
+    private fun hanteraGenvagIntent(intent: Intent?) {
+        val atgard = GenvagIntent.atgardFranAction(intent?.action) ?: return
+        pendingGenvagAtgard = atgard
+        oppnaIdagVidStart = true
+        intent?.action = Intent.ACTION_MAIN
     }
 
     private fun hanteraPaminnelseIntent(intent: Intent?) {

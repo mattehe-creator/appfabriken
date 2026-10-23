@@ -79,6 +79,16 @@ sealed interface FlextidMeddelande {
     data object ImportFel : FlextidMeddelande
 
     data object GransUtanPro : FlextidMeddelande
+
+    data class Instamplad(val tid: LocalTime) : FlextidMeddelande
+
+    data class Utstamplad(val tid: LocalTime) : FlextidMeddelande
+
+    data class RedanInstamplad(val tid: LocalTime) : FlextidMeddelande
+
+    data object IngenInstampling : FlextidMeddelande
+
+    data class RedanUtstamplad(val tid: LocalTime) : FlextidMeddelande
 }
 
 data class VeckaDagRad(
@@ -377,31 +387,68 @@ class FlextidViewModel(
 
     fun stamplaIn() {
         viewModelScope.launch {
-            val inst = installning.value
-            when (
-                repository.stamplaIn(LocalDate.now(), LocalTime.now(), inst.standardRastMin, proKalla.arPro.value)
-            ) {
-                FlextidRepository.SparaDagResult.Ok -> _meddelanden.emit(FlextidMeddelande.Sparat)
-                FlextidRepository.SparaDagResult.GransUtanPro -> {
-                    visaProDialog()
-                    _meddelanden.emit(FlextidMeddelande.GransUtanPro)
-                }
-                is FlextidRepository.SparaDagResult.Fel -> Unit
-            }
+            hanteraStamplaInResultat(
+                repository.stamplaIn(
+                    LocalDate.now(),
+                    LocalTime.now(),
+                    installning.value.standardRastMin,
+                    proKalla.arPro.value,
+                ),
+            )
         }
     }
 
     fun stamplaUt() {
         viewModelScope.launch {
-            when (repository.stamplaUt(LocalDate.now(), LocalTime.now(), proKalla.arPro.value)) {
-                FlextidRepository.SparaDagResult.Ok -> _meddelanden.emit(FlextidMeddelande.Sparat)
-                FlextidRepository.SparaDagResult.GransUtanPro -> {
-                    visaProDialog()
-                    _meddelanden.emit(FlextidMeddelande.GransUtanPro)
+            hanteraStamplaUtResultat(
+                repository.stamplaUt(LocalDate.now(), LocalTime.now(), proKalla.arPro.value),
+            )
+        }
+    }
+
+    private suspend fun hanteraStamplaInResultat(resultat: FlextidRepository.SparaDagResult) {
+        when (resultat) {
+            FlextidRepository.SparaDagResult.Ok -> {
+                val start = repository.hamtaDag(LocalDate.now())?.start
+                if (start != null) {
+                    _meddelanden.emit(FlextidMeddelande.Instamplad(start))
+                } else {
+                    _meddelanden.emit(FlextidMeddelande.Sparat)
                 }
-                is FlextidRepository.SparaDagResult.Fel ->
-                    _meddelanden.emit(FlextidMeddelande.SlutForeStart)
             }
+            FlextidRepository.SparaDagResult.GransUtanPro -> {
+                visaProDialog()
+                _meddelanden.emit(FlextidMeddelande.GransUtanPro)
+            }
+            is FlextidRepository.SparaDagResult.RedanInstamplad ->
+                _meddelanden.emit(FlextidMeddelande.RedanInstamplad(resultat.start))
+            is FlextidRepository.SparaDagResult.Fel -> Unit
+            FlextidRepository.SparaDagResult.IngenInstampling -> Unit
+            is FlextidRepository.SparaDagResult.RedanUtstamplad -> Unit
+        }
+    }
+
+    private suspend fun hanteraStamplaUtResultat(resultat: FlextidRepository.SparaDagResult) {
+        when (resultat) {
+            FlextidRepository.SparaDagResult.Ok -> {
+                val slut = repository.hamtaDag(LocalDate.now())?.slut
+                if (slut != null) {
+                    _meddelanden.emit(FlextidMeddelande.Utstamplad(slut))
+                } else {
+                    _meddelanden.emit(FlextidMeddelande.Sparat)
+                }
+            }
+            FlextidRepository.SparaDagResult.GransUtanPro -> {
+                visaProDialog()
+                _meddelanden.emit(FlextidMeddelande.GransUtanPro)
+            }
+            is FlextidRepository.SparaDagResult.Fel ->
+                _meddelanden.emit(FlextidMeddelande.SlutForeStart)
+            FlextidRepository.SparaDagResult.IngenInstampling ->
+                _meddelanden.emit(FlextidMeddelande.IngenInstampling)
+            is FlextidRepository.SparaDagResult.RedanInstamplad -> Unit
+            is FlextidRepository.SparaDagResult.RedanUtstamplad ->
+                _meddelanden.emit(FlextidMeddelande.RedanUtstamplad(resultat.slut))
         }
     }
 
@@ -417,6 +464,9 @@ class FlextidViewModel(
                     _meddelanden.emit(FlextidMeddelande.GransUtanPro)
                 }
                 is FlextidRepository.SparaDagResult.Fel -> Unit
+                is FlextidRepository.SparaDagResult.RedanInstamplad -> Unit
+                FlextidRepository.SparaDagResult.IngenInstampling -> Unit
+                is FlextidRepository.SparaDagResult.RedanUtstamplad -> Unit
             }
         }
     }
@@ -482,6 +532,9 @@ class FlextidViewModel(
                     _dagFormular.value = form.copy(fel = TidValideringFel.SlutForeStart)
                     _meddelanden.emit(FlextidMeddelande.SlutForeStart)
                 }
+                is FlextidRepository.SparaDagResult.RedanInstamplad -> Unit
+                FlextidRepository.SparaDagResult.IngenInstampling -> Unit
+                is FlextidRepository.SparaDagResult.RedanUtstamplad -> Unit
             }
         }
     }
