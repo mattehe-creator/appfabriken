@@ -32,3 +32,5 @@ gradle :styrelserummet:test --tests "*ExempelDataAtgarderGrupp2Test"
 ## Gör inte
 - Ändra tidigare fyra åtgärder.
 - Lägga till balkong eller mark ännu.
+
+utfall: underkänd 2026-10-23 av Cursor (PR #596). Försök 2 i granskning/2026-10-23-styrelserummet-exempel-03-atgarder-el-varme-ventilation-hiss.md
