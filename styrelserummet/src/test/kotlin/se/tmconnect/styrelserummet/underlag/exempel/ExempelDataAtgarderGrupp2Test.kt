@@ -23,6 +23,6 @@ class ExempelDataAtgarderGrupp2Test {
         Assert.assertEquals(2031, hiss.ar)
         Assert.assertEquals(1_500_000L, hiss.kostnadKronor)
 
-        Assert.assertEquals(23_300_000L, EXEMPEL_ATGARDER.sumOf { it.kostnadKronor!! })
+        Assert.assertEquals(23_300_000L, EXEMPEL_ATGARDER.take(8).sumOf { it.kostnadKronor!! })
     }
 }

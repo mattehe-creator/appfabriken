@@ -50,3 +50,5 @@ gradle :styrelserummet:testDebugUnitTest --tests "*ExempelDataAtgarderGrupp1Test
 - Ändra namn, år eller kostnad för grupp 1:s eller grupp 2:s åtgärder.
 - Lägga till balkong eller byggnadsvärde ännu.
 - Committa enbart uppgiftsflytt utan kod.
+
+utfall: godkänd 2026-10-23 (lokal modell levererade ingen kod; Cursor implementerade grupp 3 och rättade grupp 2-testets totalsumma med take(8))
