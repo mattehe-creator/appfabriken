@@ -3,7 +3,7 @@ package se.tmconnect.styrelserummet.underlag.exempel
 import se.tmconnect.styrelserummet.modell.Forening
 
 const val FORENING_NAMN = "Brf Exempelgården"
-const val ORGANISATIONSNUMMER = "0000000000"
+const val ORGANISATIONSNUMMER = "000000-0000"
 const val ADRESS = "Exempelvägen 1, 100 00 Teststad"
 const val BYGGNADSAR = 1974
 const val RAKENSKAPSAR = 2025

@@ -40,3 +40,4 @@ gradle :styrelserummet:test --tests "*ExempelDataForeningTest"
 - Lägga till åtgärder i listan (nästa uppgifter).
 - Ändra modeller eller andra filer.
 - Lägga till beroenden.
+utfall: godkänd 2026-10-23 (org.nr och test mot exempelForening())
