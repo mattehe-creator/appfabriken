@@ -1,5 +1,47 @@
 package se.tmconnect.styrelserummet.underlag.exempel
 
+import se.tmconnect.styrelserummet.modell.Komponent
+import se.tmconnect.styrelserummet.modell.Komponentgrupp
+import se.tmconnect.styrelserummet.modell.Sakerhet
+import se.tmconnect.styrelserummet.regler.stamAv
+import se.tmconnect.styrelserummet.underlag.gissaGrupp
+
+fun exempelKomponenterFranPlan(): List<Komponent> {
+    return EXEMPEL_ATGARDER
+        .filter { it.kostnadKronor != null }
+        .map { atgard ->
+            val grupp = gissaGrupp(atgard.namn) ?: when (atgard.namn) {
+                "Entréparti" -> Komponentgrupp.FONSTER_DORRAR
+                "Brandlarm" -> Komponentgrupp.OVRIGT
+                else -> throw IllegalArgumentException("Okänd åtgärd: ${atgard.namn}")
+            }
+            
+            val nyttjandeperiodAr = when (grupp) {
+                Komponentgrupp.TAK -> 50
+                Komponentgrupp.FASAD -> 40
+                Komponentgrupp.FONSTER_DORRAR -> 40
+                Komponentgrupp.STAMMAR -> 50
+                Komponentgrupp.EL -> 50
+                Komponentgrupp.VARME -> 80
+                Komponentgrupp.VENTILATION -> 20
+                Komponentgrupp.HISS -> 25
+                Komponentgrupp.TVATTSTUGA -> 30
+                Komponentgrupp.MARK_OCH_GARAGE -> 0
+                Komponentgrupp.OVRIGT -> 30
+            }
+            
+            Komponent(
+                namn = atgard.namn,
+                grupp = grupp,
+                anskaffningsvarde = atgard.kostnadKronor!!,
+                anskaffningsar = atgard.ar,
+                nyttjandeperiodAr = nyttjandeperiodAr,
+                sakerhet = Sakerhet.HOG,
+                kalla = "exempel-underhallsplan"
+            )
+        }
+}
+
 fun underhallsplanSidor(): List<String> {
     val sida1 =
         buildString {
