@@ -107,6 +107,9 @@ class SammanstallningSkarmTest {
             onNodeWithText(pdfKnapp).assertExists()
             scrollable.performScrollToNode(hasText(csvKnapp))
             onNodeWithText(csvKnapp).assertExists()
+            val kommandeArKnapp = context.getString(R.string.oversikt_kommande_ar_knapp)
+            scrollable.performScrollToNode(hasText(kommandeArKnapp))
+            onNodeWithText(kommandeArKnapp).assertExists()
         }
     }
 
