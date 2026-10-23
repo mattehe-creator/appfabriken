@@ -51,3 +51,5 @@ gradle :styrelserummet:testDebugUnitTest --tests "*ExempelPdfTest"
 - Spara filer på disk i testet (bara minne).
 - Committa enbart uppgiftsflytt utan kod.
 - Ändra andra filer än de två listade.
+
+utfall: godkänd 2026-10-23 (Cursor implementerade ExempelPdf.kt och ExempelPdfTest.kt; setLeading för läsbar PDF-text)
