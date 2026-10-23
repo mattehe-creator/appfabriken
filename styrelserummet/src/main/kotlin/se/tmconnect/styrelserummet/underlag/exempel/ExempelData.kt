@@ -20,6 +20,10 @@ val EXEMPEL_ATGARDER: List<ExempelAtgard> =
         ExempelAtgard("Fjärrvärmecentral", 2027, 2_000_000L),
         ExempelAtgard("Ventilation FTX", 2034, 1_800_000L),
         ExempelAtgard("Hiss", 2031, 1_500_000L),
+        ExempelAtgard("Tvättstuga", 2033, 1_200_000L),
+        ExempelAtgard("Mark och gård", 2035, 1_000_000L),
+        ExempelAtgard("Entréparti", 2037, 800_000L),
+        ExempelAtgard("Garageport", 2039, 500_000L),
     )
 
 fun exempelForening(): Forening {

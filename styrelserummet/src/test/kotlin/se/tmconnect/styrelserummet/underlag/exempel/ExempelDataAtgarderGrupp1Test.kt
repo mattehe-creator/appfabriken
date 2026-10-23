@@ -7,7 +7,7 @@ class ExempelDataAtgarderGrupp1Test {
 
     @Test
     fun grupp1TackerTakFasadFonsterStammar() {
-        Assert.assertEquals(8, EXEMPEL_ATGARDER.size)
+        Assert.assertEquals(12, EXEMPEL_ATGARDER.size)
 
         val yttertak = EXEMPEL_ATGARDER.first { it.namn == "Yttertak" }
         Assert.assertEquals(2032, yttertak.ar)
