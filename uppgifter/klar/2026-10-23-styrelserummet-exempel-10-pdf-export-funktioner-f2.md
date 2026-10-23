@@ -42,3 +42,5 @@ gradle :styrelserummet:test --tests "*ExempelPdfExportTest"
 - Lägga till beroenden.
 - Committa enbart uppgiftsflytt eller tom testfil utan kod.
 - Ändra andra filer än de två listade.
+
+utfall: godkänd 2026-10-23 (hela implementationen; lokal modell levererade ingen kod)

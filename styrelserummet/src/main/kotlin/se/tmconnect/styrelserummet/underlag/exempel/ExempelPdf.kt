@@ -60,3 +60,7 @@ private fun delaLogiskRad(rad: String): List<String> {
     }
     return rader
 }
+
+fun exempelUnderhallsplanPdf(): ByteArray = skrivPdf(underhallsplanSidor())
+
+fun exempelArsredovisningPdf(): ByteArray = skrivPdf(arsredovisningSidor())
