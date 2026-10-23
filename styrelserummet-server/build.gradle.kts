@@ -53,7 +53,11 @@ tasks.register<JavaExec>("skapaExempel") {
         "Skriver underhallsplan-exempel.pdf och arsredovisning-exempel.pdf till katalogen i -PexempelKatalog=..."
     val styrelserummetProject = project(":styrelserummet")
     dependsOn(styrelserummetProject.tasks.named("classes"))
-    classpath = styrelserummetProject.configurations.getByName("runtimeClasspath")
+    // runtimeClasspath på konfigurationen saknar modulens egna klasser; källuppsättningen har dem.
+    classpath = styrelserummetProject.extensions
+        .getByType<SourceSetContainer>()
+        .getByName("main")
+        .runtimeClasspath
     mainClass.set("se.tmconnect.styrelserummet.underlag.exempel.SkapaExempelKt")
     val katalogProperty = providers.gradleProperty("exempelKatalog")
     doFirst {
