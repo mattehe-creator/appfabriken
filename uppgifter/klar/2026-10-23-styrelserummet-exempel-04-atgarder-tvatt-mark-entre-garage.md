@@ -28,3 +28,5 @@ gradle :styrelserummet:test --tests "*ExempelDataAtgarderGrupp3Test"
 
 ## Gör inte
 - Lägga till balkong eller byggnadsvärde ännu.
+
+utfall: underkänd 2026-10-23 av Cursor (PR #600). Ersatt av 2026-10-23-styrelserummet-exempel-04-atgarder-tvatt-mark-entre-garage-f2.md
