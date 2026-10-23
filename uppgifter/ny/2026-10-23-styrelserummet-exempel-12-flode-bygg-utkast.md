@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-23-styrelserummet-exempelhandlingar.md
 försök: 1
-beror-på: 2026-10-23-styrelserummet-exempel-11-inspelad-tolkare.md
+beror-på: 2026-10-23-styrelserummet-exempel-11-inspelad-tolkare-f2.md
 
 ## Ändra bara dessa filer
 - styrelserummet/src/test/kotlin/se/tmconnect/styrelserummet/underlag/exempel/ExempelFlodeTest.kt (ny)

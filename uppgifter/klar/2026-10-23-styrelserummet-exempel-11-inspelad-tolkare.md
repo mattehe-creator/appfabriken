@@ -34,3 +34,5 @@ gradle :styrelserummet:test --tests "*ExempelInspelningTest"
 ## Gör inte
 - Anropa riktig AI.
 - Ändra `TolkaForslag.kt`.
+
+utfall: underkänd 2026-10-23 av Cursor (PR #610). Ersatt av 2026-10-23-styrelserummet-exempel-11-inspelad-tolkare-f2.md
