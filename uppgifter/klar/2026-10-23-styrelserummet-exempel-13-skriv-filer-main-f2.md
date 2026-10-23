@@ -49,3 +49,5 @@ gradle :styrelserummet:testDebugUnitTest --tests "*SkapaExempelTest"
 - Checka in genererade PDF:er i repot.
 - Lägga till beroenden.
 - Använda `kotlin.test`.
+
+utfall: godkänd 2026-10-23 (hela implementationen; lokal modell levererade ingen kod; en rad i ExempelTexter för PDF-storlek >1000)
