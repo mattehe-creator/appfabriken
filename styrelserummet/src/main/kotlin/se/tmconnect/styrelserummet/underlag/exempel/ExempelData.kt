@@ -10,7 +10,13 @@ const val RAKENSKAPSAR = 2025
 
 data class ExempelAtgard(val namn: String, val ar: Int, val kostnadKronor: Long?)
 
-var EXEMPEL_ATGARDER: List<ExempelAtgard> = emptyList()
+val EXEMPEL_ATGARDER: List<ExempelAtgard> =
+    listOf(
+        ExempelAtgard("Yttertak", 2032, 5_000_000L),
+        ExempelAtgard("Fasadputs", 2036, 4_000_000L),
+        ExempelAtgard("Fönster", 2028, 3_500_000L),
+        ExempelAtgard("Stammar vatten och avlopp", 2030, 3_000_000L),
+    )
 
 fun exempelForening(): Forening {
     return Forening(FORENING_NAMN, BYGGNADSAR)
