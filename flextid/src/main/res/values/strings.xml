@@ -21,6 +21,12 @@
     <string name="installningar_rubrik">Your rules</string>
     <string name="normaltid_min">Normal hours per workday (minutes)</string>
     <string name="standard_rast_min">Default break (minutes)</string>
+    <string name="vanliga_tider_rubrik">Usual day times</string>
+    <string name="vanliga_tider_beskrivning">Used to suggest and fill in a typical workday (weekdays in your workday list, not public holidays).</string>
+    <string name="vanlig_start_tid">Usual start (HH:mm)</string>
+    <string name="vanlig_slut_tid">Usual end (HH:mm)</string>
+    <string name="vanlig_rast_min">Usual break (minutes)</string>
+    <string name="fyll_vanlig_dag">Fill usual day</string>
     <string name="ingangssaldo">Opening balance (h:mm or minutes)</string>
     <string name="arbetsdagar_rubrik">Workdays</string>
     <string name="veckodag_man">Monday</string>

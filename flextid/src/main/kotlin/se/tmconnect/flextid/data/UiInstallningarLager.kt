@@ -14,6 +14,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import se.tmconnect.flextid.regler.SEMESTERAR_STARTMANAD_STANDARD
 import se.tmconnect.flextid.regler.SEMESTERDAGAR_STANDARD
+import se.tmconnect.flextid.regler.normaliseraVanligRastMin
+import se.tmconnect.flextid.regler.normaliseraVanligSlutMin
+import se.tmconnect.flextid.regler.normaliseraVanligStartMin
 
 private val Context.flextidUiDataStore: DataStore<Preferences> by preferencesDataStore(
     name = "flextid_ui",
@@ -89,6 +92,29 @@ class UiInstallningarLager(private val context: Context) {
         }
     }
 
+    val vanligStartMin: Flow<Int> =
+        context.flextidUiDataStore.data.map { prefs ->
+            normaliseraVanligStartMin(prefs[VANLIG_START_MIN])
+        }
+
+    val vanligSlutMin: Flow<Int> =
+        context.flextidUiDataStore.data.map { prefs ->
+            normaliseraVanligSlutMin(prefs[VANLIG_SLUT_MIN])
+        }
+
+    val vanligRastMin: Flow<Int> =
+        context.flextidUiDataStore.data.map { prefs ->
+            normaliseraVanligRastMin(prefs[VANLIG_RAST_MIN])
+        }
+
+    suspend fun sattVanligaTider(startMin: Int, slutMin: Int, rastMin: Int) {
+        context.flextidUiDataStore.edit { prefs ->
+            prefs[VANLIG_START_MIN] = normaliseraVanligStartMin(startMin)
+            prefs[VANLIG_SLUT_MIN] = normaliseraVanligSlutMin(slutMin)
+            prefs[VANLIG_RAST_MIN] = normaliseraVanligRastMin(rastMin)
+        }
+    }
+
     companion object {
         const val MAX_GRANS_MIN = 500 * 60
         private val SALDO_TAK_MIN = intPreferencesKey("saldo_tak_min")
@@ -100,5 +126,8 @@ class UiInstallningarLager(private val context: Context) {
         private val VALKOMMEN_VISAD = booleanPreferencesKey("valkommen_visad")
         private val TEMA_LAGE = stringPreferencesKey("tema_lage")
         private val EXPORT_AR_MANAD = stringPreferencesKey("export_ar_manad")
+        private val VANLIG_START_MIN = intPreferencesKey("vanlig_start_min")
+        private val VANLIG_SLUT_MIN = intPreferencesKey("vanlig_slut_min")
+        private val VANLIG_RAST_MIN = intPreferencesKey("vanlig_rast_min")
     }
 }
