@@ -4,6 +4,7 @@ Claude skriver här när något kräver Mattias (se ARBETSFLODE.md). Mattias sva
 
 ## Öppna
 
+- (2026-10-23) Valfritt, och inget annat väntar på det: du kan provköra Styrelserummet på din egen dator med en riktig API-nyckel (låg utgiftsgräns) och en påhittad eller riktig underhållsplan. Steg för steg i `styrelserummet/PROVKORNING.md`, cirka 15 minuter. Det är det snabbaste sättet att se om AI:ns läsning av handlingar håller, innan något läggs ute. Gratisverktygen (avgift, fondplan, nyckeltal, protokoll, räntor, stämmotidplan) behöver ingen nyckel.
 - (2026-10-21) Tre saker, i den ordningen, var för sig några minuter:
   1. Slå på GitHub Pages: repot → Settings → Pages → Source: **GitHub Actions**. Utan det har landningssidan `webb/k3/` aldrig legat ute, och integritetspolicyerna kan inte länkas från Play. Adresserna blir `https://mattehe-creator.github.io/appfabriken/k3/` och `.../<app>/integritet/` (svenska) och `.../<app>/privacy/` (engelska).
   2. En kontaktadress för policyerna (gärna en adress för TM Connect, inte din privata). Jag lägger den i `webb/kontakt.txt`, då uppdateras alla sex sidorna.
