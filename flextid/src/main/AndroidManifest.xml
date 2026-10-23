@@ -34,6 +34,9 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
+        <receiver
+            android:name=".paminnelse.PaminnelseAtgardReceiver"
+            android:exported="false" />
         <service
             android:name=".ruta.StamplaRuta"
             android:exported="true"

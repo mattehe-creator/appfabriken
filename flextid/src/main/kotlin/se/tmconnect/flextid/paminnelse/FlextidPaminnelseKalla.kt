@@ -81,9 +81,9 @@ class FlextidPaminnelseKalla(
 
     companion object {
         const val UNIKT_JOBB_NAMN = "flextid_paminnelse_daglig"
-        private const val KANAL_ID = "flextid_paminnelser"
-        private const val NOTIS_ID_STAMPLA_IN = 2
-        private const val NOTIS_ID_STAMPLA_UT = 3
-        private const val NOTIS_ID_SAMMANSATT = 1
+        const val KANAL_ID = "flextid_paminnelser"
+        const val NOTIS_ID_STAMPLA_IN = 2
+        const val NOTIS_ID_STAMPLA_UT = 3
+        const val NOTIS_ID_SAMMANSATT = 1
     }
 }
