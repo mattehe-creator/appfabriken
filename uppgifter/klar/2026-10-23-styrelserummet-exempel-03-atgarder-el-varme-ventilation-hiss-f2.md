@@ -49,3 +49,5 @@ gradle :styrelserummet:testDebugUnitTest --tests "*ExempelDataAtgarderGrupp1Test
 - Ändra namn, år eller kostnad för grupp 1:s fyra åtgärder.
 - Lägga till balkong eller mark ännu.
 - Lämna testfilen tom.
+
+utfall: godkänd 2026-10-23 (inget)
