@@ -30,3 +30,5 @@ gradle :styrelserummet:test --tests "*SkapaExempelTest"
 ## Gör inte
 - Ändra `styrelserummet-server/build.gradle.kts` (Cursor har Gradle-uppgiften).
 - Checka in genererade PDF:er i repot.
+
+utfall: underkänd 2026-10-23 av Cursor (PR #617). Ersatt av 2026-10-23-styrelserummet-exempel-13-skriv-filer-main-f2.md
