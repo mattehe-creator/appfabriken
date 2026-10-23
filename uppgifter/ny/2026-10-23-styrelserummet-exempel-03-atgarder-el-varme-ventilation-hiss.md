@@ -24,7 +24,7 @@ Lägg till fyra åtgärder i `EXEMPEL_ATGARDER` (behåll grupp 1):
 Test `grupp2TackerElVarmeVentilationHiss`: exakt dessa namn finns, kostnader och år enligt tabellen.
 
 ## Exempel
-- Summan av kostnader för grupp 1 + grupp 2 → `21_000_000` kronor.
+- Summan av kostnader för grupp 1 + grupp 2 → `23_300_000` kronor (grupp 1 = 15_500_000, grupp 2 = 7_800_000).
 
 ## Test som ska gå igenom
 gradle :styrelserummet:test --tests "*ExempelDataAtgarderGrupp2Test"
