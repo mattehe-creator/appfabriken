@@ -32,9 +32,16 @@ import se.tmconnect.husloggen.R
 /** Flikar som nås via Mer. Bakåt från dem går till Mer. */
 val MER_FLIKAR = setOf(HusFlik.PLAN, HusFlik.MATARE, HusFlik.DOKUMENT, HusFlik.KOMMANDE)
 
+/** Undersida under Översikt (sammanställning). Bakåt går till sammanställningen. */
+val OVERSIKT_UNDERFLIKAR = setOf(HusFlik.KOMMANDE_AR)
+
 /** Vilken knapp i navigeringsfältet som är markerad för en flik. */
 fun navigeringsknappFor(flik: HusFlik): HusFlik =
-    if (flik in MER_FLIKAR) HusFlik.MER else flik
+    when (flik) {
+        in MER_FLIKAR -> HusFlik.MER
+        in OVERSIKT_UNDERFLIKAR -> HusFlik.SAMMANSTALLNING
+        else -> flik
+    }
 
 private data class Knapp(val flik: HusFlik, val ikon: ImageVector, val etikett: Int)
 

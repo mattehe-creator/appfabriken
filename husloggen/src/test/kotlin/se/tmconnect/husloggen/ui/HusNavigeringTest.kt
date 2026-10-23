@@ -12,6 +12,7 @@ class HusNavigeringTest {
         assertEquals(HusFlik.MER, navigeringsknappFor(HusFlik.DOKUMENT))
         assertEquals(HusFlik.MER, navigeringsknappFor(HusFlik.MER))
         assertEquals(HusFlik.MER, navigeringsknappFor(HusFlik.KOMMANDE))
+        assertEquals(HusFlik.SAMMANSTALLNING, navigeringsknappFor(HusFlik.KOMMANDE_AR))
     }
 
     @Test

@@ -17,6 +17,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +51,7 @@ fun SammanstallningSkarm(
     modifier: Modifier = Modifier,
     onExportPdf: () -> Unit = {},
     onExportCsv: () -> Unit = {},
+    onVisaKommandeAr: () -> Unit = {},
 ) {
     val grupperadePoster = grupperaPerAr(poster)
     val summeringar = summeraPerAr(poster)
@@ -103,6 +105,14 @@ fun SammanstallningSkarm(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp),
                         )
+                    }
+                    TextButton(
+                        onClick = onVisaKommandeAr,
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .tryckyta48(),
+                    ) {
+                        Text(text = stringResource(R.string.oversikt_kommande_ar_knapp))
                     }
                 }
             }

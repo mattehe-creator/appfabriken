@@ -72,7 +72,7 @@ import se.tmconnect.husloggen.regler.kommandePerManad
 import se.tmconnect.karna.format.formateraPrisKr
 import se.tmconnect.karna.tema.TemaLage
 
-enum class HusFlik { ATT_GORA, LOGG, PLAN, MATARE, DOKUMENT, SAMMANSTALLNING, MER, KOMMANDE }
+enum class HusFlik { ATT_GORA, LOGG, PLAN, MATARE, DOKUMENT, SAMMANSTALLNING, MER, KOMMANDE, KOMMANDE_AR }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,6 +108,7 @@ fun HusStartSkarm(
     onForsaljningsArAndras: (Int) -> Unit = {},
     onExportHistorikPdf: () -> Unit = {},
     onExportHistorikCsv: () -> Unit = {},
+    onExportKommandeArCsv: () -> Unit = {},
     senasteKostnadPerUppgift: Map<Long, Long> = emptyMap(),
     kommandeKostnad: KommandeKostnad = KommandeKostnad(0, 0, 0),
     startFlik: HusFlik = HusFlik.ATT_GORA,
@@ -121,6 +122,9 @@ fun HusStartSkarm(
     }
     BackHandler(enabled = HusFlik.entries[valdFlik] in MER_FLIKAR) {
         valdFlik = HusFlik.MER.ordinal
+    }
+    BackHandler(enabled = HusFlik.entries[valdFlik] in OVERSIKT_UNDERFLIKAR) {
+        valdFlik = HusFlik.SAMMANSTALLNING.ordinal
     }
     val locale = LocalConfiguration.current.locales[0]
     val visaSkatteInfo = locale.country.equals("SE", ignoreCase = true)
@@ -222,7 +226,7 @@ fun HusStartSkarm(
                         modifier = Modifier.tryckyta48(),
                     )
                 }
-                HusFlik.SAMMANSTALLNING, HusFlik.MER, HusFlik.KOMMANDE -> {
+                HusFlik.SAMMANSTALLNING, HusFlik.MER, HusFlik.KOMMANDE, HusFlik.KOMMANDE_AR -> {
                     // Ingen flytande knapp i sammanställningen eller under Mer
                 }
             }
@@ -303,8 +307,16 @@ fun HusStartSkarm(
                     modifier = Modifier.padding(innerPadding),
                     onExportPdf = onExportHistorikPdf,
                     onExportCsv = onExportHistorikCsv,
+                    onVisaKommandeAr = { valdFlik = HusFlik.KOMMANDE_AR.ordinal },
                 )
             }
+            HusFlik.KOMMANDE_AR -> KommandeArSkarm(
+                uppgifter = uppgifter,
+                poster = poster,
+                locale = locale,
+                contentPadding = innerPadding,
+                onExportCsv = onExportKommandeArCsv,
+            )
         }
     }
 }

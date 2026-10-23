@@ -51,8 +51,10 @@ import se.tmconnect.karna.tema.AppfabrikTema
 import se.tmconnect.husloggen.export.AvlasningCsvTexter
 import se.tmconnect.husloggen.export.HusHistorikTexter
 import se.tmconnect.husloggen.export.avlasningCsvFilnamn
+import se.tmconnect.husloggen.export.KommandeUnderhallCsvTexter
 import se.tmconnect.husloggen.export.husHistorikCsvFilnamn
 import se.tmconnect.husloggen.export.husHistorikPdfFilnamn
+import se.tmconnect.husloggen.export.kommandeUnderhallCsvFilnamn
 import se.tmconnect.husloggen.export.skatteKallorText
 import se.tmconnect.husloggen.export.sakerhetskopiaFilnamn
 import se.tmconnect.husloggen.regler.ForbattringMojlighet
@@ -191,6 +193,14 @@ class MainActivity : ComponentActivity() {
     ) { uri: Uri? ->
         if (uri != null) {
             sparaHistorikCsv(uri)
+        }
+    }
+
+    private val createKommandeUnderhallCsvContract = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("text/csv"),
+    ) { uri: Uri? ->
+        if (uri != null) {
+            sparaKommandeUnderhallCsv(uri)
         }
     }
 
@@ -611,6 +621,11 @@ class MainActivity : ComponentActivity() {
                                 onExportHistorikCsv = {
                                     createHistorikCsvContract.launch(husHistorikCsvFilnamn(idag))
                                 },
+                                onExportKommandeArCsv = {
+                                    createKommandeUnderhallCsvContract.launch(
+                                        kommandeUnderhallCsvFilnamn(idag),
+                                    )
+                                },
                                 senasteKostnadPerUppgift = senasteKostnadPerUppgiftMap,
                                 kommandeKostnad = kommandeKostnad,
                             )
@@ -677,6 +692,28 @@ class MainActivity : ComponentActivity() {
             beloppEtikett = { post -> formateraPrisKr(postBeloppForSammanstallningOre(post), locale) },
         )
     }
+
+    private fun sparaKommandeUnderhallCsv(uri: Uri) {
+        val locale = resources.configuration.locales[0]
+        val idag = LocalDate.now()
+        viewModel.sparaKommandeUnderhallCsv(
+            uri = uri,
+            texter = kommandeUnderhallCsvTexter(),
+            locale = locale,
+            datumEtikett = { datum -> formateraDatum(datum, locale) },
+            idag = idag,
+        )
+    }
+
+    private fun kommandeUnderhallCsvTexter(): KommandeUnderhallCsvTexter =
+        KommandeUnderhallCsvTexter(
+            kolumnAr = getString(R.string.kommande_ar_csv_kolumn_ar),
+            kolumnUppgift = getString(R.string.kommande_ar_csv_kolumn_uppgift),
+            kolumnDatum = getString(R.string.kommande_ar_csv_kolumn_datum),
+            kolumnKostnad = getString(R.string.kommande_ar_csv_kolumn_kostnad),
+            arSummaRubrik = { ar -> getString(R.string.kommande_ar_csv_ar_summa, ar) },
+            kostnadOkand = getString(R.string.kommande_ar_kostnad_okand),
+        )
 
     private fun avlasningCsvTexter(): AvlasningCsvTexter =
         AvlasningCsvTexter(

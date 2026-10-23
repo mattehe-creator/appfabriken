@@ -55,7 +55,10 @@ import se.tmconnect.husloggen.data.TaBortBostadResult
 import se.tmconnect.husloggen.data.PostTyp
 import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.husloggen.export.AvlasningCsvTexter
+import se.tmconnect.husloggen.export.KommandeUnderhallCsvTexter
 import se.tmconnect.husloggen.export.avlasningCsv
+import se.tmconnect.husloggen.export.kommandeUnderhallCsv
+import se.tmconnect.husloggen.regler.kommandeUnderhall
 import se.tmconnect.husloggen.regler.AvlasningFel
 import se.tmconnect.husloggen.regler.MatareFel
 import se.tmconnect.husloggen.regler.PostFel
@@ -974,6 +977,34 @@ class HusViewModel(
                     gransNej = texter.gransNej,
                 )
                 val csv = husHistorikCsv(data, texter)
+                withContext(Dispatchers.IO) {
+                    val stream = appContext.contentResolver.openOutputStream(uri)
+                        ?: throw java.io.IOException()
+                    stream.use { skrivCsvMedBom(it, csv) }
+                }
+                _meddelanden.emit(HusUiMeddelande.HistorikCsvSparad)
+            } catch (_: Exception) {
+                _meddelanden.emit(HusUiMeddelande.HistorikCsvMisslyckades)
+            }
+        }
+    }
+
+    fun sparaKommandeUnderhallCsv(
+        uri: Uri,
+        texter: KommandeUnderhallCsvTexter,
+        locale: Locale,
+        datumEtikett: (LocalDate) -> String,
+        idag: LocalDate = LocalDate.now(),
+    ) {
+        viewModelScope.launch {
+            try {
+                val grupper =
+                    kommandeUnderhall(
+                        uppgifter = uppgifter.value,
+                        loggposter = poster.value,
+                        idag = idag,
+                    )
+                val csv = kommandeUnderhallCsv(grupper, texter, datumEtikett)
                 withContext(Dispatchers.IO) {
                     val stream = appContext.contentResolver.openOutputStream(uri)
                         ?: throw java.io.IOException()

@@ -319,4 +319,18 @@
         <item quantity="one">%d job has no earlier cost and is not included.</item>
         <item quantity="other">%d jobs have no earlier cost and are not included.</item>
     </plurals>
+    <string name="oversikt_kommande_ar_knapp">Plan for the years ahead</string>
+    <string name="kommande_ar_rubrik">Years ahead</string>
+    <string name="kommande_ar_ar_rubrik">%1$d</string>
+    <string name="kommande_ar_summa">About %1$s</string>
+    <string name="kommande_ar_uppskattning">Totals are estimates based on the last known cost. Jobs with no earlier cost are not included in the year total.</string>
+    <string name="kommande_ar_saknar_kostnad">At least one job has no known cost and is not included in the total.</string>
+    <string name="kommande_ar_kostnad_okand">Unknown</string>
+    <string name="kommande_ar_tomt">No recurring tasks with an interval yet.</string>
+    <string name="export_kommande_ar_csv">Export plan as CSV</string>
+    <string name="kommande_ar_csv_kolumn_ar">Year</string>
+    <string name="kommande_ar_csv_kolumn_uppgift">Task</string>
+    <string name="kommande_ar_csv_kolumn_datum">Date</string>
+    <string name="kommande_ar_csv_kolumn_kostnad">Estimated cost</string>
+    <string name="kommande_ar_csv_ar_summa">Total %1$d</string>
 </resources>
