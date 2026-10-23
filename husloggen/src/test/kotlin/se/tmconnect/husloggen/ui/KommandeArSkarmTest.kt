@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.AndroidComposeUiTestEnvironment
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollToNode
 import androidx.test.core.app.ApplicationProvider
 import java.time.LocalDate
 import java.util.Locale
@@ -71,7 +74,10 @@ class KommandeArSkarmTest {
                 }
             }
             waitForIdle()
+            val scrollable = onNode(hasScrollAction())
+            scrollable.performScrollToNode(hasText("Takrengöring"))
             onNodeWithText("Takrengöring").assertExists()
+            scrollable.performScrollToNode(hasText(context.getString(R.string.kommande_ar_rubrik)))
             onNodeWithText(context.getString(R.string.kommande_ar_rubrik)).assertExists()
         }
     }

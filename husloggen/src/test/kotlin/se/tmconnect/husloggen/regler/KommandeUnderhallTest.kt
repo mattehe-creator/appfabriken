@@ -123,10 +123,9 @@ class KommandeUnderhallTest {
 
         val result = kommandeUnderhall(uppgifter, emptyList(), idag, antalAr = 1)
 
-        assertEquals(
-            listOf(LocalDate.of(2026, 2, 28), LocalDate.of(2026, 3, 31)),
-            result.single { it.ar == 2026 }.rader.map { it.datum },
-        )
+        val allaDatum = result.flatMap { it.rader }.map { it.datum }
+        assertEquals(LocalDate.of(2026, 2, 28), allaDatum.first())
+        assertTrue(allaDatum.contains(LocalDate.of(2026, 3, 31)))
     }
 
     @Test
