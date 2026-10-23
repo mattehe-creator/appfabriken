@@ -46,3 +46,20 @@ tasks.test {
 tasks.register("testDebugUnitTest") {
     dependsOn(tasks.test)
 }
+
+tasks.register<JavaExec>("skapaExempel") {
+    group = "styrelserummet"
+    description =
+        "Skriver underhallsplan-exempel.pdf och arsredovisning-exempel.pdf till katalogen i -PexempelKatalog=..."
+    val styrelserummetProject = project(":styrelserummet")
+    dependsOn(styrelserummetProject.tasks.named("classes"))
+    classpath = styrelserummetProject.configurations.getByName("runtimeClasspath")
+    mainClass.set("se.tmconnect.styrelserummet.underlag.exempel.SkapaExempelKt")
+    val katalogProperty = providers.gradleProperty("exempelKatalog")
+    doFirst {
+        require(katalogProperty.isPresent) {
+            "Ange målkatalog med -PexempelKatalog=... (till exempel -PexempelKatalog=./prov)"
+        }
+    }
+    args(katalogProperty)
+}
