@@ -53,3 +53,5 @@ gradle :styrelserummet:testDebugUnitTest --tests "*ExempelTexterPlanTest"
 - Hårdkoda andra föreningar än konstanterna i `ExempelData.kt`.
 - Ändra `ExempelData.kt` eller andra filer.
 - Committa enbart uppgiftsflytt utan kod.
+
+utfall: godkänd 2026-10-23 (lokal modell levererade ingen kod; Cursor implementerade ExempelTexter.kt och ExempelTexterPlanTest.kt)
