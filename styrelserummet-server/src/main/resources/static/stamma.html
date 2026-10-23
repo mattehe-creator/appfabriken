@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stämmotidplan och överlåtelseavgift — Styrelserummet</title>
+  <meta name="description" content="Räkna ut kallelsefrister och viktiga datum kring föreningsstämman, och kontrollera överlåtelse- och pantsättningsavgift mot prisbasbeloppet. Gratis, inget sparas.">
+  <link rel="canonical" href="/stamma">
+  <meta property="og:title" content="Stämmotidplan och överlåtelseavgift — Styrelserummet">
+  <meta property="og:description" content="Räkna ut kallelsefrister och viktiga datum kring föreningsstämman, och kontrollera överlåtelse- och pantsättningsavgift mot prisbasbeloppet. Gratis, inget sparas.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="/gemensam.css">
+</head>
+<body>
+  <div class="ram">
+    <div class="topp">
+      <a class="marke" href="/">Styrelserummet</a>
+      <span class="stampel">Utkast</span>
+    </div>
+    <header class="hjalte">
+      <span class="etikett">Gratis verktyg</span>
+      <h1>Stämmotidplan och avgifter vid överlåtelse</h1>
+      <p class="ingress">Ange räkenskapsårets slut, planerat stämmodatum och stadgarnas kallelsefrist. Ni får en tidplan med datum och källor. Under samma sida kan ni jämföra överlåtelse- och pantsättningsavgift mot prisbasbeloppet. Ingenting sparas.</p>
+    </header>
+
+    <form id="stamma-form">
+      <h2>Stämmotidplan</h2>
+      <div class="falt"><label for="arsslut">Räkenskapsårets slut</label><input id="arsslut" type="date" required></div>
+      <div class="falt"><label for="stammodatum">Planerat stämmodatum</label><input id="stammodatum" type="date" required></div>
+      <div class="falt"><label for="kallelse-fran">Kallelsefrist i stadgarna, kortast (veckor före stämman)</label><input id="kallelse-fran" type="number" min="2" max="6" inputmode="numeric" required aria-describedby="kallelse-hjalp"></div>
+      <div class="falt"><label for="kallelse-till">Kallelsefrist i stadgarna, längst (veckor före stämman)</label><input id="kallelse-till" type="number" min="2" max="6" inputmode="numeric" required></div>
+      <p class="hjalp" id="kallelse-hjalp">Lagen tillåter 2–6 veckor. Verktyget använder kortaste fristen för senaste kallelsedag.</p>
+
+      <h2>Överlåtelse och pantsättning (valfritt)</h2>
+      <div class="falt"><label for="pbb-ar">År för prisbasbelopp</label><input id="pbb-ar" type="number" min="2000" max="2100" inputmode="numeric" aria-describedby="pbb-hjalp"></div>
+      <p class="hjalp" id="pbb-hjalp">Prisbasbeloppet hämtas ur datafilen för det angivna året.</p>
+      <div class="falt"><label for="overlatelse">Överlåtelseavgift (kr)</label><input id="overlatelse" inputmode="numeric"></div>
+      <div class="falt"><label for="pantsattning">Pantsättningsavgift (kr)</label><input id="pantsattning" inputmode="numeric"></div>
+
+      <div class="knapp-rad">
+        <button class="knapp" type="submit">Räkna</button>
+        <button class="knapp sekundar" type="button" id="exempel">Fyll i exempel</button>
+      </div>
+      <p id="svar" class="svar" role="status" aria-live="polite"></p>
+    </form>
+
+    <section id="resultat" class="yta" hidden>
+      <div class="tabellram">
+        <table id="tidplan">
+          <caption>Tidplan — utkast</caption>
+          <thead><tr><th scope="col">Händelse</th><th scope="col">Datum</th><th scope="col">Anmärkning</th><th scope="col">Källa</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="knapp-rad"><a class="knapp sekundar" id="csv" href="#" download="stammotidplan.csv">Ladda ner CSV</a></p>
+      <div id="avgift-resultat" hidden>
+        <p id="pbb-info" class="hjalp"></p>
+        <ul class="sammanfattning" id="avgift-lista"></ul>
+      </div>
+    </section>
+
+    <footer>
+      <a href="/">Komponentlista enligt K3</a>
+      <a href="/nyckeltal">Nyckeltal</a>
+      <a href="/fondplan">Fondplan</a>
+      <a href="/rantor">Räntor</a>
+      <a href="/protokoll">Protokoll</a>
+      <a href="/avgift">Avgift</a>
+      <a href="/integritet">Integritet</a>
+      <span>Styrelserummet är en tjänst från TM Connect.</span>
+    </footer>
+  </div>
+  <script src="/stamma.js"></script>
+</body>
+</html>

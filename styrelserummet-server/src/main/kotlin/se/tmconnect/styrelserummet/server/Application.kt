@@ -165,6 +165,20 @@ fun Application.module(miljo: ServerMiljo) {
             )
         }
 
+        get("/stamma") {
+            call.respondText(
+                javaClass.classLoader.getResource("static/stamma.html")!!.readText(),
+                ContentType.Text.Html,
+            )
+        }
+
+        post("/api/stamma") {
+            kontrolleraVerktygGrans(call, verktygGrans, miljo.proxyPaa)
+            val raw = call.taEmotVerktygJson()
+            val req = tolkaVerktygJson<StammaRequest>(raw)
+            call.respond(beraknaStammaSvar(req))
+        }
+
         post("/api/avgift") {
             kontrolleraVerktygGrans(call, verktygGrans, miljo.proxyPaa)
             val raw = call.taEmotVerktygJson()
