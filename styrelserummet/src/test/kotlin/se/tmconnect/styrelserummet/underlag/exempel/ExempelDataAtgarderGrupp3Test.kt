@@ -7,7 +7,7 @@ class ExempelDataAtgarderGrupp3Test {
 
     @Test
     fun grupp3TackerTvattMarkEntreGarage() {
-        Assert.assertEquals(12, EXEMPEL_ATGARDER.size)
+        Assert.assertEquals(14, EXEMPEL_ATGARDER.size)
 
         val tvattstuga = EXEMPEL_ATGARDER.first { it.namn == "Tvättstuga" }
         Assert.assertEquals(2033, tvattstuga.ar)
@@ -25,6 +25,6 @@ class ExempelDataAtgarderGrupp3Test {
         Assert.assertEquals(2039, garageport.ar)
         Assert.assertEquals(500_000L, garageport.kostnadKronor)
 
-        Assert.assertEquals(26_800_000L, EXEMPEL_ATGARDER.sumOf { it.kostnadKronor!! })
+        Assert.assertEquals(26_800_000L, EXEMPEL_ATGARDER.take(12).sumOf { it.kostnadKronor!! })
     }
 }

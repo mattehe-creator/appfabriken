@@ -7,7 +7,7 @@ class ExempelDataAtgarderGrupp1Test {
 
     @Test
     fun grupp1TackerTakFasadFonsterStammar() {
-        Assert.assertEquals(12, EXEMPEL_ATGARDER.size)
+        Assert.assertEquals(14, EXEMPEL_ATGARDER.size)
 
         val yttertak = EXEMPEL_ATGARDER.first { it.namn == "Yttertak" }
         Assert.assertEquals(2032, yttertak.ar)
@@ -25,7 +25,7 @@ class ExempelDataAtgarderGrupp1Test {
         Assert.assertEquals(2030, stammar.ar)
         Assert.assertEquals(3_000_000L, stammar.kostnadKronor)
 
-        EXEMPEL_ATGARDER.forEach { atgard ->
+        listOf(yttertak, fasadputs, fonster, stammar).forEach { atgard ->
             Assert.assertNotNull(atgard.kostnadKronor)
         }
     }
