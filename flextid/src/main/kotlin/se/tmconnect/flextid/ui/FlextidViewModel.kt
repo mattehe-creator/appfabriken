@@ -55,8 +55,10 @@ import se.tmconnect.flextid.regler.SEMESTERDAGAR_STANDARD
 import se.tmconnect.flextid.regler.semesterSammanfattning
 import se.tmconnect.flextid.regler.periodSammanfattning
 import se.tmconnect.flextid.regler.kanLaggaTillDagPost
+import se.tmconnect.flextid.regler.ledighetsutrymme
 import se.tmconnect.flextid.regler.mandagISammaVecka
 import se.tmconnect.flextid.regler.sondagISammaVecka
+import se.tmconnect.flextid.regler.tidigasteLedigDag
 import se.tmconnect.flextid.regler.tolkaTidText
 import se.tmconnect.karna.export.skrivCsvMedBom
 import se.tmconnect.karna.paminnelse.PaminnelsePlanerare
@@ -280,6 +282,29 @@ class FlextidViewModel(
     val saldoGolvMin =
         uiInstallningarLager.saldoGolvMin.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
+    val ledighetsKort =
+        combine(saldo, installning, saldoGolvMin, aftnarLediga) { saldoNu, inst, golv, aftnar ->
+            val flexDagar = ledighetsutrymme(saldoNu, golv, inst.normaltidMinPerDag)
+            val idag = LocalDate.now()
+            val antalForDatum =
+                when (flexDagar) {
+                    null -> 1
+                    0 -> 0
+                    else -> 1
+                }
+            val tidigaste =
+                if (antalForDatum > 0) {
+                    tidigasteLedigDag(idag, antalForDatum, inst.arbetsdagarMask, aftnar)
+                } else {
+                    null
+                }
+            LedighetsKortTillstand(flexDagar = flexDagar, tidigasteLedig = tidigaste)
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            LedighetsKortTillstand(flexDagar = null, tidigasteLedig = null),
+        )
+
     val veckaSammanfattning =
         combine(_veckaAnkar, repository.observeraAllaDagar(), installning, aftnarLediga) { ankar, alla, inst, aftnar ->
             periodSammanfattning(alla, ankar, sondagISammaVecka(ankar), inst, aftnar)
@@ -464,7 +489,7 @@ class FlextidViewModel(
         }
     }
 
-    fun oppnaDagFormular(datum: LocalDate) {
+    fun oppnaDagFormular(datum: LocalDate, forvaldTyp: DagTyp? = null) {
         viewModelScope.launch {
             if (repository.hamtaDag(datum) == null && !kanLaggaTillDagPost(repository.antalDagar(), proKalla.arPro.value)) {
                 visaProDialog()
@@ -479,7 +504,7 @@ class FlextidViewModel(
                     startText = dag?.start?.toString()?.substring(0, 5) ?: "",
                     slutText = dag?.slut?.toString()?.substring(0, 5) ?: "",
                     rastText = (dag?.rastMin ?: installning.value.standardRastMin).toString(),
-                    typ = dag?.typ ?: DagTyp.ARBETE,
+                    typ = dag?.typ ?: forvaldTyp ?: DagTyp.ARBETE,
                     anteckning = dag?.anteckning ?: "",
                     forslagDatum = forslag?.datum,
                     forslagStart = forslag?.start?.toString()?.substring(0, 5) ?: "",
@@ -487,6 +512,10 @@ class FlextidViewModel(
                     forslagRast = forslag?.rastMin?.toString() ?: "",
                 )
         }
+    }
+
+    fun planeraLedigDag(datum: LocalDate) {
+        oppnaDagFormular(datum, forvaldTyp = DagTyp.LEDIG)
     }
 
     fun stangDagFormular() {
