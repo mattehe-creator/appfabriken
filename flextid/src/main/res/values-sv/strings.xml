@@ -21,6 +21,12 @@
     <string name="installningar_rubrik">Dina regler</string>
     <string name="normaltid_min">Normaltid per arbetsdag (minuter)</string>
     <string name="standard_rast_min">Standardrast (minuter)</string>
+    <string name="vanliga_tider_rubrik">Vanliga tider</string>
+    <string name="vanliga_tider_beskrivning">Används för att föreslå och fylla i en vanlig arbetsdag (veckodagar enligt arbetsdagslistan, inte röda helgdagar).</string>
+    <string name="vanlig_start_tid">Vanlig start (TT:mm)</string>
+    <string name="vanlig_slut_tid">Vanlig slut (TT:mm)</string>
+    <string name="vanlig_rast_min">Vanlig rast (minuter)</string>
+    <string name="fyll_vanlig_dag">Fyll i vanlig dag</string>
     <string name="ingangssaldo">Ingångssaldo (t:mm eller minuter)</string>
     <string name="arbetsdagar_rubrik">Arbetsdagar</string>
     <string name="veckodag_man">Måndag</string>
