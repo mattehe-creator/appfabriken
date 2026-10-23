@@ -108,6 +108,7 @@ fun HusStartSkarm(
     onForsaljningsArAndras: (Int) -> Unit = {},
     onExportHistorikPdf: () -> Unit = {},
     onExportHistorikCsv: () -> Unit = {},
+    onVisaKommandeAr: () -> Unit = {},
     senasteKostnadPerUppgift: Map<Long, Long> = emptyMap(),
     kommandeKostnad: KommandeKostnad = KommandeKostnad(0, 0, 0),
     startFlik: HusFlik = HusFlik.ATT_GORA,
@@ -303,6 +304,7 @@ fun HusStartSkarm(
                     modifier = Modifier.padding(innerPadding),
                     onExportPdf = onExportHistorikPdf,
                     onExportCsv = onExportHistorikCsv,
+                    onVisaKommandeAr = onVisaKommandeAr,
                 )
             }
         }

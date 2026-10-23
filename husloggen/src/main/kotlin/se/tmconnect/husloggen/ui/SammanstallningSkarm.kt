@@ -50,6 +50,7 @@ fun SammanstallningSkarm(
     modifier: Modifier = Modifier,
     onExportPdf: () -> Unit = {},
     onExportCsv: () -> Unit = {},
+    onVisaKommandeAr: () -> Unit = {},
 ) {
     val grupperadePoster = grupperaPerAr(poster)
     val summeringar = summeraPerAr(poster)
@@ -103,6 +104,15 @@ fun SammanstallningSkarm(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp),
                         )
+                    }
+                    OutlinedButton(
+                        onClick = onVisaKommandeAr,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp)
+                            .tryckyta48(),
+                    ) {
+                        Text(text = stringResource(R.string.sammanstallning_kommande_ar_knapp))
                     }
                 }
             }
