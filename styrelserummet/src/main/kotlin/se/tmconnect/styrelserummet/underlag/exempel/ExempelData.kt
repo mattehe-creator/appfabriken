@@ -7,6 +7,7 @@ const val ORGANISATIONSNUMMER = "000000-0000"
 const val ADRESS = "Exempelvägen 1, 100 00 Teststad"
 const val BYGGNADSAR = 1974
 const val RAKENSKAPSAR = 2025
+const val BYGGNADENS_VARDE = 27_000_000L
 
 data class ExempelAtgard(val namn: String, val ar: Int, val kostnadKronor: Long?)
 
@@ -24,8 +25,16 @@ val EXEMPEL_ATGARDER: List<ExempelAtgard> =
         ExempelAtgard("Mark och gård", 2035, 1_000_000L),
         ExempelAtgard("Entréparti", 2037, 800_000L),
         ExempelAtgard("Garageport", 2039, 500_000L),
+        ExempelAtgard("Balkonger", 2038, null),
+        ExempelAtgard("Brandlarm", 2026, 200_000L),
     )
 
 fun exempelForening(): Forening {
     return Forening(FORENING_NAMN, BYGGNADSAR)
+}
+
+fun summaAtgarderMedKostnad(): Long {
+    return EXEMPEL_ATGARDER
+        .filter { it.kostnadKronor != null }
+        .sumOf { it.kostnadKronor!! }
 }

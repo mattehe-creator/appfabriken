@@ -38,3 +38,5 @@ gradle :styrelserummet:test --tests "*ExempelDataSummaTest"
 ## Gör inte
 - Ändra belopp i tidigare grupper (summan ska fortfarande bli 27 000 000).
 - Ändra modeller.
+
+utfall: godkänd 2026-10-23 (JUnit-import, summa-test, grupp1/grupp3-test efter nya åtgärder)
