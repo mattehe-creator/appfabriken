@@ -62,3 +62,5 @@ gradle :styrelserummet:test --tests "*ExempelInspelningTest"
 - Ändra `TolkaForslag.kt`, `ExempelData.kt`, `ExempelTexter.kt` eller andra filer.
 - Committa enbart uppgiftsflytt eller tomma filer utan kod.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-23 (hel implementation — lokal modell lämnade bara uppgiftsflytt)
