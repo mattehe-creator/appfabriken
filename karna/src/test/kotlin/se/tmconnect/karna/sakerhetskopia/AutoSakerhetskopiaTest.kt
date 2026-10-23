@@ -47,6 +47,7 @@ class AutoSakerhetskopiaTest {
     @Test
     fun filnamnMedPrefix() {
         assertEquals("testapp-auto-2026-10-13.zip", autoFilnamn(dag, filPrefix))
+        assertEquals("testapp-auto-2026-10-13.json", autoFilnamn(dag, filPrefix, ".json"))
     }
 
     @Test

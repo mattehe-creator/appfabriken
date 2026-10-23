@@ -2,6 +2,7 @@ package se.tmconnect.flextid
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -173,6 +174,38 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    private val valjMappContract =
+        registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
+            if (uri != null) {
+                try {
+                    contentResolver.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+                    )
+                } catch (_: Exception) {
+                }
+                viewModel.valtAutoBackupMapp(uri, mappNamn(uri))
+            }
+        }
+
+    private fun mappNamn(trad: Uri): String? =
+        try {
+            val dokument =
+                android.provider.DocumentsContract.buildDocumentUriUsingTree(
+                    trad,
+                    android.provider.DocumentsContract.getTreeDocumentId(trad),
+                )
+            contentResolver.query(
+                dokument,
+                arrayOf(android.provider.DocumentsContract.Document.COLUMN_DISPLAY_NAME),
+                null,
+                null,
+                null,
+            )?.use { markor -> if (markor.moveToFirst()) markor.getString(0) else null }
+        } catch (_: Exception) {
+            null
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         hanteraPaminnelseIntent(intent)
@@ -259,6 +292,12 @@ class MainActivity : ComponentActivity() {
                             onImporteraSakerhetskopia = {
                                 oppnaJsonContract.launch(arrayOf("application/json", "text/plain", "*/*"))
                             },
+                            onAutoBackupPa = { pa ->
+                                if (pa) valjMappContract.launch(null) else viewModel.stangAvAutoBackup()
+                            },
+                            onByttAutoBackupMapp = { valjMappContract.launch(null) },
+                            onAutoBackupIntervall = viewModel::sattAutoBackupIntervall,
+                            onKorNuAutoBackup = viewModel::korNuAutoBackup,
                             locale = Locale.getDefault(),
                         )
                     }
@@ -272,6 +311,7 @@ class MainActivity : ComponentActivity() {
             }
         }
         viewModel.synkaPaminnelseJobb()
+        viewModel.synkaAutoBackupJobb()
     }
 
     override fun onNewIntent(intent: Intent) {

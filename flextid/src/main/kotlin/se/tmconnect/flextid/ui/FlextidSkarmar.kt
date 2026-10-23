@@ -95,6 +95,10 @@ fun FlextidStartSkarm(
     onExporteraPdf: () -> Unit,
     onExporteraSakerhetskopia: () -> Unit,
     onImporteraSakerhetskopia: () -> Unit,
+    onAutoBackupPa: (Boolean) -> Unit = {},
+    onByttAutoBackupMapp: () -> Unit = {},
+    onAutoBackupIntervall: (Int) -> Unit = {},
+    onKorNuAutoBackup: () -> Unit = {},
     locale: Locale,
 ) {
     var flik by remember(startFlik) { mutableStateOf(startFlik ?: FlextidFlik.IDAG) }
@@ -121,6 +125,7 @@ fun FlextidStartSkarm(
     val semesterdagarPerAr by viewModel.semesterdagarPerAr.collectAsState()
     val semesterarStartmanad by viewModel.semesterarStartmanad.collectAsState()
     val arsOversiktTillstand by viewModel.arsOversiktTillstand.collectAsState()
+    val autoBackup by viewModel.autoBackup.collectAsState()
     var visaArsOversikt by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -266,6 +271,11 @@ fun FlextidStartSkarm(
                         onExporteraPdf = onExporteraPdf,
                         onExporteraJson = onExporteraSakerhetskopia,
                         onImporteraJson = onImporteraSakerhetskopia,
+                        autoBackup = autoBackup,
+                        onAutoBackupPa = onAutoBackupPa,
+                        onByttAutoBackupMapp = onByttAutoBackupMapp,
+                        onAutoBackupIntervall = onAutoBackupIntervall,
+                        onKorNuAutoBackup = onKorNuAutoBackup,
                         aftnarLediga = aftnarLediga,
                         semesterdagarPerAr = semesterdagarPerAr,
                         semesterarKalenderar = semesterarStartmanad == 1,
@@ -579,6 +589,12 @@ internal fun InstallningarInnehall(
     onExporteraPdf: () -> Unit,
     onExporteraJson: () -> Unit,
     onImporteraJson: () -> Unit,
+    autoBackup: se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand =
+        se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand(),
+    onAutoBackupPa: (Boolean) -> Unit = {},
+    onByttAutoBackupMapp: () -> Unit = {},
+    onAutoBackupIntervall: (Int) -> Unit = {},
+    onKorNuAutoBackup: () -> Unit = {},
     aftnarLediga: Boolean = true,
     semesterdagarPerAr: Int = se.tmconnect.flextid.regler.SEMESTERDAGAR_STANDARD,
     semesterarKalenderar: Boolean = false,
@@ -867,6 +883,15 @@ internal fun InstallningarInnehall(
             OutlinedButton(onClick = onImporteraJson, modifier = Modifier.tryckyta48()) {
                 Text(stringResource(R.string.importera_sakerhetskopia))
             }
+        }
+        item {
+            FlextidAutoBackupAvsnitt(
+                tillstand = autoBackup,
+                onPa = onAutoBackupPa,
+                onByttMapp = onByttAutoBackupMapp,
+                onIntervall = onAutoBackupIntervall,
+                onKorNu = onKorNuAutoBackup,
+            )
         }
         item { Spacer(modifier = Modifier.padding(bottom = 24.dp)) }
     }

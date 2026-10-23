@@ -27,23 +27,22 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import se.tmconnect.flextid.data.AutoBackupInstallningarLager
 import se.tmconnect.flextid.data.Dag
 import se.tmconnect.flextid.data.FlextidRepository
 import se.tmconnect.flextid.data.Installning
 import se.tmconnect.flextid.data.UiInstallningarLager
+import se.tmconnect.flextid.export.AutoSakerhetskopiaPlanerare
 import se.tmconnect.flextid.export.ManadsCsvTexter
-import se.tmconnect.flextid.export.SakerhetskopiaInnehall
 import se.tmconnect.flextid.export.SakerhetskopiaJsonLasResult
+import se.tmconnect.flextid.export.skapaFlextidSakerhetskopiaJson
 import se.tmconnect.flextid.export.byggManadsCsv
 import se.tmconnect.flextid.regler.ManadsRapportData
 import se.tmconnect.flextid.regler.ManadsRapportTexter
 import se.tmconnect.flextid.regler.byggManadsRapport
-import se.tmconnect.flextid.export.dagTillSakerhetskopia
-import se.tmconnect.flextid.export.installningTillSakerhetskopia
 import se.tmconnect.flextid.export.lasSakerhetskopiaJson
 import se.tmconnect.flextid.export.sakerhetskopiaDagTillDag
 import se.tmconnect.flextid.export.sakerhetskopiaInstallningTillInstallning
-import se.tmconnect.flextid.export.skrivSakerhetskopiaJson
 import se.tmconnect.flextid.paminnelse.FlextidPaminnelseInstallningarLager
 import se.tmconnect.flextid.paminnelse.FlextidPaminnelseKalla
 import se.tmconnect.flextid.paminnelse.PaminnelseWorker
@@ -62,6 +61,7 @@ import se.tmconnect.flextid.regler.tolkaTidText
 import se.tmconnect.karna.export.skrivCsvMedBom
 import se.tmconnect.karna.paminnelse.PaminnelsePlanerare
 import se.tmconnect.karna.pro.ProKalla
+import se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand
 import se.tmconnect.karna.tema.TemaLage
 import java.util.Locale
 
@@ -117,6 +117,7 @@ class FlextidViewModel(
     private val proKalla: ProKalla,
     private val appContext: Context,
 ) : ViewModel() {
+    private val autoBackupInstallningar = AutoBackupInstallningarLager(appContext)
     private val _veckaAnkar = MutableStateFlow(mandagISammaVecka(LocalDate.now()))
     val veckaAnkar = _veckaAnkar.asStateFlow()
 
@@ -147,6 +148,23 @@ class FlextidViewModel(
             SharingStarted.WhileSubscribed(5_000),
             false,
         )
+
+    val autoBackup =
+        combine(
+            autoBackupInstallningar.autoBackupMapp,
+            autoBackupInstallningar.autoBackupMappNamn,
+            autoBackupInstallningar.autoBackupIntervallDagar,
+            autoBackupInstallningar.autoBackupSenaste,
+            autoBackupInstallningar.autoBackupFel,
+        ) { mapp, namn, intervall, senaste, fel ->
+            AutoBackupTillstand(
+                pa = mapp != null,
+                mappNamn = namn,
+                intervallDagar = intervall,
+                senaste = senaste,
+                fel = fel,
+            )
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AutoBackupTillstand())
 
     val stamplaInPaminnelseMinEfterMidnatt =
         paminnelseInstallningar.stamplaInPaminnelseMinEfterMidnatt.stateIn(
@@ -567,23 +585,42 @@ class FlextidViewModel(
         viewModelScope.launch { uiInstallningarLager.sattExportArManad(arManad) }
     }
 
-    suspend fun skapaSakerhetskopiaJson(): String {
-        val dagar = repository.hamtaAllaDagar()
-        val inst = repository.hamtaInstallning()
-        val stamplaInMin = paminnelseInstallningar.stamplaInPaminnelseMinEfterMidnatt.first()
-        val innehall =
-            SakerhetskopiaInnehall(
-                version = se.tmconnect.flextid.export.FLEXTID_SAKERHETSKOPIA_VERSION,
-                skapad = DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.now()),
-                installning =
-                    installningTillSakerhetskopia(inst, stamplaInMin).copy(
-                        aftnarLediga = uiInstallningarLager.aftnarLediga.first(),
-                        semesterdagarPerAr = uiInstallningarLager.semesterdagarPerAr.first(),
-                        semesterarStartmanad = uiInstallningarLager.semesterarStartmanad.first(),
-                    ),
-                dagar = dagar.map { dagTillSakerhetskopia(it) },
+    suspend fun skapaSakerhetskopiaJson(): String =
+        skapaFlextidSakerhetskopiaJson(repository, uiInstallningarLager, paminnelseInstallningar)
+
+    fun valtAutoBackupMapp(uri: Uri, namn: String?) {
+        viewModelScope.launch {
+            val tidigare = autoBackupInstallningar.autoBackupMapp.first()
+            autoBackupInstallningar.sattAutoBackupMapp(uri.toString(), namn)
+            if (tidigare == null) {
+                AutoSakerhetskopiaPlanerare.korNu(appContext)
+            }
+            synkaAutoBackupJobb()
+        }
+    }
+
+    fun stangAvAutoBackup() {
+        viewModelScope.launch {
+            autoBackupInstallningar.sattAutoBackupMapp(null, null)
+            synkaAutoBackupJobb()
+        }
+    }
+
+    fun sattAutoBackupIntervall(dagar: Int) {
+        viewModelScope.launch { autoBackupInstallningar.sattAutoBackupIntervall(dagar) }
+    }
+
+    fun korNuAutoBackup() {
+        AutoSakerhetskopiaPlanerare.korNu(appContext)
+    }
+
+    fun synkaAutoBackupJobb() {
+        viewModelScope.launch {
+            AutoSakerhetskopiaPlanerare.synka(
+                appContext,
+                autoBackupInstallningar.autoBackupMapp.first() != null,
             )
-        return skrivSakerhetskopiaJson(innehall)
+        }
     }
 
     fun importeraSakerhetskopia(json: String) {
