@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-23-styrelserummet-exempelhandlingar.md
 försök: 1
-beror-på: 2026-10-23-styrelserummet-exempel-03-atgarder-el-varme-ventilation-hiss.md
+beror-på: 2026-10-23-styrelserummet-exempel-03-atgarder-el-varme-ventilation-hiss-f2.md
 
 ## Ändra bara dessa filer
 - styrelserummet/src/main/kotlin/se/tmconnect/styrelserummet/underlag/exempel/ExempelData.kt
