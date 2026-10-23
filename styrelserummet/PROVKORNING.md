@@ -8,6 +8,7 @@ Mål: ladda upp en riktig (eller påhittad) underhållsplan och årsredovisning 
 2. **En Anthropic API-nyckel** från console.anthropic.com. Lägg en låg utgiftsgräns (till exempel 100 kr) i konsolen. Nyckeln skrivs aldrig i en fil i repot.
 3. **Repot** (`mattehe-creator/appfabriken`) uppdaterat till senaste `main`.
 4. **PDF-filer med markerbar text.** Skannade filer läses inte. Prova gärna först med påhittade filer (se längst ned) och sedan en riktig underhållsplan.
+5. **Påhittade exempel-PDF:er** (rekommenderas som första test): skapa med `./gradlew :styrelserummet-server:skapaExempel -PexempelKatalog=./prov` (katalogen skapas om den saknas). Ladda upp `underhallsplan-exempel.pdf` och `arsredovisning-exempel.pdf` från den katalogen.
 
 ## Starta (PowerShell, i repots rotmapp)
 
@@ -35,6 +36,16 @@ Bara maskad text (personnummer, e-post och telefonnummer ersätts) skickas till 
 ## Efteråt
 
 Skicka tillbaka (i chatten) vad som blev bra och vad som blev fel, gärna utan filinnehåll. Jag gör uppdrag av det. Radera provdatat: `Remove-Item -Recurse $env:STYRELSERUMMET_DATA`.
+
+## Påhittade exempelfiler
+
+Brf Exempelgården är påhittad (organisationsnummer 000000-0000). Generera PDF:erna lokalt:
+
+```powershell
+.\gradlew.bat :styrelserummet-server:skapaExempel -PexempelKatalog=.\prov
+```
+
+Filerna `underhallsplan-exempel.pdf` och `arsredovisning-exempel.pdf` hamnar i katalogen. De checkas inte in i repot.
 
 ## Driftsättning
 
