@@ -123,7 +123,7 @@ function visa(json, provad) {
     kropp.appendChild(tr);
   });
   if (csvUrl) URL.revokeObjectURL(csvUrl);
-  csvUrl = URL.createObjectURL(new Blob([json.csv], { type: "text/csv;charset=utf-8" }));
+  csvUrl = URL.createObjectURL(new Blob(["\uFEFF" + (json.csv || "")], { type: "text/csv;charset=utf-8" }));
   document.getElementById("csv").href = csvUrl;
   document.getElementById("anmarkning").textContent = json.anmarkning;
   document.getElementById("resultat").hidden = false;

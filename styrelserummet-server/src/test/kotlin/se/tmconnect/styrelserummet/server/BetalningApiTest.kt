@@ -132,7 +132,7 @@ class BetalningApiTest {
             assertEquals(HttpStatusCode.OK, client.get("/j/$id/utskrift").status)
             val plan = client.get("/api/jobb/$id/plan.csv")
             assertEquals(HttpStatusCode.OK, plan.status)
-            assertTrue(plan.bodyAsText().startsWith("år;avskrivning;bokfört värde vid årets slut"))
+            assertTrue(plan.bodyAsText().removePrefix("\uFEFF").startsWith("år;avskrivning;bokfört värde vid årets slut"))
             val utskrift = client.get("/j/$id/utskrift").bodyAsText()
             assertTrue(utskrift.contains("Avskrivningsplan"))
             assertTrue(utskrift.contains("Avskrivning per grupp"))

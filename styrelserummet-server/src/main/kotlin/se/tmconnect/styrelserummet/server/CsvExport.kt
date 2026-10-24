@@ -1,6 +1,7 @@
 package se.tmconnect.styrelserummet.server
 
 import se.tmconnect.styrelserummet.regler.bokfortVarde
+import se.tmconnect.styrelserummet.regler.csvCell
 import se.tmconnect.styrelserummet.underlag.UTKAST_RAD
 
 fun tillCsv(komponenter: List<KomponentDto>, arsslut: Int): String {
@@ -15,7 +16,7 @@ fun tillCsv(komponenter: List<KomponentDto>, arsslut: Int): String {
         "Säkerhet",
     )
     val rader = buildList {
-        add(rubriker.joinToString(";") { csvFalt(it) })
+        add(rubriker.joinToString(";") { csvCell(it) })
         komponenter.forEach { k ->
             val modell = franDto(k)
             add(
@@ -28,16 +29,11 @@ fun tillCsv(komponenter: List<KomponentDto>, arsslut: Int): String {
                     bokfortVarde(modell, arsslut).toString(),
                     k.kalla,
                     k.sakerhet,
-                ).joinToString(";") { csvFalt(it) },
+                ).joinToString(";") { csvCell(it) },
             )
         }
-        add(csvFalt(UTKAST_RAD))
+        add(csvCell(UTKAST_RAD))
     }
     return rader.joinToString("\n")
 }
 
-private fun csvFalt(text: String): String {
-    val behoverCitat = text.contains(';') || text.contains('"') || text.contains('\n') || text.contains('\r')
-    if (!behoverCitat) return text
-    return "\"" + text.replace("\"", "\"\"") + "\""
-}
