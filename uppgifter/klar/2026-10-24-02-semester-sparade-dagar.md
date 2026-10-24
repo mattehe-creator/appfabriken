@@ -30,3 +30,5 @@ gradle :flextid:testDebugUnitTest --tests "*SemesterSparadeTest" --tests "*Semes
 ## Gör inte
 - Ändra andra filer.
 - Ändra befintliga tester.
+
+utfall: underkänd 2026-10-24 av Cursor (PR #647). Ersatt av 2026-10-24-02-semester-sparade-dagar-f2.md
