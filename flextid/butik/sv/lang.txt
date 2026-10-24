@@ -1,16 +1,16 @@
 Flextid håller koll på din arbetstid och ditt flexsaldo, utan konto och utan internet.
 
 Stämpla in och ut
-Ett tryck när du kommer och ett när du går, i appen eller direkt från snabbinställningarna med rutan Stämpla. Rasten fylls i automatiskt och kan ändras. Glömde du stämpla går dagen att rätta i efterhand.
+Ett tryck när du kommer och ett när du går, i appen, från widgeten på hemskärmen eller direkt från snabbinställningarna med rutan Stämpla. Rasten fylls i automatiskt och kan ändras. Glömde du stämpla går dagen att rätta i efterhand.
 
 När kan jag gå hem?
 Under dagen visar Flextid när din normaltid är fylld, och när saldot blir noll om du har plus eller minus sedan tidigare.
 
 Saldo och vecka
-Ange din egen normaltid och vilka veckodagar du arbetar. Appen räknar saldot mot normaltiden och visar veckan dag för dag. Ledighet, semester, sjukdom och helgdag registreras med ett val. Veckan och månaden visar arbetad tid mot normaltiden, och du kan dela veckans tider som text med valfri app. Ange gärna ett tak och ett golv för saldot, så säger appen till när du är utanför.
+Ange din egen normaltid och vilka veckodagar du arbetar. Kortare fredag eller sommartid? Normaltiden kan vara olika per veckodag och under en period varje år. Appen räknar saldot mot normaltiden och visar veckan dag för dag. Flexledighet (som drar normaltiden från saldot), semester, sjukdom och annan ledighet registreras med ett val. Widgeten på hemskärmen visar saldot hela tiden. Veckan och månaden visar arbetad tid mot normaltiden, och du kan dela veckans tider som text med valfri app. Ange gärna ett tak och ett golv för saldot, så säger appen till när du är utanför.
 
 Svenska helgdagar och semester
-Röda dagar är inbyggda och visas i veckan, och du får ingen påminnelse om att stämpla in på dem. Midsommar-, jul- och nyårsafton kan räknas som lediga. Appen visar hur många semesterdagar du har tagit, planerat och har kvar under semesteråret.
+Röda dagar är inbyggda och visas i veckan. De har ingen normaltid, så arbetar du en röd dag blir det plus, och du får ingen påminnelse om att stämpla in. Midsommar-, jul- och nyårsafton kan räknas som lediga. Appen visar hur många semesterdagar du har tagit, planerat och har kvar under semesteråret.
 
 Påminnelser
 Valfria påminnelser om att stämpla in på morgonen och att stämpla ut när normaltiden är slut.
