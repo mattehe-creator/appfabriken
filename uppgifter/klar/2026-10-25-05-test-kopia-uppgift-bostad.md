@@ -46,3 +46,5 @@ gradle :husloggen:testDebugUnitTest --tests "*SakerhetskopiaUppgiftBostadTest"
 - Ändra `SakerhetskopiaModell.kt`. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Jämföra hela `Uppgift`-objekt (fältet `skapad` skiljer sig).
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-24 av Cursor (PR #677). Ersatt av 2026-10-25-05-test-kopia-uppgift-bostad-f2.md
