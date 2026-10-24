@@ -209,4 +209,11 @@
     <string name="sommartid_normaltid">Normal hours in the period</string>
     <string name="sommartid_ogiltig">Summer hours not saved: enter from, to and normal hours.</string>
     <string name="normaltid_undantag_spara">Save normal hours</string>
+    <string name="widget_namn">Flextime balance</string>
+    <string name="widget_beskrivning">Balance and a button to clock in or out</string>
+    <string name="widget_saldo">Balance %1$s</string>
+    <string name="widget_inte_instamplad">Not clocked in today</string>
+    <string name="widget_in_sedan">In since %1$s</string>
+    <string name="widget_klar">Done for today</string>
+    <string name="widget_oppna">Open</string>
 </resources>

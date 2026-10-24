@@ -40,6 +40,7 @@ import se.tmconnect.flextid.export.ManadsCsvTexter
 import se.tmconnect.flextid.export.SakerhetskopiaJsonLasResult
 import se.tmconnect.flextid.export.skapaFlextidSakerhetskopiaJson
 import se.tmconnect.flextid.export.byggManadsCsv
+import se.tmconnect.flextid.widget.SaldoWidget
 import se.tmconnect.flextid.regler.ManadsRapportData
 import se.tmconnect.flextid.regler.ManadsRapportTexter
 import se.tmconnect.flextid.regler.byggManadsRapport
@@ -440,6 +441,14 @@ class FlextidViewModel(
         )
 
     init {
+        viewModelScope.launch {
+            // Widgeten på hemskärmen visar saldot; rita om den när dagar eller normaltid ändras.
+            combine(repository.observeraAllaDagar(), arbetstidFlode) { _, _ -> Unit }.collect {
+                withContext(Dispatchers.IO) {
+                    runCatching { SaldoWidget.uppdateraAlla(appContext) }
+                }
+            }
+        }
         viewModelScope.launch {
             // Kontrollera datumet varje minut, så att "idag" byts vid midnatt om appen ligger öppen.
             while (true) {

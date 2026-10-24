@@ -209,4 +209,11 @@
     <string name="sommartid_normaltid">Normaltid under perioden</string>
     <string name="sommartid_ogiltig">Sommartiden sparades inte: ange från, till och normaltid.</string>
     <string name="normaltid_undantag_spara">Spara normaltid</string>
+    <string name="widget_namn">Flexsaldo</string>
+    <string name="widget_beskrivning">Saldo och en knapp för att stämpla in eller ut</string>
+    <string name="widget_saldo">Saldo %1$s</string>
+    <string name="widget_inte_instamplad">Inte instämplad i dag</string>
+    <string name="widget_in_sedan">In sedan %1$s</string>
+    <string name="widget_klar">Klar för i dag</string>
+    <string name="widget_oppna">Öppna</string>
 </resources>

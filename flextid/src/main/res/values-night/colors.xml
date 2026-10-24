@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="fonster_bakgrund">#141412</color>
+    <color name="widget_bakgrund">#FF1B1E1D</color>
+    <color name="widget_text">#FFE7E5DF</color>
+    <color name="widget_text_svag">#FFC8C4BB</color>
+    <color name="widget_knapp">#FF7FC4BC</color>
+    <color name="widget_text_pa_knapp">#FF0B2422</color>
 </resources>

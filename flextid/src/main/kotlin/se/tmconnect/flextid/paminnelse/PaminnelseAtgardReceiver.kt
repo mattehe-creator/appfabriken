@@ -31,6 +31,7 @@ class PaminnelseAtgardReceiver : BroadcastReceiver() {
             try {
                 withContext(Dispatchers.IO) {
                     korAtgard(context.applicationContext, intent, notisId)
+                    runCatching { se.tmconnect.flextid.widget.SaldoWidget.uppdateraAlla(context.applicationContext) }
                 }
             } finally {
                 pendingResult.finish()
