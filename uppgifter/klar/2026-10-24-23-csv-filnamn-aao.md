@@ -27,3 +27,5 @@ gradle :husloggen:testDebugUnitTest --tests "*AvlasningCsvFilnamnTest"
 
 ## Gör inte
 - Ändra andra filer eller funktionen `avlasningCsv`.
+
+utfall: underkänd 2026-10-24 av Cursor (PR #663). Ersatt av 2026-10-24-23-csv-filnamn-aao-f2.md
