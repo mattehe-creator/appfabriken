@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -95,8 +96,10 @@ fun BostaderInstallningSektion(
     hamtaRaderingInfo: suspend (Long) -> Int,
     modifier: Modifier = Modifier,
 ) {
-    var visaNy by remember { mutableStateOf(false) }
-    var redigera by remember { mutableStateOf<Bostad?>(null) }
+    // Sparas över rotation, annars stängs dialogen och det inskrivna försvinner.
+    var visaNy by rememberSaveable { mutableStateOf(false) }
+    var redigeraId by rememberSaveable { mutableStateOf<Long?>(null) }
+    val redigera = redigeraId?.let { id -> bostader.firstOrNull { it.id == id } }
     var visaSistaVarning by remember { mutableStateOf(false) }
     var bekraftaBorttagning by remember { mutableStateOf<Bostad?>(null) }
     var bekraftAntal by remember { mutableStateOf(0) }
@@ -122,7 +125,7 @@ fun BostaderInstallningSektion(
                         Text(text = it, style = MaterialTheme.typography.bodySmall)
                     }
                 }
-                TextButton(onClick = { redigera = bostad }) {
+                TextButton(onClick = { redigeraId = bostad.id }) {
                     Text(text = stringResource(R.string.knapp_andra))
                 }
             }
@@ -153,7 +156,7 @@ fun BostaderInstallningSektion(
             startNamn = bostad.namn,
             startAdress = bostad.adress.orEmpty(),
             startAnteckning = bostad.anteckning.orEmpty(),
-            onDismiss = { redigera = null },
+            onDismiss = { redigeraId = null },
             onSpara = { namn, adress, anteckning ->
                 onUppdateraBostad(
                     bostad.copy(
@@ -162,14 +165,14 @@ fun BostaderInstallningSektion(
                         anteckning = anteckning.ifBlank { null },
                     ),
                 )
-                redigera = null
+                redigeraId = null
             },
             onTaBort = if (bostader.size > 1) {
                 {
                     scope.launch {
                         bekraftAntal = hamtaRaderingInfo(bostad.id)
                         bekraftaBorttagning = bostad
-                        redigera = null
+                        redigeraId = null
                     }
                 }
             } else {
@@ -235,9 +238,9 @@ private fun BostadFormularDialog(
     onSpara: (String, String, String) -> Unit,
     onTaBort: (() -> Unit)? = null,
 ) {
-    var namn by remember { mutableStateOf(startNamn) }
-    var adress by remember { mutableStateOf(startAdress) }
-    var anteckning by remember { mutableStateOf(startAnteckning) }
+    var namn by rememberSaveable { mutableStateOf(startNamn) }
+    var adress by rememberSaveable { mutableStateOf(startAdress) }
+    var anteckning by rememberSaveable { mutableStateOf(startAnteckning) }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = titel) },

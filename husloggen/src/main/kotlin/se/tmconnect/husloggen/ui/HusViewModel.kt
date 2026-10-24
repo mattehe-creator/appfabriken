@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import java.time.LocalDate
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -384,6 +386,14 @@ class HusViewModel(
     private val _meddelanden = MutableSharedFlow<HusUiMeddelande>()
     val meddelanden: SharedFlow<HusUiMeddelande> = _meddelanden.asSharedFlow()
 
+    /** Pågående sparning av ett formulär. Ett andra tryck på Spara medan den pågår ignoreras. */
+    private var sparJobb: Job? = null
+
+    private fun sparaEnGang(block: suspend CoroutineScope.() -> Unit) {
+        if (sparJobb?.isActive == true) return
+        sparJobb = viewModelScope.launch(block = block)
+    }
+
     /** Filer tillagda under pågående formulärsession som ska raderas vid avbryt utan spara. */
     private var bilderTillagdaISession: Set<String> = emptySet()
 
@@ -450,7 +460,7 @@ class HusViewModel(
             _formular.value = tillstand.copy(valideringsFel = fel)
             return false
         }
-        viewModelScope.launch {
+        sparaEnGang {
             val befintlig = if (tillstand.redigerarId != 0L) {
                 repository.hamtaUppgift(tillstand.redigerarId)
             } else {
@@ -524,9 +534,11 @@ class HusViewModel(
         }
     }
 
+    // Eagerly: ingen i UI samlar in flödet, så med WhileSubscribed stod värdet kvar på 0
+    // och gränsen på 15 poster släppte alltid igenom "Ny post".
     private val totaltAntalPoster: StateFlow<Int> =
         repository.totaltAntalPosterFlow()
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     fun kanLaggaTillNyPost(): Boolean =
         kanLaggaTillPost(totaltAntalPoster.value, proKalla.arPro.value)
@@ -696,7 +708,7 @@ class HusViewModel(
             _postFormular.value = tillstand.copy(valideringsFel = fel)
             return false
         }
-        viewModelScope.launch {
+        sparaEnGang {
             val befintlig = if (tillstand.redigerarId != 0L) {
                 repository.hamtaPost(tillstand.redigerarId)
             } else {
@@ -727,7 +739,10 @@ class HusViewModel(
                 skapad = befintlig?.skapad ?: System.currentTimeMillis(),
             )
             when (repository.sparaPost(post, proKalla.arPro.value)) {
-                SparaPostResult.GransNadd -> return@launch
+                SparaPostResult.GransNadd -> {
+                    // Gränsen för gratisversionen är nådd: visa Pro i stället för att inget händer.
+                    visaProDialog()
+                }
                 is SparaPostResult.Sparad -> {
                     tillstand.planeradKostnadIdEfterSparad?.let { planId ->
                         repository.hamtaPlaneradKostnad(planId)?.let { repository.taBortPlaneradKostnad(it) }
@@ -1107,7 +1122,7 @@ class HusViewModel(
             _matareFormular.value = tillstand.copy(valideringsFel = MatareFel.PrisOgiltigt)
             return
         }
-        viewModelScope.launch {
+        sparaEnGang {
             val befintlig =
                 if (tillstand.redigerarId != 0L) repository.hamtaMatare(tillstand.redigerarId) else null
             val bostadId = valdBostadId.value ?: befintlig?.bostadId ?: repository.hamtaForvaldBostadId()
@@ -1166,7 +1181,7 @@ class HusViewModel(
 
     fun sparaAvlasningFormular(bekraftatLagreVarde: Boolean = false) {
         val tillstand = _avlasningFormular.value ?: return
-        viewModelScope.launch {
+        sparaEnGang {
             val befintliga = repository.avlasningarForMatareLista(tillstand.matareId)
             val fel =
                 valideraAvlasning(
@@ -1177,7 +1192,7 @@ class HusViewModel(
                 )
             if (fel != null) {
                 _avlasningFormular.value = tillstand.copy(valideringsFel = fel)
-                return@launch
+                return@sparaEnGang
             }
             val varde = tolkaMatareVardeTillTusendel(tillstand.vardeText)!!
             val foregaende =
@@ -1187,7 +1202,7 @@ class HusViewModel(
                 varde < foregaende.varde
             ) {
                 _avlasningFormular.value = tillstand.copy(visarLagreVardeBekraftelse = true)
-                return@launch
+                return@sparaEnGang
             }
             val befintlig =
                 if (tillstand.redigerarId != 0L) {
@@ -1301,15 +1316,23 @@ class HusViewModel(
             if (tillstand.redigerarId != 0L) {
                 return@launch
             }
-            tillstand.filnamn?.let { repository.taBortDokumentfil(it) }
             when (val resultat = withContext(Dispatchers.IO) { repository.kopieraDokumentFranUri(uri) }) {
-                is KopieraDokumentResult.Ok ->
+                is KopieraDokumentResult.Ok -> {
+                    // Den tidigare filen tas bort först när den nya finns, så att ett misslyckat
+                    // byte inte lämnar formuläret med ett filnamn vars fil redan är raderad.
+                    val aktuellt = _dokumentFormular.value
+                    if (aktuellt == null || aktuellt.redigerarId != 0L) {
+                        repository.taBortDokumentfil(resultat.filnamn)
+                        return@launch
+                    }
+                    aktuellt.filnamn?.let { repository.taBortDokumentfil(it) }
                     _dokumentFormular.value =
-                        tillstand.copy(
+                        aktuellt.copy(
                             filnamn = resultat.filnamn,
                             mimeTyp = resultat.mimeTyp,
                             valideringsFel = null,
                         )
+                }
                 KopieraDokumentResult.ForStor -> {
                     _meddelanden.emit(HusUiMeddelande.DokumentForStort)
                 }
@@ -1330,7 +1353,7 @@ class HusViewModel(
             _dokumentFormular.value = tillstand.copy(valideringsFel = fel)
             return
         }
-        viewModelScope.launch {
+        sparaEnGang {
             if (tillstand.redigerarId == 0L) {
                 val bostadId = valdBostadId.value ?: repository.hamtaForvaldBostadId()
                 repository.sparaDokument(
@@ -1345,7 +1368,7 @@ class HusViewModel(
                     ),
                 )
             } else {
-                val befintlig = repository.hamtaDokument(tillstand.redigerarId) ?: return@launch
+                val befintlig = repository.hamtaDokument(tillstand.redigerarId) ?: return@sparaEnGang
                 repository.sparaDokument(
                     befintlig.copy(
                         titel = tillstand.titel.trim(),
@@ -1436,7 +1459,7 @@ class HusViewModel(
             _planFormular.value = tillstand.copy(valideringsFel = fel)
             return
         }
-        viewModelScope.launch {
+        sparaEnGang {
             val bostadId = valdBostadId.value ?: repository.hamtaForvaldBostadId()
             repository.sparaPlaneradKostnad(
                 PlaneradKostnad(
