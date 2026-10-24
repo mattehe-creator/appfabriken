@@ -44,3 +44,5 @@ gradle :husloggen:testDebugUnitTest --tests "*HusSmaHjalpfunktionerTest"
 - Ändra andra filer.
 - Ändra produktionskoden. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-24 av Cursor (PR #678). Ersatt av 2026-10-25-06-test-sma-hjalpfunktioner-f2.md
