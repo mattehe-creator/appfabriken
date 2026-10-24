@@ -52,6 +52,7 @@ import se.tmconnect.flextid.paminnelse.PaminnelseWorker
 import se.tmconnect.flextid.regler.DagTyp
 import se.tmconnect.flextid.regler.TidValideringFel
 import se.tmconnect.flextid.regler.arbetadeMinuter
+import se.tmconnect.flextid.regler.avrundaTillHelMinut
 import se.tmconnect.flextid.regler.dagensUtfall
 import se.tmconnect.flextid.regler.SEMESTERAR_STARTMANAD_STANDARD
 import se.tmconnect.flextid.regler.SEMESTERDAGAR_STANDARD
@@ -468,7 +469,7 @@ class FlextidViewModel(
         viewModelScope.launch {
             val inst = installning.value
             when (
-                repository.stamplaIn(LocalDate.now(), LocalTime.now(), inst.standardRastMin, proKalla.arPro.value)
+                repository.stamplaIn(LocalDate.now(), avrundaTillHelMinut(LocalTime.now()), inst.standardRastMin, proKalla.arPro.value)
             ) {
                 FlextidRepository.SparaDagResult.Ok -> _meddelanden.emit(FlextidMeddelande.Sparat)
                 FlextidRepository.SparaDagResult.GransUtanPro -> {
@@ -482,7 +483,7 @@ class FlextidViewModel(
 
     fun stamplaUt() {
         viewModelScope.launch {
-            when (repository.stamplaUt(LocalDate.now(), LocalTime.now(), proKalla.arPro.value)) {
+            when (repository.stamplaUt(LocalDate.now(), avrundaTillHelMinut(LocalTime.now()), proKalla.arPro.value)) {
                 FlextidRepository.SparaDagResult.Ok -> _meddelanden.emit(FlextidMeddelande.Sparat)
                 FlextidRepository.SparaDagResult.GransUtanPro -> {
                     visaProDialog()
