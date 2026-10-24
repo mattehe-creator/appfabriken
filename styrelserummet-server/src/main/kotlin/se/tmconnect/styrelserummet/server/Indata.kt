@@ -40,3 +40,21 @@ fun valideraArsslut(text: String, nuAr: Int): Int? {
     if (ar !in 2000..nuAr + 1) return null
     return ar
 }
+
+/**
+ * Är filen årsredovisningen (och inte underhållsplanen)? Namnet avgör om det säger det
+ * ("årsredovisning", "arsredovisning", "redovisning"); annars innehållet: en årsredovisning har
+ * både resultaträkning och balansräkning. Tidigare räckte "ars" i namnet, vilket slog till på
+ * till exempel "Brf Marsvinet underhållsplan".
+ */
+fun arArsredovisning(filnamn: String, text: String): Boolean {
+    val namn = filnamn.lowercase()
+    if (namn.contains("underh")) return false
+    if (namn.contains("redov") || namn.contains("rsred") || namn.contains("bokslut")) return true
+    val innehall = text.lowercase()
+    return innehall.contains("resultaträkning") && innehall.contains("balansräkning")
+}
+
+/** Lagringsnamn med löpnummer först, så att två filer med samma namn inte skriver över varandra. */
+fun lagringsnamn(lopnummer: Int, filnamn: String): String =
+    "${lopnummer.toString().padStart(2, '0')}-${sakertFilnamn(filnamn)}"

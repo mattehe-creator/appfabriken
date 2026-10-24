@@ -98,7 +98,7 @@ class JobbLagring(
         if (!dir.exists()) return emptyList()
         val filerDir = dir / "filer"
         if (!filerDir.exists()) return emptyList()
-        return filerDir.listDirectoryEntries().toList()
+        return filerDir.listDirectoryEntries().sortedBy { it.fileName.toString() }
     }
 
     fun raderaJobb(id: String) {
