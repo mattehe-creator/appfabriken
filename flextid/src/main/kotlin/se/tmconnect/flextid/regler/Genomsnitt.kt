@@ -3,7 +3,6 @@ package se.tmconnect.flextid.regler
 import java.time.LocalDate
 import java.time.LocalTime
 import se.tmconnect.flextid.data.Dag
-import se.tmconnect.flextid.regler.DagTyp
 
 fun genomsnittArbetadMin(dagar: List<Dag>, fran: LocalDate, till: LocalDate): Int? {
     val filtreradeDagar = dagar.filter { dag ->
