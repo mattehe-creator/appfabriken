@@ -119,9 +119,17 @@ class HusRepository(
         if (dao.antalBostader() <= 1) {
             return TaBortBostadResult.SistaBostaden
         }
+        // Raderna försvinner med bostaden (CASCADE), men filerna måste tas bort för hand,
+        // annars ligger bilder och dokument kvar på telefonen fast användaren raderat dem.
+        val bildfiler = dao.allaPoster().filter { it.bostadId == bostad.id }.flatMap { postFiler(it) }
+        val dokumentfiler = dao.allaDokument().filter { it.bostadId == bostad.id }.map { it.filnamn }
         dao.taBortBostad(bostad)
+        bildfiler.forEach { bildLager.taBort(it) }
+        dokumentfiler.forEach { dokumentLager.taBort(it) }
         return TaBortBostadResult.Borttagen
     }
+
+    private fun postFiler(post: Post): List<String> = (lasBilder(post) + listOfNotNull(post.kvittoFil)).distinct()
 
     fun avlasningarForMatare(matareId: Long): Flow<List<Avlasning>> =
         dao.avlasningarForMatareFlow(matareId)
@@ -200,8 +208,8 @@ class HusRepository(
     suspend fun uppdateraPost(post: Post) = dao.uppdateraPost(post)
 
     suspend fun taBortPost(post: Post) {
-        lasBilder(post).forEach { bildLager.taBort(it) }
         dao.taBortPost(post)
+        postFiler(post).forEach { bildLager.taBort(it) }
     }
 
     suspend fun antalPoster(): Int = dao.antalPoster()
@@ -327,12 +335,35 @@ class HusRepository(
         val forvaldBostadId = hamtaForvaldBostadId()
         databas.withTransaction {
             val bostadIndexTillId = mutableMapOf<Int, Long>()
+            val befintligaBostader = dao.allaBostader()
+            val befintligaMatare = dao.allaMatare()
+            val befintligaDokument = dao.allaDokument()
+            val befintligaPlaner = dao.allaPlaneradeKostnader()
+            // En tom bostad (appen skapar en vid första start) tas över av den första bostaden i
+            // filen, så att en återställning på ny telefon inte ger en extra, tom bostad.
+            val tomBostad =
+                befintligaBostader.singleOrNull()?.takeIf { b ->
+                    befintligaPoster.none { it.bostadId == b.id } &&
+                        befintligaUppgifter.none { it.bostadId == b.id } &&
+                        befintligaMatare.none { it.bostadId == b.id } &&
+                        befintligaDokument.none { it.bostadId == b.id } &&
+                        befintligaPlaner.none { it.bostadId == b.id }
+                }
             if (innehall.bostader.isEmpty()) {
                 bostadIndexTillId[0] = forvaldBostadId
             } else {
                 innehall.bostader.forEachIndexed { index, export ->
-                    val nyttId = dao.infogaBostad(sakerhetskopiaBostadTillBostad(export))
-                    bostadIndexTillId[index] = nyttId
+                    val ny = sakerhetskopiaBostadTillBostad(export)
+                    val samma = befintligaBostader.firstOrNull { it.namn.trim().equals(ny.namn, ignoreCase = true) }
+                    bostadIndexTillId[index] =
+                        when {
+                            samma != null -> samma.id
+                            index == 0 && tomBostad != null -> {
+                                dao.uppdateraBostad(ny.copy(id = tomBostad.id))
+                                tomBostad.id
+                            }
+                            else -> dao.infogaBostad(ny)
+                        }
                 }
             }
             fun bostadIdForIndex(index: Int): Long =
@@ -370,19 +401,37 @@ class HusRepository(
                 )
                 tillagda++
             }
+            // Mätare, avläsningar, dokument och planerade kostnader som redan finns läggs inte in igen,
+            // så att samma fil kan importeras två gånger utan dubbletter.
             val matareIndexTillId = mutableMapOf<Int, Long>()
             innehall.matare.forEachIndexed { index, export ->
-                val nyttId =
-                    dao.infogaMatare(
-                        sakerhetskopiaMatareTillMatare(export, bostadIdForIndex(export.bostadIndex)),
-                    )
-                matareIndexTillId[index] = nyttId
+                val ny = sakerhetskopiaMatareTillMatare(export, bostadIdForIndex(export.bostadIndex))
+                val samma =
+                    befintligaMatare.firstOrNull {
+                        it.bostadId == ny.bostadId &&
+                            it.namn.trim().equals(ny.namn, ignoreCase = true) &&
+                            it.enhet.trim().equals(ny.enhet, ignoreCase = true)
+                    }
+                matareIndexTillId[index] = samma?.id ?: dao.infogaMatare(ny)
             }
+            val befintligaAvlasningar = dao.allaAvlasningar().map { Triple(it.matareId, it.datum, it.varde) }.toMutableSet()
             for (export in innehall.avlasningar) {
                 val matareId = matareIndexTillId[export.matareIndex] ?: continue
-                dao.infogaAvlasning(sakerhetskopiaAvlasningTillAvlasning(export, matareId))
+                val ny = sakerhetskopiaAvlasningTillAvlasning(export, matareId)
+                if (befintligaAvlasningar.add(Triple(ny.matareId, ny.datum, ny.varde))) {
+                    dao.infogaAvlasning(ny)
+                }
             }
             for (export in innehall.dokument) {
+                val dokBostad = bostadIdForIndex(export.bostadIndex)
+                val finns =
+                    befintligaDokument.any {
+                        it.bostadId == dokBostad &&
+                            it.titel.trim() == export.titel.trim() &&
+                            it.tillagd == export.tillagd &&
+                            it.mimeTyp == export.mimeTyp
+                    }
+                if (finns) continue
                 export.filnamn.let { filnamn ->
                     if (filnamn !in dokumentFiler) {
                         error("Saknad dokumentfil i säkerhetskopia: $filnamn")
@@ -402,12 +451,15 @@ class HusRepository(
                 )
             }
             for (export in innehall.planeradeKostnader) {
-                dao.infogaPlaneradKostnad(
-                    sakerhetskopiaPlaneradKostnadTillPlaneradKostnad(
-                        export,
-                        bostadIdForIndex(export.bostadIndex),
-                    ),
-                )
+                val ny = sakerhetskopiaPlaneradKostnadTillPlaneradKostnad(export, bostadIdForIndex(export.bostadIndex))
+                val finns =
+                    befintligaPlaner.any {
+                        it.bostadId == ny.bostadId &&
+                            it.titel.trim().equals(ny.titel.trim(), ignoreCase = true) &&
+                            it.beloppOre == ny.beloppOre &&
+                            it.planeratAr == ny.planeratAr
+                    }
+                if (!finns) dao.infogaPlaneradKostnad(ny)
             }
         }
         return SakerhetskopiaImportResultat(tillagda = tillagda, hoppadeOver = hoppadeOver)

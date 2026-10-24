@@ -67,7 +67,7 @@ class HusViewModelBilderTest {
             InstallningarLager(context),
             context,
             FakeProKalla(),
-            idag,
+            { idag },
         )
     }
 

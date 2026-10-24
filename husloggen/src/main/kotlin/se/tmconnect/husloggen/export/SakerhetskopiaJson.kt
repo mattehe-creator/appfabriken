@@ -90,6 +90,8 @@ private fun skrivUppgiftObjekt(uppgift: SakerhetskopiaUppgift): String =
         uppgift.senastGjord?.let { laggTillFalt("senastGjord", jsonStrang(it.toString())) }
         uppgift.anteckning?.let { laggTillFalt("anteckning", jsonStrang(it)) }
         laggTillFalt("bostadIndex", uppgift.bostadIndex.toString())
+        // Parsern läser bara strängar, tal, objekt och listor, så påminnelsen skrivs som 0.
+        if (!uppgift.paminnelse) laggTillFalt("paminnelse", "0")
         append('}')
     }
 
@@ -130,6 +132,7 @@ private fun skrivMatareObjekt(matare: SakerhetskopiaMatare): String =
         laggTillFalt("enhet", jsonStrang(matare.enhet))
         matare.anteckning?.let { laggTillFalt("anteckning", jsonStrang(it)) }
         laggTillFalt("bostadIndex", matare.bostadIndex.toString())
+        matare.prisOrePerEnhet?.let { laggTillFalt("prisOrePerEnhet", it.toString()) }
         append('}')
     }
 
@@ -355,6 +358,7 @@ private fun lasUppgiftObjekt(falt: Map<String, Any?>): SakerhetskopiaUppgift? {
         senastGjord = lasDatum(falt["senastGjord"]),
         anteckning = falt["anteckning"] as? String,
         bostadIndex = lasBostadIndex(falt),
+        paminnelse = (falt["paminnelse"] as? Number)?.toLong() != 0L,
     )
 }
 
@@ -366,6 +370,7 @@ private fun lasMatareObjekt(falt: Map<String, Any?>): SakerhetskopiaMatare? {
         enhet = enhet,
         anteckning = falt["anteckning"] as? String,
         bostadIndex = lasBostadIndex(falt),
+        prisOrePerEnhet = (falt["prisOrePerEnhet"] as? Number)?.toLong(),
     )
 }
 
