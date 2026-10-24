@@ -41,6 +41,7 @@ data class SemesterSammanfattning(
     val uttagna: Int,
     val planerade: Int,
     val kvar: Int,
+    val sparade: Int = 0,
 )
 
 const val SEMESTERDAGAR_STANDARD = 25
@@ -51,10 +52,12 @@ fun semesterSammanfattning(
     arbetsdagarMask: Int,
     dagarPerAr: Int = SEMESTERDAGAR_STANDARD,
     startManad: Int = SEMESTERAR_STARTMANAD_STANDARD,
-    aftnarLediga: Boolean = true
+    aftnarLediga: Boolean = true,
+    sparadeDagar: Int = 0,
 ): SemesterSammanfattning {
     val ar = semesterArFor(idag, startManad)
     val uttagna = raknaDagarAvTyp(dagar, DagTyp.SEMESTER, ar.fran, idag, arbetsdagarMask, aftnarLediga)
     val planerade = raknaDagarAvTyp(dagar, DagTyp.SEMESTER, idag.plusDays(1), ar.till, arbetsdagarMask, aftnarLediga)
-    return SemesterSammanfattning(ar, uttagna, planerade, dagarPerAr.coerceAtLeast(0) - uttagna - planerade)
+    val sparade = sparadeDagar.coerceAtLeast(0)
+    return SemesterSammanfattning(ar, uttagna, planerade, dagarPerAr.coerceAtLeast(0) + sparade - uttagna - planerade, sparade)
 }
