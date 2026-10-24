@@ -352,14 +352,19 @@ class HusRepository(
             if (innehall.bostader.isEmpty()) {
                 bostadIndexTillId[0] = forvaldBostadId
             } else {
+                // Bostäder som en bostad i filen kan slås ihop med. Den tomma bostaden som tas över
+                // har fått ett nytt namn och får inte längre matchas på sitt gamla, annars hamnar en
+                // senare bostad i filen med det gamla namnet i samma bostad som den första.
+                val kandidater = befintligaBostader.toMutableList()
                 innehall.bostader.forEachIndexed { index, export ->
                     val ny = sakerhetskopiaBostadTillBostad(export)
-                    val samma = befintligaBostader.firstOrNull { it.namn.trim().equals(ny.namn, ignoreCase = true) }
+                    val samma = kandidater.firstOrNull { it.namn.trim().equals(ny.namn, ignoreCase = true) }
                     bostadIndexTillId[index] =
                         when {
                             samma != null -> samma.id
                             index == 0 && tomBostad != null -> {
                                 dao.uppdateraBostad(ny.copy(id = tomBostad.id))
+                                kandidater.remove(tomBostad)
                                 tomBostad.id
                             }
                             else -> dao.infogaBostad(ny)

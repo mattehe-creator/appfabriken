@@ -9,9 +9,9 @@ class RaderGranserTest {
 
     @Test
     fun rimligaRaderGodkanns() {
-        assertTrue(raderInomGranser(listOf(ok), 2025))
-        assertTrue(raderInomGranser(emptyList(), 2025))
-        assertTrue(raderInomGranser(listOf(ok.copy(anskaffningsar = 2026)), 2025))
+        assertTrue(raderInomGranser(listOf(ok), 2025, nuAr = 2025))
+        assertTrue(raderInomGranser(emptyList(), 2025, nuAr = 2025))
+        assertTrue(raderInomGranser(listOf(ok.copy(anskaffningsar = 2026)), 2025, nuAr = 2025))
     }
 
     @Test
@@ -30,12 +30,21 @@ class RaderGranserTest {
                 ok.copy(namn = "x".repeat(301)),
                 ok.copy(kalla = "x".repeat(301)),
             )
-        fall.forEach { assertFalse(it.toString(), raderInomGranser(listOf(it), 2025)) }
+        fall.forEach { assertFalse(it.toString(), raderInomGranser(listOf(it), 2025, nuAr = 2025)) }
+    }
+
+    @Test
+    fun komponentAnskaffadEfterRakenskapsaretGarAttSpara() {
+        // Tolkningen godtar anskaffningsår till och med nästa kalenderår. Ett utkast för
+        // räkenskapsåret 2023 med en takrenovering 2025 måste gå att spara oförändrat.
+        assertTrue(raderInomGranser(listOf(ok.copy(anskaffningsar = 2025)), 2023, nuAr = 2026))
+        assertTrue(raderInomGranser(listOf(ok.copy(anskaffningsar = 2027)), 2023, nuAr = 2026))
+        assertFalse(raderInomGranser(listOf(ok.copy(anskaffningsar = 2028)), 2023, nuAr = 2026))
     }
 
     @Test
     fun forMangaRaderAvvisas() {
-        assertTrue(raderInomGranser(List(500) { ok }, 2025))
-        assertFalse(raderInomGranser(List(501) { ok }, 2025))
+        assertTrue(raderInomGranser(List(500) { ok }, 2025, nuAr = 2025))
+        assertFalse(raderInomGranser(List(501) { ok }, 2025, nuAr = 2025))
     }
 }

@@ -17,13 +17,21 @@ const val MAX_KROPP_RADER_BYTES = 2 * 1024 * 1024
 /**
  * Kontroll av rader som kommer utifrån (PUT /rader). Utan den kunde ett anskaffningsår som
  * -2000000000 få bokfört värde att räkna i miljarder varv och låsa servern.
+ *
+ * Övre gränsen för anskaffningsår är nästa kalenderår, samma som tolkningen tillåter
+ * (ByggUtkast). Räknades den från räkenskapsårets slut gick ett utkast med en komponent
+ * anskaffad efter räkenskapsåret inte att spara alls, inte ens oförändrat.
  */
-fun raderInomGranser(komponenter: List<KomponentDto>, arsslut: Int): Boolean =
+fun raderInomGranser(
+    komponenter: List<KomponentDto>,
+    arsslut: Int,
+    nuAr: Int = java.time.Year.now().value,
+): Boolean =
     komponenter.size <= MAX_KOMPONENTER &&
         komponenter.all { k ->
             k.namn.length <= MAX_TEXT_PER_FALT &&
                 k.kalla.length <= MAX_TEXT_PER_FALT &&
-                k.anskaffningsar in MIN_ANSKAFFNINGSAR..(arsslut + 1) &&
+                k.anskaffningsar in MIN_ANSKAFFNINGSAR..(maxOf(arsslut, nuAr) + 1) &&
                 k.nyttjandeperiodAr in 1..MAX_NYTTJANDEPERIOD_AR &&
                 k.anskaffningsvarde in 0..MAX_BELOPP_KR &&
                 k.restvarde in 0..k.anskaffningsvarde
