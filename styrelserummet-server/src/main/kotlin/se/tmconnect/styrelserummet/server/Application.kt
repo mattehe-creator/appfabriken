@@ -303,7 +303,7 @@ fun Application.module(miljo: ServerMiljo) {
                                 // Läs aldrig mer än det som får plats i jobbet, så att en stor fil inte fyller minnet.
                                 val kvar = MAX_BYTES_PER_JOBB - totalBytes
                                 val bytes = part.streamProvider().use { lasHogst(it, kvar) }
-                                totalBytes += bytes?.size ?: (kvar + 1)
+                                totalBytes += bytes?.size?.toLong() ?: (kvar + 1)
                                 if (bytes == null || totalBytes > MAX_BYTES_PER_JOBB) {
                                     part.dispose()
                                     lagring.raderaJobb(id)
