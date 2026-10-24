@@ -90,4 +90,42 @@ class FlextidRepositoryGenvagTest {
         assertEquals(FlextidRepository.GenvagStamplaInResult.GransUtanPro, resultat)
         assertEquals(null, repository.hamtaDag(idag))
     }
+
+    @Test
+    fun genvagStamplaInEfterSluttidGerSlutForeStart() = runTest {
+        // Dagen har bara en sluttid 07:00; instämpling 08:00 ligger efter den och får inte sparas.
+        repository.sparaDagUtanValidering(Dag(datum = idag, slut = LocalTime.of(7, 0)), arPro = false)
+        val resultat =
+            repository.genvagStamplaIn(idag, LocalTime.of(8, 0), 30, arPro = false)
+        assertEquals(FlextidRepository.GenvagStamplaInResult.SlutForeStart, resultat)
+        assertEquals(null, repository.hamtaDag(idag)?.start)
+    }
+
+    @Test
+    fun rastUtanDagSkaparIngenPost() = runTest {
+        assertEquals(false, repository.sparaRastPaBefintligDag(idag, 45))
+        assertEquals(null, repository.hamtaDag(idag))
+        assertEquals(0, repository.antalDagar())
+    }
+
+    @Test
+    fun rastPaBefintligDagSparas() = runTest {
+        repository.stamplaIn(idag, LocalTime.of(8, 0), 30, arPro = false)
+        assertEquals(true, repository.sparaRastPaBefintligDag(idag, 45))
+        assertEquals(45, repository.hamtaDag(idag)?.rastMin)
+        assertEquals(LocalTime.of(8, 0), repository.hamtaDag(idag)?.start)
+        assertEquals(1, repository.antalDagar())
+    }
+
+    @Test
+    fun rastPaBefintligDagFungerarVidGratisgransen() = runTest {
+        val bas = LocalDate.of(2026, 1, 1)
+        repeat(15) { offset ->
+            repository.sparaDag(Dag(datum = bas.plusDays(offset.toLong()), start = LocalTime.of(8, 0)), arPro = false)
+        }
+        assertEquals(false, repository.sparaRastPaBefintligDag(idag, 45))
+        assertEquals(15, repository.antalDagar())
+        assertEquals(true, repository.sparaRastPaBefintligDag(bas, 50))
+        assertEquals(50, repository.hamtaDag(bas)?.rastMin)
+    }
 }

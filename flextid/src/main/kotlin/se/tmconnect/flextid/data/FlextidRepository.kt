@@ -59,6 +59,9 @@ class FlextidRepository(private val dao: FlextidDao) {
         data class RedanInstamplad(val start: LocalTime) : GenvagStamplaInResult
 
         data object GransUtanPro : GenvagStamplaInResult
+
+        /** Dagen har redan en sluttid som inte ligger efter instämplingen. Inget sparas. */
+        data object SlutForeStart : GenvagStamplaInResult
     }
 
     sealed interface FyllVanligDagResult {
@@ -102,6 +105,16 @@ class FlextidRepository(private val dao: FlextidDao) {
         }
         dao.sparaDag(dag)
         return SparaDagResult.Ok
+    }
+
+    /**
+     * Sparar rasten på en dag som redan finns. Skapar aldrig en ny dagpost (räknas inte mot gratisgränsen).
+     * Returnerar false när dagen saknas.
+     */
+    suspend fun sparaRastPaBefintligDag(datum: LocalDate, rastMin: Int): Boolean {
+        val befintlig = dao.hamtaDag(datum) ?: return false
+        dao.sparaDag(befintlig.copy(rastMin = rastMin))
+        return true
     }
 
     suspend fun taBortDag(datum: LocalDate) {
@@ -180,7 +193,7 @@ class FlextidRepository(private val dao: FlextidDao) {
                 when (stamplaIn(datum, beslut.start, standardRastMin, arPro)) {
                     SparaDagResult.Ok -> GenvagStamplaInResult.Sparat
                     SparaDagResult.GransUtanPro -> GenvagStamplaInResult.GransUtanPro
-                    is SparaDagResult.Fel -> GenvagStamplaInResult.Sparat
+                    is SparaDagResult.Fel -> GenvagStamplaInResult.SlutForeStart
                 }
         }
     }

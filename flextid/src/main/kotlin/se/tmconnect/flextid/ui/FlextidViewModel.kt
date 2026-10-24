@@ -519,9 +519,9 @@ class FlextidViewModel(
 
     fun stamplaIn() {
         viewModelScope.launch {
-            val inst = installning.value
+            val datum = LocalDate.now()
             when (
-                repository.stamplaIn(LocalDate.now(), avrundaTillHelMinut(LocalTime.now()), inst.standardRastMin, proKalla.arPro.value)
+                repository.stamplaIn(datum, avrundaTillHelMinut(LocalTime.now()), rastVidInstampling(datum), proKalla.arPro.value)
             ) {
                 FlextidRepository.SparaDagResult.Ok -> _meddelanden.emit(FlextidMeddelande.Sparat)
                 FlextidRepository.SparaDagResult.GransUtanPro -> {
@@ -550,13 +550,13 @@ class FlextidViewModel(
 
     fun genvagStamplaIn() {
         viewModelScope.launch {
-            val inst = installning.value
+            val datum = LocalDate.now()
             when (
                 val resultat =
                     repository.genvagStamplaIn(
-                        LocalDate.now(),
+                        datum,
                         LocalTime.now(),
-                        inst.standardRastMin,
+                        rastVidInstampling(datum),
                         proKalla.arPro.value,
                     )
             ) {
@@ -567,6 +567,8 @@ class FlextidViewModel(
                     visaProDialog()
                     _meddelanden.emit(FlextidMeddelande.GransUtanPro)
                 }
+                FlextidRepository.GenvagStamplaInResult.SlutForeStart ->
+                    _meddelanden.emit(FlextidMeddelande.SlutForeStart)
             }
         }
     }
@@ -590,18 +592,16 @@ class FlextidViewModel(
     fun uppdateraIdagRast(minuter: Int) {
         viewModelScope.launch {
             val datum = LocalDate.now()
-            val befintlig = repository.hamtaDag(datum)
-            val dag = (befintlig ?: Dag(datum = datum, rastMin = minuter)).copy(rastMin = minuter)
-            when (repository.sparaDagUtanValidering(dag, proKalla.arPro.value)) {
-                FlextidRepository.SparaDagResult.Ok -> Unit
-                FlextidRepository.SparaDagResult.GransUtanPro -> {
-                    visaProDialog()
-                    _meddelanden.emit(FlextidMeddelande.GransUtanPro)
-                }
-                is FlextidRepository.SparaDagResult.Fel -> Unit
-            }
+            // Rasten skapar ingen dagpost. Utan dag gäller värdet bara som rast vid nästa instämpling i dag.
+            forifylldRast = if (repository.sparaRastPaBefintligDag(datum, minuter)) null else datum to minuter
         }
     }
+
+    /** Rast som användaren skrivit innan instämpling; gäller bara samma datum och bara i minnet. */
+    private var forifylldRast: Pair<LocalDate, Int>? = null
+
+    private fun rastVidInstampling(datum: LocalDate): Int =
+        forifylldRast?.takeIf { it.first == datum }?.second ?: installning.value.standardRastMin
 
     fun oppnaDagFormular(datum: LocalDate, forvaldTyp: DagTyp? = null) {
         viewModelScope.launch {

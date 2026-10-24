@@ -28,6 +28,8 @@ fun notisAtgardEfterStamplaIn(
             NotisAtgardUtfall.VisaText(NotisAtgardTextNyckel.GENVAG_REDAN_INSTAMPLAD, resultat.start)
         FlextidRepository.GenvagStamplaInResult.GransUtanPro ->
             NotisAtgardUtfall.VisaText(NotisAtgardTextNyckel.PRO_GRANS_NADD)
+        FlextidRepository.GenvagStamplaInResult.SlutForeStart ->
+            NotisAtgardUtfall.VisaText(NotisAtgardTextNyckel.FEL_SLUT_FORE_START)
     }
 
 fun notisAtgardEfterStamplaUt(
