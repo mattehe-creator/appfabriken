@@ -28,10 +28,11 @@ fun raknaDagarAvTyp(
     fran: LocalDate,
     till: LocalDate,
     arbetsdagarMask: Int,
+    aftnarLediga: Boolean = true
 ): Int {
     if (fran.isAfter(till)) return 0
     return dagar.count { d ->
-        d.typ == typ && !d.datum.isBefore(fran) && !d.datum.isAfter(till) && arArbetsdag(d.datum, arbetsdagarMask)
+        d.typ == typ && !d.datum.isBefore(fran) && !d.datum.isAfter(till) && arArbetsdagMedHelger(d.datum, arbetsdagarMask, aftnarLediga)
     }
 }
 
@@ -50,9 +51,10 @@ fun semesterSammanfattning(
     arbetsdagarMask: Int,
     dagarPerAr: Int = SEMESTERDAGAR_STANDARD,
     startManad: Int = SEMESTERAR_STARTMANAD_STANDARD,
+    aftnarLediga: Boolean = true
 ): SemesterSammanfattning {
     val ar = semesterArFor(idag, startManad)
-    val uttagna = raknaDagarAvTyp(dagar, DagTyp.SEMESTER, ar.fran, idag, arbetsdagarMask)
-    val planerade = raknaDagarAvTyp(dagar, DagTyp.SEMESTER, idag.plusDays(1), ar.till, arbetsdagarMask)
+    val uttagna = raknaDagarAvTyp(dagar, DagTyp.SEMESTER, ar.fran, idag, arbetsdagarMask, aftnarLediga)
+    val planerade = raknaDagarAvTyp(dagar, DagTyp.SEMESTER, idag.plusDays(1), ar.till, arbetsdagarMask, aftnarLediga)
     return SemesterSammanfattning(ar, uttagna, planerade, dagarPerAr.coerceAtLeast(0) - uttagna - planerade)
 }
