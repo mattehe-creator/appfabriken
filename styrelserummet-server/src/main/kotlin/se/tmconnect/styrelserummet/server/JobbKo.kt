@@ -149,11 +149,25 @@ class JobbKo(
     }
 }
 
+/**
+ * Raderar jobb 30 dagar efter senaste aktivitet (integritetssidans löfte). Ett jobb utan läsbar
+ * meta.json (avbruten uppladdning, skadad fil) raderas när katalogen är äldre än ett dygn.
+ */
 fun rensaGamlaJobb(lagring: JobbLagring, nuMs: Long = System.currentTimeMillis()) {
     lagring.allaJobb().forEach { id ->
-        val meta = lagring.lasMeta(id) ?: return@forEach
-        if (skaRensas(meta.senastAktivMs, nuMs)) {
-            lagring.raderaJobb(id)
-        }
+        val meta = lagring.lasMeta(id)
+        val radera =
+            if (meta != null) {
+                skaRensas(meta.senastAktivMs, nuMs)
+            } else {
+                val andrad = runCatching {
+                    java.nio.file.Files.getLastModifiedTime(lagring.jobbKatalog(id)).toMillis()
+                }.getOrDefault(0L)
+                nuMs - andrad > TRASIGT_JOBB_RADERAS_EFTER_MS
+            }
+        if (radera) lagring.raderaJobb(id)
     }
 }
+
+const val TRASIGT_JOBB_RADERAS_EFTER_MS = 24L * 60 * 60 * 1000
+const val RENSNING_INTERVALL_MS = 6L * 60 * 60 * 1000
