@@ -31,6 +31,7 @@ import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import se.tmconnect.styrelserummet.regler.CSV_BOM
 import se.tmconnect.styrelserummet.regler.avskrivningsplanCsv
@@ -72,6 +73,13 @@ fun Application.module(miljo: ServerMiljo) {
     val scope = CoroutineScope(SupervisorJob())
     val ko = JobbKo(lagring, miljo.tolkare, scope = scope, synkron = miljo.synkronJobb)
     rensaGamlaJobb(lagring)
+    // Rensa även medan servern kör; en värd startar sällan om, och löftet är 30 dagar.
+    scope.launch {
+        while (true) {
+            kotlinx.coroutines.delay(RENSNING_INTERVALL_MS)
+            runCatching { rensaGamlaJobb(lagring) }
+        }
+    }
     val betalKonfig = miljo.betalning
     val betalare: Betalare? = miljo.betalare ?: if (betalKonfig.aktiv) StripeBetalare(betalKonfig) else null
     val publikBas = publikBasUrl(betalKonfig)
