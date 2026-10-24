@@ -30,7 +30,9 @@ fun normaliseraStamplaInPaminnelseMinEfterMidnatt(sparad: Int?): Int {
 fun stamplaInPaminnelseKlockan(minEfterMidnatt: Int): LocalTime =
     minuterTillLocalTime(normaliseraStamplaInPaminnelseMinEfterMidnatt(minEfterMidnatt))
 
+/** Nästa arbetsdag efter [efter]. Utan valda veckodagar: dagen efter. */
 fun nastaArbetsdagEfter(efter: LocalDate, arbetsdagarMask: Int): LocalDate {
+    if (!harArbetsdagar(arbetsdagarMask)) return efter.plusDays(1)
     var dag = efter.plusDays(1)
     while (!arArbetsdag(dag, arbetsdagarMask)) {
         dag = dag.plusDays(1)
@@ -65,7 +67,7 @@ fun beraknaNastaStamplaInPaminnelse(
     }
 
     var kandidat = idag
-    while (!arArbetsdag(kandidat, arbetsdagarMask)) {
+    while (harArbetsdagar(arbetsdagarMask) && !arArbetsdag(kandidat, arbetsdagarMask)) {
         kandidat = kandidat.plusDays(1)
     }
     return LocalDateTime.of(kandidat, klockslag)

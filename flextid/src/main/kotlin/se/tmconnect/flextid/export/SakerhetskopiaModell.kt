@@ -4,7 +4,9 @@ import java.time.LocalDate
 import java.time.LocalTime
 import se.tmconnect.flextid.data.Dag
 import se.tmconnect.flextid.data.Installning
+import se.tmconnect.flextid.regler.ARBETSDAGAR_MANDAG_FREDAG
 import se.tmconnect.flextid.regler.DagTyp
+import se.tmconnect.flextid.regler.harArbetsdagar
 import se.tmconnect.flextid.regler.NormaltidUndantag
 import se.tmconnect.flextid.regler.STANDARD_STAMPLA_IN_PAMINNELSE_MIN_EFTER_MIDNATT
 
@@ -78,5 +80,7 @@ fun sakerhetskopiaInstallningTillInstallning(export: SakerhetskopiaInstallning):
         normaltidMinPerDag = export.normaltidMinPerDag,
         standardRastMin = export.standardRastMin,
         ingangssaldoMin = export.ingangssaldoMin,
-        arbetsdagarMask = export.arbetsdagarMask,
+        // En fil utan valda veckodagar skulle ge en app utan arbetsdagar; använd måndag–fredag.
+        arbetsdagarMask =
+            if (harArbetsdagar(export.arbetsdagarMask)) export.arbetsdagarMask else ARBETSDAGAR_MANDAG_FREDAG,
     )
