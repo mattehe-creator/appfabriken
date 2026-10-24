@@ -65,6 +65,9 @@ class StamplaRuta : TileService() {
                                 repo.stamplaUt(idag, LocalTime.now().withSecond(0).withNano(0), arPro)
                             StampelLage.KLAR -> null
                         }
+                    if (resultat == FlextidRepository.SparaDagResult.Ok) {
+                        runCatching { se.tmconnect.flextid.widget.SaldoWidget.uppdateraAlla(applicationContext) }
+                    }
                     resultat == null || resultat != FlextidRepository.SparaDagResult.Ok
                 }
             if (oppnaAppen) oppnaApp() else uppdatera()
