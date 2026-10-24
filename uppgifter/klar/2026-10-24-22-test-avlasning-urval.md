@@ -32,3 +32,5 @@ gradle :husloggen:testDebugUnitTest --tests "*AvlasningUrvalTest"
 
 ## Gör inte
 - Ändra andra filer.
+
+utfall: godkänd 2026-10-24 (Long-literaler i assertEquals mot Avlasning.id)
