@@ -4,6 +4,8 @@ Claude skriver här när något kräver Mattias (se ARBETSFLODE.md). Mattias sva
 
 ## Öppna
 
+- (2026-10-24) Flextid och gratisgränsen 15 poster: i Flextid är en post en dag, så gratisversionen räcker i tre arbetsveckor. Förslag: gränsen i Flextid räknas som 60 dagar (ungefär tre månader) i stället, eller att bara de senaste 30 dagarna går att ändra utan Pro. Säg vilket, eller att 15 ska gälla.
+
 - (2026-10-23) Valfritt, och inget annat väntar på det: du kan provköra Styrelserummet på din egen dator med en riktig API-nyckel (låg utgiftsgräns) och en påhittad eller riktig underhållsplan. Steg för steg i `styrelserummet/PROVKORNING.md`, cirka 15 minuter. Det är det snabbaste sättet att se om AI:ns läsning av handlingar håller, innan något läggs ute. Gratisverktygen (avgift, fondplan, nyckeltal, protokoll, räntor, stämmotidplan) behöver ingen nyckel.
 - (2026-10-21) Tre saker, i den ordningen, var för sig några minuter:
   1. Slå på GitHub Pages: repot → Settings → Pages → Source: **GitHub Actions**. Utan det har landningssidan `webb/k3/` aldrig legat ute, och integritetspolicyerna kan inte länkas från Play. Adresserna blir `https://mattehe-creator.github.io/appfabriken/k3/` och `.../<app>/integritet/` (svenska) och `.../<app>/privacy/` (engelska).
