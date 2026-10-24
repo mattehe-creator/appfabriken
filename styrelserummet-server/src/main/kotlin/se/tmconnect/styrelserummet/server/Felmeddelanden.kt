@@ -41,6 +41,9 @@ object Felmeddelanden {
             Felkoder.BETALNING_EJ_AKTIV -> "Betalning är inte påslagen i tjänsten."
             Felkoder.BETALNING_MISSLYCKADES ->
                 "Betalningen kunde inte bekräftas. Har du betalat, ladda om sidan om en stund. Inget dras två gånger."
+            Felkoder.OGILTIGA_RADER ->
+                "Någon rad har ett värde utanför det tillåtna (år 1800 till nästa år, nyttjandeperiod 1–150 år, belopp 0–1 000 miljarder kr, högst 500 rader). Rätta raden och spara igen."
+            Felkoder.FOR_STOR_FORFRAGAN -> "Förfrågan är för stor. Högst 2 MB."
             Felkoder.INTERNT_FEL -> "Något gick fel. Försök igen."
             else -> "Något gick fel. Försök igen."
         }
