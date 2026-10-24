@@ -35,3 +35,5 @@ gradle :flextid:testDebugUnitTest --tests "*SemesterRodaDagarTest" --tests "*Sem
 - Ändra andra filer.
 - Ändra befintliga tester.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-24 (inget)
