@@ -45,6 +45,17 @@ class PaminnelseInstallningarLager(
         }
     }
 
+    /**
+     * Sparar [nya] som aviserade och släpper nycklar som inte längre finns bland [aktuella]
+     * frister, så att mängden inte växer för evigt (Flextid lägger till två nycklar per dag).
+     */
+    suspend fun uppdateraAviseradeNycklar(nya: Set<String>, aktuella: Set<String>) {
+        dataStore.edit { prefs ->
+            val befintliga = prefs[AVISERADE_NYCKLAR] ?: emptySet()
+            prefs[AVISERADE_NYCKLAR] = befintliga.intersect(aktuella) + nya
+        }
+    }
+
     companion object {
         private val PAMINNELSER_PA = booleanPreferencesKey("paminnelser_pa")
         private val AVISERADE_NYCKLAR = stringSetPreferencesKey("aviserade_nycklar")

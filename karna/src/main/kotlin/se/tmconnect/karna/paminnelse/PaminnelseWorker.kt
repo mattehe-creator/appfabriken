@@ -45,7 +45,11 @@ abstract class PaminnelseWorker(
             redanAviserade,
             kalla.dagarInnan,
         )
+        val aktuellaNycklar = frister.map { it.nyckel }.toSet()
         if (attAvisera.isEmpty()) {
+            if ((redanAviserade - aktuellaNycklar).isNotEmpty()) {
+                installningar.uppdateraAviseradeNycklar(emptySet(), aktuellaNycklar)
+            }
             return Result.success()
         }
 
@@ -56,7 +60,7 @@ abstract class PaminnelseWorker(
             kalla.notisSamlad(attAvisera.size)
         }
         visaNotis(kalla, innehall, kalla.skapaAppIntent(attAvisera.singleOrNull()))
-        installningar.laggTillAviseradeNycklar(attAvisera.map { it.nyckel }.toSet())
+        installningar.uppdateraAviseradeNycklar(attAvisera.map { it.nyckel }.toSet(), aktuellaNycklar)
         return Result.success()
     }
 
