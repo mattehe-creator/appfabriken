@@ -316,7 +316,7 @@ fun Application.module(miljo: ServerMiljo) {
                                     lagring.raderaJobb(id)
                                     throw ServerFelBegaran(ServerFel.IntePdf)
                                 }
-                                lagring.sparaFil(id, sakertFilnamn(namn), bytes)
+                                lagring.sparaFil(id, lagringsnamn(filAntal + 1, namn), bytes)
                                 filAntal++
                             }
                             else -> Unit

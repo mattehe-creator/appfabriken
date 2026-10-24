@@ -68,8 +68,7 @@ class JobbKo(
                     }
                     return
                 }
-                val namn = path.fileName.toString().lowercase()
-                if (namn.contains("ars") || namn.contains("redov")) {
+                if (arArsredovisning(path.fileName.toString(), text)) {
                     arsredovisning += text + "\n"
                 } else {
                     underhallsplan += text + "\n"
