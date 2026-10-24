@@ -122,7 +122,8 @@ class FlextidRepository(private val dao: FlextidDao) {
         val dag =
             (befintlig ?: Dag(datum = datum, rastMin = standardRastMin)).copy(
                 start = tid,
-                typ = befintlig?.typ ?: se.tmconnect.flextid.regler.DagTyp.ARBETE,
+                // Den som stämplar in arbetar, även om dagen var planerad som ledig.
+                typ = se.tmconnect.flextid.regler.DagTyp.ARBETE,
             )
         dao.sparaDag(dag)
         return SparaDagResult.Ok

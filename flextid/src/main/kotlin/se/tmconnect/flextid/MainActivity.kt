@@ -113,6 +113,7 @@ class MainActivity : ComponentActivity() {
                             typEtiketter =
                                 mapOf(
                                     DagTyp.ARBETE to getString(R.string.dagtyp_arbete),
+                                    DagTyp.FLEX to getString(R.string.dagtyp_flex),
                                     DagTyp.LEDIG to getString(R.string.dagtyp_ledig),
                                     DagTyp.SEMESTER to getString(R.string.dagtyp_semester),
                                     DagTyp.SJUK to getString(R.string.dagtyp_sjuk),

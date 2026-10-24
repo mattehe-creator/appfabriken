@@ -10,7 +10,7 @@ Enkel, helt offline flextidsregistrering: stämpla in och ut per dag, rast, och 
 
 - **Dag**: en kalenderdag med valfri start- och sluttid, rast i minuter, typ och anteckning.
 - **Normaltid**: hur många minuter per arbetsdag som räknas som “fullgjort” (standard 480).
-- **Utfall**: skillnaden mellan arbetad tid och normaltid på arbetsdagar med typ Arbete; andra typer ger utfall 0.
+- **Utfall**: skillnaden mellan arbetad tid och dagens normaltid för typ Arbete. Typ Flexledig ger minus dagens normaltid. Semester, sjuk, helgdag och annan ledighet ger 0. Röda dagar och lediga aftnar har ingen normaltid (BESLUTSLOGG 2026-10-24).
 - **Saldo**: ingångssaldo plus summan av alla registrerade dagars utfall.
 
 ## Regler

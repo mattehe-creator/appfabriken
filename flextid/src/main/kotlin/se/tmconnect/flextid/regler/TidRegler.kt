@@ -36,6 +36,8 @@ fun valideraTider(start: LocalTime?, slut: LocalTime?): TidValideringFel? {
 fun dagensUtfall(dag: Dag, arbetstid: Arbetstid): Int =
     when (dag.typ) {
         DagTyp.LEDIG, DagTyp.SEMESTER, DagTyp.SJUK, DagTyp.HELGDAG -> 0
+        // Flexledig dag: saldot minskar med dagens normaltid (0 på lediga dagar).
+        DagTyp.FLEX -> -arbetstid.normaltidFor(dag.datum)
         DagTyp.ARBETE -> {
             // En arbetsdag utan både in- och utstämpling är inte avslutad och räknas inte,
             // annars visar saldot minus en hel normaltid hela dagen tills man stämplar ut.

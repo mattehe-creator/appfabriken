@@ -44,7 +44,7 @@
     <string name="anteckning">Note</string>
     <string name="dagtyp_rubrik">Day type</string>
     <string name="dagtyp_arbete">Work</string>
-    <string name="dagtyp_ledig">Off</string>
+    <string name="dagtyp_ledig">Other leave</string>
     <string name="dagtyp_semester">Vacation</string>
     <string name="dagtyp_sjuk">Sick</string>
     <string name="dagtyp_helgdag">Public holiday</string>
@@ -216,4 +216,5 @@
     <string name="widget_in_sedan">In since %1$s</string>
     <string name="widget_klar">Done for today</string>
     <string name="widget_oppna">Open</string>
+    <string name="dagtyp_flex">Flex leave</string>
 </resources>

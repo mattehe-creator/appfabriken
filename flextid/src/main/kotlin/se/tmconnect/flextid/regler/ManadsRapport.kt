@@ -95,6 +95,7 @@ fun byggManadsRapport(
                 }
             val utfallMin =
                 when {
+                    dag.typ == DagTyp.FLEX -> dagensUtfall(dag, arbetstid)
                     dag.typ != DagTyp.ARBETE -> 0
                     komplett ->
                         dagensUtfall(dag, arbetstid)
@@ -102,6 +103,9 @@ fun byggManadsRapport(
                 }
 
             when {
+                dag.typ == DagTyp.FLEX -> {
+                    summaUtfallMin += utfallMin ?: 0
+                }
                 dag.typ != DagTyp.ARBETE -> {
                     summaUtfallMin += 0
                 }

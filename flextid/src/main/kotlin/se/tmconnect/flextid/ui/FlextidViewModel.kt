@@ -647,7 +647,7 @@ class FlextidViewModel(
     }
 
     fun planeraLedigDag(datum: LocalDate) {
-        oppnaDagFormular(datum, forvaldTyp = DagTyp.LEDIG)
+        oppnaDagFormular(datum, forvaldTyp = DagTyp.FLEX)
     }
 
     fun fyllVanligDagIdag() {
