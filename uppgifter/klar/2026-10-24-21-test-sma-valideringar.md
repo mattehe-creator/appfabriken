@@ -34,3 +34,5 @@ gradle :husloggen:testDebugUnitTest --tests "*SmaValideringarTest"
 
 ## Gör inte
 - Ändra andra filer.
+
+utfall: godkänd 2026-10-24 (inget)
