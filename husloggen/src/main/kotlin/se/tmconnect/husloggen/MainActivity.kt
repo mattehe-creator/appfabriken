@@ -297,6 +297,7 @@ class MainActivity : ComponentActivity() {
                 val uppgiftGjordPostEjSparadText = stringResource(R.string.uppgift_gjord_post_ej_sparad)
                 val sakerhetskopiaSparadText = stringResource(R.string.sakerhetskopia_sparad)
                 val sakerhetskopiaKundeInteLasasText = stringResource(R.string.sakerhetskopia_kunde_inte_lasas)
+                val sakerhetskopiaKundeInteSparasText = stringResource(R.string.sakerhetskopia_kunde_inte_sparas)
                 val sakerhetskopiaNyareVersionText = stringResource(R.string.sakerhetskopia_nyare_version)
                 val historikPdfSparadText = stringResource(R.string.export_pdf_sparad)
                 val historikPdfFelText = stringResource(R.string.export_pdf_misslyckades)
@@ -324,6 +325,7 @@ class MainActivity : ComponentActivity() {
                             HusUiMeddelande.UppgiftMarkeradGjordPostEjSparad -> uppgiftGjordPostEjSparadText
                             HusUiMeddelande.SakerhetskopiaSparad -> sakerhetskopiaSparadText
                             HusUiMeddelande.SakerhetskopiaKundeInteLasas -> sakerhetskopiaKundeInteLasasText
+                            HusUiMeddelande.SakerhetskopiaKundeInteSparas -> sakerhetskopiaKundeInteSparasText
                             HusUiMeddelande.SakerhetskopiaNyareVersion -> sakerhetskopiaNyareVersionText
                             is HusUiMeddelande.SakerhetskopiaImporterad -> getString(
                                 R.string.sakerhetskopia_importerad,
@@ -771,7 +773,10 @@ class MainActivity : ComponentActivity() {
             skattRubrik = getString(R.string.historik_pdf_skatt_rubrik),
             skattText = getString(R.string.historik_pdf_skatt_text),
             kallorRubrik = getString(R.string.sammanstallning_skatte_info_rubrik),
-            kallorText = skatteKallorText(),
+            kallorText = skatteKallorText(
+                lagRad = getString(R.string.historik_pdf_kallor_lag),
+                kontrolleradRad = { datum -> getString(R.string.historik_pdf_kallor_kontrollerat, datum) },
+            ),
         )
     }
 

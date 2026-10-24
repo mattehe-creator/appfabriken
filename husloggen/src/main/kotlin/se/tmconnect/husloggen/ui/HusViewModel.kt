@@ -188,6 +188,8 @@ sealed class HusUiMeddelande {
 
     data object SakerhetskopiaKundeInteLasas : HusUiMeddelande()
 
+    data object SakerhetskopiaKundeInteSparas : HusUiMeddelande()
+
     data object SakerhetskopiaNyareVersion : HusUiMeddelande()
 
     data class SakerhetskopiaImporterad(val tillagda: Int, val hoppadeOver: Int) : HusUiMeddelande()
@@ -916,7 +918,7 @@ class HusViewModel(
                 }
                 _meddelanden.emit(HusUiMeddelande.SakerhetskopiaSparad)
             } catch (_: Exception) {
-                _meddelanden.emit(HusUiMeddelande.SakerhetskopiaKundeInteLasas)
+                _meddelanden.emit(HusUiMeddelande.SakerhetskopiaKundeInteSparas)
             }
         }
     }
@@ -947,6 +949,19 @@ class HusViewModel(
         }
     }
 
+    /**
+     * Bostaden som en export gäller. Läses från inställningarna om ViewModel-värdet inte har
+     * hunnit fyllas, till exempel när Android har startat om appen medan filväljaren var öppen.
+     */
+    private suspend fun bostadIdForExport(): Long? =
+        valdBostadId.value
+            ?: installningarLager.valdBostadId.first()
+            ?: repository.allaBostader().firstOrNull()?.id
+
+    /** Poster för exporten, hämtade från databasen när filen skrivs (inte från UI-flödet). */
+    private suspend fun posterForExport(bostadId: Long?): List<Post> =
+        if (bostadId == null) emptyList() else repository.posterForBostad(bostadId).first()
+
     fun sparaHusHistorikPdf(
         uri: Uri,
         texter: HusHistorikTexter,
@@ -959,7 +974,7 @@ class HusViewModel(
         viewModelScope.launch {
             try {
                 val data = byggHusHistorik(
-                    poster = poster.value,
+                    poster = posterForExport(bostadIdForExport()),
                     forsaljningsar = _forsaljningsAr.value,
                     localeLand = locale.country,
                     typEtikett = typEtikett,
@@ -997,7 +1012,7 @@ class HusViewModel(
         viewModelScope.launch {
             try {
                 val data = byggHusHistorik(
-                    poster = poster.value,
+                    poster = posterForExport(bostadIdForExport()),
                     forsaljningsar = _forsaljningsAr.value,
                     localeLand = locale.country,
                     typEtikett = typEtikett,
@@ -1027,11 +1042,14 @@ class HusViewModel(
     ) {
         viewModelScope.launch {
             try {
+                val bostadId = bostadIdForExport()
+                val uppgifterNu =
+                    if (bostadId == null) emptyList() else repository.uppgifterForBostad(bostadId).first()
                 val grupper =
                     kommandeUnderhall(
-                        uppgifter = uppgifter.value,
-                        loggposter = poster.value,
-                        idag = LocalDate.now(),
+                        uppgifter = sorteraUppgifter(uppgifterNu, idag),
+                        loggposter = posterForExport(bostadId),
+                        idag = idag,
                     )
                 val csv =
                     kommandeUnderhallCsv(
@@ -1231,7 +1249,7 @@ class HusViewModel(
     ) {
         viewModelScope.launch {
             try {
-                val matare = repository.hamtaMatare(matareId) ?: return@launch
+                val matare = repository.hamtaMatare(matareId) ?: throw java.io.IOException()
                 val avlasningar = repository.avlasningarForMatareLista(matareId)
                 val rader = beraknaAvlasningarMedForbrukning(avlasningar)
                 val csv =
