@@ -281,6 +281,17 @@ class HusViewModel(
             .map { sorteraUppgifter(it, idag) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    init {
+        // Widgeten på hemskärmen visar de närmaste uppgifterna; rita om den när de ändras.
+        viewModelScope.launch {
+            uppgifter.collect {
+                withContext(Dispatchers.IO) {
+                    runCatching { se.tmconnect.husloggen.widget.KommandeWidget.uppdateraAlla(appContext) }
+                }
+            }
+        }
+    }
+
     val poster: StateFlow<List<Post>> =
         valdBostadId
             .flatMapLatest { id ->

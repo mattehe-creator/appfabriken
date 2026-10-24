@@ -330,4 +330,10 @@
         <item quantity="one">%d jobb saknar tidigare kostnad och räknas inte med.</item>
         <item quantity="other">%d jobb saknar tidigare kostnad och räknas inte med.</item>
     </plurals>
+    <string name="widget_kommande_namn">Kommande underhåll</string>
+    <string name="widget_kommande_beskrivning">De närmaste uppgifterna för bostaden</string>
+    <string name="widget_kommande_rubrik">Kommande</string>
+    <string name="widget_kommande_tom">Inget planerat. Lägg till en uppgift i appen.</string>
+    <string name="widget_kommande_rad">%1$s · %2$s</string>
+    <string name="widget_kommande_forsenad">%1$s · försenad sedan %2$s</string>
 </resources>
