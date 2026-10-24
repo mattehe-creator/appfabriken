@@ -203,8 +203,11 @@ class HusViewModel(
     private val installningarLager: InstallningarLager,
     private val appContext: Context,
     private val proKalla: ProKalla,
-    private val idag: LocalDate = LocalDate.now(),
+    /** Dagens datum. Läses varje gång, så att appen inte fastnar på dagen den startade. */
+    private val klocka: () -> LocalDate = { LocalDate.now() },
 ) : ViewModel() {
+    private val idag: LocalDate get() = klocka()
+
     val arPro: StateFlow<Boolean> = proKalla.arPro
 
     private val _proDialogSynlig = MutableStateFlow(false)
