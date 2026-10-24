@@ -29,9 +29,9 @@ class FlextidRepository(private val dao: FlextidDao) {
     fun observeraInstallning(): Flow<Installning> =
         dao.observeraInstallning().map { it ?: Installning() }
 
-    fun observeraSaldo(): Flow<Int> =
-        combine(observeraAllaDagar(), observeraInstallning()) { dagar, inst ->
-            beraknaSaldo(dagar, inst)
+    fun observeraSaldo(aftnarLediga: Flow<Boolean>): Flow<Int> =
+        combine(observeraAllaDagar(), observeraInstallning(), aftnarLediga) { dagar, inst, aftnar ->
+            beraknaSaldo(dagar, inst, aftnar)
         }
 
     fun observeraAntalDagar(): Flow<Int> =
@@ -111,9 +111,7 @@ class FlextidRepository(private val dao: FlextidDao) {
     suspend fun hamtaAllaDagar(): List<Dag> = dao.hamtaAllaDagar()
 
     suspend fun ersattAllData(dagar: List<Dag>, installning: Installning) {
-        dao.taBortAllaDagar()
-        dagar.forEach { dao.sparaDag(it) }
-        dao.sparaInstallning(installning.copy(id = 1))
+        dao.ersattAllData(dagar, installning.copy(id = 1))
     }
 
     suspend fun stamplaIn(datum: LocalDate, tid: java.time.LocalTime, standardRastMin: Int, arPro: Boolean): SparaDagResult {

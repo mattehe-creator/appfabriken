@@ -6,7 +6,12 @@ import se.tmconnect.flextid.data.Installning
 
 data class ManadsRad(val manad: Int, val arbetadMin: Int, val utfallMin: Int, val saldoVidSlutMin: Int)
 
-fun arsOversikt(dagar: List<Dag>, ar: Int, installning: Installning): List<ManadsRad> {
+fun arsOversikt(
+    dagar: List<Dag>,
+    ar: Int,
+    installning: Installning,
+    aftnarLediga: Boolean = true,
+): List<ManadsRad> {
     val normaltid = installning.normaltidMinPerDag
     val mask = installning.arbetsdagarMask
     return (1..12).map { manad ->
@@ -15,12 +20,12 @@ fun arsOversikt(dagar: List<Dag>, ar: Int, installning: Installning): List<Manad
             iManad
                 .filter { it.typ == DagTyp.ARBETE }
                 .sumOf { arbetadeMinuter(it.start, it.slut, it.rastMin) }
-        val utfallMin = iManad.sumOf { dagensUtfall(it, normaltid, mask) }
+        val utfallMin = iManad.sumOf { dagensUtfall(it, normaltid, mask, aftnarLediga) }
         val slutManad = YearMonth.of(ar, manad).atEndOfMonth()
         val saldoUtfall =
             dagar
                 .filter { !it.datum.isAfter(slutManad) }
-                .sumOf { dagensUtfall(it, normaltid, mask) }
+                .sumOf { dagensUtfall(it, normaltid, mask, aftnarLediga) }
         ManadsRad(manad, arbetadMin, utfallMin, installning.ingangssaldoMin + saldoUtfall)
     }
 }

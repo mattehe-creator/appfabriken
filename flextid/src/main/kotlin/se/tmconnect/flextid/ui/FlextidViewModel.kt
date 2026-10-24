@@ -16,6 +16,8 @@ import java.time.LocalTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,6 +25,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -49,6 +52,7 @@ import se.tmconnect.flextid.paminnelse.PaminnelseWorker
 import se.tmconnect.flextid.regler.DagTyp
 import se.tmconnect.flextid.regler.TidValideringFel
 import se.tmconnect.flextid.regler.arbetadeMinuter
+import se.tmconnect.flextid.regler.avrundaTillHelMinut
 import se.tmconnect.flextid.regler.dagensUtfall
 import se.tmconnect.flextid.regler.SEMESTERAR_STARTMANAD_STANDARD
 import se.tmconnect.flextid.regler.SEMESTERDAGAR_STANDARD
@@ -122,6 +126,7 @@ data class DagFormularTillstand(
     val forslagRast: String = "",
 )
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class FlextidViewModel(
     private val repository: FlextidRepository,
     private val uiInstallningarLager: UiInstallningarLager,
@@ -207,21 +212,24 @@ class FlextidViewModel(
         )
 
     val saldo =
-        repository.observeraSaldo().stateIn(
+        repository.observeraSaldo(uiInstallningarLager.aftnarLediga).stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             0,
         )
 
+    /** Dagens datum; byts när klockan passerar midnatt medan appen är öppen. */
+    private val _idag = MutableStateFlow(LocalDate.now())
+
     val idagDag =
-        repository.observeraDag(LocalDate.now()).stateIn(
+        _idag.flatMapLatest { repository.observeraDag(it) }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             null,
         )
 
     val veckaRader =
-        combine(_veckaAnkar, repository.observeraAllaDagar(), installning) { ankar, alla, inst ->
+        combine(_veckaAnkar, repository.observeraAllaDagar(), installning, uiInstallningarLager.aftnarLediga) { ankar, alla, inst, aftnar ->
             val slut = sondagISammaVecka(ankar)
             val map = alla.filter { !it.datum.isBefore(ankar) && !it.datum.isAfter(slut) }.associateBy { it.datum }
             (0L..6L).map { offset ->
@@ -230,7 +238,7 @@ class FlextidViewModel(
                 val arbetat =
                     dag?.let { arbetadeMinuter(it.start, it.slut, it.rastMin) } ?: 0
                 val utfall =
-                    dag?.let { dagensUtfall(it, inst.normaltidMinPerDag, inst.arbetsdagarMask) } ?: 0
+                    dag?.let { dagensUtfall(it, inst.normaltidMinPerDag, inst.arbetsdagarMask, aftnar) } ?: 0
                 VeckaDagRad(datum, dag, arbetat, utfall)
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -258,11 +266,11 @@ class FlextidViewModel(
 
     /** Saldo vid årets slut om årets takt håller i sig; null tidigt på året. */
     val saldoVidArsslut =
-        combine(repository.observeraAllaDagar(), installning, saldo) { alla, inst, saldoNu ->
+        combine(repository.observeraAllaDagar(), installning, saldo, uiInstallningarLager.aftnarLediga) { alla, inst, saldoNu, aftnar ->
             val idag = LocalDate.now()
             val utfallIAr = alla
                 .filter { it.datum.year == idag.year && !it.datum.isAfter(idag) }
-                .sumOf { dagensUtfall(it, inst.normaltidMinPerDag, inst.arbetsdagarMask) }
+                .sumOf { dagensUtfall(it, inst.normaltidMinPerDag, inst.arbetsdagarMask, aftnar) }
             saldoVidArssluten(saldoNu, utfallIAr, idag)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
@@ -364,17 +372,23 @@ class FlextidViewModel(
         )
 
     val arsOversiktTillstand =
-        combine(repository.observeraAllaDagar(), installning, exportArManad, saldo) { dagar, inst, arManad, saldoNu ->
+        combine(
+            repository.observeraAllaDagar(),
+            installning,
+            exportArManad,
+            saldo,
+            uiInstallningarLager.aftnarLediga,
+        ) { dagar, inst, arManad, saldoNu, aftnar ->
             val ar = arManad.year
             val idag = LocalDate.now()
-            val rader = arsOversikt(dagar, ar, inst)
+            val rader = arsOversikt(dagar, ar, inst, aftnar)
             val arArInnevarandeAr = ar == idag.year
             val prognosMin =
                 if (arArInnevarandeAr) {
                     val utfallIAr =
                         dagar
                             .filter { it.datum.year == ar && !it.datum.isAfter(idag) }
-                            .sumOf { dagensUtfall(it, inst.normaltidMinPerDag, inst.arbetsdagarMask) }
+                            .sumOf { dagensUtfall(it, inst.normaltidMinPerDag, inst.arbetsdagarMask, aftnar) }
                     saldoVidArssluten(saldoNu, utfallIAr, idag)
                 } else {
                     null
@@ -392,6 +406,14 @@ class FlextidViewModel(
         )
 
     init {
+        viewModelScope.launch {
+            // Kontrollera datumet varje minut, så att "idag" byts vid midnatt om appen ligger öppen.
+            while (true) {
+                delay(60_000)
+                val nu = LocalDate.now()
+                if (nu != _idag.value) _idag.value = nu
+            }
+        }
         viewModelScope.launch {
             proKalla.kontrollera()
             synkaPaminnelseJobb()
@@ -447,7 +469,7 @@ class FlextidViewModel(
         viewModelScope.launch {
             val inst = installning.value
             when (
-                repository.stamplaIn(LocalDate.now(), LocalTime.now(), inst.standardRastMin, proKalla.arPro.value)
+                repository.stamplaIn(LocalDate.now(), avrundaTillHelMinut(LocalTime.now()), inst.standardRastMin, proKalla.arPro.value)
             ) {
                 FlextidRepository.SparaDagResult.Ok -> _meddelanden.emit(FlextidMeddelande.Sparat)
                 FlextidRepository.SparaDagResult.GransUtanPro -> {
@@ -461,7 +483,7 @@ class FlextidViewModel(
 
     fun stamplaUt() {
         viewModelScope.launch {
-            when (repository.stamplaUt(LocalDate.now(), LocalTime.now(), proKalla.arPro.value)) {
+            when (repository.stamplaUt(LocalDate.now(), avrundaTillHelMinut(LocalTime.now()), proKalla.arPro.value)) {
                 FlextidRepository.SparaDagResult.Ok -> _meddelanden.emit(FlextidMeddelande.Sparat)
                 FlextidRepository.SparaDagResult.GransUtanPro -> {
                     visaProDialog()
@@ -827,7 +849,13 @@ class FlextidViewModel(
     /** Årsöversikt för året i exportvalet: en rad per månad med saldo vid månadens slut. */
     suspend fun skapaArsCsv(rubriker: List<String>, locale: Locale): String {
         val ar = exportArManad.value.year
-        val rader = arsOversikt(repository.hamtaAllaDagar(), ar, installning.value)
+        val rader =
+            arsOversikt(
+                repository.hamtaAllaDagar(),
+                ar,
+                repository.hamtaInstallning(),
+                uiInstallningarLager.aftnarLediga.first(),
+            )
         val manadsnamn = java.time.Month.entries.map {
             it.getDisplayName(java.time.format.TextStyle.FULL_STANDALONE, locale)
         }
@@ -838,14 +866,21 @@ class FlextidViewModel(
         val dagar = repository.hamtaAllaDagar()
         val inst = repository.hamtaInstallning()
         val arManad = exportArManad.value
-        return byggManadsCsv(dagar, inst, arManad, texter, locale)
+        return byggManadsCsv(dagar, inst, arManad, texter, locale, uiInstallningarLager.aftnarLediga.first())
     }
 
     suspend fun skapaManadsRapport(texter: ManadsRapportTexter, locale: Locale): ManadsRapportData {
         val dagar = repository.hamtaAllaDagar()
         val inst = repository.hamtaInstallning()
         val arManad = exportArManad.value
-        return byggManadsRapport(dagar, inst, arManad, texter, locale, aftnarLediga = aftnarLediga.value)
+        return byggManadsRapport(
+            dagar,
+            inst,
+            arManad,
+            texter,
+            locale,
+            aftnarLediga = uiInstallningarLager.aftnarLediga.first(),
+        )
     }
 
     fun skrivTillUri(uri: Uri, skriv: suspend (java.io.OutputStream) -> Unit) {

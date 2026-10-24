@@ -20,7 +20,7 @@ fun periodSammanfattning(
             .sumOf { arbetadeMinuter(it.start, it.slut, it.rastMin) }
     val utfallMin =
         iIntervall.sumOf {
-            dagensUtfall(it, installning.normaltidMinPerDag, installning.arbetsdagarMask)
+            dagensUtfall(it, installning.normaltidMinPerDag, installning.arbetsdagarMask, aftnarLediga)
         }
     val normaltidMin =
         normaltidForIntervallMin(

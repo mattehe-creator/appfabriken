@@ -47,11 +47,12 @@ fun saldoVidOchMed(
     dagar: List<Dag>,
     installning: Installning,
     tillOchMed: java.time.LocalDate,
+    aftnarLediga: Boolean = true,
 ): Int {
     val summaUtfall =
         dagar
             .filter { it.datum <= tillOchMed }
-            .sumOf { dagensUtfall(it, installning.normaltidMinPerDag, installning.arbetsdagarMask) }
+            .sumOf { dagensUtfall(it, installning.normaltidMinPerDag, installning.arbetsdagarMask, aftnarLediga) }
     return installning.ingangssaldoMin + summaUtfall
 }
 
@@ -72,7 +73,7 @@ fun byggManadsRapport(
             uteslutAftnar = aftnarLediga,
         )
     val sistaDagIManaden = arManad.atEndOfMonth()
-    val saldo = saldoVidOchMed(dagar, installning, sistaDagIManaden)
+    val saldo = saldoVidOchMed(dagar, installning, sistaDagIManaden, aftnarLediga)
     val iManaden =
         dagar
             .filter { YearMonth.from(it.datum) == arManad }
@@ -94,7 +95,7 @@ fun byggManadsRapport(
                 when {
                     dag.typ != DagTyp.ARBETE -> 0
                     komplett ->
-                        dagensUtfall(dag, installning.normaltidMinPerDag, installning.arbetsdagarMask)
+                        dagensUtfall(dag, installning.normaltidMinPerDag, installning.arbetsdagarMask, aftnarLediga)
                     else -> null
                 }
 
