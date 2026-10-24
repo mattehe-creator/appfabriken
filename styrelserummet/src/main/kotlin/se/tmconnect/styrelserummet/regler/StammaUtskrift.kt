@@ -21,18 +21,12 @@ data class StammaTabellRad(val etikett: String, val datum: String, val anmarknin
 
 const val STAMMA_RADGIVNING_RAD = "Allmän information, inte juridisk rådgivning. Kontrollera era stadgar."
 
-private fun csvFalt(text: String): String {
-    if (text.none { it == ';' || it == '"' || it == '\n' || it == '\r' }) {
-        return text
-    }
-    return "\"" + text.replace("\"", "\"\"") + "\""
-}
 
 fun tidplanCsv(rader: List<StammaTabellRad>): String {
     val header = "etikett;datum;anmärkning;källa"
     val dataRader = rader.map { rad ->
         listOf(rad.etikett, rad.datum, rad.anmarkning, rad.kalla)
-            .joinToString(";") { csvFalt(it) }
+            .joinToString(";") { csvCell(it) }
     }
     return (listOf(header) + dataRader + STAMMA_RADGIVNING_RAD).joinToString("\n") + "\n"
 }

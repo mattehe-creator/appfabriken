@@ -32,6 +32,7 @@ import io.ktor.server.routing.routing
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.json.Json
+import se.tmconnect.styrelserummet.regler.CSV_BOM
 import se.tmconnect.styrelserummet.regler.avskrivningsplanCsv
 import se.tmconnect.styrelserummet.regler.avskrivningsplanPerGrupp
 import se.tmconnect.styrelserummet.tolking.Tolkare
@@ -373,7 +374,7 @@ fun Application.module(miljo: ServerMiljo) {
                 lagring.uppdateraAktivitet(id)
                 val csv = tillCsv(utkast.komponenter, utkast.arsslut)
                 call.response.header(HttpHeaders.ContentDisposition, "attachment; filename=\"komponentlista.csv\"")
-                call.respondText(csv, ContentType.parse("text/csv; charset=utf-8"))
+                call.respondText(CSV_BOM + csv, ContentType.parse("text/csv; charset=utf-8"))
             }
 
             get("/{id}/atgarder") {
@@ -401,7 +402,7 @@ fun Application.module(miljo: ServerMiljo) {
                 lagring.uppdateraAktivitet(id)
                 val csv = avskrivningsplanCsv(planForUtkast(utkast))
                 call.response.header(HttpHeaders.ContentDisposition, "attachment; filename=\"avskrivningsplan.csv\"")
-                call.respondText(csv, ContentType.parse("text/csv; charset=utf-8"))
+                call.respondText(CSV_BOM + csv, ContentType.parse("text/csv; charset=utf-8"))
             }
 
             get("/{id}") {

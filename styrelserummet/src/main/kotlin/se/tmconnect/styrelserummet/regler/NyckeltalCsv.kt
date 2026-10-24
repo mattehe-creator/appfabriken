@@ -14,14 +14,8 @@ fun nyckeltalCsv(perAr: List<Pair<Int, List<NyckeltalRad>>>): String {
         listOf(etikett) + varden
     }
     val csv = (listOf(header) + dataRader).joinToString("\n") { rad ->
-        rad.joinToString(";") { csvFalt(it) }
+        rad.joinToString(";") { csvCell(it) }
     }
     return "$csv\n$UTKAST_RAD\n"
 }
 
-private fun csvFalt(text: String): String {
-    if (text.none { it == ';' || it == '"' || it == '\n' || it == '\r' }) {
-        return text
-    }
-    return "\"" + text.replace("\"", "\"\"") + "\""
-}

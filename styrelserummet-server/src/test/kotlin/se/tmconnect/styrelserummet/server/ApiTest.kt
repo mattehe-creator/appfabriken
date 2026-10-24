@@ -233,13 +233,15 @@ class ApiTest {
                 val csv = client.get("/api/jobb/$id.csv")
                 assertEquals(HttpStatusCode.OK, csv.status)
                 val csvText = csv.bodyAsText()
+                assertTrue("CSV ska börja med BOM", csvText.startsWith("\uFEFF"))
+
                 
                 // Kontrollera att CSV innehåller UTKAST
                 assertTrue("CSV ska innehålla UTKAST", csvText.contains("UTKAST"))
                 
                 // Kontrollera CSV-rubriker
                 val rubriker = "Komponent;Grupp;Anskaffningsvärde;Anskaffningsår;Nyttjandeperiod;Bokfört värde;Källa;Säkerhet"
-                assertTrue("CSV ska innehålla rätt rubriker", csvText.startsWith(rubriker))
+                assertTrue("CSV ska innehålla rätt rubriker", csvText.removePrefix("\uFEFF").startsWith(rubriker))
                 
                 // Räkna antal datarader (exklusive rubrik och utkastrad)
                 val rader = csvText.lines()

@@ -32,7 +32,7 @@ fun avgiftCsv(perLagenhet: List<Long>, trappa: List<Long>): String {
         ""
     } else {
         allRows.joinToString("\n") { row ->
-            row.joinToString(";")
+            row.joinToString(";") { csvCell(it) }
         } + "\n"
     }
 }

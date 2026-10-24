@@ -3,10 +3,11 @@ package se.tmconnect.styrelserummet.server
 import se.tmconnect.styrelserummet.modell.Komponent
 import se.tmconnect.styrelserummet.modell.Komponentgrupp
 import se.tmconnect.styrelserummet.modell.Sakerhet
+import se.tmconnect.styrelserummet.regler.csvCellTillbaka
 import se.tmconnect.styrelserummet.underlag.UTKAST_RAD
 
 fun franExportCsv(text: String): List<Komponent> {
-    val rader = text.lines().filter { it.isNotBlank() && !it.trim().startsWith(UTKAST_RAD) }
+    val rader = text.removePrefix("\uFEFF").lines().filter { it.isNotBlank() && !it.trim().startsWith(UTKAST_RAD) }
     if (rader.size <= 1) return emptyList()
     val dataRader = rader.drop(1)
     return dataRader.mapNotNull { rad ->
@@ -15,13 +16,13 @@ fun franExportCsv(text: String): List<Komponent> {
         val grupp = gruppFranExport(falt[1]) ?: Komponentgrupp.OVRIGT
         val sakerhet = runCatching { Sakerhet.valueOf(falt[7].trim()) }.getOrDefault(Sakerhet.MEDEL)
         Komponent(
-            namn = falt[0],
+            namn = csvCellTillbaka(falt[0]),
             grupp = grupp,
             anskaffningsvarde = falt[2].trim().replace(" ", "").toLongOrNull() ?: return@mapNotNull null,
             anskaffningsar = falt[3].trim().toIntOrNull() ?: return@mapNotNull null,
             nyttjandeperiodAr = falt[4].trim().toIntOrNull() ?: return@mapNotNull null,
             restvarde = 0,
-            kalla = falt[6],
+            kalla = csvCellTillbaka(falt[6]),
             sakerhet = sakerhet,
         )
     }

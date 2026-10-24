@@ -31,14 +31,8 @@ fun tillCsv(komponenter: List<Komponent>, arsslut: Int): String {
         )
     }
     val csv = (listOf(header) + rader).joinToString("\n") { rad ->
-        rad.joinToString(";") { csvFalt(it) }
+        rad.joinToString(";") { csvCell(it) }
     }
     return "$csv\n$UTKAST_RAD\n"
 }
 
-private fun csvFalt(text: String): String {
-    if (text.none { it == ';' || it == '"' || it == '\n' || it == '\r' }) {
-        return text
-    }
-    return "\"" + text.replace("\"", "\"\"") + "\""
-}
