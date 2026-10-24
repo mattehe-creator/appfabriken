@@ -13,6 +13,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.os.BundleCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
@@ -219,8 +220,22 @@ class MainActivity : ComponentActivity() {
 
     private var behorighetNekad by mutableStateOf(false)
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // Kameran och filväljaren öppnas i en annan app; under tiden kan aktiviteten skapas om
+        // (rotation, systemet frigör minne). Utan detta tappas resultatet när de kommer tillbaka.
+        kameraUri?.let { outState.putParcelable(SPARAT_KAMERA_URI, it) }
+        avlasningCsvMatareId?.let { outState.putLong(SPARAT_AVLASNING_CSV_MATARE, it) }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            kameraUri = BundleCompat.getParcelable(savedInstanceState, SPARAT_KAMERA_URI, Uri::class.java)
+            if (savedInstanceState.containsKey(SPARAT_AVLASNING_CSV_MATARE)) {
+                avlasningCsvMatareId = savedInstanceState.getLong(SPARAT_AVLASNING_CSV_MATARE)
+            }
+        }
         hanteraPaminnelseIntent(intent)
         viewModel.synkaPaminnelseJobb()
         viewModel.synkaAutoBackupJobb()
@@ -773,4 +788,9 @@ class MainActivity : ComponentActivity() {
             ForbattringMojlighet.KravBedomning -> R.string.sammanstallning_forbattring_bedomning
             ForbattringMojlighet.Nej -> R.string.sammanstallning_forbattring_nej
         }
+
+    private companion object {
+        const val SPARAT_KAMERA_URI = "kamera_uri"
+        const val SPARAT_AVLASNING_CSV_MATARE = "avlasning_csv_matare"
+    }
 }
