@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.OutputStream
 import java.time.LocalDate
 import java.util.Locale
 import kotlinx.coroutines.CompletableDeferred
@@ -115,9 +117,13 @@ class HusViewModelExportTest {
 
     private fun registreraFelandeFil(namn: String): Uri {
         val uri = Uri.parse("content://test.export/$namn")
-        shadowOf(context.contentResolver).registerOutputStreamSupplier(uri) {
-            throw SecurityException("Ingen skrivrätt")
+        // Skrivningen misslyckas, som när lagringsplatsen är full eller leverantören försvinner.
+        val felande = object : OutputStream() {
+            override fun write(b: Int): Unit = throw IOException("Ingen skrivrätt")
+
+            override fun write(b: ByteArray, off: Int, len: Int): Unit = throw IOException("Ingen skrivrätt")
         }
+        shadowOf(context.contentResolver).registerOutputStream(uri, felande)
         return uri
     }
 
