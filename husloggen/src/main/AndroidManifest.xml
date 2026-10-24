@@ -32,6 +32,17 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/bildfil_paths" />
         </provider>
+        <receiver
+            android:name=".widget.KommandeWidget"
+            android:exported="false"
+            android:label="@string/widget_kommande_namn">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_kommande_info" />
+        </receiver>
     </application>
 
 </manifest>

@@ -334,4 +334,10 @@
         <item quantity="one">%d job has no earlier cost and is not included.</item>
         <item quantity="other">%d jobs have no earlier cost and are not included.</item>
     </plurals>
+    <string name="widget_kommande_namn">Upcoming maintenance</string>
+    <string name="widget_kommande_beskrivning">The next tasks for your home</string>
+    <string name="widget_kommande_rubrik">Upcoming</string>
+    <string name="widget_kommande_tom">Nothing planned. Add a task in the app.</string>
+    <string name="widget_kommande_rad">%1$s · %2$s</string>
+    <string name="widget_kommande_forsenad">%1$s · overdue since %2$s</string>
 </resources>
