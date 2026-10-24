@@ -6,7 +6,7 @@ import org.junit.Test
 
 class MatareTolkningTest {
     @Test
-    fun test TolkaMatareVardeTillTusendel() {
+    fun testTolkaMatareVardeTillTusendel() {
         assertEquals(12_345_000L, tolkaMatareVardeTillTusendel("12345"))
         assertEquals(12_345_600L, tolkaMatareVardeTillTusendel("12345,6"))
         assertEquals(1_234_567L, tolkaMatareVardeTillTusendel("1 234,567"))
@@ -19,7 +19,7 @@ class MatareTolkningTest {
     }
 
     @Test
-    fun test MatareVardeTillFaltText() {
+    fun testMatareVardeTillFaltText() {
         assertEquals("12345,6", matareVardeTillFaltText(12_345_600L))
         assertEquals("0,05", matareVardeTillFaltText(50L))
         assertEquals("12345", matareVardeTillFaltText(12_345_000L))
