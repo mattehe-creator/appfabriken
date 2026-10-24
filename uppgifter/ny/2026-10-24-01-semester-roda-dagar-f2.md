@@ -1,12 +1,16 @@
 # Uppgift: Röda dagar räknas inte som semesterdagar
 
+## Vad som saknades (försök 1)
+- **`Semester.kt` ändrades inte.** `raknaDagarAvTyp` och `semesterSammanfattning` ska få parametern `aftnarLediga: Boolean = true` sist och använda `arArbetsdagMedHelger` i stället för `arArbetsdag` när semesterdagar räknas (funktionen finns redan i `Ledighet.kt`, samma paket).
+- **`SemesterRodaDagarTest.kt` är tom.** Skriv JUnit 4-tester (`org.junit.Test`, `org.junit.Assert.assertEquals`) som förebilden `SemesterSammanfattningTest.kt` och som assertar exakt värdena i exemplen nedan — minst ett test per bullet under «Exempel».
+
 uppdrag: uppdrag/claude/2026-10-24-flextid-semester-statistik.md
-försök: 1
+försök: 2
 beror-på: ingen
 
 ## Ändra bara dessa filer
 - flextid/src/main/kotlin/se/tmconnect/flextid/regler/Semester.kt
-- flextid/src/test/kotlin/se/tmconnect/flextid/regler/SemesterRodaDagarTest.kt (ny)
+- flextid/src/test/kotlin/se/tmconnect/flextid/regler/SemesterRodaDagarTest.kt (ny eller fyll i befintlig tom fil)
 
 ## Läs som förebild (ändra inte)
 - flextid/src/main/kotlin/se/tmconnect/flextid/regler/Ledighet.kt (funktionen `arArbetsdagMedHelger`)

@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/claude/2026-10-24-flextid-semester-statistik.md
 försök: 1
-beror-på: 2026-10-24-01-semester-roda-dagar.md
+beror-på: 2026-10-24-01-semester-roda-dagar-f2.md
 
 ## Ändra bara dessa filer
 - flextid/src/main/kotlin/se/tmconnect/flextid/regler/Semester.kt
