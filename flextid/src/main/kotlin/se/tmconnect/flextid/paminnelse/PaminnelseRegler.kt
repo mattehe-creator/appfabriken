@@ -45,6 +45,8 @@ fun skaPaminnelseStamplaIn(
 ): Boolean {
     if (!arArbetsdagMedHelger(idag, installning.arbetsdagarMask, aftnarLediga)) return false
     if (dag?.start != null) return false
+    // Semester, sjuk, flexledig och annan ledighet: ingen påminnelse om att stämpla in.
+    if (dag != null && dag.typ != se.tmconnect.flextid.regler.DagTyp.ARBETE) return false
     val klockslag = stamplaInPaminnelseKlockan(stamplaInPaminnelseMinEfterMidnatt)
     return !nu.isBefore(klockslag)
 }

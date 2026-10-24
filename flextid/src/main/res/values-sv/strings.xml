@@ -44,7 +44,7 @@
     <string name="anteckning">Anteckning</string>
     <string name="dagtyp_rubrik">Dagtyp</string>
     <string name="dagtyp_arbete">Arbete</string>
-    <string name="dagtyp_ledig">Ledig</string>
+    <string name="dagtyp_ledig">Annan ledighet</string>
     <string name="dagtyp_semester">Semester</string>
     <string name="dagtyp_sjuk">Sjuk</string>
     <string name="dagtyp_helgdag">Helgdag</string>
@@ -216,4 +216,5 @@
     <string name="widget_in_sedan">In sedan %1$s</string>
     <string name="widget_klar">Klar för i dag</string>
     <string name="widget_oppna">Öppna</string>
+    <string name="dagtyp_flex">Flexledig</string>
 </resources>

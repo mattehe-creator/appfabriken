@@ -993,6 +993,7 @@ internal fun InstallningarInnehall(
     }
 }
 
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 internal fun DagFormularDialog(
     tillstand: DagFormularTillstand,
@@ -1051,7 +1052,10 @@ internal fun DagFormularDialog(
                     singleLine = true,
                 )
                 Text(stringResource(R.string.dagtyp_rubrik))
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                // Raden bryts så att alla typer syns även på smal skärm och med stor text.
+                androidx.compose.foundation.layout.FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
                     DagTyp.entries.forEach { typ ->
                         FilterChip(
                             selected = tillstand.typ == typ,
@@ -1199,6 +1203,7 @@ internal fun veckodagStringRes(dag: DayOfWeek): Int =
 private fun dagTypStringRes(typ: DagTyp): Int =
     when (typ) {
         DagTyp.ARBETE -> R.string.dagtyp_arbete
+        DagTyp.FLEX -> R.string.dagtyp_flex
         DagTyp.LEDIG -> R.string.dagtyp_ledig
         DagTyp.SEMESTER -> R.string.dagtyp_semester
         DagTyp.SJUK -> R.string.dagtyp_sjuk

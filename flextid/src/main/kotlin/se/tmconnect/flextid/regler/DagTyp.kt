@@ -2,6 +2,9 @@ package se.tmconnect.flextid.regler
 
 enum class DagTyp {
     ARBETE,
+
+    /** Flexledig: hela dagens normaltid tas från saldot. */
+    FLEX,
     LEDIG,
     SEMESTER,
     SJUK,

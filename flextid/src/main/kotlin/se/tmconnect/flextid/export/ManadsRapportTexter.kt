@@ -47,6 +47,7 @@ fun manadsRapportTexter(
 private fun dagTypStringRes(typ: DagTyp): Int =
     when (typ) {
         DagTyp.ARBETE -> R.string.dagtyp_arbete
+        DagTyp.FLEX -> R.string.dagtyp_flex
         DagTyp.LEDIG -> R.string.dagtyp_ledig
         DagTyp.SEMESTER -> R.string.dagtyp_semester
         DagTyp.SJUK -> R.string.dagtyp_sjuk
