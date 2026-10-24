@@ -26,6 +26,7 @@ suspend fun skapaFlextidSakerhetskopiaJson(
                     aftnarLediga = uiInstallningarLager.aftnarLediga.first(),
                     semesterdagarPerAr = uiInstallningarLager.semesterdagarPerAr.first(),
                     semesterarStartmanad = uiInstallningarLager.semesterarStartmanad.first(),
+                    normaltidUndantag = uiInstallningarLager.normaltidUndantag.first(),
                 ),
             dagar = dagar.map { dagTillSakerhetskopia(it) },
         )

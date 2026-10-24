@@ -30,35 +30,35 @@ fun valideraTider(start: LocalTime?, slut: LocalTime?): TidValideringFel? {
 }
 
 /**
- * Utfallet för en dag. Röda dagar och, om [aftnarLediga], aftnar har ingen normaltid,
- * precis som i vecko- och månadens normaltid. Arbete på en sådan dag blir därför plus.
+ * Utfallet för en dag: arbetad tid minus dagens normaltid enligt [arbetstid].
+ * Röda dagar och lediga aftnar har ingen normaltid, så arbete då blir plus.
  */
+fun dagensUtfall(dag: Dag, arbetstid: Arbetstid): Int =
+    when (dag.typ) {
+        DagTyp.LEDIG, DagTyp.SEMESTER, DagTyp.SJUK, DagTyp.HELGDAG -> 0
+        DagTyp.ARBETE -> {
+            // En arbetsdag utan både in- och utstämpling är inte avslutad och räknas inte,
+            // annars visar saldot minus en hel normaltid hela dagen tills man stämplar ut.
+            if (dag.start == null || dag.slut == null) {
+                0
+            } else {
+                arbetadeMinuter(dag.start, dag.slut, dag.rastMin) - arbetstid.normaltidFor(dag.datum)
+            }
+        }
+    }
+
 fun dagensUtfall(
     dag: Dag,
     normaltidMinPerDag: Int,
     arbetsdagarMask: Int,
     aftnarLediga: Boolean = true,
-): Int {
-    when (dag.typ) {
-        DagTyp.LEDIG, DagTyp.SEMESTER, DagTyp.SJUK, DagTyp.HELGDAG -> return 0
-        DagTyp.ARBETE -> {
-            // En arbetsdag utan både in- och utstämpling är inte avslutad och räknas inte,
-            // annars visar saldot minus en hel normaltid hela dagen tills man stämplar ut.
-            if (dag.start == null || dag.slut == null) return 0
-            val arbetat = arbetadeMinuter(dag.start, dag.slut, dag.rastMin)
-            if (!arArbetsdagMedHelger(dag.datum, arbetsdagarMask, aftnarLediga)) {
-                return arbetat
-            }
-            return arbetat - normaltidMinPerDag
-        }
-    }
-}
+): Int = dagensUtfall(dag, Arbetstid(normaltidMinPerDag, arbetsdagarMask, aftnarLediga))
 
-fun beraknaSaldo(dagar: List<Dag>, installning: Installning, aftnarLediga: Boolean = true): Int {
-    val summaUtfall =
-        dagar.sumOf { dagensUtfall(it, installning.normaltidMinPerDag, installning.arbetsdagarMask, aftnarLediga) }
-    return installning.ingangssaldoMin + summaUtfall
-}
+fun beraknaSaldo(dagar: List<Dag>, ingangssaldoMin: Int, arbetstid: Arbetstid): Int =
+    ingangssaldoMin + dagar.sumOf { dagensUtfall(it, arbetstid) }
+
+fun beraknaSaldo(dagar: List<Dag>, installning: Installning, aftnarLediga: Boolean = true): Int =
+    beraknaSaldo(dagar, installning.ingangssaldoMin, installning.arbetstid(aftnarLediga))
 
 fun mandagISammaVecka(datum: LocalDate): LocalDate =
     datum.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))

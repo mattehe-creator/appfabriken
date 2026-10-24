@@ -5,6 +5,7 @@ import java.time.LocalTime
 import se.tmconnect.flextid.data.Dag
 import se.tmconnect.flextid.data.Installning
 import se.tmconnect.flextid.regler.DagTyp
+import se.tmconnect.flextid.regler.NormaltidUndantag
 import se.tmconnect.flextid.regler.STANDARD_STAMPLA_IN_PAMINNELSE_MIN_EFTER_MIDNATT
 
 const val FLEXTID_SAKERHETSKOPIA_VERSION = 1
@@ -20,6 +21,7 @@ data class SakerhetskopiaInstallning(
     val aftnarLediga: Boolean = true,
     val semesterdagarPerAr: Int = 25,
     val semesterarStartmanad: Int = 4,
+    val normaltidUndantag: NormaltidUndantag = NormaltidUndantag(),
 )
 
 data class SakerhetskopiaDag(

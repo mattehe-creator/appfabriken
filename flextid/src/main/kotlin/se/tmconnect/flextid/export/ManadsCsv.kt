@@ -8,6 +8,8 @@ import se.tmconnect.flextid.data.Installning
 import se.tmconnect.flextid.regler.DagTyp
 import se.tmconnect.flextid.regler.Helgdag
 import se.tmconnect.flextid.regler.arbetadeMinuter
+import se.tmconnect.flextid.regler.Arbetstid
+import se.tmconnect.flextid.regler.arbetstid
 import se.tmconnect.flextid.regler.dagensUtfall
 import se.tmconnect.flextid.regler.formateraMinuterSomTid
 import se.tmconnect.flextid.regler.formateraTid
@@ -31,6 +33,7 @@ fun byggManadsCsv(
     texter: ManadsCsvTexter,
     locale: Locale = Locale.getDefault(),
     aftnarLediga: Boolean = true,
+    arbetstid: Arbetstid = installning.arbetstid(aftnarLediga),
 ): String {
     val iManaden =
         dagar.filter { dag ->
@@ -42,7 +45,7 @@ fun byggManadsCsv(
         iManaden.forEach { dag ->
             val arbetat = arbetadeMinuter(dag.start, dag.slut, dag.rastMin)
             val utfall =
-                dagensUtfall(dag, installning.normaltidMinPerDag, installning.arbetsdagarMask, aftnarLediga)
+                dagensUtfall(dag, arbetstid)
             add(
                 csvRad(
                     listOf(

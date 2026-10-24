@@ -1,5 +1,11 @@
 package se.tmconnect.flextid.export
 
+import se.tmconnect.flextid.regler.MAX_NORMALTID_MIN
+import se.tmconnect.flextid.regler.NormaltidUndantag
+import se.tmconnect.flextid.regler.SommarNormaltid
+import se.tmconnect.flextid.regler.formateraPerVeckodag
+import se.tmconnect.flextid.regler.tolkaManadDag
+import se.tmconnect.flextid.regler.tolkaPerVeckodag
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeParseException
@@ -94,6 +100,19 @@ private fun lasInstallning(obj: JsonObjekt, version: Int): SakerhetskopiaInstall
     val semesterdagarPerAr = (obj.heltal("semesterdagarPerAr") ?: 25).coerceIn(0, 60)
     val semesterarStartmanadRaw = obj.heltal("semesterarStartmanad") ?: 4
     val semesterarStartmanad = if (semesterarStartmanadRaw == 1) 1 else 4
+    val sommarMin = obj.heltal("sommarNormaltidMin")?.takeIf { it in 0..MAX_NORMALTID_MIN }
+    val sommarFran = tolkaManadDag(obj.strang("sommarFran"))
+    val sommarTill = tolkaManadDag(obj.strang("sommarTill"))
+    val undantag =
+        NormaltidUndantag(
+            perVeckodag = tolkaPerVeckodag(obj.strang("normaltidPerVeckodag")),
+            sommar =
+                if (sommarMin != null && sommarFran != null && sommarTill != null) {
+                    SommarNormaltid(sommarFran, sommarTill, sommarMin)
+                } else {
+                    null
+                },
+        )
     return SakerhetskopiaInstallning(
         normaltidMinPerDag = normaltid,
         standardRastMin = rast,
@@ -103,6 +122,7 @@ private fun lasInstallning(obj: JsonObjekt, version: Int): SakerhetskopiaInstall
         aftnarLediga = aftnarLediga,
         semesterdagarPerAr = semesterdagarPerAr,
         semesterarStartmanad = semesterarStartmanad,
+        normaltidUndantag = undantag,
     )
 }
 
@@ -144,6 +164,15 @@ private fun skrivInstallningObjekt(installning: SakerhetskopiaInstallning): Stri
         append("\"aftnarLediga\":").append(installning.aftnarLediga).append(',')
         append("\"semesterdagarPerAr\":").append(installning.semesterdagarPerAr).append(',')
         append("\"semesterarStartmanad\":").append(installning.semesterarStartmanad)
+        val undantag = installning.normaltidUndantag
+        if (undantag.perVeckodag.isNotEmpty()) {
+            append(",\"normaltidPerVeckodag\":").append(jsonStrang(formateraPerVeckodag(undantag.perVeckodag)))
+        }
+        undantag.sommar?.let { sommar ->
+            append(",\"sommarNormaltidMin\":").append(sommar.minPerDag)
+            append(",\"sommarFran\":").append(jsonStrang(sommar.fran.toString()))
+            append(",\"sommarTill\":").append(jsonStrang(sommar.till.toString()))
+        }
         append('}')
     }
 

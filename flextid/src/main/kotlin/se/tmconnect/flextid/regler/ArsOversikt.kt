@@ -11,21 +11,20 @@ fun arsOversikt(
     ar: Int,
     installning: Installning,
     aftnarLediga: Boolean = true,
+    arbetstid: Arbetstid = installning.arbetstid(aftnarLediga),
 ): List<ManadsRad> {
-    val normaltid = installning.normaltidMinPerDag
-    val mask = installning.arbetsdagarMask
     return (1..12).map { manad ->
         val iManad = dagar.filter { it.datum.year == ar && it.datum.monthValue == manad }
         val arbetadMin =
             iManad
                 .filter { it.typ == DagTyp.ARBETE }
                 .sumOf { arbetadeMinuter(it.start, it.slut, it.rastMin) }
-        val utfallMin = iManad.sumOf { dagensUtfall(it, normaltid, mask, aftnarLediga) }
+        val utfallMin = iManad.sumOf { dagensUtfall(it, arbetstid) }
         val slutManad = YearMonth.of(ar, manad).atEndOfMonth()
         val saldoUtfall =
             dagar
                 .filter { !it.datum.isAfter(slutManad) }
-                .sumOf { dagensUtfall(it, normaltid, mask, aftnarLediga) }
+                .sumOf { dagensUtfall(it, arbetstid) }
         ManadsRad(manad, arbetadMin, utfallMin, installning.ingangssaldoMin + saldoUtfall)
     }
 }

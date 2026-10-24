@@ -48,11 +48,12 @@ fun saldoVidOchMed(
     installning: Installning,
     tillOchMed: java.time.LocalDate,
     aftnarLediga: Boolean = true,
+    arbetstid: Arbetstid = installning.arbetstid(aftnarLediga),
 ): Int {
     val summaUtfall =
         dagar
             .filter { it.datum <= tillOchMed }
-            .sumOf { dagensUtfall(it, installning.normaltidMinPerDag, installning.arbetsdagarMask, aftnarLediga) }
+            .sumOf { dagensUtfall(it, arbetstid) }
     return installning.ingangssaldoMin + summaUtfall
 }
 
@@ -63,6 +64,7 @@ fun byggManadsRapport(
     texter: ManadsRapportTexter,
     locale: Locale = Locale.getDefault(),
     aftnarLediga: Boolean = true,
+    arbetstid: Arbetstid = installning.arbetstid(aftnarLediga),
 ): ManadsRapportData {
     val arbetsdagar =
         arbetsdagarIManad(
@@ -73,7 +75,7 @@ fun byggManadsRapport(
             uteslutAftnar = aftnarLediga,
         )
     val sistaDagIManaden = arManad.atEndOfMonth()
-    val saldo = saldoVidOchMed(dagar, installning, sistaDagIManaden, aftnarLediga)
+    val saldo = saldoVidOchMed(dagar, installning, sistaDagIManaden, aftnarLediga, arbetstid)
     val iManaden =
         dagar
             .filter { YearMonth.from(it.datum) == arManad }
@@ -95,7 +97,7 @@ fun byggManadsRapport(
                 when {
                     dag.typ != DagTyp.ARBETE -> 0
                     komplett ->
-                        dagensUtfall(dag, installning.normaltidMinPerDag, installning.arbetsdagarMask, aftnarLediga)
+                        dagensUtfall(dag, arbetstid)
                     else -> null
                 }
 
@@ -154,7 +156,8 @@ fun byggManadsRapport(
         saldoManadsslut = formateraSaldoMinuter(saldo, locale),
         ingaDagar = rader.isEmpty(),
         arbetsdagarManad = arbetsdagar,
-        normaltidManad = formateraMinuterSomTid(arbetsdagar * installning.normaltidMinPerDag, locale),
+        normaltidManad =
+            formateraMinuterSomTid(arbetstid.normaltidForIntervall(arManad.atDay(1), sistaDagIManaden), locale),
     )
 }
 
