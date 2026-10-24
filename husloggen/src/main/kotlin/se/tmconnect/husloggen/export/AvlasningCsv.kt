@@ -46,7 +46,14 @@ fun avlasningCsv(
 }
 
 fun avlasningCsvFilnamn(matareNamn: String, idag: java.time.LocalDate): String {
-    val saker = matareNamn.lowercase().replace(Regex("[^a-z0-9]+"), "-").trim('-')
+    val saker =
+        matareNamn
+            .lowercase()
+            .replace('å', 'a')
+            .replace('ä', 'a')
+            .replace('ö', 'o')
+            .replace(Regex("[^a-z0-9]+"), "-")
+            .trim('-')
     val bas = if (saker.isEmpty()) "matare" else saker
     return "husloggen-$bas-${idag}.csv"
 }
