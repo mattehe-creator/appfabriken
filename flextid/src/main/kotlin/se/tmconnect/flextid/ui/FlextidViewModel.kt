@@ -229,18 +229,18 @@ class FlextidViewModel(
         )
 
     /** Allt som avgör normaltiden en viss dag. */
-    private val arbetstidFlode =
+    private val arbetstidFlode: kotlinx.coroutines.flow.Flow<Arbetstid> =
         combine(
             repository.observeraInstallning(),
             uiInstallningarLager.aftnarLediga,
             uiInstallningarLager.normaltidUndantag,
         ) { inst, aftnar, undantag -> inst.arbetstid(aftnar, undantag) }
 
-    val arbetstid =
+    val arbetstid: kotlinx.coroutines.flow.StateFlow<Arbetstid> =
         arbetstidFlode.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
-            Installning().arbetstid(),
+            Installning().arbetstid(aftnarLediga = true),
         )
 
     val saldo =
