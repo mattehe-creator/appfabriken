@@ -4,7 +4,6 @@ import java.time.LocalDate
 import java.time.LocalTime
 import org.junit.Test
 import se.tmconnect.flextid.data.Dag
-import se.tmconnect.flextid.regler.DagTyp
 import kotlin.test.assertEquals
 
 class SaldoKurvaTest {
