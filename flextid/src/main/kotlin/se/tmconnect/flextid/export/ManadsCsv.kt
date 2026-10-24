@@ -30,6 +30,7 @@ fun byggManadsCsv(
     arManad: YearMonth,
     texter: ManadsCsvTexter,
     locale: Locale = Locale.getDefault(),
+    aftnarLediga: Boolean = true,
 ): String {
     val iManaden =
         dagar.filter { dag ->
@@ -41,7 +42,7 @@ fun byggManadsCsv(
         iManaden.forEach { dag ->
             val arbetat = arbetadeMinuter(dag.start, dag.slut, dag.rastMin)
             val utfall =
-                dagensUtfall(dag, installning.normaltidMinPerDag, installning.arbetsdagarMask)
+                dagensUtfall(dag, installning.normaltidMinPerDag, installning.arbetsdagarMask, aftnarLediga)
             add(
                 csvRad(
                     listOf(

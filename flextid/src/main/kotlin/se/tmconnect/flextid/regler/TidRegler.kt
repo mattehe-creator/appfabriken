@@ -29,10 +29,15 @@ fun valideraTider(start: LocalTime?, slut: LocalTime?): TidValideringFel? {
     return null
 }
 
+/**
+ * Utfallet för en dag. Röda dagar och, om [aftnarLediga], aftnar har ingen normaltid,
+ * precis som i vecko- och månadens normaltid. Arbete på en sådan dag blir därför plus.
+ */
 fun dagensUtfall(
     dag: Dag,
     normaltidMinPerDag: Int,
     arbetsdagarMask: Int,
+    aftnarLediga: Boolean = true,
 ): Int {
     when (dag.typ) {
         DagTyp.LEDIG, DagTyp.SEMESTER, DagTyp.SJUK, DagTyp.HELGDAG -> return 0
@@ -41,7 +46,7 @@ fun dagensUtfall(
             // annars visar saldot minus en hel normaltid hela dagen tills man stämplar ut.
             if (dag.start == null || dag.slut == null) return 0
             val arbetat = arbetadeMinuter(dag.start, dag.slut, dag.rastMin)
-            if (!arArbetsdag(dag.datum, arbetsdagarMask)) {
+            if (!arArbetsdagMedHelger(dag.datum, arbetsdagarMask, aftnarLediga)) {
                 return arbetat
             }
             return arbetat - normaltidMinPerDag
@@ -49,8 +54,9 @@ fun dagensUtfall(
     }
 }
 
-fun beraknaSaldo(dagar: List<Dag>, installning: Installning): Int {
-    val summaUtfall = dagar.sumOf { dagensUtfall(it, installning.normaltidMinPerDag, installning.arbetsdagarMask) }
+fun beraknaSaldo(dagar: List<Dag>, installning: Installning, aftnarLediga: Boolean = true): Int {
+    val summaUtfall =
+        dagar.sumOf { dagensUtfall(it, installning.normaltidMinPerDag, installning.arbetsdagarMask, aftnarLediga) }
     return installning.ingangssaldoMin + summaUtfall
 }
 

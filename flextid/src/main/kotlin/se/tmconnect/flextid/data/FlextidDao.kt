@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import java.time.LocalDate
 import kotlinx.coroutines.flow.Flow
@@ -48,4 +49,12 @@ interface FlextidDao {
 
     @Update
     suspend fun uppdateraInstallning(installning: Installning)
+
+    /** Import: allt eller inget, så att ett avbrott inte lämnar en tom databas. */
+    @Transaction
+    suspend fun ersattAllData(dagar: List<Dag>, installning: Installning) {
+        taBortAllaDagar()
+        dagar.forEach { sparaDag(it) }
+        sparaInstallning(installning)
+    }
 }
