@@ -22,7 +22,6 @@ fun skrivManadsPdf(
     outputStream: OutputStream,
 ): PdfExportResult =
     skrivPdfDokument({ _, skrivare ->
-        val canvas = skrivare.canvas
         var y = skrivare.y
         val rubrikPaint =
             Paint().apply {
@@ -49,19 +48,19 @@ fun skrivManadsPdf(
             }
         val radHojd = 14f
 
-        canvas.drawText(rapport.rubrik, PDF_MARGIN, y + 14f, rubrikPaint)
+        skrivare.canvas.drawText(rapport.rubrik, PDF_MARGIN, y + 14f, rubrikPaint)
         y += 28f
 
         if (rapport.ingaDagar) {
             skrivare.y = y
             skrivare.behovNySida(PDF_RAD_AVSTAND)
-            canvas.drawText(texter.ingaRegistreradeDagar, PDF_MARGIN, skrivare.y, tabellTextPaint)
+            skrivare.canvas.drawText(texter.ingaRegistreradeDagar, PDF_MARGIN, skrivare.y, tabellTextPaint)
             y = skrivare.y + PDF_RAD_AVSTAND
         } else {
             val kolumner = tabellKolumner()
             skrivare.y = y
             skrivare.behovNySida(radHojd * 2)
-            ritaTabellRad(canvas, texter.kolumnRubriker, kolumner, skrivare.y, tabellRubrikPaint)
+            ritaTabellRad(skrivare.canvas, texter.kolumnRubriker, kolumner, skrivare.y, tabellRubrikPaint)
             y = skrivare.y + radHojd
             for (rad in rapport.rader) {
                 skrivare.y = y
@@ -77,14 +76,14 @@ fun skrivManadsPdf(
                         rad.utfall,
                         rad.typ,
                     )
-                ritaTabellRad(canvas, celler, kolumner, skrivare.y, tabellTextPaint)
+                ritaTabellRad(skrivare.canvas, celler, kolumner, skrivare.y, tabellTextPaint)
                 y = skrivare.y + radHojd
             }
             y += 8f
             rapport.summaArbetad?.let { summa ->
                 skrivare.y = y
                 skrivare.behovNySida(PDF_RAD_AVSTAND * 2)
-                canvas.drawText(
+                skrivare.canvas.drawText(
                     "${texter.summaArbetadEtikett}: $summa",
                     PDF_MARGIN,
                     skrivare.y,
@@ -95,7 +94,7 @@ fun skrivManadsPdf(
             rapport.summaUtfall?.let { summa ->
                 skrivare.y = y
                 skrivare.behovNySida(PDF_RAD_AVSTAND)
-                canvas.drawText(
+                skrivare.canvas.drawText(
                     "${texter.summaUtfallEtikett}: $summa",
                     PDF_MARGIN,
                     skrivare.y,
@@ -108,7 +107,7 @@ fun skrivManadsPdf(
         if (texter.normaltidManadEtikett.isNotBlank()) {
             skrivare.y = y + 4f
             skrivare.behovNySida(PDF_RAD_AVSTAND)
-            canvas.drawText(
+            skrivare.canvas.drawText(
                 "${texter.normaltidManadEtikett}: ${rapport.normaltidManad}",
                 PDF_MARGIN,
                 skrivare.y,
@@ -118,7 +117,7 @@ fun skrivManadsPdf(
         }
         skrivare.y = y + 4f
         skrivare.behovNySida(PDF_RAD_AVSTAND)
-        canvas.drawText(
+        skrivare.canvas.drawText(
             "${texter.saldoManadsslutEtikett}: ${rapport.saldoManadsslut}",
             PDF_MARGIN,
             skrivare.y,

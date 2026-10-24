@@ -218,4 +218,8 @@
     <string name="widget_oppna">Öppna</string>
     <string name="dagtyp_flex">Flexledig</string>
     <string name="arbetsdagar_saknas">Välj minst en arbetsdag. Inget sparades.</string>
+    <string name="fel_ogiltig_tid">Skriv tider som 08:30 och rasten i hela minuter.</string>
+    <string name="fel_rast_langre_an_arbetstid">Rasten är längre än tiden mellan start och slut.</string>
+    <string name="export_ogiltig_period">Ange ett år (1900–9999) och en månad (1–12).</string>
+    <string name="meddelande_export_fel">Kunde inte spara filen</string>
 </resources>

@@ -45,6 +45,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,6 +60,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import se.tmconnect.flextid.R
 import se.tmconnect.flextid.regler.DagTyp
 import se.tmconnect.flextid.regler.SemesterSammanfattning
+import se.tmconnect.flextid.regler.TidValideringFel
+import se.tmconnect.flextid.regler.tolkaExportArManad
 import se.tmconnect.flextid.regler.PeriodSammanfattning
 import se.tmconnect.flextid.regler.VeckoTextTexter
 import se.tmconnect.flextid.regler.veckoText
@@ -100,7 +103,8 @@ fun FlextidStartSkarm(
     onKorNuAutoBackup: () -> Unit = {},
     locale: Locale,
 ) {
-    var flik by remember(startFlik) { mutableStateOf(startFlik ?: FlextidFlik.IDAG) }
+    // Sparas vid rotation, annars hamnar man på Idag när telefonen vrids.
+    var flik by rememberSaveable(startFlik) { mutableStateOf(startFlik ?: FlextidFlik.IDAG) }
     val saldo by viewModel.saldo.collectAsState()
     val installning by viewModel.installning.collectAsState()
     val idagDag by viewModel.idagDag.collectAsState()
@@ -132,7 +136,7 @@ fun FlextidStartSkarm(
     val vanligRastMin by viewModel.vanligRastMin.collectAsState()
     val arbetstid by viewModel.arbetstid.collectAsState()
     val normaltidUndantag by viewModel.normaltidUndantag.collectAsState()
-    var visaArsOversikt by remember { mutableStateOf(false) }
+    var visaArsOversikt by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
@@ -667,8 +671,6 @@ internal fun InstallningarInnehall(
         mutableStateOf(formateraTid(minuterTillLocalTime(vanligSlutMin), locale))
     }
     var vanligRast by remember(vanligRastMin) { mutableStateOf(vanligRastMin.toString()) }
-    var exportAr by remember(exportArManad) { mutableIntStateOf(exportArManad.year) }
-    var exportManad by remember(exportArManad) { mutableIntStateOf(exportArManad.monthValue) }
 
     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         item {
@@ -928,51 +930,13 @@ internal fun InstallningarInnehall(
         }
         item {
             Text(stringResource(R.string.export_rubrik), style = MaterialTheme.typography.titleMedium)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(
-                    value = exportAr.toString(),
-                    onValueChange = { it.toIntOrNull()?.let { ar -> exportAr = ar } },
-                    label = { Text(stringResource(R.string.export_ar)) },
-                    singleLine = true,
-                    modifier = Modifier.weight(1f),
-                )
-                OutlinedTextField(
-                    value = exportManad.toString(),
-                    onValueChange = { it.toIntOrNull()?.let { m -> exportManad = m } },
-                    label = { Text(stringResource(R.string.export_manad)) },
-                    singleLine = true,
-                    modifier = Modifier.weight(1f),
-                )
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(
-                    onClick = {
-                        onExportManad(YearMonth.of(exportAr, exportManad.coerceIn(1, 12)))
-                        onExporteraCsv()
-                    },
-                    modifier = Modifier.tryckyta48().weight(1f),
-                ) {
-                    Text(stringResource(R.string.exportera_csv))
-                }
-                Button(
-                    onClick = {
-                        onExportManad(YearMonth.of(exportAr, exportManad.coerceIn(1, 12)))
-                        onExporteraPdf()
-                    },
-                    modifier = Modifier.tryckyta48().weight(1f),
-                ) {
-                    Text(stringResource(R.string.exportera_pdf))
-                }
-            }
-            OutlinedButton(
-                onClick = {
-                    onExportManad(YearMonth.of(exportAr, exportManad.coerceIn(1, 12)))
-                    onExporteraArsCsv()
-                },
-                modifier = Modifier.tryckyta48().fillMaxWidth(),
-            ) {
-                Text(stringResource(R.string.exportera_ars_csv))
-            }
+            ExportPeriodAvsnitt(
+                exportArManad = exportArManad,
+                onExportManad = onExportManad,
+                onExporteraCsv = onExporteraCsv,
+                onExporteraPdf = onExporteraPdf,
+                onExporteraArsCsv = onExporteraArsCsv,
+            )
             OutlinedButton(onClick = onExporteraJson, modifier = Modifier.tryckyta48()) {
                 Text(stringResource(R.string.exportera_sakerhetskopia))
             }
@@ -990,6 +954,91 @@ internal fun InstallningarInnehall(
             )
         }
         item { Spacer(modifier = Modifier.padding(bottom = 24.dp)) }
+    }
+}
+
+/**
+ * År och månad för export. Fälten är text så att de går att tömma och skriva om; ogiltiga värden
+ * (månad 13, år 0) stänger av knapparna i stället för att krascha eller tyst bytas mot december.
+ * Texten sparas vid rotation.
+ */
+@Composable
+internal fun ExportPeriodAvsnitt(
+    exportArManad: YearMonth,
+    onExportManad: (YearMonth) -> Unit,
+    onExporteraCsv: () -> Unit,
+    onExporteraPdf: () -> Unit,
+    onExporteraArsCsv: () -> Unit,
+) {
+    var arText by rememberSaveable(exportArManad) { mutableStateOf(exportArManad.year.toString()) }
+    var manadText by rememberSaveable(exportArManad) { mutableStateOf(exportArManad.monthValue.toString()) }
+    val period = tolkaExportArManad(arText, manadText)
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedTextField(
+                value = arText,
+                onValueChange = { arText = it.filter(Char::isDigit).take(4) },
+                label = { Text(stringResource(R.string.export_ar)) },
+                isError = period == null,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                modifier = Modifier.weight(1f),
+            )
+            OutlinedTextField(
+                value = manadText,
+                onValueChange = { manadText = it.filter(Char::isDigit).take(2) },
+                label = { Text(stringResource(R.string.export_manad)) },
+                isError = period == null,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                modifier = Modifier.weight(1f),
+            )
+        }
+        if (period == null) {
+            Text(
+                text = stringResource(R.string.export_ogiltig_period),
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+                onClick = {
+                    period?.let {
+                        onExportManad(it)
+                        onExporteraCsv()
+                    }
+                },
+                enabled = period != null,
+                modifier = Modifier.tryckyta48().weight(1f),
+            ) {
+                Text(stringResource(R.string.exportera_csv))
+            }
+            Button(
+                onClick = {
+                    period?.let {
+                        onExportManad(it)
+                        onExporteraPdf()
+                    }
+                },
+                enabled = period != null,
+                modifier = Modifier.tryckyta48().weight(1f),
+            ) {
+                Text(stringResource(R.string.exportera_pdf))
+            }
+        }
+        OutlinedButton(
+            onClick = {
+                period?.let {
+                    onExportManad(it)
+                    onExporteraArsCsv()
+                }
+            },
+            enabled = period != null,
+            modifier = Modifier.tryckyta48().fillMaxWidth(),
+        ) {
+            Text(stringResource(R.string.exportera_ars_csv))
+        }
     }
 }
 
@@ -1047,7 +1096,7 @@ internal fun DagFormularDialog(
                 )
                 OutlinedTextField(
                     value = tillstand.rastText,
-                    onValueChange = { onAndra(tillstand.copy(rastText = it)) },
+                    onValueChange = { onAndra(tillstand.copy(rastText = it, fel = null)) },
                     label = { Text(stringResource(R.string.rast_min)) },
                     singleLine = true,
                 )
@@ -1070,9 +1119,15 @@ internal fun DagFormularDialog(
                     label = { Text(stringResource(R.string.anteckning)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
-                tillstand.fel?.let {
+                tillstand.fel?.let { fel ->
                     Text(
-                        stringResource(R.string.fel_slut_fore_start),
+                        stringResource(
+                            when (fel) {
+                                TidValideringFel.SlutForeStart -> R.string.fel_slut_fore_start
+                                TidValideringFel.OgiltigTid -> R.string.fel_ogiltig_tid
+                                TidValideringFel.RastLangreAnArbetstid -> R.string.fel_rast_langre_an_arbetstid
+                            },
+                        ),
                         color = MaterialTheme.colorScheme.error,
                     )
                 }

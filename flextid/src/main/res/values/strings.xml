@@ -218,4 +218,8 @@
     <string name="widget_oppna">Open</string>
     <string name="dagtyp_flex">Flex leave</string>
     <string name="arbetsdagar_saknas">Choose at least one working day. Nothing was saved.</string>
+    <string name="fel_ogiltig_tid">Write times as 08:30 and the break in whole minutes.</string>
+    <string name="fel_rast_langre_an_arbetstid">The break is longer than the time between start and end.</string>
+    <string name="export_ogiltig_period">Enter a year (1900–9999) and a month (1–12).</string>
+    <string name="meddelande_export_fel">Could not save the file</string>
 </resources>

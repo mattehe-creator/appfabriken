@@ -40,6 +40,8 @@ import se.tmconnect.flextid.export.ManadsCsvTexter
 import se.tmconnect.flextid.export.SakerhetskopiaJsonLasResult
 import se.tmconnect.flextid.export.skapaFlextidSakerhetskopiaJson
 import se.tmconnect.flextid.export.byggManadsCsv
+import se.tmconnect.flextid.export.lasSakert
+import se.tmconnect.flextid.export.skrivSakert
 import se.tmconnect.flextid.widget.SaldoWidget
 import se.tmconnect.flextid.regler.ManadsRapportData
 import se.tmconnect.flextid.regler.ManadsRapportTexter
@@ -52,6 +54,8 @@ import se.tmconnect.flextid.paminnelse.FlextidPaminnelseKalla
 import se.tmconnect.flextid.paminnelse.PaminnelseWorker
 import se.tmconnect.flextid.regler.DagTyp
 import se.tmconnect.flextid.regler.TidValideringFel
+import se.tmconnect.flextid.regler.DagFormularTolkning
+import se.tmconnect.flextid.regler.tolkaDagFormular
 import se.tmconnect.flextid.regler.Arbetstid
 import se.tmconnect.flextid.regler.NormaltidUndantag
 import se.tmconnect.flextid.regler.SommarNormaltid
@@ -98,6 +102,8 @@ sealed interface FlextidMeddelande {
     data object SlutForeStart : FlextidMeddelande
 
     data object ImportFel : FlextidMeddelande
+
+    data object ExportFel : FlextidMeddelande
 
     data object GransUtanPro : FlextidMeddelande
 
@@ -522,7 +528,8 @@ class FlextidViewModel(
                     visaProDialog()
                     _meddelanden.emit(FlextidMeddelande.GransUtanPro)
                 }
-                is FlextidRepository.SparaDagResult.Fel -> Unit
+                is FlextidRepository.SparaDagResult.Fel ->
+                    _meddelanden.emit(FlextidMeddelande.SlutForeStart)
             }
         }
     }
@@ -689,15 +696,24 @@ class FlextidViewModel(
     fun sparaDagFormular() {
         val form = _dagFormular.value ?: return
         viewModelScope.launch {
-            val start = tolkaTidText(form.startText)
-            val slut = tolkaTidText(form.slutText)
-            val rast = form.rastText.toIntOrNull() ?: installning.value.standardRastMin
+            // Otolkbar text ("8.30", "25:00") får inte sparas som tom tid och radera en registrerad tid.
+            val tolkat =
+                when (
+                    val t = tolkaDagFormular(form.startText, form.slutText, form.rastText, installning.value.standardRastMin)
+                ) {
+                    is DagFormularTolkning.Ok -> t
+                    is DagFormularTolkning.Fel -> {
+                        _dagFormular.value = form.copy(fel = t.fel)
+                        if (t.fel == TidValideringFel.SlutForeStart) _meddelanden.emit(FlextidMeddelande.SlutForeStart)
+                        return@launch
+                    }
+                }
             val dag =
                 Dag(
                     datum = form.datum,
-                    start = start,
-                    slut = slut,
-                    rastMin = rast.coerceAtLeast(0),
+                    start = tolkat.start,
+                    slut = tolkat.slut,
+                    rastMin = tolkat.rastMin,
                     typ = form.typ,
                     anteckning = form.anteckning.trim().takeIf { it.isNotEmpty() },
                 )
@@ -832,7 +848,14 @@ class FlextidViewModel(
         }
     }
 
+    /** Senast valda exportmånad; gäller direkt, innan DataStore hunnit spara och skicka tillbaka värdet. */
+    @Volatile private var valdExportArManad: YearMonth? = null
+
+    /** Exportmånaden att använda nu, även i samma tryck som valet gjordes (filnamnet). */
+    fun aktuellExportArManad(): YearMonth = valdExportArManad ?: exportArManad.value
+
     fun sattExportArManad(arManad: YearMonth) {
+        valdExportArManad = arManad
         viewModelScope.launch { uiInstallningarLager.sattExportArManad(arManad) }
     }
 
@@ -899,7 +922,7 @@ class FlextidViewModel(
 
     /** Årsöversikt för året i exportvalet: en rad per månad med saldo vid månadens slut. */
     suspend fun skapaArsCsv(rubriker: List<String>, locale: Locale): String {
-        val ar = exportArManad.value.year
+        val ar = aktuellExportArManad().year
         val inst = repository.hamtaInstallning()
         val at = hamtaArbetstid(inst)
         val rader = arsOversikt(repository.hamtaAllaDagar(), ar, inst, at.aftnarLediga, at)
@@ -912,7 +935,7 @@ class FlextidViewModel(
     suspend fun skapaManadsCsv(texter: ManadsCsvTexter, locale: Locale): String {
         val dagar = repository.hamtaAllaDagar()
         val inst = repository.hamtaInstallning()
-        val arManad = exportArManad.value
+        val arManad = aktuellExportArManad()
         val at = hamtaArbetstid(inst)
         return byggManadsCsv(dagar, inst, arManad, texter, locale, at.aftnarLediga, at)
     }
@@ -920,7 +943,7 @@ class FlextidViewModel(
     suspend fun skapaManadsRapport(texter: ManadsRapportTexter, locale: Locale): ManadsRapportData {
         val dagar = repository.hamtaAllaDagar()
         val inst = repository.hamtaInstallning()
-        val arManad = exportArManad.value
+        val arManad = aktuellExportArManad()
         val at = hamtaArbetstid(inst)
         return byggManadsRapport(
             dagar,
@@ -935,10 +958,11 @@ class FlextidViewModel(
 
     fun skrivTillUri(uri: Uri, skriv: suspend (java.io.OutputStream) -> Unit) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                appContext.contentResolver.openOutputStream(uri)?.use { skriv(it) }
-            }
-            _meddelanden.emit(FlextidMeddelande.Exporterat)
+            val lyckades =
+                withContext(Dispatchers.IO) {
+                    skrivSakert({ appContext.contentResolver.openOutputStream(uri) }, skriv)
+                }
+            _meddelanden.emit(if (lyckades) FlextidMeddelande.Exporterat else FlextidMeddelande.ExportFel)
         }
     }
 
@@ -946,9 +970,13 @@ class FlextidViewModel(
         viewModelScope.launch {
             val text =
                 withContext(Dispatchers.IO) {
-                    appContext.contentResolver.openInputStream(uri)?.use { las(it) } ?: ""
+                    lasSakert({ appContext.contentResolver.openInputStream(uri) }, las)
                 }
-            importeraSakerhetskopia(text)
+            if (text == null) {
+                _meddelanden.emit(FlextidMeddelande.ImportFel)
+            } else {
+                importeraSakerhetskopia(text)
+            }
         }
     }
 

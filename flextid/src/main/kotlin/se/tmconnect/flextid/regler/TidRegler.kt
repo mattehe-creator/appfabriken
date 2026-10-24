@@ -10,6 +10,12 @@ import se.tmconnect.flextid.data.Installning
 
 sealed interface TidValideringFel {
     data object SlutForeStart : TidValideringFel
+
+    /** En tid eller rasten i dagformuläret går inte att tolka. */
+    data object OgiltigTid : TidValideringFel
+
+    /** Rasten är längre än tiden mellan start och slut. */
+    data object RastLangreAnArbetstid : TidValideringFel
 }
 
 fun arbetadeMinuter(
