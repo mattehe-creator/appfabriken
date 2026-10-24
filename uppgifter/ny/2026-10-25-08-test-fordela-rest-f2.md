@@ -1,8 +1,12 @@
 # Uppgift: Test av fördelning av byggnadens värde på komponentgrupper
 
 uppdrag: uppdrag/claude/2026-10-25-natt-testtackning.md
-försök: 1
+försök: 2
 beror-på: ingen
+
+## Vad som saknades
+- Filen `styrelserummet/src/test/kotlin/se/tmconnect/styrelserummet/regler/FordelaRestTest.kt` skapades inte. Grenen innehöll bara flytt av uppgiftsfilen till `uppgifter/pagar/`.
+- Skapa testfilen på exakt den sökvägen (inte i repots rot). Förebild för paket, imports och JUnit 4-stil: `styrelserummet/src/test/kotlin/se/tmconnect/styrelserummet/regler/RantescenarioTest.kt` och `ReglerTest.kt`.
 
 ## Ändra bara dessa filer
 - styrelserummet/src/test/kotlin/se/tmconnect/styrelserummet/regler/FordelaRestTest.kt (ny)
@@ -12,7 +16,7 @@ beror-på: ingen
 - styrelserummet/src/test/kotlin/se/tmconnect/styrelserummet/regler/ReglerTest.kt
 
 ## Uppgift
-Skriv JUnit 4-tester (`org.junit.Test`, `assertEquals`, `assertThrows`) för
+Skriv JUnit 4-tester (`org.junit.Test`, `org.junit.Assert.assertEquals`, `org.junit.Assert.assertThrows`) för
 `fordela(total: Long, andelar: List<Pair<Komponentgrupp, Int>>): Map<Komponentgrupp, Long>`.
 
 Så räknar funktionen:
@@ -23,6 +27,8 @@ Så räknar funktionen:
 
 Importera `se.tmconnect.styrelserummet.modell.Komponentgrupp`. Jämför hela kartan, till exempel
 `assertEquals(mapOf(Komponentgrupp.STOMME to 51L, Komponentgrupp.FASAD to 50L), fordela(101, listOf(Komponentgrupp.STOMME to 50, Komponentgrupp.FASAD to 50)))`.
+
+Skriv minst ett `@Test` per rad i avsnittet Exempel nedan (gärna ett testnamn per exempel).
 
 ## Exempel
 - `fordela(100, [STOMME 34, FASAD 33, TAK 33])` → `{STOMME=34, FASAD=33, TAK=33}` (ingen rest)
@@ -42,3 +48,4 @@ gradle :styrelserummet:test --tests "*FordelaRestTest"
 - Ändra andra filer.
 - Ändra `FordelaVarde.kt`. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Lägga till beroenden.
+- Använd `kotlin.test`; använd JUnit 4 (`org.junit`).
