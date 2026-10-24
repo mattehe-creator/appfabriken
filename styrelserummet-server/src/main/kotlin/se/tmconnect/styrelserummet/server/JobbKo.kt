@@ -40,8 +40,7 @@ class JobbKo(
     }
 
     private fun bearbeta(id: String) {
-        val meta = lagring.lasMeta(id) ?: return
-        lagring.skrivMeta(meta.copy(status = JobbStatus.BEARBETAR.name))
+        val meta = lagring.uppdateraMeta(id) { it.copy(status = JobbStatus.BEARBETAR.name) } ?: return
         try {
             val filer = lagring.listaFiler(id)
             if (filer.isEmpty()) {
@@ -110,41 +109,39 @@ class JobbKo(
                 return
             }
             lagring.sparaUtkast(id, tillUtkastDto(utkast, meta.arsslut))
-            lagring.skrivMeta(
-                meta.copy(
+            lagring.uppdateraMeta(id) {
+                it.copy(
                     status = JobbStatus.KLAR.name,
                     senastAktivMs = System.currentTimeMillis(),
                     felmeddelande = null,
-                ),
-            )
+                )
+            }
         } catch (_: Exception) {
             fel(id, ServerFel.Okant)
         }
     }
 
     private fun fel(id: String, serverFel: ServerFel) {
-        val meta = lagring.lasMeta(id) ?: return
         val tidMs = System.currentTimeMillis()
-        lagring.skrivMeta(
-            meta.copy(
+        lagring.uppdateraMeta(id) {
+            it.copy(
                 status = JobbStatus.FEL.name,
                 felmeddelande = felText(serverFelTillKod(serverFel)),
                 senastAktivMs = tidMs,
-            ),
-        )
+            )
+        } ?: return
         loggSkriv(loggJobbFel(id, serverFel, tidMs))
     }
 
     private fun felForStorHandling(id: String) {
-        val meta = lagring.lasMeta(id) ?: return
         val tidMs = System.currentTimeMillis()
-        lagring.skrivMeta(
-            meta.copy(
+        lagring.uppdateraMeta(id) {
+            it.copy(
                 status = JobbStatus.FEL.name,
                 felmeddelande = Felmeddelanden.forklara(Felkoder.FOR_STOR_HANDLING),
                 senastAktivMs = tidMs,
-            ),
-        )
+            )
+        } ?: return
         loggSkriv("$id ${Felkoder.FOR_STOR_HANDLING} $tidMs")
     }
 }

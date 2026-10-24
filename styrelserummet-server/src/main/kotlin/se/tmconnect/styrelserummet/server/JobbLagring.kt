@@ -3,8 +3,10 @@ package se.tmconnect.styrelserummet.server
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.nio.file.AtomicMoveNotSupportedException
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 import kotlin.io.path.createDirectories
 import kotlin.io.path.div
 import kotlin.io.path.deleteIfExists
@@ -35,7 +37,12 @@ class JobbLagring(
     private val logg: (String) -> Unit = ::println
 ) {
     private val json = Json { prettyPrint = true; ignoreUnknownKeys = true }
-    private val skrivLås = Any()
+
+    /**
+     * Lås per jobb-id (fördelade på ett fast antal lås, så att minnet inte växer med antalet jobb).
+     * Låsen delas mellan alla instanser, eftersom flera instanser kan peka på samma katalog.
+     */
+    private fun lasFor(id: String): Any = JOBB_LAS[Math.floorMod(id.hashCode(), JOBB_LAS.size)]
 
     init {
         rot.createDirectories()
@@ -64,17 +71,62 @@ class JobbLagring(
         }
     }
 
+    /**
+     * Skriver hela meta.json. Använd [uppdateraMeta] när den nya metan bygger på en läst meta,
+     * annars kan en samtidig ändring (till exempel status KLAR från kön) skrivas över.
+     */
     fun skrivMeta(meta: JobbMeta) {
-        val fil = jobbKatalog(meta.id) / "meta.json"
-        synchronized(skrivLås) {
-            fil.writeText(json.encodeToString(meta))
+        synchronized(lasFor(meta.id)) {
+            skrivAtomart(jobbKatalog(meta.id) / "meta.json", json.encodeToString(meta))
         }
     }
 
+    /**
+     * Atomär läs-ändra-skriv av meta.json under jobbets lås. Null om jobbet saknas eller
+     * meta.json inte går att läsa; då skrivs ingenting.
+     */
+    fun uppdateraMeta(id: String, andring: (JobbMeta) -> JobbMeta): JobbMeta? =
+        synchronized(lasFor(id)) {
+            val gammal = lasMeta(id) ?: return null
+            val ny = andring(gammal)
+            require(ny.id == id) { "Jobb-id får inte ändras" }
+            skrivAtomart(jobbKatalog(id) / "meta.json", json.encodeToString(ny))
+            ny
+        }
+
     fun sparaUtkast(id: String, utkast: UtkastDto) {
-        val dir = jobbKatalog(id)
-        if (!dir.exists()) return
-        (dir / "utkast.json").writeText(json.encodeToString(utkast))
+        synchronized(lasFor(id)) {
+            val dir = jobbKatalog(id)
+            if (!dir.exists()) return
+            skrivAtomart(dir / "utkast.json", json.encodeToString(utkast))
+        }
+    }
+
+    /** Atomär läs-ändra-skriv av utkast.json under jobbets lås. Null om utkastet saknas. */
+    fun uppdateraUtkast(id: String, andring: (UtkastDto) -> UtkastDto): UtkastDto? =
+        synchronized(lasFor(id)) {
+            val gammalt = lasUtkast(id) ?: return null
+            val nytt = andring(gammalt)
+            skrivAtomart(jobbKatalog(id) / "utkast.json", json.encodeToString(nytt))
+            nytt
+        }
+
+    /**
+     * Skriver till en temporär fil i samma katalog och flyttar den på plats, så att en läsare
+     * eller en krasch aldrig ser en halvskriven fil.
+     */
+    private fun skrivAtomart(fil: Path, text: String) {
+        val tmp = fil.resolveSibling("${fil.fileName}.${java.util.UUID.randomUUID()}.tmp")
+        try {
+            tmp.writeText(text)
+            try {
+                Files.move(tmp, fil, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING)
+            } catch (_: AtomicMoveNotSupportedException) {
+                Files.move(tmp, fil, StandardCopyOption.REPLACE_EXISTING)
+            }
+        } finally {
+            tmp.deleteIfExists()
+        }
     }
 
     fun lasUtkast(id: String): UtkastDto? {
@@ -102,23 +154,28 @@ class JobbLagring(
     }
 
     fun raderaJobb(id: String) {
-        val dir = jobbKatalog(id)
-        if (!dir.exists()) return
-        dir.listDirectoryEntries().forEach { entry ->
-            if (entry.isDirectory()) {
-                entry.listDirectoryEntries().forEach { it.deleteIfExists() }
+        synchronized(lasFor(id)) {
+            val dir = jobbKatalog(id)
+            if (!dir.exists()) return
+            dir.listDirectoryEntries().forEach { entry ->
+                if (entry.isDirectory()) {
+                    entry.listDirectoryEntries().forEach { it.deleteIfExists() }
+                }
+                entry.deleteIfExists()
             }
-            entry.deleteIfExists()
+            dir.deleteIfExists()
         }
-        dir.deleteIfExists()
     }
 
     fun allaJobb(): List<String> =
         (rot / "jobb").takeIf { it.exists() }?.listDirectoryEntries()?.map { it.fileName.toString() }.orEmpty()
 
-    fun uppdateraAktivitet(id: String) {
-        val meta = lasMeta(id) ?: return
-        skrivMeta(meta.copy(senastAktivMs = System.currentTimeMillis()))
+    /** Sätter senast aktiv till nu, atomärt. Returnerar den nya metan, null om jobbet saknas. */
+    fun uppdateraAktivitet(id: String): JobbMeta? =
+        uppdateraMeta(id) { it.copy(senastAktivMs = System.currentTimeMillis()) }
+
+    private companion object {
+        val JOBB_LAS = Array(64) { Any() }
     }
 }
 
