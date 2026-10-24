@@ -34,3 +34,5 @@ gradle :husloggen:testDebugUnitTest --tests "*MatareTolkningTest"
 ## Gör inte
 - Ändra andra filer.
 - Ändra `MatareTolkning.kt`. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
+
+utfall: godkänd 2026-10-24 (inget)
