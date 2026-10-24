@@ -48,6 +48,7 @@ import se.tmconnect.flextid.ui.FlextidViewModel
 import se.tmconnect.flextid.ui.FlextidViewModelFactory
 import se.tmconnect.flextid.ui.ProDialog
 import se.tmconnect.flextid.ui.ValkommenSkarm
+import se.tmconnect.karna.export.PdfExportResult
 import se.tmconnect.karna.export.skrivCsvMedBom
 import se.tmconnect.karna.tema.AppfabrikTema
 class MainActivity : ComponentActivity() {
@@ -147,12 +148,14 @@ class MainActivity : ComponentActivity() {
             if (uri != null) {
                 viewModel.skrivTillUri(uri) { out ->
                     val locale = Locale.getDefault()
-                    val arManad = viewModel.exportArManad.value
+                    val arManad = viewModel.aktuellExportArManad()
                     val texter = manadsRapportTexter(this, arManad, locale)
                     val rapport = viewModel.skapaManadsRapport(texter, locale)
                     val texterMedNormaltid =
                         texter.copy(normaltidManadEtikett = normaltidManadEtikett(this, rapport.arbetsdagarManad))
-                    skrivManadsPdf(rapport, texterMedNormaltid, out)
+                    val resultat = skrivManadsPdf(rapport, texterMedNormaltid, out)
+                    // Ett misslyckat PDF-bygge ska visa fel, inte "Exporterat".
+                    if (resultat is PdfExportResult.Fel) throw java.io.IOException(resultat.meddelande)
                 }
             }
         }
@@ -261,6 +264,7 @@ class MainActivity : ComponentActivity() {
                             FlextidMeddelande.Importerat -> getString(R.string.meddelande_importerat)
                             FlextidMeddelande.SlutForeStart -> getString(R.string.fel_slut_fore_start)
                             FlextidMeddelande.ImportFel -> getString(R.string.meddelande_import_fel)
+                            FlextidMeddelande.ExportFel -> getString(R.string.meddelande_export_fel)
                             FlextidMeddelande.GransUtanPro -> getString(R.string.pro_grans_nadd)
                             is FlextidMeddelande.RedanInstamplad ->
                                 getString(
@@ -296,14 +300,14 @@ class MainActivity : ComponentActivity() {
                             onStamplaUtPaminnelse = { pa -> andraStamplaUtPaminnelse(pa) },
                             onStamplaInPaminnelse = { pa -> andraStamplaInPaminnelse(pa) },
                             onExporteraCsv = {
-                                val arManad = viewModel.exportArManad.value
+                                val arManad = viewModel.aktuellExportArManad()
                                 skapaCsvContract.launch(manadsCsvFilnamn(arManad))
                             },
                             onExporteraArsCsv = {
-                                skapaArsCsvContract.launch("flextid-ar-${viewModel.exportArManad.value.year}.csv")
+                                skapaArsCsvContract.launch("flextid-ar-${viewModel.aktuellExportArManad().year}.csv")
                             },
                             onExporteraPdf = {
-                                val arManad = viewModel.exportArManad.value
+                                val arManad = viewModel.aktuellExportArManad()
                                 skapaPdfContract.launch(manadsPdfFilnamn(arManad))
                             },
                             onExporteraSakerhetskopia = {

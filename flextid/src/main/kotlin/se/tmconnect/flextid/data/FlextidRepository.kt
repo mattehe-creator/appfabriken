@@ -119,6 +119,8 @@ class FlextidRepository(private val dao: FlextidDao) {
         if (befintlig == null && !kanLaggaTillDagPost(dao.antalDagar(), arPro)) {
             return SparaDagResult.GransUtanPro
         }
+        // En redan utstämplad dag får inte få en start efter sluttiden (ett andra tryck på "Stämpla in").
+        valideraTider(tid, befintlig?.slut)?.let { return SparaDagResult.Fel(it) }
         val dag =
             (befintlig ?: Dag(datum = datum, rastMin = standardRastMin)).copy(
                 start = tid,
