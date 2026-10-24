@@ -23,6 +23,19 @@ data class ForslagKomponent(
     val sakerhet: Sakerhet,
 )
 
+/**
+ * Högsta längd på namn och källa för en komponent. Samma gräns gäller när användaren sparar rader
+ * (`raderInomGranser` i servern), så ett tolkat utkast går alltid att spara oförändrat.
+ */
+const val MAX_TEXT_KOMPONENT = 300
+
+/** Kapar text till [MAX_TEXT_KOMPONENT] tecken utan att dela ett surrogatpar. */
+fun kapaText(text: String): String {
+    if (text.length <= MAX_TEXT_KOMPONENT) return text
+    val slut = if (text[MAX_TEXT_KOMPONENT - 1].isHighSurrogate()) MAX_TEXT_KOMPONENT - 1 else MAX_TEXT_KOMPONENT
+    return text.substring(0, slut)
+}
+
 /** En åtgärd i underhållsplanen: år, kostnad i hela kronor och kort beskrivning. */
 data class ForslagAtgard(val ar: Int, val belopp: Long, val beskrivning: String)
 
@@ -133,10 +146,11 @@ private fun parseKomponent(
     } catch (_: Exception) {
         return ParseResult.Skip("Rad $rad i $filnamn: komponenten är inte ett JSON-objekt.")
     }
-    val namn = obj.string("namn")
-    if (namn.isNullOrBlank()) {
+    val tolkatNamn = obj.string("namn")
+    if (tolkatNamn.isNullOrBlank()) {
         return ParseResult.Skip("Rad $rad i $filnamn: saknar namn.")
     }
+    val namn = kapaText(tolkatNamn)
     var lag = false
     val grupp = obj.string("grupp")?.let { text ->
         runCatching { Komponentgrupp.valueOf(text.trim()) }.getOrElse {
@@ -148,7 +162,7 @@ private fun parseKomponent(
     val anskaffningsvarde = obj.heltalsVarde("anskaffningsvarde", "anskaffningsvarde", rad, namn, anmarkningar) { lag = true }
     val anskaffningsar = obj.heltalsVarde("anskaffningsar", "anskaffningsår", rad, namn, anmarkningar) { lag = true }?.toInt()
     val nyttjandeperiod = obj.heltalsVarde("nyttjandeperiodAr", "nyttjandeperiod", rad, namn, anmarkningar) { lag = true }?.toInt()
-    val kalla = obj.string("kalla") ?: "$filnamn, sida okänd"
+    val kalla = kapaText(obj.string("kalla") ?: "$filnamn, sida okänd")
     var sakerhet = obj.string("sakerhet")?.let { text ->
         runCatching { Sakerhet.valueOf(text.trim()) }.getOrElse {
             anmarkningar += "Rad $rad ($namn): okänd säkerhet."

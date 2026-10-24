@@ -89,7 +89,8 @@ fun Application.module(miljo: ServerMiljo) {
         val kassa = meta.kassaId
         if (!betalKonfig.aktiv || meta.betald || kassa == null || betalare == null) return meta
         return when (betalare.kontrollera(kassa, meta.id)) {
-            KassaStatus.Betald -> meta.copy(betald = true).also { lagring.skrivMeta(it) }
+            // Stripe-anropet görs utanför låset; själva ändringen läser om aktuell meta.
+            KassaStatus.Betald -> lagring.uppdateraMeta(meta.id) { it.copy(betald = true) } ?: meta.copy(betald = true)
             else -> meta
         }
     }
@@ -271,7 +272,9 @@ fun Application.module(miljo: ServerMiljo) {
             post {
                 val ip = call.klientIp(miljo.proxyPaa)
                 val nuMs = System.currentTimeMillis()
-                if (!ipGrans.farSkapaJobb(ip, nuMs)) {
+                // Kontroll och registrering i ett steg; platsen lämnas tillbaka om uppladdningen avvisas.
+                val reservation = ipGrans.reservera(ip, nuMs)
+                if (reservation == null) {
                     val fel = ServerFel.ForMangaJobb(ipGrans.nastaForsokEpochMs(ip, nuMs))
                     call.respond(
                         HttpStatusCode.fromValue(felTillHttpStatus(fel)),
@@ -293,10 +296,9 @@ fun Application.module(miljo: ServerMiljo) {
                     senastAktivMs = System.currentTimeMillis(),
                     klientIpHash = ipGrans.hashIp(ip),
                 )
-                lagring.skapa(meta)
-
-                // Jobbet finns redan på disk; tas bort om något går fel innan det är köat.
+                // Jobbet finns på disk från här; tas bort om något går fel innan det är köat.
                 val ar = try {
+                    lagring.skapa(meta)
                     val multipart = call.receiveMultipart(formFieldLimit = MAX_BYTES_PER_JOBB.toLong() + 1)
                     multipart.forEachPart { part ->
                         when (part) {
@@ -348,13 +350,13 @@ fun Application.module(miljo: ServerMiljo) {
                     giltigtAr
                 } catch (fel: Throwable) {
                     lagring.raderaJobb(id)
+                    ipGrans.angra(reservation)
                     throw fel
                 }
 
-                lagring.skrivMeta(
-                    meta.copy(forening = forening, arsslut = ar, senastAktivMs = System.currentTimeMillis()),
-                )
-                ipGrans.registreraJobb(ip)
+                lagring.uppdateraMeta(id) {
+                    it.copy(forening = forening, arsslut = ar, senastAktivMs = System.currentTimeMillis())
+                }
                 ko.lagTill(id)
 
                 call.respond(
@@ -416,9 +418,8 @@ fun Application.module(miljo: ServerMiljo) {
             get("/{id}") {
                 val id = call.parameters["id"] ?: throw FelBegaran(Felkoder.SAKNAR_JOBB_ID)
                 if (!arGiltigtJobbId(id)) throw FelBegaran(Felkoder.OGILIG_LANK)
-                val meta = lagring.lasMeta(id)
+                val meta = lagring.uppdateraAktivitet(id)
                     ?: return@get call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.JOBB_SAKNAS)))
-                lagring.uppdateraAktivitet(id)
                 val utkast = lagring.lasUtkast(id)
                 val aktuell = medBetalning(meta)
                 call.respond(jobbResponse(aktuell, utkast, betalStatus(betalKonfig, aktuell)))
@@ -433,10 +434,10 @@ fun Application.module(miljo: ServerMiljo) {
                     throw FelBegaran(Felkoder.JOBB_EJ_KLART)
                 }
                 val body = call.taEmotBegransad<RaderRequest>()
-                val gammalt = lagring.lasUtkast(id) ?: throw FelBegaran(Felkoder.SAKNAR_UTKAST)
-                if (!raderInomGranser(body.komponenter, gammalt.arsslut)) throw FelBegaran(Felkoder.OGILTIGA_RADER)
-                val nytt = uppdateraKomponenter(body.komponenter, gammalt)
-                lagring.sparaUtkast(id, nytt)
+                val nytt = lagring.uppdateraUtkast(id) { gammalt ->
+                    if (!raderInomGranser(body.komponenter, gammalt.arsslut)) throw FelBegaran(Felkoder.OGILTIGA_RADER)
+                    uppdateraKomponenter(body.komponenter, gammalt)
+                } ?: throw FelBegaran(Felkoder.SAKNAR_UTKAST)
                 lagring.uppdateraAktivitet(id)
                 call.respond(jobbResponse(meta, nytt, betalStatus(betalKonfig, meta)))
             }
@@ -473,7 +474,8 @@ fun Application.module(miljo: ServerMiljo) {
                         HttpStatusCode.BadGateway,
                         mapOf("fel" to felText(Felkoder.BETALNING_MISSLYCKADES)),
                     )
-                lagring.skrivMeta(aktuell.copy(kassaId = kassa.id, senastAktivMs = System.currentTimeMillis()))
+                lagring.uppdateraMeta(id) { it.copy(kassaId = kassa.id, senastAktivMs = System.currentTimeMillis()) }
+                    ?: return@post call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.JOBB_SAKNAS)))
                 call.respond(mapOf("url" to kassa.url))
             }
 
@@ -494,8 +496,8 @@ fun Application.module(miljo: ServerMiljo) {
                         mapOf("fel" to felText(Felkoder.BETALNING_MISSLYCKADES)),
                     )
                 }
-                val ny = meta.copy(betald = true, kassaId = body.kassa)
-                lagring.skrivMeta(ny)
+                val ny = lagring.uppdateraMeta(id) { it.copy(betald = true, kassaId = body.kassa) }
+                    ?: return@post call.respond(HttpStatusCode.NotFound, mapOf("fel" to felText(Felkoder.JOBB_SAKNAS)))
                 call.respond(jobbResponse(ny, lagring.lasUtkast(id), betalStatus(betalKonfig, ny)))
             }
 
