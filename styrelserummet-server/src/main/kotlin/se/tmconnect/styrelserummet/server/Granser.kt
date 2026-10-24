@@ -17,3 +17,21 @@ fun skaRensas(sistaAktivitetEpochMs: Long, nuMs: Long = System.currentTimeMillis
 }
 
 fun skattaTecken(sidor: List<String>): Int = sidor.sumOf { it.length }
+
+/**
+ * Läser högst [max] byte. Null om strömmen innehåller mer än så.
+ */
+fun lasHogst(strom: java.io.InputStream, max: Long): ByteArray? {
+    if (max < 0) return null
+    val ut = java.io.ByteArrayOutputStream()
+    val buffert = ByteArray(64 * 1024)
+    var totalt = 0L
+    while (true) {
+        val n = strom.read(buffert)
+        if (n < 0) break
+        totalt += n
+        if (totalt > max) return null
+        ut.write(buffert, 0, n)
+    }
+    return ut.toByteArray()
+}

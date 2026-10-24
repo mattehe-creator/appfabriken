@@ -286,51 +286,60 @@ fun Application.module(miljo: ServerMiljo) {
                 )
                 lagring.skapa(meta)
 
-                val multipart = call.receiveMultipart()
-                multipart.forEachPart { part ->
-                    when (part) {
-                        is PartData.FormItem -> when (part.name) {
-                            "forening" -> forening = part.value.trim()
-                            "arsslut" -> arsslutText = part.value.trim()
+                // Jobbet finns redan på disk; tas bort om något går fel innan det är köat.
+                val ar = try {
+                    val multipart = call.receiveMultipart(formFieldLimit = MAX_BYTES_PER_JOBB.toLong() + 1)
+                    multipart.forEachPart { part ->
+                        when (part) {
+                            is PartData.FormItem -> when (part.name) {
+                                "forening" -> forening = part.value.trim()
+                                "arsslut" -> arsslutText = part.value.trim()
+                            }
+                            is PartData.FileItem -> {
+                                if (filAntal >= MAX_FILER) {
+                                    part.dispose()
+                                    throw FelBegaran(Felkoder.FOR_MANGA_FILER)
+                                }
+                                // Läs aldrig mer än det som får plats i jobbet, så att en stor fil inte fyller minnet.
+                                val kvar = MAX_BYTES_PER_JOBB - totalBytes
+                                val bytes = part.streamProvider().use { lasHogst(it, kvar) }
+                                totalBytes += bytes?.size ?: (kvar + 1)
+                                if (bytes == null || totalBytes > MAX_BYTES_PER_JOBB) {
+                                    part.dispose()
+                                    lagring.raderaJobb(id)
+                                    throw ServerFelBegaran(ServerFel.ForStorFil)
+                                }
+                                val namn = part.originalFileName ?: "fil.pdf"
+                                if (!arPdf(bytes)) {
+                                    part.dispose()
+                                    lagring.raderaJobb(id)
+                                    throw ServerFelBegaran(ServerFel.IntePdf)
+                                }
+                                lagring.sparaFil(id, sakertFilnamn(namn), bytes)
+                                filAntal++
+                            }
+                            else -> Unit
                         }
-                        is PartData.FileItem -> {
-                            if (filAntal >= MAX_FILER) {
-                                part.dispose()
-                                throw FelBegaran(Felkoder.FOR_MANGA_FILER)
-                            }
-                            val bytes = part.streamProvider().use { it.readBytes() }
-                            totalBytes += bytes.size
-                            if (totalBytes > MAX_BYTES_PER_JOBB) {
-                                part.dispose()
-                                lagring.raderaJobb(id)
-                                throw ServerFelBegaran(ServerFel.ForStorFil)
-                            }
-                            val namn = part.originalFileName ?: "fil.pdf"
-                            if (!arPdf(bytes)) {
-                                part.dispose()
-                                lagring.raderaJobb(id)
-                                throw ServerFelBegaran(ServerFel.IntePdf)
-                            }
-                            lagring.sparaFil(id, sakertFilnamn(namn), bytes)
-                            filAntal++
-                        }
-                        else -> Unit
+                        part.dispose()
                     }
-                    part.dispose()
-                }
 
-                foreningFelKod(forening)?.let { kod ->
-                    lagring.raderaJobb(id)
-                    throw FelBegaran(kod)
-                }
-                val ar = valideraArsslut(arsslutText, Year.now().value)
-                    ?: run {
+                    foreningFelKod(forening)?.let { kod ->
                         lagring.raderaJobb(id)
-                        throw FelBegaran(Felkoder.ARSSLUT_SAKNAS)
+                        throw FelBegaran(kod)
                     }
-                if (filAntal == 0) {
+                    val giltigtAr = valideraArsslut(arsslutText, Year.now().value)
+                        ?: run {
+                            lagring.raderaJobb(id)
+                            throw FelBegaran(Felkoder.ARSSLUT_SAKNAS)
+                        }
+                    if (filAntal == 0) {
+                        lagring.raderaJobb(id)
+                        throw FelBegaran(Felkoder.INGA_PDF)
+                    }
+                    giltigtAr
+                } catch (fel: Throwable) {
                     lagring.raderaJobb(id)
-                    throw FelBegaran(Felkoder.INGA_PDF)
+                    throw fel
                 }
 
                 lagring.skrivMeta(
