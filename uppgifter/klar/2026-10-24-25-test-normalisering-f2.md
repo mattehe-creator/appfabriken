@@ -52,3 +52,5 @@ gradle :flextid:testDebugUnitTest --tests "*NormaliseringTest"
 ## Gör inte
 - Ändra andra filer.
 - Använd `kotlin.test` — endast JUnit 4 (`org.junit`).
+
+utfall: godkänd 2026-10-24 (hel NormaliseringTest.kt — lokal modell levererade ingen testfil)
