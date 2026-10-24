@@ -344,7 +344,7 @@ internal fun IdagInnehall(
     onFyllVanligDag: () -> Unit = {},
     normaltidIdag: Int = installning.normaltidMinPerDag,
 ) {
-    var rastText by remember(dag?.rastMin) { mutableStateOf((dag?.rastMin ?: standardRast).toString()) }
+    var rastText by rememberSaveable(dag?.rastMin) { mutableStateOf((dag?.rastMin ?: standardRast).toString()) }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
             text = stringResource(R.string.saldo_rubrik, formateraSaldoMinuter(saldo, locale)),
@@ -651,26 +651,26 @@ internal fun InstallningarInnehall(
     onSparaNormaltidUndantag: (Map<DayOfWeek, String>, Boolean, String, String, String) -> Unit =
         { _, _, _, _, _ -> },
 ) {
-    var takText by remember(saldoTakMin) { mutableStateOf(saldoTakMin?.let { formateraMinuterSomTid(it, locale) } ?: "") }
-    var golvText by remember(saldoGolvMin) { mutableStateOf(saldoGolvMin?.let { formateraMinuterSomTid(-it, locale) } ?: "") }
-    var semesterdagarText by remember(semesterdagarPerAr) { mutableStateOf(semesterdagarPerAr.toString()) }
-    var normaltid by remember(installning.normaltidMinPerDag) {
+    var takText by rememberSaveable(saldoTakMin) { mutableStateOf(saldoTakMin?.let { formateraMinuterSomTid(it, locale) } ?: "") }
+    var golvText by rememberSaveable(saldoGolvMin) { mutableStateOf(saldoGolvMin?.let { formateraMinuterSomTid(-it, locale) } ?: "") }
+    var semesterdagarText by rememberSaveable(semesterdagarPerAr) { mutableStateOf(semesterdagarPerAr.toString()) }
+    var normaltid by rememberSaveable(installning.normaltidMinPerDag) {
         mutableStateOf(installning.normaltidMinPerDag.toString())
     }
-    var rast by remember(installning.standardRastMin) {
+    var rast by rememberSaveable(installning.standardRastMin) {
         mutableStateOf(installning.standardRastMin.toString())
     }
-    var ingang by remember(installning.ingangssaldoMin) {
+    var ingang by rememberSaveable(installning.ingangssaldoMin) {
         mutableStateOf(formateraMinuterSomTid(installning.ingangssaldoMin, locale))
     }
-    var mask by remember(installning.arbetsdagarMask) { mutableIntStateOf(installning.arbetsdagarMask) }
-    var vanligStart by remember(vanligStartMin) {
+    var mask by rememberSaveable(installning.arbetsdagarMask) { mutableIntStateOf(installning.arbetsdagarMask) }
+    var vanligStart by rememberSaveable(vanligStartMin) {
         mutableStateOf(formateraTid(minuterTillLocalTime(vanligStartMin), locale))
     }
-    var vanligSlut by remember(vanligSlutMin) {
+    var vanligSlut by rememberSaveable(vanligSlutMin) {
         mutableStateOf(formateraTid(minuterTillLocalTime(vanligSlutMin), locale))
     }
-    var vanligRast by remember(vanligRastMin) { mutableStateOf(vanligRastMin.toString()) }
+    var vanligRast by rememberSaveable(vanligRastMin) { mutableStateOf(vanligRastMin.toString()) }
 
     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         item {

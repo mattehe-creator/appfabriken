@@ -11,9 +11,8 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,17 +43,17 @@ internal fun NormaltidUndantagAvsnitt(
 ) {
     // Bara veckodagar som är arbetsdagar visas.
     val arbetsdagar = DayOfWeek.entries.filter { arbetsdagarMask and veckodagBit(it) != 0 }
-    val veckodagText =
-        remember(undantag.perVeckodag) {
-            mutableStateMapOf<DayOfWeek, String>().apply {
-                undantag.perVeckodag.forEach { (dag, min) -> put(dag, formateraMinuterSomTid(min, locale)) }
-            }
-        }
+    // Nyckel = DayOfWeek.name, så att osparad text överlever rotation (Map<String, String> kan sparas).
+    var veckodagText by rememberSaveable(undantag.perVeckodag) {
+        mutableStateOf(
+            undantag.perVeckodag.entries.associate { (dag, min) -> dag.name to formateraMinuterSomTid(min, locale) },
+        )
+    }
     val sommar = undantag.sommar
-    var sommarPa by remember(sommar) { mutableStateOf(sommar != null) }
-    var franText by remember(sommar) { mutableStateOf(sommar?.fran?.let(::formateraDagManad) ?: "1/6") }
-    var tillText by remember(sommar) { mutableStateOf(sommar?.till?.let(::formateraDagManad) ?: "31/8") }
-    var sommarNormaltidText by remember(sommar) {
+    var sommarPa by rememberSaveable(sommar) { mutableStateOf(sommar != null) }
+    var franText by rememberSaveable(sommar) { mutableStateOf(sommar?.fran?.let(::formateraDagManad) ?: "1/6") }
+    var tillText by rememberSaveable(sommar) { mutableStateOf(sommar?.till?.let(::formateraDagManad) ?: "31/8") }
+    var sommarNormaltidText by rememberSaveable(sommar) {
         mutableStateOf(sommar?.minPerDag?.let { formateraMinuterSomTid(it, locale) } ?: "")
     }
 
@@ -67,8 +66,8 @@ internal fun NormaltidUndantagAvsnitt(
         )
         arbetsdagar.forEach { dag ->
             OutlinedTextField(
-                value = veckodagText[dag] ?: "",
-                onValueChange = { veckodagText[dag] = it },
+                value = veckodagText[dag.name] ?: "",
+                onValueChange = { veckodagText = veckodagText + (dag.name to it) },
                 label = { Text(stringResource(veckodagStringRes(dag))) },
                 placeholder = { Text(formateraMinuterSomTid(standardMin, locale)) },
                 singleLine = true,
@@ -119,7 +118,7 @@ internal fun NormaltidUndantagAvsnitt(
         Button(
             onClick = {
                 onSpara(
-                    arbetsdagar.associateWith { veckodagText[it] ?: "" },
+                    arbetsdagar.associateWith { veckodagText[it.name] ?: "" },
                     sommarPa,
                     franText,
                     tillText,

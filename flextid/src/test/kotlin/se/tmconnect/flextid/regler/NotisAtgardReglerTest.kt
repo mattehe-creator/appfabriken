@@ -67,4 +67,12 @@ class NotisAtgardReglerTest {
             notisAtgardEfterStamplaUt(FlextidRepository.GenvagStamplaUtResult.GransUtanPro),
         )
     }
+
+    @Test
+    fun stamplaInSlutForeStartVisarText() {
+        assertEquals(
+            NotisAtgardUtfall.VisaText(NotisAtgardTextNyckel.FEL_SLUT_FORE_START),
+            notisAtgardEfterStamplaIn(FlextidRepository.GenvagStamplaInResult.SlutForeStart),
+        )
+    }
 }
