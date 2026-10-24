@@ -12,7 +12,12 @@ class AvlasningUrvalTest {
         val b = Avlasning(id = 1, matareId = 1, datum = LocalDate.of(2026, 1, 1), varde = 100)
         val c = Avlasning(id = 2, matareId = 1, datum = LocalDate.of(2026, 3, 1), varde = 290)
 
-        assertEquals(listOf(1, 2, 3), sorteraAvlasningar(listOf(a, b, c)).map { it.id })
+        val resultat = sorteraAvlasningar(listOf(a, b, c))
+        assertEquals(3, resultat.size)
+        assertEquals(1, resultat[0].id) // b
+        assertEquals(2, resultat[1].id) // c
+        assertEquals(3, resultat[2].id) // a
+        
         assertEquals(emptyList<Avlasning>(), sorteraAvlasningar(emptyList()))
     }
 
