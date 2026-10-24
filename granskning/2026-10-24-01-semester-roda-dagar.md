@@ -1,0 +1,57 @@
+beslut: underkänd
+granskare: cursor
+datum: 2026-10-24
+
+## Kontrollerat
+- Grenen ändrar bara `uppgifter/ny/` → `uppgifter/pagar/` och en ny testfil — inga filer i repots rot, men **`Semester.kt` saknas helt** trots att den står under «Ändra bara dessa filer».
+- `Semester.kt` använder fortfarande `arArbetsdag(d.datum, arbetsdagarMask)` i `raknaDagarAvTyp`; parametern `aftnarLediga` finns varken där eller i `semesterSammanfattning`. Uppgiftens steg 1–2 är alltså inte gjorda.
+- `SemesterRodaDagarTest.kt` finns på rätt sökväg men är **tom** (0 byte). Inga tester jämför resultat mot exemplen (Kristi himmelfärdsdag, midsommarafton, torsdag).
+- Befintliga `SemesterSammanfattningTest` är orörda (enligt «Gör inte»).
+- Ingen UI, inga hårdkodade användarsträngar, inga nya beroenden, behörigheter eller nätverk i diffen.
+- JUnit 4 kan inte bedömas — ingen testkod. Lokalt `./gradlew :flextid:testDebugUnitTest …` misslyckades här p.g.a. saknat Android SDK; PR-beskrivningen anger röda tester.
+
+## Rättat av Cursor
+- inget (saknad implementation — den lokala modellens uppgift på försök 2)
+
+## Vid underkänd: försök 2
+
+# Uppgift: Röda dagar räknas inte som semesterdagar
+
+## Vad som saknades (försök 1)
+- **`Semester.kt` ändrades inte.** `raknaDagarAvTyp` och `semesterSammanfattning` ska få parametern `aftnarLediga: Boolean = true` sist och använda `arArbetsdagMedHelger` i stället för `arArbetsdag` när semesterdagar räknas (funktionen finns redan i `Ledighet.kt`, samma paket).
+- **`SemesterRodaDagarTest.kt` är tom.** Skriv JUnit 4-tester (`org.junit.Test`, `org.junit.Assert.assertEquals`) som förebilden `SemesterSammanfattningTest.kt` och som assertar exakt värdena i exemplen nedan — minst ett test per bullet under «Exempel».
+
+uppdrag: uppdrag/claude/2026-10-24-flextid-semester-statistik.md
+försök: 2
+beror-på: ingen
+
+## Ändra bara dessa filer
+- flextid/src/main/kotlin/se/tmconnect/flextid/regler/Semester.kt
+- flextid/src/test/kotlin/se/tmconnect/flextid/regler/SemesterRodaDagarTest.kt (ny eller fyll i befintlig tom fil)
+
+## Läs som förebild (ändra inte)
+- flextid/src/main/kotlin/se/tmconnect/flextid/regler/Ledighet.kt (funktionen `arArbetsdagMedHelger`)
+- flextid/src/test/kotlin/se/tmconnect/flextid/regler/SemesterSammanfattningTest.kt
+
+## Uppgift
+En semesterdag registrerad på en röd dag (till exempel Kristi himmelfärdsdag) eller på en afton när aftnar är lediga ska inte räknas som uttagen semesterdag.
+
+1. Lägg till parametern `aftnarLediga: Boolean = true` sist i `raknaDagarAvTyp`. Byt villkoret `arArbetsdag(d.datum, arbetsdagarMask)` mot `arArbetsdagMedHelger(d.datum, arbetsdagarMask, aftnarLediga)`.
+2. Lägg till parametern `aftnarLediga: Boolean = true` sist i `semesterSammanfattning` och skicka den vidare till båda anropen av `raknaDagarAvTyp`.
+
+## Exempel
+Arbetsdagar måndag–fredag (`ARBETSDAGAR_MANDAG_FREDAG`), semesterår april (startManad 4).
+- Semester 2026-05-13, 2026-05-14 (Kristi himmelfärdsdag), 2026-05-15. `semesterSammanfattning(dagar, idag = 2026-05-20, mask)` → `uttagna = 2`, `kvar = 23`.
+- Semester 2026-06-19 (midsommarafton). `raknaDagarAvTyp(dagar, DagTyp.SEMESTER, 2026-06-01, 2026-06-30, mask)` → 0. Samma anrop med `aftnarLediga = false` → 1.
+- Semester 2026-06-18 (torsdag) → 1 i båda fallen.
+
+## Test som ska gå igenom
+gradle :flextid:testDebugUnitTest --tests "*SemesterRodaDagarTest" --tests "*SemesterSammanfattningTest"
+
+## Gör inte
+- Ändra andra filer.
+- Ändra befintliga tester.
+- Lägga till beroenden.
+
+## Frågor till Claude
+- inga
