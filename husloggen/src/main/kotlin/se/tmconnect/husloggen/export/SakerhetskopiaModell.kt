@@ -41,6 +41,7 @@ data class SakerhetskopiaUppgift(
     val senastGjord: LocalDate? = null,
     val anteckning: String? = null,
     val bostadIndex: Int = 0,
+    val paminnelse: Boolean = true,
 )
 
 data class SakerhetskopiaPost(
@@ -61,6 +62,7 @@ data class SakerhetskopiaMatare(
     val enhet: String,
     val anteckning: String? = null,
     val bostadIndex: Int = 0,
+    val prisOrePerEnhet: Long? = null,
 )
 
 data class SakerhetskopiaAvlasning(
@@ -126,6 +128,7 @@ fun uppgiftTillSakerhetskopia(uppgift: Uppgift, bostadIdTillIndex: Map<Long, Int
         senastGjord = uppgift.senastGjord,
         anteckning = uppgift.anteckning,
         bostadIndex = bostadIdTillIndex.getValue(uppgift.bostadId),
+        paminnelse = uppgift.paminnelse,
     )
 
 fun sakerhetskopiaUppgiftTillUppgift(export: SakerhetskopiaUppgift, bostadId: Long): Uppgift =
@@ -135,6 +138,7 @@ fun sakerhetskopiaUppgiftTillUppgift(export: SakerhetskopiaUppgift, bostadId: Lo
         intervallManader = export.intervallManader,
         startDatum = export.startDatum,
         senastGjord = export.senastGjord,
+        paminnelse = export.paminnelse,
         anteckning = export.anteckning?.trim()?.takeIf { it.isNotEmpty() },
     )
 
@@ -267,6 +271,7 @@ fun matareTillSakerhetskopia(matare: Matare, bostadIdTillIndex: Map<Long, Int>):
         enhet = matare.enhet,
         anteckning = matare.anteckning,
         bostadIndex = bostadIdTillIndex.getValue(matare.bostadId),
+        prisOrePerEnhet = matare.prisOrePerEnhet,
     )
 
 fun sakerhetskopiaMatareTillMatare(export: SakerhetskopiaMatare, bostadId: Long): Matare =
@@ -275,6 +280,7 @@ fun sakerhetskopiaMatareTillMatare(export: SakerhetskopiaMatare, bostadId: Long)
         namn = export.namn.trim(),
         enhet = export.enhet.trim(),
         anteckning = export.anteckning?.trim()?.takeIf { it.isNotEmpty() },
+        prisOrePerEnhet = export.prisOrePerEnhet?.takeIf { it >= 0 },
     )
 
 fun avlasningTillSakerhetskopia(avlasning: Avlasning, matareIdTillIndex: Map<Long, Int>): SakerhetskopiaAvlasning =

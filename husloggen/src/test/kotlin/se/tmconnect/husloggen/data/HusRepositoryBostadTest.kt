@@ -123,7 +123,8 @@ class HusRepositoryBostadTest {
         val nyDatabas = skapaTestHusDatabas(context)
         val nyRepo = skapaHusRepository(context, nyDatabas)
         nyRepo.importeraSakerhetskopia(innehall, emptyMap())
-        assertEquals(3, nyRepo.antalBostader())
+        // Den nya databasens tomma standardbostad har samma namn som den första i filen och återanvänds.
+        assertEquals(2, nyRepo.antalBostader())
         assertTrue(nyRepo.allaBostader().any { it.namn == "Stuga" })
     }
 
