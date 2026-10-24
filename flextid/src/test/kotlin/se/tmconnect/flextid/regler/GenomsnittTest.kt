@@ -13,15 +13,20 @@ class GenomsnittTest {
     @Test
     fun testGenomsnittArbetadMin() {
         // Tre dagar med arbetade minuter 450, 480 och 495 → genomsnitt 475
+        // 8:00–16:30 med 30 min rast = 450 minuter
         val dag1 = Dag(LocalDate.of(2026, 10, 25), LocalTime.of(8, 0), LocalTime.of(16, 30), 30, DagTyp.ARBETE)
+        // 8:00–16:40 med 30 min rast = 480 minuter
         val dag2 = Dag(LocalDate.of(2026, 10, 26), LocalTime.of(8, 0), LocalTime.of(16, 40), 30, DagTyp.ARBETE)
+        // 8:00–16:45 med 30 min rast = 495 minuter
         val dag3 = Dag(LocalDate.of(2026, 10, 27), LocalTime.of(8, 0), LocalTime.of(16, 45), 30, DagTyp.ARBETE)
         
         val result = genomsnittArbetadMin(listOf(dag1, dag2, dag3), LocalDate.of(2026, 10, 25), LocalDate.of(2026, 10, 27))
         assertEquals(475, result)
         
         // Två dagar med 450 och 481 minuter → 466
+        // 8:00–16:30 med 30 min rast = 450 minuter
         val dag4 = Dag(LocalDate.of(2026, 10, 25), LocalTime.of(8, 0), LocalTime.of(16, 30), 30, DagTyp.ARBETE)
+        // 8:00–16:41 med 30 min rast = 481 minuter
         val dag5 = Dag(LocalDate.of(2026, 10, 26), LocalTime.of(8, 0), LocalTime.of(16, 41), 30, DagTyp.ARBETE)
         
         val result2 = genomsnittArbetadMin(listOf(dag4, dag5), LocalDate.of(2026, 10, 25), LocalDate.of(2026, 10, 26))
