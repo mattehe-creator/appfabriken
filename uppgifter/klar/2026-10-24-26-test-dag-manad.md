@@ -28,3 +28,5 @@ gradle :flextid:testDebugUnitTest --tests "*DagManadTest"
 
 ## Gör inte
 - Ändra andra filer.
+
+utfall: underkänd 2026-10-24 av Cursor (PR #666). Ersatt av 2026-10-24-26-test-dag-manad-f2.md
