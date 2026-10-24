@@ -16,6 +16,8 @@ class AnthropicTolkare(
     private val modell: String,
     private val transport: HttpTransport = JavaHttpTransport(),
     private val promptLaddare: PromptLaddare = PromptLaddare(),
+    /** Väntetid före nytt försök efter 429, 500, 503 eller 529 (överbelastad). */
+    private val vantaFore: (forsok: Int) -> Unit = { forsok -> Thread.sleep(2_000L * forsok * forsok) },
 ) : Tolkare {
     override fun foreslaKomponenter(
         underhallsplanUtdrag: String,
@@ -34,7 +36,7 @@ class AnthropicTolkare(
             .replace("{{TEXT}}", underhallsplanUtdrag)
         val body = buildJsonObject {
             put("model", JsonPrimitive(modell))
-            put("max_tokens", JsonPrimitive(8192))
+            put("max_tokens", JsonPrimitive(MAX_SVAR_TOKENS))
             put("system", JsonPrimitive(system))
             put(
                 "messages",
@@ -48,33 +50,73 @@ class AnthropicTolkare(
                 },
             )
         }.toString()
-        val svar = transport.post(
-            url = "https://api.anthropic.com/v1/messages",
-            headers = mapOf(
-                "Content-Type" to "application/json",
-                "x-api-key" to apiNyckel,
-                "anthropic-version" to "2023-06-01",
-            ),
-            body = body,
-        )
-        if (svar.statusKod !in 200..299) {
-            return Result.failure(TolkningMisslyckades("http_${svar.statusKod}"))
+        var forsok = 0
+        while (true) {
+            forsok++
+            val svar =
+                try {
+                    transport.post(
+                        url = "https://api.anthropic.com/v1/messages",
+                        headers = mapOf(
+                            "Content-Type" to "application/json",
+                            "x-api-key" to apiNyckel,
+                            "anthropic-version" to "2023-06-01",
+                        ),
+                        body = body,
+                    )
+                } catch (e: java.net.http.HttpTimeoutException) {
+                    return Result.failure(TolkningMisslyckades("tidsgrans"))
+                } catch (e: java.io.IOException) {
+                    if (forsok < MAX_FORSOK) {
+                        vantaFore(forsok)
+                        continue
+                    }
+                    return Result.failure(TolkningMisslyckades("natverk"))
+                }
+            if (svar.statusKod in TILLFALLIGA_FEL && forsok < MAX_FORSOK) {
+                vantaFore(forsok)
+                continue
+            }
+            if (svar.statusKod !in 200..299) {
+                return Result.failure(TolkningMisslyckades("http_${svar.statusKod}"))
+            }
+            if (stoppOrsak(svar.kropp) == "max_tokens") {
+                // Svaret klipptes av mitt i JSON:en; att tolka det vore att gissa.
+                return Result.failure(TolkningMisslyckades("svaret_for_langt"))
+            }
+            val jsonText = extraheraText(svar.kropp)
+                ?: return Result.failure(TolkningMisslyckades("saknar_svar"))
+            return Result.success(jsonText)
         }
-        val jsonText = extraheraText(svar.kropp)
-            ?: return Result.failure(TolkningMisslyckades("saknar_svar"))
-        return Result.success(jsonText)
     }
 
+    private fun stoppOrsak(kropp: String): String? =
+        runCatching {
+            Json.parseToJsonElement(kropp).jsonObject["stop_reason"]?.jsonPrimitive?.contentOrNull
+        }.getOrNull()
+
+    /** All text i svaret, i ordning; block av andra typer hoppas över. */
     private fun extraheraText(kropp: String): String? {
         return try {
             val root = Json.parseToJsonElement(kropp).jsonObject
             val content = root["content"]?.jsonArray ?: return null
-            if (content.isEmpty()) return null
-            val block = content[0].jsonObject
-            block["text"]?.jsonPrimitive?.contentOrNull?.takeIf { it.isNotBlank() }
+            content
+                .mapNotNull { block ->
+                    val obj = block.jsonObject
+                    if (obj["type"]?.jsonPrimitive?.contentOrNull != "text") return@mapNotNull null
+                    obj["text"]?.jsonPrimitive?.contentOrNull
+                }
+                .joinToString("")
+                .takeIf { it.isNotBlank() }
         } catch (_: Exception) {
             null
         }
+    }
+
+    companion object {
+        const val MAX_SVAR_TOKENS = 16_000
+        const val MAX_FORSOK = 3
+        val TILLFALLIGA_FEL = setOf(429, 500, 503, 529)
     }
 }
 

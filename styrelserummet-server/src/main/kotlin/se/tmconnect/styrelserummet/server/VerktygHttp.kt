@@ -37,3 +37,14 @@ fun kontrolleraVerktygGrans(
     }
     grans.registreraAnrop(ip, nuMs)
 }
+
+/** JSON-kropp till jobbets egna anrop (rader, jämförelse): högst [MAX_KROPP_RADER_BYTES]. */
+suspend inline fun <reified T> ApplicationCall.taEmotBegransad(): T {
+    val langd = request.contentLength()
+    if (langd != null && langd > MAX_KROPP_RADER_BYTES) throw FelBegaran(Felkoder.FOR_STOR_FORFRAGAN)
+    val raw = receiveText()
+    if (raw.length > MAX_KROPP_RADER_BYTES) throw FelBegaran(Felkoder.FOR_STOR_FORFRAGAN)
+    return runCatching { begransadJson.decodeFromString<T>(raw) }.getOrElse { throw FelBegaran(Felkoder.OGILTIGA_RADER) }
+}
+
+val begransadJson = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }

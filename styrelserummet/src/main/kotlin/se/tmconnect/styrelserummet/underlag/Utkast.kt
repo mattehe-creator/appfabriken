@@ -39,7 +39,7 @@ class ByggUtkast(
         val maskadPlan = maskaPersonuppgifter(underhallsplanText)
         val maskadAr = maskaPersonuppgifter(arsredovisningText)
         val arsData = lasArsredovisning(maskadAr)
-        val byggnadsar = forening.byggnadsar ?: arsData.byggnadsar ?: nuAr
+        val byggnadsar = (forening.byggnadsar ?: arsData.byggnadsar)?.takeIf { it in 1800..nuAr } ?: nuAr
         val tabell = lasNyttjandeperioderFranResurs()
 
         val sidorLista = if (maskadPlan.contains('\u000C')) {
@@ -58,7 +58,7 @@ class ByggUtkast(
                 sidor = del.sidnummer,
                 filnamn = underhallsplanFilnamn,
             ).getOrElse { fel ->
-                anmarkningar += "Tolkning misslyckades för ${del.sidnummer}: ${fel.message ?: "okänt fel"}."
+                anmarkningar += "Tolkning misslyckades för sidorna ${del.sidnummer.joinToString(", ")}: ${tolkningsFelText(fel.message)}."
                 return@forEach
             }
             val resultat = tolkaForslag(json, underhallsplanFilnamn)
@@ -69,12 +69,25 @@ class ByggUtkast(
 
         var komponenter = forslag.mapNotNull { f ->
             val grupp = f.grupp ?: return@mapNotNull null
-            val nyttjandeperiod = f.nyttjandeperiodAr ?: tabell.find { it.grupp == grupp }?.forslagAr ?: run {
+            // Värden från tolkningen som inte är rimliga ersätts: nyttjandeperiod 1–150 år och
+            // anskaffningsår 1800 till nästa år. Annars kan räkningen bli fel eller mycket långsam.
+            val tolkadPeriod = f.nyttjandeperiodAr?.takeIf { it in 1..150 }
+            if (f.nyttjandeperiodAr != null && tolkadPeriod == null) {
+                anmarkningar += "Komponenten \"${f.namn}\": nyttjandeperioden ${f.nyttjandeperiodAr} år är orimlig och har ersatts med standardtabellens förslag."
+            }
+            val nyttjandeperiod = tolkadPeriod ?: tabell.find { it.grupp == grupp }?.forslagAr ?: run {
                 anmarkningar += "Komponenten \"${f.namn}\" saknar nyttjandeperiod."
                 return@mapNotNull null
             }
-            val anskaffningsar = f.anskaffningsar ?: byggnadsar
-            val varde = f.anskaffningsvarde
+            val tolkatAr = f.anskaffningsar?.takeIf { it in 1800..(nuAr + 1) }
+            if (f.anskaffningsar != null && tolkatAr == null) {
+                anmarkningar += "Komponenten \"${f.namn}\": anskaffningsåret ${f.anskaffningsar} är orimligt och har ersatts med byggnadsåret."
+            }
+            val anskaffningsar = tolkatAr ?: byggnadsar
+            val varde = f.anskaffningsvarde?.takeIf { it <= 1_000_000_000_000L }
+            if (f.anskaffningsvarde != null && varde == null) {
+                anmarkningar += "Komponenten \"${f.namn}\": beloppet är orimligt stort och har tagits bort."
+            }
             if (varde == null) {
                 null
             } else {
@@ -183,3 +196,20 @@ private fun normaliseraAndelar(
     val index = skalade.indices.maxByOrNull { skalade[it].second } ?: 0
     return skalade.mapIndexed { i, (g, p) -> if (i == index) g to (p + diff) else g to p }
 }
+
+const val TOLKNING_FOR_LANG_TEXT = "svaret blev för långt"
+
+/** Orsakskoden från tolkaren som läsbar text i anmärkningen. */
+fun tolkningsFelText(kod: String?): String =
+    when {
+        kod == null -> "okänt fel"
+        kod == "svaret_for_langt" -> "$TOLKNING_FOR_LANG_TEXT, dela upp handlingen"
+        kod == "tidsgrans" -> "tjänsten svarade inte i tid"
+        kod == "natverk" -> "tjänsten gick inte att nå"
+        kod == "saknar_api_nyckel" -> "tjänsten saknar nyckel"
+        kod == "saknar_svar" -> "tomt svar"
+        kod == "http_429" || kod == "http_529" -> "tjänsten var överbelastad"
+        kod.startsWith("http_") -> "fel från tjänsten (${kod.removePrefix("http_")})"
+        else -> kod
+    }
+

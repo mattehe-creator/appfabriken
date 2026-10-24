@@ -9,6 +9,7 @@ import se.tmconnect.styrelserummet.pdf.IngenLasbarTextException
 import se.tmconnect.styrelserummet.pdf.KrypteradPdfException
 import se.tmconnect.styrelserummet.pdf.PdfLasare
 import se.tmconnect.styrelserummet.tolking.Tolkare
+import se.tmconnect.styrelserummet.underlag.TOLKNING_FOR_LANG_TEXT
 import se.tmconnect.styrelserummet.underlag.byggUtkast
 import kotlin.io.path.readBytes
 
@@ -99,7 +100,9 @@ class JobbKo(
             if (utkast.komponenter.isEmpty()) {
                 // Kontrollera om alla anmärkningar är "Tolkning misslyckades" (typiskt timeout)
                 val harTimeoutAnmärkningar = utkast.anmarkningar.all { it.startsWith("Tolkning misslyckades") }
-                if (harTimeoutAnmärkningar) {
+                if (utkast.anmarkningar.any { it.startsWith("Tolkning misslyckades") && it.contains(TOLKNING_FOR_LANG_TEXT) }) {
+                    felForStorHandling(id)
+                } else if (harTimeoutAnmärkningar) {
                     fel(id, ServerFel.AiTimeout)
                 } else {
                     fel(id, ServerFel.AiOgiltigtSvar)

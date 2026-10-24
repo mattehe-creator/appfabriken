@@ -424,8 +424,9 @@ fun Application.module(miljo: ServerMiljo) {
                 if (meta.status != JobbStatus.KLAR.name) {
                     throw FelBegaran(Felkoder.JOBB_EJ_KLART)
                 }
-                val body = call.receive<RaderRequest>()
+                val body = call.taEmotBegransad<RaderRequest>()
                 val gammalt = lagring.lasUtkast(id) ?: throw FelBegaran(Felkoder.SAKNAR_UTKAST)
+                if (!raderInomGranser(body.komponenter, gammalt.arsslut)) throw FelBegaran(Felkoder.OGILTIGA_RADER)
                 val nytt = uppdateraKomponenter(body.komponenter, gammalt)
                 lagring.sparaUtkast(id, nytt)
                 lagring.uppdateraAktivitet(id)
@@ -441,7 +442,7 @@ fun Application.module(miljo: ServerMiljo) {
                     throw FelBegaran(Felkoder.JOBB_EJ_KLART)
                 }
                 val utkast = lagring.lasUtkast(id) ?: throw FelBegaran(Felkoder.SAKNAR_UTKAST)
-                val body = call.receive<JamforelseRequest>()
+                val body = call.taEmotBegransad<JamforelseRequest>()
                 lagring.uppdateraAktivitet(id)
                 call.respond(jamforelseMotCsv(utkast, body.csv))
             }
