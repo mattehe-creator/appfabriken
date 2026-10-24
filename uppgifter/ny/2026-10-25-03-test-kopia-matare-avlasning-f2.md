@@ -1,7 +1,11 @@
 # Uppgift: Test av säkerhetskopians omvandling för mätare och avläsningar
 
+## Vad som saknades
+- Ingen testfil skapades. PR #672 innehåller bara flytten av uppgiftsfilen till `uppgifter/pagar/`; `SakerhetskopiaMatareAvlasningTest.kt` finns inte under `husloggen/src/test/kotlin/se/tmconnect/husloggen/export/`.
+- Uppgiften kräver JUnit 4-tester med assertioner mot varje exempel nedan. Committa testklassen på grenen `lokal/2026-10-25-03-test-kopia-matare-avlasning`.
+
 uppdrag: uppdrag/claude/2026-10-25-natt-testtackning.md
-försök: 1
+försök: 2
 beror-på: ingen
 
 ## Ändra bara dessa filer
@@ -10,6 +14,7 @@ beror-på: ingen
 ## Läs som förebild (ändra inte)
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/export/SakerhetskopiaModell.kt (raderna med `matareTillSakerhetskopia` till `arSakerhetskopiaAvlasningLik`)
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/data/Matare.kt
+- husloggen/src/test/kotlin/se/tmconnect/husloggen/regler/MatareTolkningTest.kt (JUnit 4-stil)
 
 ## Uppgift
 Skriv JUnit 4-tester (`org.junit.Test`, `assertEquals`, `assertTrue`, `assertFalse`, `assertNull`, `assertThrows`) i paketet `se.tmconnect.husloggen.export` för:
@@ -23,6 +28,8 @@ Skriv JUnit 4-tester (`org.junit.Test`, `assertEquals`, `assertTrue`, `assertFal
 Importera `se.tmconnect.husloggen.data.Matare`, `se.tmconnect.husloggen.data.Avlasning` och `java.time.LocalDate`.
 
 `Matare` och `Avlasning` har fältet `skapad = System.currentTimeMillis()`, så jämför aldrig hela `Matare`- eller `Avlasning`-objekt med `assertEquals`. Jämför fält för fält. `SakerhetskopiaMatare` och `SakerhetskopiaAvlasning` saknar `skapad` och kan jämföras hela.
+
+Minst en `@Test` per funktion, och **varje rad under Exempel** ska motsvaras av minst ett assertion-anrop.
 
 ## Exempel
 - `matareTillSakerhetskopia(Matare(id = 7, bostadId = 3, namn = "El", enhet = "kWh", anteckning = "Huvudmätare", prisOrePerEnhet = 150), mapOf(3L to 0))` → `SakerhetskopiaMatare(namn = "El", enhet = "kWh", anteckning = "Huvudmätare", bostadIndex = 0, prisOrePerEnhet = 150)`
@@ -44,3 +51,4 @@ gradle :husloggen:testDebugUnitTest --tests "*SakerhetskopiaMatareAvlasningTest"
 - Ändra `SakerhetskopiaModell.kt`. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Jämföra hela `Matare`- eller `Avlasning`-objekt (fältet `skapad` skiljer sig).
 - Lägga till beroenden.
+- Använd `kotlin.test` — endast JUnit 4 (`org.junit`).
