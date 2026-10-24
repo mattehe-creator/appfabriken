@@ -102,6 +102,27 @@ class HusRepositoryAterimportTest {
     }
 
     @Test
+    fun overtagenBostadSlasInteIhopMedSenareBostadMedDetGamlaNamnet() = runTest {
+        // Filen: "Villan" först och en bostad som heter som den nya telefonens tomma standardbostad.
+        val standardnamn = context.getString(se.tmconnect.husloggen.R.string.bostad_forvald_namn)
+        val forsta = repository.hamtaBostad(repository.hamtaForvaldBostadId())!!
+        repository.sparaBostad(forsta.copy(namn = "Villan"), arPro = true)
+        val andra = (repository.sparaBostad(Bostad(namn = standardnamn), arPro = true) as SparaBostadResult.Sparad).id
+        repository.sparaMatare(Matare(bostadId = forsta.id, namn = "El", enhet = "kWh"))
+        repository.sparaMatare(Matare(bostadId = andra, namn = "Vatten", enhet = "m3"))
+        val las = exportera(repository)
+
+        val ny = skapaHusRepository(context, skapaTestHusDatabas(context))
+        ny.importeraSakerhetskopia(las.innehall, las.bildFiler, las.dokumentFiler)
+
+        assertEquals(setOf("Villan", standardnamn), ny.allaBostader().map { it.namn }.toSet())
+        val bostadPerMatare = ny.allaMatare().associate { it.namn to it.bostadId }
+        val namnPerBostad = ny.allaBostader().associate { it.id to it.namn }
+        assertEquals("Villan", namnPerBostad[bostadPerMatare["El"]])
+        assertEquals(standardnamn, namnPerBostad[bostadPerMatare["Vatten"]])
+    }
+
+    @Test
     fun bostadMedDataTasInteOver() = runTest {
         fyllMedData()
         val annan = skapaHusRepository(context, skapaTestHusDatabas(context))
