@@ -195,6 +195,7 @@
     <string name="sakerhetskopia_sparad">Backup saved</string>
     <string name="sakerhetskopia_importerad">Imported %1$d log entries, skipped %2$d</string>
     <string name="sakerhetskopia_kunde_inte_lasas">Could not read the file</string>
+    <string name="sakerhetskopia_kunde_inte_sparas">Could not save the backup</string>
     <string name="sakerhetskopia_nyare_version">The file is from a newer version of the app</string>
 
     <!-- Automatic backup (Cursor del A; manual backup strings in task 24) -->
@@ -251,6 +252,8 @@
     <string name="export_csv_sparad">CSV saved</string>
     <string name="export_csv_misslyckades">Could not create CSV</string>
     <string name="historik_pdf_rubrik">House history</string>
+    <string name="historik_pdf_kallor_lag">Swedish Income Tax Act (Inkomstskattelagen): chapter 45 (sale of real property), chapter 46 (sale of tenant-owned apartments).</string>
+    <string name="historik_pdf_kallor_kontrollerat">Checked %1$s.</string>
     <string name="historik_pdf_skatt_rubrik">Tax information (Sweden)</string>
     <string name="historik_pdf_skatt_text">Improvement expenses may be deducted when you sell your home. Repairs and maintenance count only for the sale year and the five years before it. Expenses must total at least SEK 5,000 per year. This is information, not tax advice. Always check with the Swedish Tax Agency (Skatteverket).</string>
 

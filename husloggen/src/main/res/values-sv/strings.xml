@@ -195,6 +195,7 @@
     <string name="sakerhetskopia_sparad">Säkerhetskopia sparad</string>
     <string name="sakerhetskopia_importerad">Importerade %1$d poster, hoppade över %2$d</string>
     <string name="sakerhetskopia_kunde_inte_lasas">Filen kunde inte läsas</string>
+    <string name="sakerhetskopia_kunde_inte_sparas">Säkerhetskopian kunde inte sparas</string>
     <string name="sakerhetskopia_nyare_version">Filen kommer från en nyare version av appen</string>
 
     <string name="auto_rubrik">Automatisk säkerhetskopia</string>
@@ -250,6 +251,8 @@
     <string name="export_csv_sparad">CSV sparad</string>
     <string name="export_csv_misslyckades">CSV kunde inte skapas</string>
     <string name="historik_pdf_rubrik">Husets historik</string>
+    <string name="historik_pdf_kallor_lag">Inkomstskattelagen: 45 kap. (avyttring av fastigheter), 46 kap. (avyttring av bostadsrätter).</string>
+    <string name="historik_pdf_kallor_kontrollerat">Kontrollerat %1$s.</string>
     <string name="historik_pdf_skatt_rubrik">Skatteinformation (Sverige)</string>
     <string name="historik_pdf_skatt_text">Förbättringsutgifter kan dras av när bostaden säljs. Reparation och underhåll räknas bara för försäljningsåret och de fem åren före. Utgifterna ska sammanlagt vara minst 5 000 kr per år. Det här är information, inte skatteråd. Kontrollera alltid med Skatteverket.</string>
 
