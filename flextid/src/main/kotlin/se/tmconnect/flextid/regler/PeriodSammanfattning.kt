@@ -12,6 +12,7 @@ fun periodSammanfattning(
     till: LocalDate,
     installning: Installning,
     aftnarLediga: Boolean,
+    arbetstid: Arbetstid = installning.arbetstid(aftnarLediga),
 ): PeriodSammanfattning {
     val iIntervall = dagar.filter { !it.datum.isBefore(fran) && !it.datum.isAfter(till) }
     val arbetadMin =
@@ -20,15 +21,8 @@ fun periodSammanfattning(
             .sumOf { arbetadeMinuter(it.start, it.slut, it.rastMin) }
     val utfallMin =
         iIntervall.sumOf {
-            dagensUtfall(it, installning.normaltidMinPerDag, installning.arbetsdagarMask, aftnarLediga)
+            dagensUtfall(it, arbetstid)
         }
-    val normaltidMin =
-        normaltidForIntervallMin(
-            fran,
-            till,
-            installning.arbetsdagarMask,
-            installning.normaltidMinPerDag,
-            aftnarLediga,
-        )
+    val normaltidMin = arbetstid.normaltidForIntervall(fran, till)
     return PeriodSammanfattning(arbetadMin, normaltidMin, utfallMin)
 }

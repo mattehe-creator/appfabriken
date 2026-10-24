@@ -267,6 +267,7 @@ class MainActivity : ComponentActivity() {
                                     se.tmconnect.flextid.regler.formateraTid(meddelande.start, snackbarLocale),
                                 )
                             FlextidMeddelande.IngenInstempling -> getString(R.string.genvag_ingen_instempling)
+                            FlextidMeddelande.SommartidOgiltig -> getString(R.string.sommartid_ogiltig)
                         }
                     snackbarHostState.showSnackbar(text)
                 }

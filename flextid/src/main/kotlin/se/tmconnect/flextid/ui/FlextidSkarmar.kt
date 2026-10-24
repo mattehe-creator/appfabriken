@@ -64,7 +64,6 @@ import se.tmconnect.flextid.regler.VeckoTextTexter
 import se.tmconnect.flextid.regler.veckoText
 import se.tmconnect.flextid.regler.SaldoStatus
 import se.tmconnect.flextid.regler.saldoStatus
-import se.tmconnect.flextid.regler.dagensUtfall
 import se.tmconnect.flextid.regler.gaHemTid
 import se.tmconnect.flextid.regler.gaHemTidForNollsaldo
 import se.tmconnect.flextid.regler.helgdagPa
@@ -131,6 +130,8 @@ fun FlextidStartSkarm(
     val vanligStartMin by viewModel.vanligStartMin.collectAsState()
     val vanligSlutMin by viewModel.vanligSlutMin.collectAsState()
     val vanligRastMin by viewModel.vanligRastMin.collectAsState()
+    val arbetstid by viewModel.arbetstid.collectAsState()
+    val normaltidUndantag by viewModel.normaltidUndantag.collectAsState()
     var visaArsOversikt by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -240,6 +241,7 @@ fun FlextidStartSkarm(
                         onPlaneraLedig = viewModel::planeraLedigDag,
                         visaFyllVanligDag = visaFyllVanligDagKnapp,
                         onFyllVanligDag = viewModel::fyllVanligDagIdag,
+                        normaltidIdag = idagDag?.let { arbetstid.normaltidFor(it.datum) } ?: installning.normaltidMinPerDag,
                     )
                 flik == FlextidFlik.VECKA ->
                     VeckaInnehall(
@@ -297,6 +299,8 @@ fun FlextidStartSkarm(
                         saldoTakMin = saldoTak,
                         saldoGolvMin = saldoGolv,
                         onSaldoGranser = viewModel::sattSaldoGranser,
+                        normaltidUndantag = normaltidUndantag,
+                        onSparaNormaltidUndantag = viewModel::sparaNormaltidUndantag,
                     )
             }
         }
@@ -334,6 +338,7 @@ internal fun IdagInnehall(
     onPlaneraLedig: (LocalDate) -> Unit = {},
     visaFyllVanligDag: Boolean = false,
     onFyllVanligDag: () -> Unit = {},
+    normaltidIdag: Int = installning.normaltidMinPerDag,
 ) {
     var rastText by remember(dag?.rastMin) { mutableStateOf((dag?.rastMin ?: standardRast).toString()) }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -388,15 +393,17 @@ internal fun IdagInnehall(
         }
         val start = dag?.start
         if (dag != null && start != null && dag.slut == null) {
-            val dagensUtfallNu = dagensUtfall(dag, installning.normaltidMinPerDag, installning.arbetsdagarMask)
-            val saldoForeIdag = saldo - dagensUtfallNu
-            gaHemTid(start, dag.rastMin, installning.normaltidMinPerDag)?.let { tid ->
+            // Dagen är inte utstämplad, så dagens utfall ingår inte i saldot ännu.
+            val saldoForeIdag = saldo
+            // På en ledig dag finns ingen normaltid; visa då gå hem-tiden för en vanlig dag.
+            val normaltidForGaHem = normaltidIdag.takeIf { it > 0 } ?: installning.normaltidMinPerDag
+            gaHemTid(start, dag.rastMin, normaltidForGaHem)?.let { tid ->
                 Text(
                     text = stringResource(R.string.ga_hem_normaltid, formateraTid(tid, locale)),
                     style = MaterialTheme.typography.titleMedium,
                 )
             }
-            gaHemTidForNollsaldo(start, dag.rastMin, installning.normaltidMinPerDag, saldoForeIdag)?.let { tid ->
+            gaHemTidForNollsaldo(start, dag.rastMin, normaltidIdag, saldoForeIdag)?.let { tid ->
                 Text(
                     text = stringResource(R.string.ga_hem_nollsaldo, formateraTid(tid, locale)),
                     style = MaterialTheme.typography.bodyMedium,
@@ -635,6 +642,10 @@ internal fun InstallningarInnehall(
     vanligStartMin: Int = se.tmconnect.flextid.regler.STANDARD_VANLIG_START_MIN,
     vanligSlutMin: Int = se.tmconnect.flextid.regler.STANDARD_VANLIG_SLUT_MIN,
     vanligRastMin: Int = se.tmconnect.flextid.regler.STANDARD_VANLIG_RAST_MIN,
+    normaltidUndantag: se.tmconnect.flextid.regler.NormaltidUndantag =
+        se.tmconnect.flextid.regler.NormaltidUndantag(),
+    onSparaNormaltidUndantag: (Map<DayOfWeek, String>, Boolean, String, String, String) -> Unit =
+        { _, _, _, _, _ -> },
 ) {
     var takText by remember(saldoTakMin) { mutableStateOf(saldoTakMin?.let { formateraMinuterSomTid(it, locale) } ?: "") }
     var golvText by remember(saldoGolvMin) { mutableStateOf(saldoGolvMin?.let { formateraMinuterSomTid(-it, locale) } ?: "") }
@@ -884,6 +895,15 @@ internal fun InstallningarInnehall(
             ) {
                 Text(stringResource(R.string.spara))
             }
+        }
+        item {
+            NormaltidUndantagAvsnitt(
+                undantag = normaltidUndantag,
+                arbetsdagarMask = installning.arbetsdagarMask,
+                standardMin = installning.normaltidMinPerDag,
+                locale = locale,
+                onSpara = onSparaNormaltidUndantag,
+            )
         }
         item {
             Text(stringResource(R.string.tema_rubrik), style = MaterialTheme.typography.titleMedium)
@@ -1165,7 +1185,7 @@ private fun PaminnelseReglage(
     }
 }
 
-private fun veckodagStringRes(dag: DayOfWeek): Int =
+internal fun veckodagStringRes(dag: DayOfWeek): Int =
     when (dag) {
         DayOfWeek.MONDAY -> R.string.veckodag_man
         DayOfWeek.TUESDAY -> R.string.veckodag_tis

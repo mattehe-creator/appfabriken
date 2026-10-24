@@ -158,7 +158,7 @@
     <string name="semesterar_kalenderar_rubrik">Semesteråret följer kalenderåret</string>
     <string name="semesterar_kalenderar_beskrivning">Av: april–mars, som i semesterlagen. På: januari–december.</string>
     <string name="aftnar_lediga_rubrik">Aftnar är lediga</string>
-    <string name="aftnar_lediga_beskrivning">Midsommar-, jul- och nyårsafton räknas som lediga för påminnelser. Röda dagar är alltid lediga.</string>
+    <string name="aftnar_lediga_beskrivning">Midsommar-, jul- och nyårsafton räknas som lediga: inga påminnelser och ingen normaltid, så arbete de dagarna ger plus. Röda dagar är alltid lediga.</string>
     <string name="pdf_normaltid_manad">Normaltid i månaden (%1$d arbetsdagar)</string>
     <string name="butik_rubrik">Stämpla, se saldot och när du kan gå hem</string>
     <string name="butik_punkt_1">När normaltiden är fylld, på minuten</string>
@@ -200,4 +200,13 @@
     <string name="ledighet_kort_for_lagt">Saldo räcker inte för en hel flexdag</string>
     <string name="ledighet_kort_tidigast">Tidigast ledig %1$s</string>
     <string name="ledighet_planera_knapp">Planera ledig dag</string>
+    <string name="normaltid_undantag_rubrik">Normaltid per veckodag</string>
+    <string name="normaltid_undantag_beskrivning">Lämna tomt för att använda standard (%1$s). Skriv till exempel 7:00 eller 7,5.</string>
+    <string name="sommartid_rubrik">Sommartid</string>
+    <string name="sommartid_beskrivning">Annan normaltid under en period varje år. Gäller före veckodagarnas normaltid.</string>
+    <string name="sommartid_fran">Från (dag/månad)</string>
+    <string name="sommartid_till">Till (dag/månad)</string>
+    <string name="sommartid_normaltid">Normaltid under perioden</string>
+    <string name="sommartid_ogiltig">Sommartiden sparades inte: ange från, till och normaltid.</string>
+    <string name="normaltid_undantag_spara">Spara normaltid</string>
 </resources>

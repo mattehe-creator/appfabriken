@@ -12,7 +12,13 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import se.tmconnect.flextid.regler.MAX_NORMALTID_MIN
+import se.tmconnect.flextid.regler.NormaltidUndantag
 import se.tmconnect.flextid.regler.SEMESTERAR_STARTMANAD_STANDARD
+import se.tmconnect.flextid.regler.SommarNormaltid
+import se.tmconnect.flextid.regler.formateraPerVeckodag
+import se.tmconnect.flextid.regler.tolkaManadDag
+import se.tmconnect.flextid.regler.tolkaPerVeckodag
 import se.tmconnect.flextid.regler.SEMESTERDAGAR_STANDARD
 import se.tmconnect.flextid.regler.normaliseraVanligRastMin
 import se.tmconnect.flextid.regler.normaliseraVanligSlutMin
@@ -115,7 +121,48 @@ class UiInstallningarLager(private val context: Context) {
         }
     }
 
+    /** Normaltid per veckodag och sommartid. Tomt = samma normaltid alla arbetsdagar. */
+    val normaltidUndantag: Flow<NormaltidUndantag> =
+        context.flextidUiDataStore.data.map { prefs ->
+            val sommarMin = prefs[SOMMAR_NORMALTID_MIN]
+            val fran = tolkaManadDag(prefs[SOMMAR_FRAN])
+            val till = tolkaManadDag(prefs[SOMMAR_TILL])
+            NormaltidUndantag(
+                perVeckodag = tolkaPerVeckodag(prefs[NORMALTID_PER_VECKODAG]),
+                sommar =
+                    if (sommarMin != null && fran != null && till != null) {
+                        SommarNormaltid(fran, till, sommarMin.coerceIn(0, MAX_NORMALTID_MIN))
+                    } else {
+                        null
+                    },
+            )
+        }
+
+    suspend fun sattNormaltidUndantag(undantag: NormaltidUndantag) {
+        context.flextidUiDataStore.edit { prefs ->
+            if (undantag.perVeckodag.isEmpty()) {
+                prefs.remove(NORMALTID_PER_VECKODAG)
+            } else {
+                prefs[NORMALTID_PER_VECKODAG] = formateraPerVeckodag(undantag.perVeckodag)
+            }
+            val sommar = undantag.sommar
+            if (sommar == null) {
+                prefs.remove(SOMMAR_NORMALTID_MIN)
+                prefs.remove(SOMMAR_FRAN)
+                prefs.remove(SOMMAR_TILL)
+            } else {
+                prefs[SOMMAR_NORMALTID_MIN] = sommar.minPerDag.coerceIn(0, MAX_NORMALTID_MIN)
+                prefs[SOMMAR_FRAN] = sommar.fran.toString()
+                prefs[SOMMAR_TILL] = sommar.till.toString()
+            }
+        }
+    }
+
     companion object {
+        private val NORMALTID_PER_VECKODAG = stringPreferencesKey("normaltid_per_veckodag")
+        private val SOMMAR_NORMALTID_MIN = intPreferencesKey("sommar_normaltid_min")
+        private val SOMMAR_FRAN = stringPreferencesKey("sommar_fran")
+        private val SOMMAR_TILL = stringPreferencesKey("sommar_till")
         const val MAX_GRANS_MIN = 500 * 60
         private val SALDO_TAK_MIN = intPreferencesKey("saldo_tak_min")
         private val SALDO_GOLV_MIN = intPreferencesKey("saldo_golv_min")

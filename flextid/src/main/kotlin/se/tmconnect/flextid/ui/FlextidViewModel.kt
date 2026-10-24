@@ -51,7 +51,14 @@ import se.tmconnect.flextid.paminnelse.FlextidPaminnelseKalla
 import se.tmconnect.flextid.paminnelse.PaminnelseWorker
 import se.tmconnect.flextid.regler.DagTyp
 import se.tmconnect.flextid.regler.TidValideringFel
+import se.tmconnect.flextid.regler.Arbetstid
+import se.tmconnect.flextid.regler.NormaltidUndantag
+import se.tmconnect.flextid.regler.SommarNormaltid
 import se.tmconnect.flextid.regler.arbetadeMinuter
+import se.tmconnect.flextid.regler.arbetstid
+import se.tmconnect.flextid.regler.beraknaSaldo
+import se.tmconnect.flextid.regler.tolkaDagManadText
+import se.tmconnect.flextid.regler.tolkaLangdText
 import se.tmconnect.flextid.regler.avrundaTillHelMinut
 import se.tmconnect.flextid.regler.dagensUtfall
 import se.tmconnect.flextid.regler.SEMESTERAR_STARTMANAD_STANDARD
@@ -95,6 +102,8 @@ sealed interface FlextidMeddelande {
     data class RedanInstamplad(val start: LocalTime) : FlextidMeddelande
 
     data object IngenInstempling : FlextidMeddelande
+
+    data object SommartidOgiltig : FlextidMeddelande
 }
 
 data class VeckaDagRad(
@@ -211,8 +220,33 @@ class FlextidViewModel(
             Installning(),
         )
 
+    /** Normaltid per veckodag och sommartid (inställningar). */
+    val normaltidUndantag =
+        uiInstallningarLager.normaltidUndantag.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            NormaltidUndantag(),
+        )
+
+    /** Allt som avgör normaltiden en viss dag. */
+    private val arbetstidFlode: kotlinx.coroutines.flow.Flow<Arbetstid> =
+        combine(
+            repository.observeraInstallning(),
+            uiInstallningarLager.aftnarLediga,
+            uiInstallningarLager.normaltidUndantag,
+        ) { inst, aftnar, undantag -> inst.arbetstid(aftnar, undantag) }
+
+    val arbetstid: kotlinx.coroutines.flow.StateFlow<Arbetstid> =
+        arbetstidFlode.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            Installning().arbetstid(aftnarLediga = true),
+        )
+
     val saldo =
-        repository.observeraSaldo(uiInstallningarLager.aftnarLediga).stateIn(
+        combine(repository.observeraAllaDagar(), repository.observeraInstallning(), arbetstidFlode) { dagar, inst, at ->
+            beraknaSaldo(dagar, inst.ingangssaldoMin, at)
+        }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             0,
@@ -229,7 +263,7 @@ class FlextidViewModel(
         )
 
     val veckaRader =
-        combine(_veckaAnkar, repository.observeraAllaDagar(), installning, uiInstallningarLager.aftnarLediga) { ankar, alla, inst, aftnar ->
+        combine(_veckaAnkar, repository.observeraAllaDagar(), arbetstidFlode) { ankar, alla, at ->
             val slut = sondagISammaVecka(ankar)
             val map = alla.filter { !it.datum.isBefore(ankar) && !it.datum.isAfter(slut) }.associateBy { it.datum }
             (0L..6L).map { offset ->
@@ -238,7 +272,7 @@ class FlextidViewModel(
                 val arbetat =
                     dag?.let { arbetadeMinuter(it.start, it.slut, it.rastMin) } ?: 0
                 val utfall =
-                    dag?.let { dagensUtfall(it, inst.normaltidMinPerDag, inst.arbetsdagarMask, aftnar) } ?: 0
+                    dag?.let { dagensUtfall(it, at) } ?: 0
                 VeckaDagRad(datum, dag, arbetat, utfall)
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -266,11 +300,11 @@ class FlextidViewModel(
 
     /** Saldo vid årets slut om årets takt håller i sig; null tidigt på året. */
     val saldoVidArsslut =
-        combine(repository.observeraAllaDagar(), installning, saldo, uiInstallningarLager.aftnarLediga) { alla, inst, saldoNu, aftnar ->
+        combine(repository.observeraAllaDagar(), saldo, arbetstidFlode) { alla, saldoNu, at ->
             val idag = LocalDate.now()
             val utfallIAr = alla
                 .filter { it.datum.year == idag.year && !it.datum.isAfter(idag) }
-                .sumOf { dagensUtfall(it, inst.normaltidMinPerDag, inst.arbetsdagarMask, aftnar) }
+                .sumOf { dagensUtfall(it, at) }
             saldoVidArssluten(saldoNu, utfallIAr, idag)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
@@ -353,14 +387,14 @@ class FlextidViewModel(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val veckaSammanfattning =
-        combine(_veckaAnkar, repository.observeraAllaDagar(), installning, aftnarLediga) { ankar, alla, inst, aftnar ->
-            periodSammanfattning(alla, ankar, sondagISammaVecka(ankar), inst, aftnar)
+        combine(_veckaAnkar, repository.observeraAllaDagar(), installning, arbetstidFlode) { ankar, alla, inst, at ->
+            periodSammanfattning(alla, ankar, sondagISammaVecka(ankar), inst, at.aftnarLediga, at)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val manadSammanfattning =
-        combine(repository.observeraAllaDagar(), installning, aftnarLediga) { alla, inst, aftnar ->
+        combine(repository.observeraAllaDagar(), installning, arbetstidFlode) { alla, inst, at ->
             val manad = YearMonth.now()
-            periodSammanfattning(alla, manad.atDay(1), manad.atEndOfMonth(), inst, aftnar)
+            periodSammanfattning(alla, manad.atDay(1), manad.atEndOfMonth(), inst, at.aftnarLediga, at)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
 
@@ -377,18 +411,18 @@ class FlextidViewModel(
             installning,
             exportArManad,
             saldo,
-            uiInstallningarLager.aftnarLediga,
-        ) { dagar, inst, arManad, saldoNu, aftnar ->
+            arbetstidFlode,
+        ) { dagar, inst, arManad, saldoNu, at ->
             val ar = arManad.year
             val idag = LocalDate.now()
-            val rader = arsOversikt(dagar, ar, inst, aftnar)
+            val rader = arsOversikt(dagar, ar, inst, at.aftnarLediga, at)
             val arArInnevarandeAr = ar == idag.year
             val prognosMin =
                 if (arArInnevarandeAr) {
                     val utfallIAr =
                         dagar
                             .filter { it.datum.year == ar && !it.datum.isAfter(idag) }
-                            .sumOf { dagensUtfall(it, inst.normaltidMinPerDag, inst.arbetsdagarMask, aftnar) }
+                            .sumOf { dagensUtfall(it, at) }
                     saldoVidArssluten(saldoNu, utfallIAr, idag)
                 } else {
                     null
@@ -838,6 +872,7 @@ class FlextidViewModel(
                     uiInstallningarLager.sattAftnarLediga(las.innehall.installning.aftnarLediga)
                     uiInstallningarLager.sattSemesterdagarPerAr(las.innehall.installning.semesterdagarPerAr)
                     uiInstallningarLager.sattSemesterarStartmanad(las.innehall.installning.semesterarStartmanad)
+                    uiInstallningarLager.sattNormaltidUndantag(las.innehall.installning.normaltidUndantag)
                     synkaPaminnelseJobb()
                     _meddelanden.emit(FlextidMeddelande.Importerat)
                 }
@@ -849,13 +884,9 @@ class FlextidViewModel(
     /** Årsöversikt för året i exportvalet: en rad per månad med saldo vid månadens slut. */
     suspend fun skapaArsCsv(rubriker: List<String>, locale: Locale): String {
         val ar = exportArManad.value.year
-        val rader =
-            arsOversikt(
-                repository.hamtaAllaDagar(),
-                ar,
-                repository.hamtaInstallning(),
-                uiInstallningarLager.aftnarLediga.first(),
-            )
+        val inst = repository.hamtaInstallning()
+        val at = hamtaArbetstid(inst)
+        val rader = arsOversikt(repository.hamtaAllaDagar(), ar, inst, at.aftnarLediga, at)
         val manadsnamn = java.time.Month.entries.map {
             it.getDisplayName(java.time.format.TextStyle.FULL_STANDALONE, locale)
         }
@@ -866,20 +897,23 @@ class FlextidViewModel(
         val dagar = repository.hamtaAllaDagar()
         val inst = repository.hamtaInstallning()
         val arManad = exportArManad.value
-        return byggManadsCsv(dagar, inst, arManad, texter, locale, uiInstallningarLager.aftnarLediga.first())
+        val at = hamtaArbetstid(inst)
+        return byggManadsCsv(dagar, inst, arManad, texter, locale, at.aftnarLediga, at)
     }
 
     suspend fun skapaManadsRapport(texter: ManadsRapportTexter, locale: Locale): ManadsRapportData {
         val dagar = repository.hamtaAllaDagar()
         val inst = repository.hamtaInstallning()
         val arManad = exportArManad.value
+        val at = hamtaArbetstid(inst)
         return byggManadsRapport(
             dagar,
             inst,
             arManad,
             texter,
             locale,
-            aftnarLediga = uiInstallningarLager.aftnarLediga.first(),
+            aftnarLediga = at.aftnarLediga,
+            arbetstid = at,
         )
     }
 
@@ -899,6 +933,42 @@ class FlextidViewModel(
                     appContext.contentResolver.openInputStream(uri)?.use { las(it) } ?: ""
                 }
             importeraSakerhetskopia(text)
+        }
+    }
+
+    private suspend fun hamtaArbetstid(inst: Installning): Arbetstid =
+        inst.arbetstid(uiInstallningarLager.aftnarLediga.first(), uiInstallningarLager.normaltidUndantag.first())
+
+    /**
+     * Normaltid per veckodag: text per veckodag ("7:00", "7,5" eller tomt för standard).
+     * Sommartid: på/av, från och till som "1/6", och normaltid. Ogiltiga fält ignoreras.
+     */
+    fun sparaNormaltidUndantag(
+        veckodagText: Map<java.time.DayOfWeek, String>,
+        sommarPa: Boolean,
+        sommarFranText: String,
+        sommarTillText: String,
+        sommarNormaltidText: String,
+    ) {
+        viewModelScope.launch {
+            val perVeckodag =
+                veckodagText.mapNotNull { (dag, text) -> tolkaLangdText(text)?.let { dag to it } }.toMap()
+            val fran = tolkaDagManadText(sommarFranText)
+            val till = tolkaDagManadText(sommarTillText)
+            val sommarMin = tolkaLangdText(sommarNormaltidText)
+            val sommar =
+                if (sommarPa && fran != null && till != null && sommarMin != null) {
+                    SommarNormaltid(fran, till, sommarMin)
+                } else {
+                    null
+                }
+            uiInstallningarLager.sattNormaltidUndantag(NormaltidUndantag(perVeckodag, sommar))
+            if (sommarPa && sommar == null) {
+                _meddelanden.emit(FlextidMeddelande.SommartidOgiltig)
+            } else {
+                _meddelanden.emit(FlextidMeddelande.Sparat)
+            }
+            synkaPaminnelseJobb()
         }
     }
 
