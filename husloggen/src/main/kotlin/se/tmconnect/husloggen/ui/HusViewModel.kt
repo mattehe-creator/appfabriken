@@ -959,7 +959,7 @@ class HusViewModel(
             ?: repository.allaBostader().firstOrNull()?.id
 
     /** Poster för exporten, hämtade från databasen när filen skrivs (inte från UI-flödet). */
-    private suspend fun posterForExport(bostadId: Long? = bostadIdForExport()): List<Post> =
+    private suspend fun posterForExport(bostadId: Long?): List<Post> =
         if (bostadId == null) emptyList() else repository.posterForBostad(bostadId).first()
 
     fun sparaHusHistorikPdf(
@@ -974,7 +974,7 @@ class HusViewModel(
         viewModelScope.launch {
             try {
                 val data = byggHusHistorik(
-                    poster = posterForExport(),
+                    poster = posterForExport(bostadIdForExport()),
                     forsaljningsar = _forsaljningsAr.value,
                     localeLand = locale.country,
                     typEtikett = typEtikett,
@@ -1012,7 +1012,7 @@ class HusViewModel(
         viewModelScope.launch {
             try {
                 val data = byggHusHistorik(
-                    poster = posterForExport(),
+                    poster = posterForExport(bostadIdForExport()),
                     forsaljningsar = _forsaljningsAr.value,
                     localeLand = locale.country,
                     typEtikett = typEtikett,
