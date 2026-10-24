@@ -58,6 +58,7 @@ import se.tmconnect.flextid.regler.SommarNormaltid
 import se.tmconnect.flextid.regler.arbetadeMinuter
 import se.tmconnect.flextid.regler.arbetstid
 import se.tmconnect.flextid.regler.beraknaSaldo
+import se.tmconnect.flextid.regler.harArbetsdagar
 import se.tmconnect.flextid.regler.tolkaDagManadText
 import se.tmconnect.flextid.regler.tolkaLangdText
 import se.tmconnect.flextid.regler.avrundaTillHelMinut
@@ -105,6 +106,8 @@ sealed interface FlextidMeddelande {
     data object IngenInstempling : FlextidMeddelande
 
     data object SommartidOgiltig : FlextidMeddelande
+
+    data object ArbetsdagarSaknas : FlextidMeddelande
 }
 
 data class VeckaDagRad(
@@ -733,6 +736,10 @@ class FlextidViewModel(
         vanligRastText: String,
     ) {
         viewModelScope.launch {
+            if (!harArbetsdagar(arbetsdagarMask)) {
+                _meddelanden.emit(FlextidMeddelande.ArbetsdagarSaknas)
+                return@launch
+            }
             val normaltid = normaltidText.toIntOrNull() ?: installning.value.normaltidMinPerDag
             val rast = rastText.toIntOrNull() ?: installning.value.standardRastMin
             val ingang = parseSaldoMinuter(ingangssaldoText) ?: installning.value.ingangssaldoMin

@@ -5,12 +5,14 @@ import java.time.LocalDate
 private fun arPlanerbarArbetsdag(datum: LocalDate, arbetsdagarMask: Int, helgdagar: Boolean): Boolean =
     arArbetsdag(datum, arbetsdagarMask) && !arLedigDag(datum, helgdagar)
 
-private fun nastaPlanerbarArbetsdag(efter: LocalDate, arbetsdagarMask: Int, helgdagar: Boolean): LocalDate {
+/** Null om ingen planerbar arbetsdag finns inom [MAX_DAGAR_FRAMAT] dagar. */
+private fun nastaPlanerbarArbetsdag(efter: LocalDate, arbetsdagarMask: Int, helgdagar: Boolean): LocalDate? {
     var dag = efter.plusDays(1)
-    while (!arPlanerbarArbetsdag(dag, arbetsdagarMask, helgdagar)) {
+    repeat(MAX_DAGAR_FRAMAT) {
+        if (arPlanerbarArbetsdag(dag, arbetsdagarMask, helgdagar)) return dag
         dag = dag.plusDays(1)
     }
-    return dag
+    return null
 }
 
 private fun kanTaUtDagar(
@@ -22,7 +24,7 @@ private fun kanTaUtDagar(
     if (!arPlanerbarArbetsdag(start, arbetsdagarMask, helgdagar)) return false
     var dag = start
     repeat(antalDagar - 1) {
-        dag = nastaPlanerbarArbetsdag(dag, arbetsdagarMask, helgdagar)
+        dag = nastaPlanerbarArbetsdag(dag, arbetsdagarMask, helgdagar) ?: return false
     }
     return true
 }
@@ -37,12 +39,13 @@ fun tidigasteLedigDag(
     arbetsdagarMask: Int,
     helgdagar: Boolean,
 ): LocalDate? {
-    if (antalDagar <= 0) return null
+    if (antalDagar <= 0 || !harArbetsdagar(arbetsdagarMask)) return null
     var kandidat = idag.plusDays(1)
-    while (true) {
+    repeat(MAX_DAGAR_FRAMAT) {
         if (kanTaUtDagar(kandidat, antalDagar, arbetsdagarMask, helgdagar)) {
             return kandidat
         }
-        kandidat = nastaPlanerbarArbetsdag(kandidat, arbetsdagarMask, helgdagar)
+        kandidat = nastaPlanerbarArbetsdag(kandidat, arbetsdagarMask, helgdagar) ?: return null
     }
+    return null
 }

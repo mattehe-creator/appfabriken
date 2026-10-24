@@ -12,3 +12,9 @@ fun arArbetsdag(datum: LocalDate, arbetsdagarMask: Int): Boolean {
 }
 
 fun veckodagBit(veckodag: DayOfWeek): Int = 1 shl veckodag.ordinal
+
+/** Sant när minst en veckodag är vald. Annars finns ingen arbetsdag att hitta. */
+fun harArbetsdagar(arbetsdagarMask: Int): Boolean = arbetsdagarMask and 0b111_1111 != 0
+
+/** Högst så här många dagar framåt letas en arbetsdag; skyddar mot oändliga loopar. */
+const val MAX_DAGAR_FRAMAT = 400

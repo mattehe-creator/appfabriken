@@ -217,4 +217,5 @@
     <string name="widget_klar">Klar för i dag</string>
     <string name="widget_oppna">Öppna</string>
     <string name="dagtyp_flex">Flexledig</string>
+    <string name="arbetsdagar_saknas">Välj minst en arbetsdag. Inget sparades.</string>
 </resources>

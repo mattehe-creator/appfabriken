@@ -217,4 +217,5 @@
     <string name="widget_klar">Done for today</string>
     <string name="widget_oppna">Open</string>
     <string name="dagtyp_flex">Flex leave</string>
+    <string name="arbetsdagar_saknas">Choose at least one working day. Nothing was saved.</string>
 </resources>
