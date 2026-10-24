@@ -58,3 +58,5 @@ gradle :flextid:testDebugUnitTest --tests "*SemesterSparadeTest" --tests "*Semes
 - Ändra andra filer (inklusive befintliga tester).
 - Lägga till beroenden.
 - Använda `kotlin.test`.
+
+utfall: godkänd 2026-10-24 (inget)
