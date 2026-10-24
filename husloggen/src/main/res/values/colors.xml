@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="fonster_bakgrund">#FAFAF7</color>
+    <color name="widget_bakgrund">#FFFFFFFF</color>
+    <color name="widget_text">#FF1C1B19</color>
+    <color name="widget_text_svag">#FF5E5B55</color>
+    <color name="widget_fel">#FFB3261E</color>
 </resources>
