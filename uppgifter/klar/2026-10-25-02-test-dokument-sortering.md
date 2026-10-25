@@ -65,3 +65,5 @@ gradle :husloggen:testDebugUnitTest --tests "*DokumentSorteringTest"
 - Ändra `DokumentSortering.kt`. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Använda å, ä eller ö i titlarna (sorteringen av dem är inte det som testas här).
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-24 av Cursor (PR #669). Ersatt av 2026-10-25-02-test-dokument-sortering-f2.md

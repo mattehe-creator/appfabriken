@@ -1,8 +1,12 @@
 # Uppgift: Test av föregående avläsning
 
 uppdrag: uppdrag/claude/2026-10-25-natt-testtackning.md
-försök: 1
+försök: 2
 beror-på: ingen
+
+## Vad som saknades
+- Filen `husloggen/src/test/kotlin/se/tmconnect/husloggen/regler/ForegaendeAvlasningTest.kt` skapades inte. Grenen innehöll bara flytt av uppgiftsfilen till `uppgifter/pagar/`.
+- Skapa testfilen på exakt den sökvägen (inte i repots rot). Förebild för paket, imports och JUnit 4-stil: `husloggen/src/test/kotlin/se/tmconnect/husloggen/regler/AvlasningValideringTest.kt`.
 
 ## Ändra bara dessa filer
 - husloggen/src/test/kotlin/se/tmconnect/husloggen/regler/ForegaendeAvlasningTest.kt (ny)
@@ -19,11 +23,9 @@ Funktionen tar bort avläsningen med id `redigerarId`, behåller avläsningar p�
 
 Använd dessa tre avläsningar (importera `se.tmconnect.husloggen.data.Avlasning` och `java.time.LocalDate`). Ge alltid ett id från 1 och uppåt: en avläsning med id 0 filtreras bort eftersom `redigerarId` som standard är 0.
 
-```kotlin
 val a1 = Avlasning(id = 1, matareId = 1, datum = LocalDate.of(2026, 1, 10), varde = 1_000_000)
 val a2 = Avlasning(id = 2, matareId = 1, datum = LocalDate.of(2026, 2, 10), varde = 1_200_000)
 val a3 = Avlasning(id = 3, matareId = 1, datum = LocalDate.of(2026, 3, 10), varde = 1_500_000)
-```
 
 Jämför med `assertEquals(a2, resultat)` (samma objekt) eller `assertNull(resultat)`.
 
@@ -44,3 +46,4 @@ gradle :husloggen:testDebugUnitTest --tests "*ForegaendeAvlasningTest"
 - Ändra andra filer.
 - Ändra `AvlasningValidering.kt`. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Lägga till beroenden.
+- Använd `kotlin.test`; använd JUnit 4 (`org.junit`).
