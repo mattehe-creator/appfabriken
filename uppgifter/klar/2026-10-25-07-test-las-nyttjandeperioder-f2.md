@@ -48,3 +48,5 @@ gradle :styrelserummet:test --tests "*LasNyttjandeperioderTest"
 - Ändra andra filer.
 - Använd `kotlin.test` — endast JUnit 4 (`org.junit`).
 - Ändra `NyttjandeperioderTabell.kt` eller `nyttjandeperioder.csv`.
+
+utfall: godkänd 2026-10-25 (Cursor skrev hela LasNyttjandeperioderTest.kt — lokal modell lämnade tom fil)
