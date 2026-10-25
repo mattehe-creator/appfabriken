@@ -46,3 +46,5 @@ gradle :styrelserummet:test --tests "*LasNyttjandeperioderTest"
 - Ändra andra filer.
 - Ändra `NyttjandeperioderTabell.kt` eller `nyttjandeperioder.csv`. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-24 av Cursor (PR #680). Ersatt av 2026-10-25-07-test-las-nyttjandeperioder-f2.md

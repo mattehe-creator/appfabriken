@@ -33,3 +33,5 @@ gradle :flextid:testDebugUnitTest --tests "*DagManadTest"
 
 ## Gör inte
 - Ändra andra filer.
+
+utfall: godkänd 2026-10-24 (hela DagManadTest.kt — lokala modellen lämnade tom fil på försök 2)
