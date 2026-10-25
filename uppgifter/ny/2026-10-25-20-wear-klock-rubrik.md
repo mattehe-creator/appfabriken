@@ -26,16 +26,18 @@ Typ-prefix (exakt):
 - `HEM` → `Hem`
 - Okänd typ → `Förslag`
 
-Tid/datum: använd `start.atZone(zon)`. Om lokal datum är `idag` + 1 dag, skriv `i morgon HH:mm` (24 h). Om samma kalenderdag som `idag`, skriv bara `HH:mm`. Annars kort datum `d/M HH:mm`.
+Tid/datum: använd `start.atZone(zon)`. Om lokalt datum är `idag` + 1 dag, skriv `i morgon HH:mm` (24 h). Om samma kalenderdag som `idag`, skriv bara `HH:mm`. Annars kort datum `d/M HH:mm`.
 
-Om hela strängen skulle bli längre än 40 tecken, korta `titel` med `…` så att resultatet passar.
+Om hela strängen skulle bli längre än 40 tecken, korta `titel` med `…` så att resultatet blir exakt 40 tecken (titeln tappar tecken, prefix och tid behålls).
 
 ## Exempel
-(zon `Europe/Stockholm`, `idag` = 2026-10-25, `start` = 2026-10-26 07:00 UTC+2)
-- `klockRubrik("PAMINNELSE", "ring tandläkaren", start, zon, idag)` → `"Påminnelse: ring tandläkaren, i morgon 09:00"` (≤ 40 tecken; korta titel om nödvändigt).
-- `klockRubrik("ATT_GORA", "mjölk", null, zon)` → `"Att göra: mjölk"`.
-- `klockRubrik("HEM", "tänd lampan", null, zon)` → `"Hem: tänd lampan"`.
-- Mycket lång titel → max 40 tecken totalt.
+(zon `Europe/Stockholm`, `idag` = `LocalDate.of(2026, 10, 25)`, `start` = `Instant.parse("2026-10-26T06:00:00Z")`, vilket är 07:00 lokal tid eftersom vintertid gäller från 25 oktober)
+- `klockRubrik("PAMINNELSE", "ring Eva", start, zon, idag)` → `"Påminnelse: ring Eva, i morgon 07:00"` (36 tecken).
+- `klockRubrik("PAMINNELSE", "a".repeat(50), null, zon, idag)` → `"Påminnelse: "` + 27 stycken `a` + `"…"` (40 tecken).
+- `klockRubrik("ATT_GORA", "mjölk", null, zon, idag)` → `"Att göra: mjölk"`.
+- `klockRubrik("HEM", "tänd lampan", null, zon, idag)` → `"Hem: tänd lampan"`.
+- `klockRubrik("OKAND", "x", null, zon, idag)` → `"Förslag: x"`.
+- `start` = `Instant.parse("2026-10-25T10:30:00Z")` med `idag` 2026-10-25 → slutar på `", 11:30"`.
 
 ## Test som ska gå igenom
 gradle :rostfangst:testDebugUnitTest --tests "*KlockRubrikTest"
