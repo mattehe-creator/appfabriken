@@ -14,7 +14,7 @@ Håller ordning på husets underhåll: återkommande uppgifter med påminnelser,
 ## Regler
 
 - Gratisgränsen är 15 poster i loggen, räknade över alla bostäder tillsammans. Uppgifter, påminnelser, mätare med avläsningar och dokument (manualer, ritningar m.m.) är obegränsade per bostad. "Markera som gjord" flyttar alltid nästa datum; när gränsen är nådd sparas ingen ny post utan Pro. Gränsen ligger på ett ställe i `regler/`.
-- Flera bostäder: upp till 3 utan Pro, fler kräver Pro. Vald bostad styr vad som visas i flikarna; planerade kostnader filtreras per bostad. Säkerhetskopia och import inkluderar bostäder och kopplingar (JSON version 5). Äldre säkerhetskopior utan bostäder importeras till den förvalda bostaden. Regler i `regler/BostadGrans.kt`, databas version 6.
+- Flera bostäder: obegränsat antal (Pro gäller bara gränsen på 15 loggposter totalt). Vald bostad styr vad som visas i flikarna; planerade kostnader filtreras per bostad. Säkerhetskopia och import inkluderar bostäder och kopplingar (JSON version 5). Äldre säkerhetskopior utan bostäder importeras till den förvalda bostaden. Filtrering per bostad i `regler/BostadFilter.kt`, databas version 7.
 - Belopp lagras i öre (`Long`), datum som `LocalDate`, flera bildfiler som kommaseparerade filnamn, typer som enum-namn. Som i Garantivalvet.
 - Skatteregler (förbättringsutgifter vid försäljning) visas som information, aldrig som råd, med lagrum, och bara för Sverige. Siffrorna ligger på ett ställe i `regler/` och kontrolleras mot Skatteverket och inkomstskattelagen (45 kap. för fastighet, 46 kap. för bostadsrätt) innan uppdraget skrivs. I andra länder visar appen bara summor per år och typ.
 

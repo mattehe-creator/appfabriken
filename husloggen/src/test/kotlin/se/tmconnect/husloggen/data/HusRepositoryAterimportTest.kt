@@ -92,7 +92,7 @@ class HusRepositoryAterimportTest {
     @Test
     fun tomStandardbostadTarOverForstaBostadenIFilen() = runTest {
         val bostad = repository.hamtaBostad(repository.hamtaForvaldBostadId())!!
-        repository.sparaBostad(bostad.copy(namn = "Villan"), arPro = false)
+        repository.sparaBostad(bostad.copy(namn = "Villan"))
         fyllMedData()
         val las = exportera(repository)
         val ny = skapaHusRepository(context, skapaTestHusDatabas(context))
@@ -106,8 +106,8 @@ class HusRepositoryAterimportTest {
         // Filen: "Villan" först och en bostad som heter som den nya telefonens tomma standardbostad.
         val standardnamn = context.getString(se.tmconnect.husloggen.R.string.bostad_forvald_namn)
         val forsta = repository.hamtaBostad(repository.hamtaForvaldBostadId())!!
-        repository.sparaBostad(forsta.copy(namn = "Villan"), arPro = true)
-        val andra = (repository.sparaBostad(Bostad(namn = standardnamn), arPro = true) as SparaBostadResult.Sparad).id
+        repository.sparaBostad(forsta.copy(namn = "Villan"))
+        val andra = (repository.sparaBostad(Bostad(namn = standardnamn)) as SparaBostadResult.Sparad).id
         repository.sparaMatare(Matare(bostadId = forsta.id, namn = "El", enhet = "kWh"))
         repository.sparaMatare(Matare(bostadId = andra, namn = "Vatten", enhet = "m3"))
         val las = exportera(repository)
@@ -127,7 +127,7 @@ class HusRepositoryAterimportTest {
         fyllMedData()
         val annan = skapaHusRepository(context, skapaTestHusDatabas(context))
         val bostad = annan.hamtaBostad(annan.hamtaForvaldBostadId())!!
-        annan.sparaBostad(bostad.copy(namn = "Stugan"), arPro = false)
+        annan.sparaBostad(bostad.copy(namn = "Stugan"))
         annan.sparaMatare(Matare(bostadId = bostad.id, namn = "Vatten", enhet = "m3"))
         val las = exportera(repository)
         annan.importeraSakerhetskopia(las.innehall, las.bildFiler, las.dokumentFiler)
@@ -137,7 +137,7 @@ class HusRepositoryAterimportTest {
     @Test
     fun raderadBostadTarBortBilderna() = runTest {
         val forsta = repository.hamtaForvaldBostadId()
-        val andra = (repository.sparaBostad(Bostad(namn = "Stuga"), arPro = true) as SparaBostadResult.Sparad).id
+        val andra = (repository.sparaBostad(Bostad(namn = "Stuga")) as SparaBostadResult.Sparad).id
         val bildLager = skapaHusBildLager(context)
         val fil = bildLager.sparaFranBytes(byteArrayOf(1, 2, 3), "bild.jpg")
         repository.sparaPost(
@@ -145,7 +145,13 @@ class HusRepositoryAterimportTest {
             arPro = true,
         )
         assertTrue(bildLager.filFinns(fil))
-        assertEquals(TaBortBostadResult.Borttagen, repository.taBortBostad(repository.hamtaBostad(andra)!!))
+        assertEquals(
+            TaBortBostadResult.Borttagen,
+            repository.taBortBostad(
+                repository.hamtaBostad(andra)!!,
+                BostadBorttagningSatt.RADERA_INNEHALL,
+            ),
+        )
         assertFalse(bildLager.filFinns(fil))
         assertEquals(forsta, repository.allaBostader().single().id)
     }

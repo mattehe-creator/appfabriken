@@ -287,7 +287,6 @@ class MainActivity : ComponentActivity() {
                 val paminnelserPa by viewModel.paminnelserPa.collectAsState()
                 val arPro by viewModel.arPro.collectAsState()
                 val proDialogSynlig by viewModel.proDialogSynlig.collectAsState()
-                val proDialogVisaBostadsGrans by viewModel.proDialogVisaBostadsGrans.collectAsState()
                 val bostader by viewModel.bostader.collectAsState()
                 val valdBostad by viewModel.valdBostad.collectAsState()
                 val valdBostadId by viewModel.valdBostadId.collectAsState()
@@ -553,7 +552,15 @@ class MainActivity : ComponentActivity() {
                                 onValjBostad = viewModel::valjBostad,
                                 onSparaNyBostad = viewModel::sparaNyBostad,
                                 onUppdateraBostad = viewModel::uppdateraBostad,
-                                onTaBortBostad = viewModel::taBortBostad,
+                                onTaBortBostad = { bostad, onSista, onBorttagen ->
+                                    viewModel.taBortBostad(
+                                        bostad,
+                                        se.tmconnect.husloggen.data.BostadBorttagningSatt.RADERA_INNEHALL,
+                                        flyttTillId = null,
+                                        onSista = onSista,
+                                        onBorttagen = onBorttagen,
+                                    )
+                                },
                                 hamtaRaderingInfo = { id ->
                                     viewModel.bostadRaderingInfo(id).antalPoster
                                 },
@@ -670,7 +677,6 @@ class MainActivity : ComponentActivity() {
                     ProDialog(
                         onDismiss = viewModel::stangProDialog,
                         onKopPro = viewModel::kopPro,
-                        visaBostadsGrans = proDialogVisaBostadsGrans,
                     )
                 }
             }

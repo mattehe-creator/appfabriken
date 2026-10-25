@@ -28,6 +28,30 @@ interface HusDao {
     @Delete
     suspend fun taBortBostad(bostad: Bostad)
 
+    @Query("UPDATE uppgift SET bostad_id = :tillId WHERE bostad_id = :franId")
+    suspend fun flyttaUppgifterTillBostad(franId: Long, tillId: Long)
+
+    @Query("UPDATE post SET bostad_id = :tillId WHERE bostad_id = :franId")
+    suspend fun flyttaPosterTillBostad(franId: Long, tillId: Long)
+
+    @Query("UPDATE matare SET bostad_id = :tillId WHERE bostad_id = :franId")
+    suspend fun flyttaMatareTillBostad(franId: Long, tillId: Long)
+
+    @Query("UPDATE dokument SET bostad_id = :tillId WHERE bostad_id = :franId")
+    suspend fun flyttaDokumentTillBostad(franId: Long, tillId: Long)
+
+    @Query("UPDATE planerad_kostnad SET bostad_id = :tillId WHERE bostad_id = :franId")
+    suspend fun flyttaPlaneradeKostnaderTillBostad(franId: Long, tillId: Long)
+
+    @Transaction
+    suspend fun flyttaAlltTillBostad(franId: Long, tillId: Long) {
+        flyttaUppgifterTillBostad(franId, tillId)
+        flyttaPosterTillBostad(franId, tillId)
+        flyttaMatareTillBostad(franId, tillId)
+        flyttaDokumentTillBostad(franId, tillId)
+        flyttaPlaneradeKostnaderTillBostad(franId, tillId)
+    }
+
     @Query("SELECT COUNT(*) FROM bostad")
     suspend fun antalBostader(): Int
 

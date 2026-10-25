@@ -19,7 +19,6 @@ import se.tmconnect.husloggen.R
 fun ProDialog(
     onDismiss: () -> Unit,
     onKopPro: (Activity) -> Unit,
-    visaBostadsGrans: Boolean = false,
 ) {
     val context = LocalContext.current
     AlertDialog(
@@ -28,11 +27,7 @@ fun ProDialog(
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(text = stringResource(R.string.pro_forklaring))
-                Text(
-                    text = stringResource(
-                        if (visaBostadsGrans) R.string.pro_grans_bostader else R.string.pro_grans_nadd,
-                    ),
-                )
+                Text(text = stringResource(R.string.pro_grans_nadd))
             }
         },
         confirmButton = {
