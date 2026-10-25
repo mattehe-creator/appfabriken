@@ -22,14 +22,11 @@ class HaHandelseTest {
         
         val result = bygghaHandelseJson(forslag, original)
         
-        // Kontrollera att JSON innehåller rätt fält
-        val obj = org.json.JSONObject(result)
-        assertEquals("PAMINNELSE", obj.getString("typ"))
-        assertEquals("Ring tandläkaren", obj.getString("titel"))
-        assertEquals("2026-10-26T08:00:00Z", obj.getString("start"))
-        assertEquals(JSONObject.NULL, obj.get("slut"))
-        assertEquals(JSONObject.NULL, obj.get("plats"))
-        assertEquals("påminn mig", obj.getString("original"))
+        // Kontrollera att JSON innehåller rätt fält genom att analysera strängen
+        assertEquals(
+            """{"typ":"PAMINNELSE","titel":"Ring tandläkaren","start":"2026-10-26T08:00:00Z","slut":null,"plats":null,"original":"påminn mig"}""",
+            result
+        )
     }
     
     @Test
@@ -46,13 +43,10 @@ class HaHandelseTest {
         
         val result = bygghaHandelseJson(forslag, original)
         
-        // Kontrollera att JSON innehåller rätt fält
-        val obj = org.json.JSONObject(result)
-        assertEquals("ATT_GORA", obj.getString("typ"))
-        assertEquals("Säg \"hej\"\nigen", obj.getString("titel"))
-        assertEquals(JSONObject.NULL, obj.get("start"))
-        assertEquals(JSONObject.NULL, obj.get("slut"))
-        assertEquals("Hemmet", obj.getString("plats"))
-        assertEquals("köp mjölk", obj.getString("original"))
+        // Kontrollera att JSON innehåller rätt fält genom att analysera strängen
+        assertEquals(
+            """{"typ":"ATT_GORA","titel":"Säg \"hej\"\nigen","start":null,"slut":null,"plats":"Hemmet","original":"köp mjölk"}""",
+            result
+        )
     }
 }
