@@ -14,28 +14,40 @@ fun kodaForslag(id: Long, typ: String, rubrik: String): ByteArray {
     json.put("id", id)
     json.put("typ", typ)
     
-    var trimmadRubrik = rubrik.trim()
-    if (trimmadRubrik.length > 120) {
-        trimmadRubrik = trimmadRubrik.substring(0, 119) + "…"
+    val trimmadRubrik = rubrik.trim()
+    val avkortadRubrik = if (trimmadRubrik.length > 120) {
+        trimmadRubrik.substring(0, 119) + "…"
+    } else {
+        trimmadRubrik
     }
-    json.put("rubrik", trimmadRubrik)
+    
+    json.put("rubrik", avkortadRubrik)
     
     return json.toString().toByteArray(StandardCharsets.UTF_8)
 }
 
 fun avkodaForslag(data: ByteArray): ForslagMeddelande? {
-    val jsonString = data.toString(StandardCharsets.UTF_8)
+    if (data.isEmpty()) return null
+    
+    val jsonString = try {
+        data.toString(StandardCharsets.UTF_8)
+    } catch (e: Exception) {
+        return null
+    }
+    
     if (jsonString.isBlank()) return null
     
     return try {
         val json = JSONObject(jsonString)
-        val id = json.getLong("id")
-        val typ = json.getString("typ")
-        val rubrik = json.getString("rubrik")
         
-        if (id < 0 || typ.isBlank() || rubrik.isBlank()) {
-            return null
-        }
+        val id = json.getLong("id")
+        if (id < 0) return null
+        
+        val typ = json.getString("typ")
+        if (typ.isBlank()) return null
+        
+        val rubrik = json.getString("rubrik")
+        if (rubrik.isBlank()) return null
         
         ForslagMeddelande(id, typ, rubrik)
     } catch (e: Exception) {
