@@ -1,51 +1,78 @@
 package se.tmconnect.rostfangst.export
 
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import se.tmconnect.rostfangst.data.FangstRad
 import se.tmconnect.rostfangst.regler.ForslagTyp
-import java.time.Instant
-import java.time.ZoneOffset
+import kotlin.test.assertEquals
 
 class HistorikCsvTest {
-
+    
     @Test
-    fun `skriver ut tom lista som csv`() {
-        val rader = emptyList<FangstRad>()
-        val resultat = historikSomCsv(rader)
-        assert(resultat == "tid,typ,titel,original,plats,svar\n")
-    }
-
-    @Test
-    fun `skriver ut en rad som csv`() {
-        val rad = FangstRad(
-            id = 1,
-            originalText = "Hej världen",
-            typ = ForslagTyp.FORSLAG,
-            titel = "Forslagsrubrik",
-            plats = null,
-            svar = null,
-            skapadIso = "2023-01-01T00:00:00Z"
+    fun `skal generera korrekt csv med rubrikrad`() {
+        val fangstRader = listOf(
+            FangstRad(
+                id = 1,
+                originalText = "Test text",
+                typ = ForslagTyp.FORSLAG,
+                titel = "Testtitel",
+                plats = "Stockholm",
+                svar = "Godkänt",
+                skapadIso = "2023-01-01T10:00:00Z"
+            )
         )
-        val resultat = historikSomCsv(listOf(rad))
-        assert(resultat == """tid,typ,titel,original,plats,svar
-"2023-01-01T00:00:00Z",FORSLAG,Forslagsrubrik,Hej världen,,"
-""")
-    }
+        
+        val expected = """tid,typ,titel,original,plats,svar
+"2023-01-01T10:00:00Z",FORSLAG,"Testtitel","Test text","Stockholm","Godkänt"
 
+"""
+        
+        val result = historikSomCsv(fangstRader)
+        assertEquals(expected, result)
+    }
+    
     @Test
-    fun `skriver ut rad med kommatecken som csv`() {
-        val rad = FangstRad(
-            id = 1,
-            originalText = "Hej, världen",
-            typ = ForslagTyp.FORSLAG,
-            titel = "Forslagsrubrik",
-            plats = null,
-            svar = null,
-            skapadIso = "2023-01-01T00:00:00Z"
+    fun `skal citera fält med kommatecken`() {
+        val fangstRader = listOf(
+            FangstRad(
+                id = 1,
+                originalText = "Test text",
+                typ = ForslagTyp.FORSLAG,
+                titel = "Hej, världen",
+                plats = null,
+                svar = null,
+                skapadIso = "2023-01-01T10:00:00Z"
+            )
         )
-        val resultat = historikSomCsv(listOf(rad))
-        assert(resultat == """tid,typ,titel,original,plats,svar
-"2023-01-01T00:00:00Z",FORSLAG,Forslagsrubrik,"Hej, världen",,"
-""")
+        
+        val expected = """tid,typ,titel,original,plats,svar
+"2023-01-01T10:00:00Z",FORSLAG,"Hej, världen","Test text","",""
+
+"""
+        
+        val result = historikSomCsv(fangstRader)
+        assertEquals(expected, result)
+    }
+    
+    @Test
+    fun `skal hantera tomma fält`() {
+        val fangstRader = listOf(
+            FangstRad(
+                id = 1,
+                originalText = "",
+                typ = ForslagTyp.FORSLAG,
+                titel = "",
+                plats = null,
+                svar = null,
+                skapadIso = "2023-01-01T10:00:00Z"
+            )
+        )
+        
+        val expected = """tid,typ,titel,original,plats,svar
+"2023-01-01T10:00:00Z",FORSLAG,"","","","",""
+
+"""
+        
+        val result = historikSomCsv(fangstRader)
+        assertEquals(expected, result)
     }
 }
