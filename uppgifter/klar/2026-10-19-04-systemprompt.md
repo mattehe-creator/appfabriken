@@ -25,3 +25,5 @@ gradle :rostfangst:testDebugUnitTest --tests "*SystempromptTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-25 av Cursor (PR #719). Ersatt av 2026-10-19-04-systemprompt-f2.md
