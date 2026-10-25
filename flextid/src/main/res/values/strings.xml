@@ -222,4 +222,9 @@
     <string name="fel_rast_langre_an_arbetstid">The break is longer than the time between start and end.</string>
     <string name="export_ogiltig_period">Enter a year (1900–9999) and a month (1–12).</string>
     <string name="meddelande_export_fel">Could not save the file</string>
+    <string name="ledighet_period_knapp">Leave for a period</string>
+    <string name="ledighet_period_rubrik">Choose first and last day</string>
+    <string name="ledighet_inga_dagar">No working days without an entry in that period.</string>
+    <plurals name="ledighet_sparad"><item quantity="one">Saved %1$d day</item><item quantity="other">Saved %1$d days</item></plurals>
+    <plurals name="ledighet_forhandsvisning"><item quantity="one">%1$d working day gets an entry</item><item quantity="other">%1$d working days get an entry</item></plurals>
 </resources>

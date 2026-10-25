@@ -137,6 +137,18 @@ fun FlextidStartSkarm(
     val arbetstid by viewModel.arbetstid.collectAsState()
     val normaltidUndantag by viewModel.normaltidUndantag.collectAsState()
     var visaArsOversikt by rememberSaveable { mutableStateOf(false) }
+    var visaLedighetsperiod by rememberSaveable { mutableStateOf(false) }
+    if (visaLedighetsperiod) {
+        LedighetsPeriodDialog(
+            antalDagar = viewModel::antalLedighetsdagar,
+            typEtikett = { stringResource(dagTypStringRes(it)) },
+            onSpara = { fran, till, typ ->
+                viewModel.registreraLedighetsperiod(fran, till, typ)
+                visaLedighetsperiod = false
+            },
+            onStang = { visaLedighetsperiod = false },
+        )
+    }
 
     Scaffold(
         modifier = modifier,
@@ -257,6 +269,7 @@ fun FlextidStartSkarm(
                         onNasta = viewModel::nastaVecka,
                         onDennaVecka = viewModel::gaTillDennaVecka,
                         onDagClick = viewModel::oppnaDagFormular,
+                        onLedighetsperiod = { visaLedighetsperiod = true },
                     )
                 flik == FlextidFlik.INSTALLNINGAR ->
                     InstallningarInnehall(
@@ -489,6 +502,7 @@ internal fun VeckaInnehall(
     onDennaVecka: () -> Unit,
     onDagClick: (LocalDate) -> Unit,
     sammanfattning: PeriodSammanfattning? = null,
+    onLedighetsperiod: () -> Unit = {},
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val slut = veckaAnkar.plusDays(6)
@@ -558,6 +572,9 @@ internal fun VeckaInnehall(
         modifier = Modifier.tryckyta48(),
     ) {
         Text(delaRubrik)
+    }
+    OutlinedButton(onClick = onLedighetsperiod, modifier = Modifier.tryckyta48()) {
+        Text(stringResource(R.string.ledighet_period_knapp))
     }
     LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         items(rader) { rad ->

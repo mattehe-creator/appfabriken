@@ -274,6 +274,9 @@ class MainActivity : ComponentActivity() {
                             FlextidMeddelande.IngenInstempling -> getString(R.string.genvag_ingen_instempling)
                             FlextidMeddelande.SommartidOgiltig -> getString(R.string.sommartid_ogiltig)
                             FlextidMeddelande.ArbetsdagarSaknas -> getString(R.string.arbetsdagar_saknas)
+                            is FlextidMeddelande.LedighetSparad ->
+                                resources.getQuantityString(R.plurals.ledighet_sparad, meddelande.antal, meddelande.antal)
+                            FlextidMeddelande.LedighetIngaDagar -> getString(R.string.ledighet_inga_dagar)
                         }
                     snackbarHostState.showSnackbar(text)
                 }

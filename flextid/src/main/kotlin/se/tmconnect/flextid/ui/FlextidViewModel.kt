@@ -62,6 +62,7 @@ import se.tmconnect.flextid.regler.SommarNormaltid
 import se.tmconnect.flextid.regler.arbetadeMinuter
 import se.tmconnect.flextid.regler.arbetstid
 import se.tmconnect.flextid.regler.beraknaSaldo
+import se.tmconnect.flextid.regler.dagarForLedighetsperiod
 import se.tmconnect.flextid.regler.harArbetsdagar
 import se.tmconnect.flextid.regler.tolkaDagManadText
 import se.tmconnect.flextid.regler.tolkaLangdText
@@ -114,6 +115,10 @@ sealed interface FlextidMeddelande {
     data object SommartidOgiltig : FlextidMeddelande
 
     data object ArbetsdagarSaknas : FlextidMeddelande
+
+    data class LedighetSparad(val antal: Int) : FlextidMeddelande
+
+    data object LedighetIngaDagar : FlextidMeddelande
 }
 
 data class VeckaDagRad(
@@ -653,6 +658,30 @@ class FlextidViewModel(
                     forslagSlut = senasteForslag?.slut?.let { formateraTidKort(it) } ?: "",
                     forslagRast = senasteForslag?.rastMin?.toString() ?: "",
                 )
+        }
+    }
+
+    /** Hur många dagposter en ledighet för perioden skulle ge (för förhandsvisning i dialogen). */
+    suspend fun antalLedighetsdagar(fran: LocalDate, till: LocalDate): Int {
+        val befintliga = repository.hamtaAllaDagar().map { it.datum }.toSet()
+        return dagarForLedighetsperiod(fran, till, DagTyp.SEMESTER, hamtaArbetstid(repository.hamtaInstallning()), befintliga).size
+    }
+
+    /** Ledighet för en hel period: en post per arbetsdag som saknar post. */
+    fun registreraLedighetsperiod(fran: LocalDate, till: LocalDate, typ: DagTyp) {
+        viewModelScope.launch {
+            val inst = repository.hamtaInstallning()
+            val at = hamtaArbetstid(inst)
+            val befintliga = repository.hamtaAllaDagar().map { it.datum }.toSet()
+            val dagar = dagarForLedighetsperiod(fran, till, typ, at, befintliga)
+            when (val r = repository.sparaLedighetsperiod(dagar, proKalla.arPro.value)) {
+                is FlextidRepository.LedighetsPeriodResult.Sparat -> _meddelanden.emit(FlextidMeddelande.LedighetSparad(r.antal))
+                FlextidRepository.LedighetsPeriodResult.IngaDagar -> _meddelanden.emit(FlextidMeddelande.LedighetIngaDagar)
+                is FlextidRepository.LedighetsPeriodResult.GransUtanPro -> {
+                    visaProDialog()
+                    _meddelanden.emit(FlextidMeddelande.GransUtanPro)
+                }
+            }
         }
     }
 

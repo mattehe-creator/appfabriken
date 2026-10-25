@@ -74,6 +74,27 @@ class FlextidRepository(private val dao: FlextidDao) {
         data object GransUtanPro : FyllVanligDagResult
     }
 
+    sealed interface LedighetsPeriodResult {
+        data class Sparat(val antal: Int) : LedighetsPeriodResult
+
+        /** Inga arbetsdagar utan post i perioden. */
+        data object IngaDagar : LedighetsPeriodResult
+
+        /** Utan Pro ryms bara [ryms] nya poster; inget sparades. */
+        data class GransUtanPro(val ryms: Int) : LedighetsPeriodResult
+    }
+
+    /** Sparar [dagar] (från `dagarForLedighetsperiod`) i en transaktion, eller inget alls. */
+    suspend fun sparaLedighetsperiod(dagar: List<Dag>, arPro: Boolean): LedighetsPeriodResult {
+        if (dagar.isEmpty()) return LedighetsPeriodResult.IngaDagar
+        if (!arPro) {
+            val ryms = (se.tmconnect.flextid.regler.GRATIS_MAX_DAGPOSTER - dao.antalDagar()).coerceAtLeast(0)
+            if (dagar.size > ryms) return LedighetsPeriodResult.GransUtanPro(ryms)
+        }
+        dao.sparaDagar(dagar)
+        return LedighetsPeriodResult.Sparat(dagar.size)
+    }
+
     sealed interface GenvagStamplaUtResult {
         data object Sparat : GenvagStamplaUtResult
 

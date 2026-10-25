@@ -50,6 +50,12 @@ interface FlextidDao {
     @Update
     suspend fun uppdateraInstallning(installning: Installning)
 
+    /** Flera dagar på en gång (ledighet för en period): allt eller inget. */
+    @Transaction
+    suspend fun sparaDagar(dagar: List<Dag>) {
+        dagar.forEach { sparaDag(it) }
+    }
+
     /** Import: allt eller inget, så att ett avbrott inte lämnar en tom databas. */
     @Transaction
     suspend fun ersattAllData(dagar: List<Dag>, installning: Installning) {
