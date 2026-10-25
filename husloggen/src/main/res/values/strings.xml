@@ -181,6 +181,9 @@
     <string name="bostad_spara">Save</string>
     <string name="bostad_ta_bort">Remove home</string>
     <string name="bostad_ta_bort_bekraftelse">Remove %1$s and %2$d items linked to it?</string>
+    <string name="bostad_ta_bort_flytta_val">Move linked items to another home</string>
+    <string name="bostad_ta_bort_radera_val">Delete all linked content</string>
+    <string name="bostad_ta_bort_radera_varning">All linked entries will be permanently deleted. This cannot be undone.</string>
     <string name="bostad_sista_gar_inte">At least one home must remain</string>
     <string name="historik_rubrik_med_bostad">%1$s – %2$s</string>
     <string name="uppgift_gjord_post_ej_sparad">Task moved but entry not saved (Pro required)</string>

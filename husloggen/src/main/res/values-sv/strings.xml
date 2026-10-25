@@ -181,6 +181,9 @@
     <string name="bostad_spara">Spara</string>
     <string name="bostad_ta_bort">Ta bort bostad</string>
     <string name="bostad_ta_bort_bekraftelse">Ta bort %1$s och %2$d tillhörande poster?</string>
+    <string name="bostad_ta_bort_flytta_val">Flytta till annan bostad</string>
+    <string name="bostad_ta_bort_radera_val">Radera allt innehåll</string>
+    <string name="bostad_ta_bort_radera_varning">Alla kopplade poster raderas permanent. Det går inte att ångra.</string>
     <string name="bostad_sista_gar_inte">Minst en bostad måste finnas kvar</string>
     <string name="historik_rubrik_med_bostad">%1$s – %2$s</string>
     <string name="uppgift_gjord_post_ej_sparad">Uppgiften flyttades men posten sparades inte (Pro krävs)</string>

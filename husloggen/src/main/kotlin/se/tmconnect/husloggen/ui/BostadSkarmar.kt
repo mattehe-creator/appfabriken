@@ -20,6 +20,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import se.tmconnect.husloggen.R
 import se.tmconnect.husloggen.data.Bostad
+import se.tmconnect.husloggen.data.BostadBorttagningSatt
 
 @Composable
 fun BostadValjareRad(
@@ -92,7 +94,13 @@ fun BostaderInstallningSektion(
     onValjBostad: (Long) -> Unit,
     onSparaNyBostad: (String, String, String, (Boolean) -> Unit) -> Unit,
     onUppdateraBostad: (Bostad) -> Unit,
-    onTaBortBostad: (Bostad, onSista: () -> Unit, onBorttagen: () -> Unit) -> Unit,
+    onTaBortBostad: (
+        Bostad,
+        BostadBorttagningSatt,
+        flyttTillId: Long?,
+        onSista: () -> Unit,
+        onBorttagen: () -> Unit,
+    ) -> Unit,
     hamtaRaderingInfo: suspend (Long) -> Int,
     modifier: Modifier = Modifier,
 ) {
@@ -193,27 +201,126 @@ fun BostaderInstallningSektion(
         )
     }
     bekraftaBorttagning?.let { bostad ->
+        var valdSatt by remember(bostad.id) { mutableStateOf<BostadBorttagningSatt?>(null) }
+        var valdFlyttTillId by remember(bostad.id) { mutableStateOf<Long?>(null) }
+        LaunchedEffect(bostad.id, bekraftAntal) {
+            valdSatt = null
+            valdFlyttTillId = null
+        }
+        val andraBostader = remember(bostad.id, bostader) {
+            bostader.filter { it.id != bostad.id }
+        }
+        val bekraftelseEnabled =
+            when (valdSatt) {
+                BostadBorttagningSatt.FLYTTA_TILL -> valdFlyttTillId != null
+                BostadBorttagningSatt.RADERA_INNEHALL -> true
+                null -> bekraftAntal == 0
+            }
         AlertDialog(
             onDismissRequest = { bekraftaBorttagning = null },
             title = { Text(text = stringResource(R.string.bostad_ta_bort)) },
             text = {
-                Text(
-                    text = stringResource(
-                        R.string.bostad_ta_bort_bekraftelse,
-                        bostad.namn,
-                        bekraftAntal,
-                    ),
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = stringResource(
+                            R.string.bostad_ta_bort_bekraftelse,
+                            bostad.namn,
+                            bekraftAntal,
+                        ),
+                    )
+                    if (bekraftAntal > 0) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 48.dp)
+                                .clickable(role = Role.RadioButton) {
+                                    valdSatt = BostadBorttagningSatt.FLYTTA_TILL
+                                },
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(
+                                selected = valdSatt == BostadBorttagningSatt.FLYTTA_TILL,
+                                onClick = null,
+                            )
+                            Text(
+                                text = stringResource(R.string.bostad_ta_bort_flytta_val),
+                                modifier = Modifier.padding(start = 8.dp),
+                            )
+                        }
+                        if (valdSatt == BostadBorttagningSatt.FLYTTA_TILL) {
+                            andraBostader.forEach { mal ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .heightIn(min = 48.dp)
+                                        .clickable(role = Role.RadioButton) {
+                                            valdFlyttTillId = mal.id
+                                        },
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    RadioButton(
+                                        selected = valdFlyttTillId == mal.id,
+                                        onClick = null,
+                                    )
+                                    Text(
+                                        text = mal.namn,
+                                        modifier = Modifier.padding(start = 8.dp),
+                                    )
+                                }
+                            }
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 48.dp)
+                                .clickable(role = Role.RadioButton) {
+                                    valdSatt = BostadBorttagningSatt.RADERA_INNEHALL
+                                },
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(
+                                selected = valdSatt == BostadBorttagningSatt.RADERA_INNEHALL,
+                                onClick = null,
+                            )
+                            Text(
+                                text = stringResource(R.string.bostad_ta_bort_radera_val),
+                                modifier = Modifier.padding(start = 8.dp),
+                            )
+                        }
+                        if (valdSatt == BostadBorttagningSatt.RADERA_INNEHALL) {
+                            Text(
+                                text = stringResource(R.string.bostad_ta_bort_radera_varning),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                        }
+                    }
+                }
             },
             confirmButton = {
                 Button(
                     onClick = {
+                        val satt =
+                            if (bekraftAntal == 0) {
+                                BostadBorttagningSatt.RADERA_INNEHALL
+                            } else {
+                                checkNotNull(valdSatt)
+                            }
+                        val flyttId =
+                            if (satt == BostadBorttagningSatt.FLYTTA_TILL) {
+                                checkNotNull(valdFlyttTillId)
+                            } else {
+                                null
+                            }
                         onTaBortBostad(
                             bostad,
+                            satt,
+                            flyttId,
                             { visaSistaVarning = true },
                             { bekraftaBorttagning = null },
                         )
                     },
+                    enabled = bekraftelseEnabled,
                     modifier = Modifier.heightIn(min = 48.dp),
                 ) {
                     Text(text = stringResource(R.string.bostad_ta_bort))
