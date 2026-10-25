@@ -163,7 +163,7 @@
     <!-- Pro -->
     <string name="pro">Pro</string>
     <string name="pro_las_upp">Unlock Pro</string>
-    <string name="pro_forklaring">The free version has every feature, up to 15 log entries and 3 homes. Pro is a one-time purchase without subscription that removes the limits. Tasks, reminders, meters and documents are always unlimited, and export, PDF and backup are always free.</string>
+    <string name="pro_forklaring">The free version has every feature, up to 15 log entries. Pro is a one-time purchase without subscription that removes the limit. Tasks, reminders, meters and documents are always unlimited, and export, PDF and backup are always free.</string>
     <string name="pro_du_har">You have Pro</string>
     <string name="pro_kop_misslyckades">The purchase could not be completed. Try again.</string>
     <string name="pro_grans_nadd">Limit reached: 15 entries</string>
