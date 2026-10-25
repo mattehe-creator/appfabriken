@@ -1,12 +1,8 @@
 package se.tmconnect.rostfangst.wear
 
-import org.json.JSONObject
 import org.junit.Assert.*
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class ForslagMeddelandeTest {
 
     @Test
@@ -35,7 +31,7 @@ class ForslagMeddelandeTest {
         
         assertNotNull(forslag)
         assertTrue(forslag!!.rubrik.length <= 120)
-        assertTrue(forslag.rubrik.endsWith("…"))
+        assertTrue(forslag.rrubrik.endsWith("…"))
     }
 
     @Test

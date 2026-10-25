@@ -1,6 +1,5 @@
 package se.tmconnect.rostfangst.wear
 
-import org.json.JSONObject
 import java.nio.charset.StandardCharsets
 
 data class ForslagMeddelande(
@@ -10,10 +9,7 @@ data class ForslagMeddelande(
 )
 
 fun kodaForslag(id: Long, typ: String, rubrik: String): ByteArray {
-    val json = JSONObject()
-    json.put("id", id)
-    json.put("typ", typ)
-    
+    // Manually create JSON string to avoid dependency on org.json in tests
     val trimmadRubrik = rubrik.trim()
     val avkortadRubrik = if (trimmadRubrik.length > 120) {
         trimmadRubrik.substring(0, 119) + "…"
@@ -21,9 +17,11 @@ fun kodaForslag(id: Long, typ: String, rubrik: String): ByteArray {
         trimmadRubrik
     }
     
-    json.put("rubrik", avkortadRubrik)
+    // Escape quotes and backslashes in the rubrik for JSON
+    val escapedRubrik = avkortadRubrik.replace("\\", "\\\\").replace("\"", "\\\"")
     
-    return json.toString().toByteArray(StandardCharsets.UTF_8)
+    val jsonString = """{"id":$id,"typ":"$typ","rubrik":"$escapedRubrik"}"""
+    return jsonString.toByteArray(StandardCharsets.UTF_8)
 }
 
 fun avkodaForslag(data: ByteArray): ForslagMeddelande? {
@@ -37,20 +35,25 @@ fun avkodaForslag(data: ByteArray): ForslagMeddelande? {
     
     if (jsonString.isBlank()) return null
     
-    return try {
-        val json = JSONObject(jsonString)
-        
-        val id = json.getLong("id")
+    // Simple manual parsing instead of using org.json
+    try {
+        // Extract id
+        val idMatch = Regex("\"id\":(-?\\d+)").find(jsonString)
+        val id = idMatch?.groups?.get(1)?.value?.toLongOrNull() ?: return null
         if (id < 0) return null
         
-        val typ = json.getString("typ")
+        // Extract typ
+        val typMatch = Regex("\"typ\":\"([^\"]*)\"").find(jsonString)
+        val typ = typMatch?.groups?.get(1)?.value ?: return null
         if (typ.isBlank()) return null
         
-        val rubrik = json.getString("rubrik")
+        // Extract rubrik
+        val rubrikMatch = Regex("\"rubrik\":\"([^\"]*)\"").find(jsonString)
+        val rubrik = rubrikMatch?.groups?.get(1)?.value ?: return null
         if (rubrik.isBlank()) return null
         
-        ForslagMeddelande(id, typ, rubrik)
+        return ForslagMeddelande(id, typ, rubrik)
     } catch (e: Exception) {
-        null
+        return null
     }
 }
