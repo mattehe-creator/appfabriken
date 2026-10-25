@@ -40,3 +40,5 @@ gradle :husloggen:testDebugUnitTest --tests "*HusViewModelExportTest*"
 - Ändra databas eller repository.
 - Lägga till beroenden.
 - Ändra andra filer.
+
+utfall: godkänd 2026-10-25 (återställde trasiga ViewModel-/testfiler från main, implementerade filtreraPaBostad och exportHistorikCsvTarBaraMedValdBostad)
