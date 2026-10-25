@@ -1,0 +1,38 @@
+# Kontrollerar att PowerShell-skripten i verktyg/ går att tolka (syntax), innan de når
+# Mattias dator. kor-alla återställer till origin/main före varje uppgift, så ett trasigt
+# skript på main stoppar hela den lokala kön. Ändras bara av Claude (CLAUDE.md punkt 11).
+name: Skript
+
+on:
+  push:
+    paths: ["verktyg/**.ps1", ".github/workflows/skript.yml"]
+  pull_request:
+    paths: ["verktyg/**.ps1", ".github/workflows/skript.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tolka:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: Tolka PowerShell-skript
+        shell: pwsh
+        run: |
+          $fel = 0
+          foreach ($fil in Get-ChildItem -Path verktyg -Filter *.ps1 -Recurse) {
+            $tokens = $null; $problem = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($fil.FullName, [ref]$tokens, [ref]$problem) | Out-Null
+            if ($problem.Count -gt 0) {
+              foreach ($p in $problem) {
+                Write-Host "::error file=verktyg/$($fil.Name),line=$($p.Extent.StartLineNumber)::$($p.Message)"
+              }
+              $fel++
+            } else {
+              Write-Host "OK $($fil.Name)"
+            }
+          }
+          if ($fel -gt 0) { exit 1 }
