@@ -1,7 +1,13 @@
 # Uppgift: Kodning av förslagsmeddelande (JSON)
 
+## Vad som saknades
+- Filen `ForslagMeddelande.kt` står inte under "Ändra bara dessa filer" (fel sökväg eller fel fil).
+- Filen `ForslagMeddelandeTest.kt` står inte under "Ändra bara dessa filer" (fel sökväg eller fel fil).
+- Filen `rostfangst/src/main/kotlin/se/tmconnect/rostfangst/wear/ForslagMeddelande.kt` är tom.
+- Filen `rostfangst/src/test/kotlin/se/tmconnect/rostfangst/wear/ForslagMeddelandeTest.kt` är tom.
+
 uppdrag: uppdrag/vantar/2026-10-25-rostfangst-klocka.md
-försök: 1
+försök: 2
 beror-på: 2026-10-25-15-wear-sokvagar-f2.md
 
 ## Ändra bara dessa filer
