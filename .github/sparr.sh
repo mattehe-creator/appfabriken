@@ -17,7 +17,7 @@ uppg="uppgifter/pagar/$namn.md"
 # En fråga från den lokala modellen kräver omdöme.
 [ -f FRAGA.md ] && { echo "FRAGA.md finns."; echo KLAR_FOR_GRANSKNING; exit 0; }
 
-git fetch -q origin main
+git fetch -q --depth=200 origin main 2>/dev/null || git fetch -q origin main
 bas=$(git merge-base origin/main HEAD)
 andrade=$(git diff --name-only "$bas" HEAD | grep -vE '^(uppgifter|granskning)/' || true)
 tillatna=$(awk '/^## Ändra bara dessa filer/{f=1;next} /^## /{f=0} f && /^- /' "$uppg" \
@@ -33,9 +33,12 @@ while IFS= read -r f; do
   [ -z "$f" ] && continue
   if [ ! -f "$f" ]; then fel+=("Filen \`$f\` finns inte.")
   elif [ ! -s "$f" ]; then fel+=("Filen \`$f\` är tom.")
-  elif git diff --quiet "$bas" HEAD -- "$f"; then fel+=("Filen \`$f\` är inte ändrad.")
   fi
 done <<<"$tillatna"
+# Uppgifter som skriver tester till befintlig kod listar ofta även koden; det räcker att något av det tillåtna har ändrats.
+if [ -n "$andrade" ] && ! grep -qxFf <(printf '%s\n' "$tillatna") <<<"$andrade"; then
+  fel+=("Ingen av filerna under \"Ändra bara dessa filer\" är ändrad.")
+fi
 rader=$(git diff --numstat "$bas" HEAD -- $andrade 2>/dev/null | awk '{s+=$1+$2} END{print s+0}')
 [ "$rader" -gt 250 ] && fel+=("$rader ändrade rader, gränsen är cirka 150.")
 if git diff "$bas" HEAD -- $andrade | grep -E '^\+' | grep -qE 'uses-permission|android\.permission\.INTERNET'; then
@@ -44,7 +47,7 @@ fi
 if git diff "$bas" HEAD -- $andrade | grep -E '^\+' | grep -qE '^\+\s*(implementation|api|ksp|kapt|testImplementation)\('; then
   fel+=("Ett beroende har lagts till.")
 fi
-[ "$BYGGE" = "failure" ] && fel+=("Bygget eller testerna är röda. Kör testet i uppgiften och rätta tills det är grönt.")
+[ "$BYGGE" = "failure" ] && fel+=("Bygget eller testerna är röda. Kör testet i uppgiften och rätta tills det är grönt. Testerna i appmodulerna använder JUnit 4: import org.junit.Test och import org.junit.Assert.assertEquals (eller assertTrue, assertFalse), inte kotlin.test.")
 
 if [ ${#fel[@]} -gt 0 ]; then
   printf '%s\n' "${fel[@]}"
