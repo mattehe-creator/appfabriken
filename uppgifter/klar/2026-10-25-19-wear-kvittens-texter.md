@@ -31,3 +31,5 @@ gradle :rostfangst:testDebugUnitTest --tests "*KvittensTexterTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-25 av Claude (reservläge, inget rättat)
