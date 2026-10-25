@@ -47,3 +47,5 @@ gradle :husloggen:testDebugUnitTest --tests "*ForegaendeAvlasningTest"
 - Ändra `AvlasningValidering.kt`. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Lägga till beroenden.
 - Använd `kotlin.test`; använd JUnit 4 (`org.junit`).
+
+utfall: godkänd 2026-10-24 (Cursor skapade hela ForegaendeAvlasningTest.kt; lokal modell levererade ingen testkod)
