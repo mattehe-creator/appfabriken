@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -93,7 +94,7 @@ fun BostaderInstallningSektion(
     onValjBostad: (Long) -> Unit,
     onSparaNyBostad: (String, String, String, (Boolean) -> Unit) -> Unit,
     onUppdateraBostad: (Bostad) -> Unit,
-    onTaBortBostad: (Bostad, BostadBorttagningSatt, Long?, () -> Unit, () -> Unit) -> Unit,
+    onTaBortBostad: (Bostad, BostadBorttagningSatt, flyttTillId: Long?, onSista: () -> Unit, onBorttagen: () -> Unit) -> Unit,
     hamtaRaderingInfo: suspend (Long) -> Int,
     modifier: Modifier = Modifier,
 ) {
@@ -105,7 +106,7 @@ fun BostaderInstallningSektion(
     var bekraftaBorttagning by remember { mutableStateOf<Bostad?>(null) }
     var bekraftAntal by remember { mutableStateOf(0) }
     var visaFlyttDialog by remember { mutableStateOf<Bostad?>(null) }
-    var valdFlyttTillId by remember { mutableStateOf<Long?>(null) }
+    var valdFlyttTillId by remember { mutableIntStateOf(-1) }
     val scope = rememberCoroutineScope()
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -195,24 +196,15 @@ fun BostaderInstallningSektion(
             },
         )
     }
+    
+    // Visa flytt-dialog om användaren har valt att ta bort en bostad med poster
     bekraftaBorttagning?.let { bostad ->
-        if (bekraftAntal > 0) {
-            // Visa flytt-dialog
-            visaFlyttDialog = bostad
-        } else {
-            // Visa enkel bekräftelse
+        if (bekraftAntal == 0) {
+            // Enkel bekräftelse för bostäder utan poster
             AlertDialog(
                 onDismissRequest = { bekraftaBorttagning = null },
                 title = { Text(text = stringResource(R.string.bostad_ta_bort)) },
-                text = {
-                    Text(
-                        text = stringResource(
-                            R.string.bostad_ta_bort_bekraftelse,
-                            bostad.namn,
-                            bekraftAntal,
-                        ),
-                    )
-                },
+                text = { Text(text = stringResource(R.string.bostad_ta_bort_bekraftelse, bostad.namn, bekraftAntal)) },
                 confirmButton = {
                     Button(
                         onClick = {
@@ -235,56 +227,89 @@ fun BostaderInstallningSektion(
                     }
                 },
             )
+        } else {
+            // Dialog för bostäder med poster
+            visaFlyttDialog = bostad
         }
     }
     
+    // Visa flytt-dialog om användaren har valt att ta bort en bostad med poster
     visaFlyttDialog?.let { bostad ->
+        var valdSatt by remember { mutableStateOf<BostadBorttagningSatt?>(null) }
         AlertDialog(
             onDismissRequest = { visaFlyttDialog = null },
             title = { Text(text = stringResource(R.string.bostad_ta_bort)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = stringResource(
-                            R.string.bostad_ta_bort_flytt_bekraftelse,
-                            bostad.namn,
-                            bekraftAntal,
-                        ),
-                    )
-                    Text(text = stringResource(R.string.bostad_ta_bort_flytt_varning))
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        bostader.filter { it.id != bostad.id }.forEach { annanBostad ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .heightIn(min = 48.dp)
-                                    .clickable { valdFlyttTillId = annanBostad.id },
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                RadioButton(
-                                    selected = valdFlyttTillId == annanBostad.id,
-                                    onClick = null,
-                                )
-                                Text(text = annanBostad.namn, modifier = Modifier.padding(start = 8.dp))
+                    Text(text = stringResource(R.string.bostad_ta_bort_bekraftelse, bostad.namn, bekraftAntal))
+                    Text(text = stringResource(R.string.bostad_ta_bort_forklaring), style = MaterialTheme.typography.bodySmall)
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        RadioButton(
+                            selected = valdSatt == BostadBorttagningSatt.FLYTTA_TILL,
+                            onClick = { valdSatt = BostadBorttagningSatt.FLYTTA_TILL },
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                        Text(text = stringResource(R.string.bostad_ta_bort_flytta_till), style = MaterialTheme.typography.bodyMedium)
+                        
+                        if (valdSatt == BostadBorttagningSatt.FLYTTA_TILL) {
+                            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                Text(text = stringResource(R.string.bostad_ta_bort_valj_mal), style = MaterialTheme.typography.bodySmall)
+                                bostader.filter { it.id != bostad.id }.forEach { malBostad ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .heightIn(min = 48.dp)
+                                            .clickable { valdFlyttTillId = malBostad.id.toInt() },
+                                        verticalAlignment = Alignment.CenterVertically,
+                                    ) {
+                                        RadioButton(
+                                            selected = valdFlyttTillId == malBostad.id.toInt(),
+                                            onClick = null,
+                                        )
+                                        Text(text = malBostad.namn, modifier = Modifier.padding(start = 8.dp))
+                                    }
+                                }
                             }
                         }
+                        
+                        RadioButton(
+                            selected = valdSatt == BostadBorttagningSatt.RADERA_INNEHALL,
+                            onClick = { valdSatt = BostadBorttagningSatt.RADERA_INNEHALL },
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                        Text(text = stringResource(R.string.bostad_ta_bort_radera_allt), style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        if (valdFlyttTillId != null) {
-                            onTaBortBostad(
-                                bostad,
-                                BostadBorttagningSatt.FLYTTA_TILL,
-                                valdFlyttTillId,
-                                { visaSistaVarning = true },
-                                { visaFlyttDialog = null },
-                            )
+                        when (valdSatt) {
+                            BostadBorttagningSatt.FLYTTA_TILL -> {
+                                if (valdFlyttTillId >= 0) {
+                                    onTaBortBostad(
+                                        bostad,
+                                        BostadBorttagningSatt.FLYTTA_TILL,
+                                        valdFlyttTillId.toLong(),
+                                        { visaSistaVarning = true },
+                                        { visaFlyttDialog = null },
+                                    )
+                                }
+                            }
+                            BostadBorttagningSatt.RADERA_INNEHALL -> {
+                                onTaBortBostad(
+                                    bostad,
+                                    BostadBorttagningSatt.RADERA_INNEHALL,
+                                    null,
+                                    { visaSistaVarning = true },
+                                    { visaFlyttDialog = null },
+                                )
+                            }
+                            else -> {}
                         }
                     },
-                    enabled = valdFlyttTillId != null,
+                    enabled = valdSatt != null && 
+                        (valdSatt != BostadBorttagningSatt.FLYTTA_TILL || valdFlyttTillId >= 0),
                     modifier = Modifier.heightIn(min = 48.dp),
                 ) {
                     Text(text = stringResource(R.string.bostad_ta_bort))

@@ -87,7 +87,7 @@ fun HusStartSkarm(
     onValjBostad: (Long) -> Unit = {},
     onSparaNyBostad: (String, String, String, (Boolean) -> Unit) -> Unit = { _, _, _, _ -> },
     onUppdateraBostad: (Bostad) -> Unit = {},
-    onTaBortBostad: (Bostad, BostadBorttagningSatt, Long?, () -> Unit, () -> Unit) -> Unit = { _, _, _, _, _ -> },
+    onTaBortBostad: (Bostad, BostadBorttagningSatt, flyttTillId: Long?, onSista: () -> Unit, onBorttagen: () -> Unit) -> Unit = { _, _, _, _, _ -> },
     hamtaRaderingInfo: suspend (Long) -> Int = { 0 },
     onInstallningar: () -> Unit,
     onNyUppgift: () -> Unit,
@@ -763,3 +763,4 @@ private fun postTypKortRes(typ: PostTyp): Int =
         PostTyp.REPARATION -> R.string.logg_filter_reparation
         PostTyp.OMBYGGNAD -> R.string.logg_filter_ombyggnad
     }
+}

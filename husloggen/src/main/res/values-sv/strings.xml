@@ -6,9 +6,9 @@
     <string name="flik_matare">Mätare</string>
     <string name="flik_plan">Plan</string>
     <string name="fab_ny_planerad_kostnad">Planerad kostnad</string>
-    <string name="tom_plan">Inga planerade kostnader ännu. Lägg till saker du förväntar dig betala för, såsom ett nytt tak eller vattenkoker, grupperade efter år.</string>
+    <string name="tom_plan">Inga planerade kostnader ännu. Lägg till saker du förväntar dig betala för, såsom ett nytt tak eller värme, grupperat efter år.</string>
     <string name="plan_ar_summa">Totalt: %1$s</string>
-    <string name="plan_genomford">Färdig</string>
+    <string name="plan_genomford">Klar</string>
     <string name="ny_planerad_kostnad_rubrik">Planerad kostnad</string>
     <string name="andra_planerad_kostnad_rubrik">Redigera planerad kostnad</string>
     <string name="falt_plan_titel">Titel</string>
@@ -26,19 +26,19 @@
     <string name="post_typ_reparation">Reparation</string>
     <string name="post_typ_ombyggnad">Ny byggnad, utbyggnad eller omvandling</string>
     <string name="status_forsenad">Försenad</string>
-    <string name="status_snart">Påminnelse snart</string>
+    <string name="status_snart">Snart förfallen</string>
     <string name="status_senare">Senare</string>
     <string name="fab_ny_uppgift">Ny uppgift</string>
     <string name="fab_ny_post">Ny post</string>
     <string name="fab_ny_matare">Ny mätare</string>
-    <string name="fab_ny_avlasning">Ny avläsning</string>
+    <string name="fab_ny_avlasning">Ny läsning</string>
     <string name="tom_matare">Inga mätare ännu. Lägg till el, vatten, uppvärmning eller andra läsningar du följer själv.</string>
-    <string name="tom_avlasningar">Inga avläsningar ännu.</string>
+    <string name="tom_avlasningar">Inga läsningar ännu.</string>
     <string name="ny_matare_rubrik">Ny mätare</string>
     <string name="andra_matare_rubrik">Redigera mätare</string>
-    <string name="ny_avlasning_rubrik">Ny avläsning</string>
+    <string name="ny_avlasning_rubrik">Ny läsning</string>
     <string name="falt_enhet">Enhet</string>
-    <string name="falt_avlasning_varde">Avläsning</string>
+    <string name="falt_avlasning_varde">Läsning</string>
     <string name="falt_avlasning_varde_hjalp">Använd komma för decimaler, till exempel 1250,5 %1$s</string>
     <string name="falt_forbrukning">Förbrukning sedan föregående</string>
     <string name="fel_matare_namn_saknas">Ange ett namn</string>
@@ -48,20 +48,20 @@
     <string name="falt_matare_pris_ore_hjalp">Valfritt. Exempel: 150 öre per kWh. Används för att uppskatta kostnad från förbrukning.</string>
     <string name="matare_pris_etikett">Pris: %1$s öre per %2$s</string>
     <string name="avlasning_kostnad_rad">Kostnad: %1$s</string>
-    <string name="fel_avlasning_varde">Ogiltig avläsning</string>
-    <string name="fel_avlasning_datum">Det finns redan en avläsning på detta datum</string>
+    <string name="fel_avlasning_varde">Ogiltig läsning</string>
+    <string name="fel_avlasning_datum">Det finns redan en läsning på detta datum</string>
     <string name="matare_enhet_etikett">Enhet: %1$s</string>
-    <string name="matare_avlasningar_rubrik">Avläsningar</string>
+    <string name="matare_avlasningar_rubrik">Läsningar</string>
     <string name="matare_arsforbrukning_rubrik">Förbrukning per kalenderår</string>
-    <string name="matare_prognos">Prognos för %1$s: ungefär %2$s %3$s, baserat på avläsningar hittills.</string>
+    <string name="matare_prognos">Prognos för %1$s: ungefär %2$s %3$s, baserat på läsningar hittills.</string>
     <string name="matare_arsforbrukning_rad">%1$s: %2$s %3$s</string>
     <string name="avlasning_varde_rad">%1$s %2$s</string>
     <string name="avlasning_forbrukning_rad">+%1$s %2$s sedan föregående</string>
-    <string name="avlasning_lagre_varde_titel">Lägre än föregående avläsning?</string>
-    <string name="avlasning_lagre_varde_text">Värdet är lägre än föregående avläsning. Har mätaren nollställts eller ersatts?</string>
+    <string name="avlasning_lagre_varde_titel">Lägre än föregående läsning?</string>
+    <string name="avlasning_lagre_varde_text">Värdet är lägre än föregående läsning. Har mätaren nollställts eller ersatts?</string>
     <string name="spara_anda">Spara ändå</string>
     <string name="bekrafta_ta_bort_matare_titel">Ta bort mätare?</string>
-    <string name="bekrafta_ta_bort_matare_text">Mätaren och alla dess avläsningar kommer att tas bort permanent.</string>
+    <string name="bekrafta_ta_bort_matare_text">Mätaren och alla dess läsningar kommer att tas bort permanent.</string>
     <string name="ta_bort_matare">Ta bort mätare</string>
     <string name="export_avlasning_csv">Exportera CSV</string>
     <string name="matare_forslag_rubrik">Förslag</string>
@@ -69,7 +69,7 @@
     <string name="matare_forslag_el">El</string>
     <string name="matare_forslag_vatten">Vatten</string>
     <string name="matare_forslag_fjarrvarme">Fjärrvärme</string>
-    <string name="matare_forslag_olja">Värmepellets</string>
+    <string name="matare_forslag_olja">Värmeflaska</string>
     <string name="matare_forslag_pellets">Pellets</string>
     <string name="matare_enhet_kwh">kWh</string>
     <string name="matare_enhet_kubik">m³</string>
@@ -88,10 +88,10 @@
     <string name="falt_uppgift">Länkad uppgift</string>
     <string name="ingen_uppgift">Ingen uppgift</string>
     <string name="fel_vad_saknas">Ange vad som gjorts</string>
-    <string name="fel_datum_framtid">Datum får inte vara i framtiden</string>
+    <string name="fel_datum_framtid">Datum kan inte vara i framtiden</string>
     <string name="fel_belopp_ogiltigt">Ogiltigt belopp</string>
     <string name="fel_avdrag_ogiltigt">Ogiltigt avdrag</string>
-    <string name="fel_avdrag_for_stort">Avdrag får inte överstiga beloppet</string>
+    <string name="fel_avdrag_for_stort">Avdrag kan inte överstiga beloppet</string>
     <string name="bekrafta_ta_bort_post_titel">Ta bort post?</string>
     <string name="bekrafta_ta_bort_post_text">Denna post kommer att tas bort permanent.</string>
     <string name="knapp_andra">Redigera</string>
@@ -116,8 +116,8 @@
     <string name="fel_namn_saknas">Ange ett namn</string>
     <string name="fel_intervall_saknas">Ange intervall i månader</string>
     <string name="fel_intervall_ogiltigt">Intervall måste vara 1–120 månader</string>
-    <string name="markera_gjord">Markera som färdig</string>
-    <string name="uppgift_markerad_gjord">Uppgift markerad som färdig</string>
+    <string name="markera_gjord">Markera som klar</string>
+    <string name="uppgift_markerad_gjord">Uppgift markerad som klar</string>
     <string name="bekrafta_ta_bort_uppgift_titel">Ta bort uppgift?</string>
     <string name="bekrafta_ta_bort_uppgift_text">Uppgiften kommer att tas bort. Loggposter behålls.</string>
     <string name="ja_ta_bort">Ja, ta bort</string>
@@ -127,7 +127,7 @@
     <string name="forslag_byt_filter_ventilation">Byt ventilationsskylt</string>
     <string name="forslag_rensa_golvbrunn">Rengör golvsug</string>
     <string name="forslag_kontrollera_tak">Inspektera taket</string>
-    <string name="forslag_sotning">Skälväggsskrapa</string>
+    <string name="forslag_sotning">Sotning</string>
     <string name="forslag_service_varmepump">Värmepumpsunderhåll</string>
     <string name="forslag_service_ventilation">Ventilationsunderhåll</string>
     <plurals name="intervall_manader">
@@ -148,7 +148,7 @@
     <string name="paminnelse_notis_samlad_text">%1$d uppgifter förfaller inom en vecka</string>
     <string name="paminnelse_installning_rubrik">Påminn mig innan uppgifter förfaller</string>
     <string name="paminnelse_installning_beskrivning">Daglig avisering när en uppgift förfaller inom 7 dagar</string>
-    <string name="paminnelse_behorighet_nekad">Aviseringar är avstängda. Aktivera dem i systeminställningar för att få påminnelser.</string>
+    <string name="paminnelse_behorighet_nekad">Aviseringar är avstängda. Aktivera dem i systeminställningarna för att få påminnelser.</string>
 
     <!-- Bildfunktioner -->
     <string name="bild_valj_bild">Välj bild</string>
@@ -183,11 +183,13 @@
     <string name="bostad_ta_bort_bekraftelse">Ta bort %1$s och %2$d poster kopplade till det?</string>
     <string name="bostad_sista_gar_inte">Minst ett hem måste finnas kvar</string>
     <string name="historik_rubrik_med_bostad">%1$s – %2$s</string>
-    <string name="uppgift_gjord_post_ej_sparad">Uppgift flyttad men post inte sparad (Pro krävs)</string>
+    <string name="uppgift_gjord_post_ej_sparad">Uppgift flyttad men post ej sparad (Pro krävs)</string>
 
     <!-- Bostad borttagning -->
-    <string name="bostad_ta_bort_flytt_bekraftelse">Ta bort %1$s och %2$d poster kopplade till det?</string>
-    <string name="bostad_ta_bort_flytt_varning">Varning: Om du väljer att flytta kommer alla poster att flyttas till ett annat hem. Om du väljer att ta bort kommer alla poster att tas bort permanent.</string>
+    <string name="bostad_ta_bort_forklaring">Detta hem har poster kopplade till sig. Välj hur du vill hantera dem:</string>
+    <string name="bostad_ta_bort_flytta_till">Flytta alla poster till ett annat hem</string>
+    <string name="bostad_ta_bort_valj_mal">Välj hem att flytta poster till:</string>
+    <string name="bostad_ta_bort_radera_allt">Ta bort alla poster permanent</string>
 
     <!-- Säkerhetskopia -->
     <string name="sakerhetskopia_rubrik">Säkerhetskopia</string>
@@ -225,7 +227,7 @@
     <string name="kommande_ar_rubrik">Kommande år</string>
     <string name="kommande_ar_forklaring">Summor är uppskattningar från senaste kända kostnad för varje uppgift. Rader utan kostnad ingår inte i summan.</string>
     <string name="kommande_ar_export_csv">Exportera CSV</string>
-    <string name="kommande_ar_tomt">Ingen kommande underhållning inom nästa fem år.</string>
+    <string name="kommande_ar_tomt">Inget kommande underhåll inom nästa fem år.</string>
     <string name="kommande_ar_ar_rubrik">%1$d</string>
     <string name="kommande_ar_summa">Uppskattat totalt: %1$s</string>
     <string name="kommande_ar_utan_kostnad">Vissa uppgifter har ingen känd kostnad och ingår inte i summan.</string>
@@ -248,21 +250,21 @@
     <string name="sammanstallning_skatte_info_text">Förbättringskostnader kan dras av när du säljer ditt hem. Reparationer och underhåll räknas endast för försäljningsåret och de fem åren innan det. Kostnaderna måste totalt vara minst SEK 5,000 per år. Detta är information, inte skatterådgivning. Kontakta alltid Skatteverket.</string>
     <string name="sammanstallning_grans_ar">Minst SEK 5,000 detta år</string>
     <string name="sammanstallning_grans_ar_ej">Under SEK 5,000 detta år</string>
-    <string name="export_hus_historik_pdf">Exportera PDF (Husets historia)</string>
+    <string name="export_hus_historik_pdf">Exportera PDF (Hemhistorik)</string>
     <string name="export_hus_historik_csv">Exportera CSV</string>
     <string name="export_pdf_sparad">PDF sparad</string>
     <string name="export_pdf_misslyckades">Kunde inte skapa PDF</string>
     <string name="export_csv_sparad">CSV sparad</string>
     <string name="export_csv_misslyckades">Kunde inte skapa CSV</string>
-    <string name="historik_pdf_rubrik">Husets historia</string>
-    <string name="historik_pdf_kallor_lag">Svensk inkomstskattelag (Inkomstskattelagen): kapitel 45 (försäljning av fast egendom), kapitel 46 (försäljning av hyresrätt).</string>
+    <string name="historik_pdf_rubrik">Hemhistorik</string>
+    <string name="historik_pdf_kallor_lag">Svensk inkomstskattelag (Inkomstskattelagen): kapitel 45 (försäljning av fast egendom), kapitel 46 (försäljning av hyresrättshem).</string>
     <string name="historik_pdf_kallor_kontrollerat">Kontrollerad %1$s.</string>
     <string name="historik_pdf_skatt_rubrik">Skatteinformation (Sverige)</string>
     <string name="historik_pdf_skatt_text">Förbättringskostnader kan dras av när du säljer ditt hem. Reparationer och underhåll räknas endast för försäljningsåret och de fem åren innan det. Kostnaderna måste totalt vara minst SEK 5,000 per år. Detta är information, inte skatterådgivning. Kontakta alltid Skatteverket.</string>
 
     <!-- Appearance -->
     <string name="utseende_rubrik">Utseende</string>
-    <string name="utseende_system">Följ telefon</string>
+    <string name="utseende_system">Följ telefonen</string>
     <string name="utseende_ljust">Ljust</string>
     <string name="utseende_morkt">Mörkt</string>
 
@@ -272,7 +274,7 @@
     <string name="valkommen_steg1_rubrik">Lägg till återkommande uppgifter</string>
     <string name="valkommen_steg1_text">Välj från förslag eller skapa dina egna. Ställ in hur ofta de ska göras och valfria påminnelser.</string>
     <string name="valkommen_steg2_rubrik">Logga arbete och kvitton</string>
-    <string name="valkommen_steg2_text">Spara vad som gjorts, kostnaden och foton av kvitton. Markera en uppgift som färdig för att flytta nästa datum.</string>
+    <string name="valkommen_steg2_text">Spara vad som gjorts, kostnaden och foton av kvitton. Markera en uppgift som klar för att flytta nästa datum.</string>
     <string name="valkommen_steg3_rubrik">Sammanställning vid försäljning</string>
     <string name="valkommen_steg3_text">Se summor per år och typ. För Sverige visas skatteinformation som information endast, inte rådgivning.</string>
     <string name="valkommen_integritet">Inget konto, inga annonser och ingen molntjänst. Gratis upp till 15 loggposter.</string>
@@ -300,7 +302,6 @@
     <string name="dokument_valj_fil">Välj fil (PDF eller bild)</string>
     <string name="dokument_fil_vald">Byt fil</string>
     <string name="dokument_fil_oforandrad">Filen kan inte ändras vid redigering. Lägg till ett nytt dokument istället.</string>
-    <string name="dokument_oppna_fil">Öppna fil</string>
     <string name="ta_bort_dokument">Ta bort dokument</string>
     <string name="bekrafta_ta_bort_dokument_titel">Ta bort dokument?</string>
     <string name="bekrafta_ta_bort_dokument_text">Dokumentet och dess fil kommer att tas bort permanent.</string>
@@ -334,7 +335,7 @@
     <string name="kommande_tomt">Inga återkommande uppgifter ännu. Lägg till dem under Att göra.</string>
     <string name="kommande_forsenad">Försenad, förfaller %1$s</string>
     <string name="knapp_kopiera_post">Kopiera till ny post</string>
-    <string name="uppgift_senast_kostnad">Senaste gång: %1$s</string>
+    <string name="uppgift_senast_kostnad">Senaste gången: %1$s</string>
     <string name="kommande_kostnad">Ungefär %1$s under nästa tolv månader, baserat på vad varje jobb kostade senast.</string>
     <plurals name="kommande_utan_kostnad">
         <item quantity="one">%d jobb har ingen tidigare kostnad och ingår inte.</item>

@@ -186,8 +186,10 @@
     <string name="uppgift_gjord_post_ej_sparad">Task moved but entry not saved (Pro required)</string>
 
     <!-- Bostad borttagning -->
-    <string name="bostad_ta_bort_flytt_bekraftelse">Remove %1$s and %2$d items linked to it?</string>
-    <string name="bostad_ta_bort_flytt_varning">Warning: If you choose to move, all items will be moved to another home. If you choose to delete, all items will be permanently removed.</string>
+    <string name="bostad_ta_bort_forklaring">This home has items linked to it. Choose how to handle them:</string>
+    <string name="bostad_ta_bort_flytta_till">Move all items to another home</string>
+    <string name="bostad_ta_bort_valj_mal">Choose the home to move items to:</string>
+    <string name="bostad_ta_bort_radera_allt">Delete all items permanently</string>
 
     <!-- Säkerhetskopia -->
     <string name="sakerhetskopia_rubrik">Backup</string>
