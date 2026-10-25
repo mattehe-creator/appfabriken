@@ -33,3 +33,5 @@ gradle :husloggen:testDebugUnitTest --tests "*HusNavigeringTest*"
 - Ändra databasschemat eller `HusRepository`.
 - Lägga till beroenden.
 - Ändra andra filer.
+
+utfall: underkänd 2026-10-25 (ingen kod i PR #700, bara uppgiftsflytt)
