@@ -24,6 +24,7 @@
     <string name="typ_att_gora">To-do</string>
     <string name="typ_anteckning">Note</string>
     <string name="typ_fraga">Question</string>
+    <string name="typ_hem">Control home</string>
     <string name="svar_rubrik">Answer</string>
     <string name="fel_tom_inspelning">Nothing was heard.</string>
     <string name="utfor_klar">Done.</string>
