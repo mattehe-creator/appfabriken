@@ -65,3 +65,5 @@ Kör detta lokalt innan du pushar.
 - Lägga till beroenden.
 - Ändra andra filer.
 - Lägg filer i repots rot.
+
+utfall: godkänd 2026-10-25 (återställde MainActivity från main, slutförde HusSkarmar-signaturer och MainActivity-koppling)

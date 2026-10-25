@@ -85,6 +85,10 @@ fun HusStartSkarm(
     bostader: List<Bostad> = emptyList(),
     valdBostad: Bostad? = null,
     onValjBostad: (Long) -> Unit = {},
+    onSparaNyBostad: (String, String, String, (Boolean) -> Unit) -> Unit = { _, _, _, _ -> },
+    onUppdateraBostad: (Bostad) -> Unit = {},
+    onTaBortBostad: (Bostad, onSista: () -> Unit, onBorttagen: () -> Unit) -> Unit = { _, _, _ -> },
+    hamtaRaderingInfo: suspend (Long) -> Int = { 0 },
     onInstallningar: () -> Unit,
     onNyUppgift: () -> Unit,
     onNyPost: () -> Unit,
@@ -303,16 +307,10 @@ fun HusStartSkarm(
                         bostader = bostader,
                         valdBostadId = valdBostad?.id,
                         onValjBostad = onValjBostad,
-                        onSparaNyBostad = { namn, adress, anteckning, callback ->
-                            onSparaNyBostad(namn, adress, anteckning) { ok ->
-                                callback(ok)
-                            }
-                        },
+                        onSparaNyBostad = onSparaNyBostad,
                         onUppdateraBostad = onUppdateraBostad,
-                        onTaBortBostad = { bostad, onSista, onBorttagen ->
-                            onTaBortBostad(bostad, onSista, onBorttagen)
-                        },
-                        hamtaRaderingInfo = { id -> hamtaRaderingInfo(id) },
+                        onTaBortBostad = onTaBortBostad,
+                        hamtaRaderingInfo = hamtaRaderingInfo,
                     )
                     SammanstallningSkarm(
                         poster = poster,
@@ -633,13 +631,6 @@ private fun TomFlikText(
 fun InstallningarSkarm(
     onTillbaka: () -> Unit,
     modifier: Modifier = Modifier,
-    bostader: List<Bostad> = emptyList(),
-    valdBostadId: Long? = null,
-    onValjBostad: (Long) -> Unit = {},
-    onSparaNyBostad: (String, String, String, (Boolean) -> Unit) -> Unit = { _, _, _, _ -> },
-    onUppdateraBostad: (Bostad) -> Unit = {},
-    onTaBortBostad: (Bostad, onSista: () -> Unit, onBorttagen: () -> Unit) -> Unit = { _, _, _ -> },
-    hamtaRaderingInfo: suspend (Long) -> Int = { 0 },
     temaLage: TemaLage = TemaLage.SYSTEM,
     onTemaLage: (TemaLage) -> Unit = {},
     autoBackup: se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand = se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand(),
