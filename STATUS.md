@@ -1,6 +1,6 @@
 # Status
 
-Uppdaterad 2026-10-22 morgon.
+Uppdaterad 2026-10-25 morgon.
 
 ## Klart: Grundplattan (2026-10-08–09)
 
@@ -36,6 +36,8 @@ Val och omfång i IDEURVAL.md (omprövning 2026-10-16), regler i `husloggen/APP.
 
 2026-10-22 (Claude): sök och filter i loggen, jämförelse mot året innan och årsprognos för mätare, Kommande år. Köat: senaste kostnad per uppgift och uppskattad kostnad för kommande tolv månader.
 
+2026-10-24/25 (Claude, två sessioner): widget med kommande underhåll (#636); säkerhetskopian behåller mätarpris och påminnelse, återimport utan dubbletter, raderad bostad och post tar bort sina filer, dagens datum låses inte vid start (#630); granskning natt (#654, #660): Pro-gränsen, dubbelsparning, dokumentfil, tillstånd vid omstart, exporternas felmeddelanden. Flera bostäder komplettering (#694, Cursor): ingen gräns på antal bostäder (Pro gäller bara 15 poster), ta bort bostad med flytt eller radering; UI-delarna ligger som uppgifter 09-11 i kön. Testtäckning för de flesta rena funktioner (natten 24-25, lokala modellen).
+
 ## Nu: Styrelserummet (webbtjänst för bostadsrättsföreningar)
 
 Mattias 2026-10-19: bygg tjänsten istället för att vänta på landningssidans test. Första produkten är K3-komponentlistan ur underhållsplan och årsredovisning (utkast till revisor). Egna regler i `styrelserummet/APP.md` (webb, INTERNET; CLAUDE.md punkt 5 och 6 gäller Android-apparna). Landningssidan `webb/k3/sida.html` ligger kvar och mäter intresset under tiden.
@@ -48,11 +50,16 @@ Mattias 2026-10-19: bygg tjänsten istället för att vänta på landningssidans
    2026-10-22 dag (Claude): avgiftskalkyl `/avgift` (#531), kontroll av underlaget på nyckeltalssidan (#535).
    2026-10-22 natt (Claude): betalning med Stripe Checkout byggd och mergad (av tills nyckel finns, se DRIFT.md); utskriften rättad för CSP; pris på startsidan. Gratisverktygen Nyckeltal och Fondplan mergade (#490, skydd och SEO #491). Avskrivningsplanen finns i utskriften och som CSV (#492). Värd (Fly.io, Stockholm) beslutad men inte incheckad, väntar på Mattias.
    2026-10-21 kväll (Claude): avskrivningsplan tio år framåt, utrangering vid utbyte och plan som CSV, som uppgifter för den lokala modellen; Claude kopplar in planen i utskrift och CSV-rutt.
+   2026-10-24/25 (Claude): uppladdningen läser högst jobbets gräns och städar avvisade jobb (#632); CSV skyddas mot formler och får BOM (#642); årsredovisning känns igen på innehåll, inte på "ars" i filnamnet, och filer med samma namn skrivs inte över (#644); gränser för rader och rimliga tolkade värden (#652); atomär jobbmeta och IP-gräns (#659); gamla jobb rensas var sjätte timme (#653).
 4. Därefter, Mattias (se FRAGOR.md): bolagsuppgifter till integritetssidan, värd (konto), `ANTHROPIC_API_KEY` som hemlighet, betalkonto, domän. Betalning blir eget uppdrag.
 
 ## Nu: Flextid (app 3, byggd av Cursor 2026-10-18)
 
-Grund, Pro, påminnelser, PDF och butiksmaterial finns. 2026-10-21/22 (Claude): svenska helgdagar, gå hem-tid, semesterår och månadens normaltid mergade (PR #448); saldot rör sig inte under en påbörjad dag. Vecka och månad visar arbetat av normaltid (#493). Release-bygget provkört. 2026-10-22: årsöversikt per månad (saldo vid månadens slut, CSV) köad för den lokala modellen. Publiceringsguide i `flextid/butik/PUBLICERA.md`. Integritetspolicy skriven. Kvar: Mattias provar på telefon; appnamn och applicationId vid publicering.
+Grund, Pro, påminnelser, PDF och butiksmaterial finns. 2026-10-21/22 (Claude): svenska helgdagar, gå hem-tid, semesterår och månadens normaltid mergade (PR #448); saldot rör sig inte under en påbörjad dag. Vecka och månad visar arbetat av normaltid (#493). Release-bygget provkört. 2026-10-22: årsöversikt per månad (saldo vid månadens slut, CSV) köad för den lokala modellen. Publiceringsguide i `flextid/butik/PUBLICERA.md`. Integritetspolicy skriven. 2026-10-24/25 (Claude): röda dagar och lediga aftnar har ingen normaltid, arbete då ger plus (#628); normaltid per veckodag och sommartid (#629); widget med saldo och stämpla-knapp (#631); dagtypen Flexledig (#634); appen frös utan valda veckodagar (#638); granskning natt (#656, #658). Butikstexterna nämner det nya (#640). Öppen fråga till Mattias: gratisgränsen 15 poster räcker tre arbetsveckor (FRAGOR.md). Kvar: Mattias provar på telefon; appnamn och applicationId vid publicering.
+
+## Lokala modellen
+
+2026-10-25: körskriptet kör Aider ett andra varv när en fil som uppgiften kräver är tom eller oförändrad (#695); natten 24-25 underkändes ungefär hälften av första försöken av just det skälet. Workflowet Skript kontrollerar syntaxen i `verktyg/*.ps1` före merge.
 
 ## Pausat (Mattias 2026-10-19)
 
