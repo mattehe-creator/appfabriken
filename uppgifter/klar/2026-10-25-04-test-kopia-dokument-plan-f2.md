@@ -47,3 +47,5 @@ gradle :husloggen:testDebugUnitTest --tests "*SakerhetskopiaDokumentPlanTest"
 - Ändra `SakerhetskopiaModell.kt`. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Lägga till beroenden.
 - Använda `kotlin.test` — endast JUnit 4 (`org.junit`).
+
+utfall: godkänd 2026-10-25 (Cursor skrev hela SakerhetskopiaDokumentPlanTest.kt — lokal modell levererade ingen testkod)
