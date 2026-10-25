@@ -10,3 +10,6 @@ local.properties
 
 # Granskningsbilder (GranskaUtseendeTest) skrivs hit av recordRoborazziDebug men checkas inte in.
 garantivalvet/butik/granskning/
+
+# Claudes lokala arbetskopior (agenternas worktrees) och inställningar
+.claude/
