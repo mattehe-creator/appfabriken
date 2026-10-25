@@ -78,3 +78,5 @@ gradle :husloggen:testDebugUnitTest --tests "*HusRepositoryBostadTest.taBortBost
 - Ändra repository eller migrationer.
 - Lägga till beroenden.
 - Ändra andra filer.
+
+utfall: underkänd 2026-10-25 av Cursor (PR #705). Ersatt av 2026-10-25-10-bostad-ta-bort-flytt-dialog-f3.md
