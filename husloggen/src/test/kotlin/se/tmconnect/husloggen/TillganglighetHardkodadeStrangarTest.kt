@@ -16,7 +16,9 @@ class TillganglighetHardkodadeStrangarTest {
     fun ingaHardkodadeUiStrangarEllerFarger() {
         val rot = File("src/main/kotlin/se/tmconnect/husloggen")
         val globs = listOf(
+            "ui/*.kt",
             "ui/**/*.kt",
+            "widget/*.kt",
             "widget/**/*.kt",
             "MainActivity.kt",
         )
@@ -26,8 +28,10 @@ class TillganglighetHardkodadeStrangarTest {
             Regex("""Color\s*\(\s*0x[0-9A-Fa-f]+"""),
         )
         val träffar = mutableListOf<String>()
+        val skannade = mutableSetOf<File>()
         for (glob in globs) {
             for (fil in matchGlob(rot.toPath(), glob)) {
+                if (!skannade.add(fil)) continue
                 val rader = fil.readLines()
                 rader.forEachIndexed { index, rad ->
                     val trim = rad.trim()
@@ -40,6 +44,7 @@ class TillganglighetHardkodadeStrangarTest {
                 }
             }
         }
+        assertTrue("Testet skannade för få filer: ${skannade.size}", skannade.size >= 10)
         assertTrue(
             "Hårdkodade UI-strängar eller Color(0x…): ${träffar.joinToString("\n")}",
             träffar.isEmpty(),
