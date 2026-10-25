@@ -53,3 +53,5 @@ gradle :husloggen:testDebugUnitTest --tests "*HusSmaHjalpfunktionerTest"
 - Ändra andra filer.
 - Ändra produktionskoden. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-25 (hela HusSmaHjalpfunktionerTest.kt — lokal modell levererade ingen testkod)
