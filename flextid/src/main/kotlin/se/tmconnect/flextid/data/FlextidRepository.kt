@@ -84,7 +84,10 @@ class FlextidRepository(private val dao: FlextidDao) {
         data class GransUtanPro(val ryms: Int) : LedighetsPeriodResult
     }
 
-    /** Sparar [dagar] (från `dagarForLedighetsperiod`) i en transaktion, eller inget alls. */
+    /**
+     * Sparar flera nya dagar (ledighet för en period, eller veckans tomma dagar med vanliga tider)
+     * i en transaktion, eller inget alls.
+     */
     suspend fun sparaLedighetsperiod(dagar: List<Dag>, arPro: Boolean): LedighetsPeriodResult {
         if (dagar.isEmpty()) return LedighetsPeriodResult.IngaDagar
         if (!arPro) {

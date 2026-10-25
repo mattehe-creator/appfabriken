@@ -227,4 +227,5 @@
     <string name="ledighet_inga_dagar">Inga arbetsdagar utan registrering under perioden.</string>
     <plurals name="ledighet_sparad"><item quantity="one">Sparade %1$d dag</item><item quantity="other">Sparade %1$d dagar</item></plurals>
     <plurals name="ledighet_forhandsvisning"><item quantity="one">%1$d arbetsdag registreras</item><item quantity="other">%1$d arbetsdagar registreras</item></plurals>
+    <plurals name="fyll_veckan_knapp"><item quantity="one">Fyll %1$d tom arbetsdag med vanliga tider</item><item quantity="other">Fyll %1$d tomma arbetsdagar med vanliga tider</item></plurals>
 </resources>
