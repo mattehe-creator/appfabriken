@@ -606,11 +606,11 @@ class MainActivity : ComponentActivity() {
                                 onValjBostad = viewModel::valjBostad,
                                 onSparaNyBostad = viewModel::sparaNyBostad,
                                 onUppdateraBostad = viewModel::uppdateraBostad,
-                                onTaBortBostad = { bostad, onSista, onBorttagen ->
+                                onTaBortBostad = { bostad, satt, flyttTillId, onSista, onBorttagen ->
                                     viewModel.taBortBostad(
                                         bostad,
-                                        se.tmconnect.husloggen.data.BostadBorttagningSatt.RADERA_INNEHALL,
-                                        flyttTillId = null,
+                                        satt,
+                                        flyttTillId,
                                         onSista = onSista,
                                         onBorttagen = onBorttagen,
                                     )

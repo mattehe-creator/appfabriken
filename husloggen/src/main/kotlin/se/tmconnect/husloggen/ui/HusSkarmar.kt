@@ -61,6 +61,7 @@ import java.util.Locale
 import se.tmconnect.husloggen.BuildConfig
 import se.tmconnect.husloggen.R
 import se.tmconnect.husloggen.data.Bostad
+import se.tmconnect.husloggen.data.BostadBorttagningSatt
 import se.tmconnect.husloggen.data.Dokument
 import se.tmconnect.husloggen.data.Matare
 import se.tmconnect.husloggen.data.PlaneradKostnad
@@ -87,7 +88,13 @@ fun HusStartSkarm(
     onValjBostad: (Long) -> Unit = {},
     onSparaNyBostad: (String, String, String, (Boolean) -> Unit) -> Unit = { _, _, _, _ -> },
     onUppdateraBostad: (Bostad) -> Unit = {},
-    onTaBortBostad: (Bostad, onSista: () -> Unit, onBorttagen: () -> Unit) -> Unit = { _, _, _ -> },
+    onTaBortBostad: (
+        Bostad,
+        BostadBorttagningSatt,
+        flyttTillId: Long?,
+        onSista: () -> Unit,
+        onBorttagen: () -> Unit,
+    ) -> Unit = { _, _, _, _, _ -> },
     hamtaRaderingInfo: suspend (Long) -> Int = { 0 },
     onInstallningar: () -> Unit,
     onNyUppgift: () -> Unit,
