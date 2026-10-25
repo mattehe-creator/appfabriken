@@ -16,4 +16,4 @@ Dina uppgifter stannar hos dig
 Husloggen har ingen internetbehörighet, inga konton, ingen reklam och ingen analys. Säkerhetskopiera till en fil eller mapp du själv väljer, manuellt eller automatiskt, och läs tillbaka den på en ny telefon.
 
 Gratis och Pro
-Gratisversionen har alla funktioner. Gränsen är 15 poster i loggen och 3 bostäder. Uppgifter, påminnelser, mätare och dokument är obegränsade. Pro är ett engångsköp som tar bort gränserna. Export, PDF och säkerhetskopia är alltid gratis, och befintliga uppgifter raderas aldrig.
+Gratisversionen har alla funktioner. Gränsen är 15 poster i loggen. Uppgifter, påminnelser, mätare och dokument är obegränsade. Pro är ett engångsköp som tar bort gränsen. Export, PDF och säkerhetskopia är alltid gratis, och befintliga uppgifter raderas aldrig.

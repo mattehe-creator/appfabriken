@@ -163,7 +163,7 @@
     <!-- Pro -->
     <string name="pro">Pro</string>
     <string name="pro_las_upp">Lås upp Pro</string>
-    <string name="pro_forklaring">Gratisversionen har alla funktioner, upp till 15 poster i loggen och 3 bostäder. Pro är ett engångsköp utan prenumeration och tar bort gränserna. Uppgifter, påminnelser, mätare och dokument är alltid obegränsade, och export, PDF och säkerhetskopia är alltid gratis.</string>
+    <string name="pro_forklaring">Gratisversionen har alla funktioner, upp till 15 poster i loggen. Pro är ett engångsköp utan prenumeration och tar bort gränsen. Uppgifter, påminnelser, mätare och dokument är alltid obegränsade, och export, PDF och säkerhetskopia är alltid gratis.</string>
     <string name="pro_du_har">Du har Pro</string>
     <string name="pro_kop_misslyckades">Köpet kunde inte genomföras. Försök igen.</string>
     <string name="pro_grans_nadd">Gränsen är nådd: 15 poster</string>

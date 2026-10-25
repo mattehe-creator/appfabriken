@@ -16,4 +16,4 @@ Your data stays with you
 House Log has no internet permission, no accounts, no ads and no analytics. Back up to a file or folder you choose, manually or automatically, and restore it on a new phone.
 
 Free and Pro
-The free version has every feature. The limit is 15 log entries and 3 homes. Tasks, reminders, meters and documents are unlimited. Pro is a one-time purchase that removes the limits. Export, PDF and backup are always free, and existing data is never deleted.
+The free version has every feature. The limit is 15 log entries. Tasks, reminders, meters and documents are unlimited. Pro is a one-time purchase that removes the limit. Export, PDF and backup are always free, and existing data is never deleted.
