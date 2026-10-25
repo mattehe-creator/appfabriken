@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import se.tmconnect.husloggen.R
 import se.tmconnect.husloggen.data.Bostad
+import se.tmconnect.husloggen.data.BostadBorttagningSatt
 
 @Composable
 fun BostadValjareRad(
@@ -92,7 +93,7 @@ fun BostaderInstallningSektion(
     onValjBostad: (Long) -> Unit,
     onSparaNyBostad: (String, String, String, (Boolean) -> Unit) -> Unit,
     onUppdateraBostad: (Bostad) -> Unit,
-    onTaBortBostad: (Bostad, onSista: () -> Unit, onBorttagen: () -> Unit) -> Unit,
+    onTaBortBostad: (Bostad, BostadBorttagningSatt, Long?, () -> Unit, () -> Unit) -> Unit,
     hamtaRaderingInfo: suspend (Long) -> Int,
     modifier: Modifier = Modifier,
 ) {
@@ -103,6 +104,8 @@ fun BostaderInstallningSektion(
     var visaSistaVarning by remember { mutableStateOf(false) }
     var bekraftaBorttagning by remember { mutableStateOf<Bostad?>(null) }
     var bekraftAntal by remember { mutableStateOf(0) }
+    var visaFlyttDialog by remember { mutableStateOf<Bostad?>(null) }
+    var valdFlyttTillId by remember { mutableStateOf<Long?>(null) }
     val scope = rememberCoroutineScope()
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -193,34 +196,102 @@ fun BostaderInstallningSektion(
         )
     }
     bekraftaBorttagning?.let { bostad ->
+        if (bekraftAntal > 0) {
+            // Visa flytt-dialog
+            visaFlyttDialog = bostad
+        } else {
+            // Visa enkel bekräftelse
+            AlertDialog(
+                onDismissRequest = { bekraftaBorttagning = null },
+                title = { Text(text = stringResource(R.string.bostad_ta_bort)) },
+                text = {
+                    Text(
+                        text = stringResource(
+                            R.string.bostad_ta_bort_bekraftelse,
+                            bostad.namn,
+                            bekraftAntal,
+                        ),
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            onTaBortBostad(
+                                bostad,
+                                BostadBorttagningSatt.RADERA_INNEHALL,
+                                null,
+                                { visaSistaVarning = true },
+                                { bekraftaBorttagning = null },
+                            )
+                        },
+                        modifier = Modifier.heightIn(min = 48.dp),
+                    ) {
+                        Text(text = stringResource(R.string.bostad_ta_bort))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { bekraftaBorttagning = null }) {
+                        Text(text = stringResource(R.string.pro_inte_nu))
+                    }
+                },
+            )
+        }
+    }
+    
+    visaFlyttDialog?.let { bostad ->
         AlertDialog(
-            onDismissRequest = { bekraftaBorttagning = null },
+            onDismissRequest = { visaFlyttDialog = null },
             title = { Text(text = stringResource(R.string.bostad_ta_bort)) },
             text = {
-                Text(
-                    text = stringResource(
-                        R.string.bostad_ta_bort_bekraftelse,
-                        bostad.namn,
-                        bekraftAntal,
-                    ),
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = stringResource(
+                            R.string.bostad_ta_bort_flytt_bekraftelse,
+                            bostad.namn,
+                            bekraftAntal,
+                        ),
+                    )
+                    Text(text = stringResource(R.string.bostad_ta_bort_flytt_varning))
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        bostader.filter { it.id != bostad.id }.forEach { annanBostad ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(min = 48.dp)
+                                    .clickable { valdFlyttTillId = annanBostad.id },
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                RadioButton(
+                                    selected = valdFlyttTillId == annanBostad.id,
+                                    onClick = null,
+                                )
+                                Text(text = annanBostad.namn, modifier = Modifier.padding(start = 8.dp))
+                            }
+                        }
+                    }
+                }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        onTaBortBostad(
-                            bostad,
-                            { visaSistaVarning = true },
-                            { bekraftaBorttagning = null },
-                        )
+                        if (valdFlyttTillId != null) {
+                            onTaBortBostad(
+                                bostad,
+                                BostadBorttagningSatt.FLYTTA_TILL,
+                                valdFlyttTillId,
+                                { visaSistaVarning = true },
+                                { visaFlyttDialog = null },
+                            )
+                        }
                     },
+                    enabled = valdFlyttTillId != null,
                     modifier = Modifier.heightIn(min = 48.dp),
                 ) {
                     Text(text = stringResource(R.string.bostad_ta_bort))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { bekraftaBorttagning = null }) {
+                TextButton(onClick = { visaFlyttDialog = null }) {
                     Text(text = stringResource(R.string.pro_inte_nu))
                 }
             },

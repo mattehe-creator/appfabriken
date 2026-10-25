@@ -185,6 +185,10 @@
     <string name="historik_rubrik_med_bostad">%1$s – %2$s</string>
     <string name="uppgift_gjord_post_ej_sparad">Task moved but entry not saved (Pro required)</string>
 
+    <!-- Bostad borttagning -->
+    <string name="bostad_ta_bort_flytt_bekraftelse">Remove %1$s and %2$d items linked to it?</string>
+    <string name="bostad_ta_bort_flytt_varning">Warning: If you choose to move, all items will be moved to another home. If you choose to delete, all items will be permanently removed.</string>
+
     <!-- Säkerhetskopia -->
     <string name="sakerhetskopia_rubrik">Backup</string>
     <string name="sakerhetskopia_beskrivning">The file contains all tasks, log entries and images. It is saved where you choose, and is not encrypted.</string>
