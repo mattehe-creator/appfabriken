@@ -1,6 +1,6 @@
 # Integritetspolicy — Husloggen
 
-Senast uppdaterad: 2026-10-21
+Senast uppdaterad: 2026-10-25
 
 Husloggen utvecklas av TM Connect. Kontakt: [kontaktadress läggs in vid publicering].
 
@@ -17,7 +17,8 @@ Följande sparas bara lokalt på din telefon, i appens eget utrymme:
 - Återkommande uppgifter och planerade kostnader.
 - Mätare och avläsningar.
 - Kvitton och bilder som du fotar eller väljer, och dokument (till exempel manualer och ritningar) som du lägger till.
-- Inställningar, till exempel påminnelser och intervall för säkerhetskopia.
+- Inställningar, till exempel påminnelser, valt tema och intervall för säkerhetskopia.
+- Hemskärmswidgeten visar de närmaste uppgifterna från samma lokala data; den skickar inget till oss.
 
 ## När data lämnar telefonen
 

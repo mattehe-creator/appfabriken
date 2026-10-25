@@ -15,7 +15,7 @@ Teckengränser och URL-förbud kontrolleras av `ButikTexterTest`.
 
 | Fil / mapp | Storlek | Innehåll |
 |------------|---------|----------|
-| `skarmbilder/sv/` | 1080 × 1920 (porträtt) | Att göra, Logg, formulär, Sammanställning, Pro-dialog |
+| `skarmbilder/sv/` | 1080 × 1920 (porträtt) | Att göra, Logg, formulär, Översikt, Pro-dialog |
 | `skarmbilder/en/` | 1080 × 1920 | Samma skärmar på engelska |
 | `funktionsgrafik-sv.png` | 1024 × 500 | Appnamn och kort rad på svenska (från strängresurser) |
 | `funktionsgrafik-en.png` | 1024 × 500 | Appnamn och kort rad på engelska |

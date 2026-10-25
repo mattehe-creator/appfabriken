@@ -16,7 +16,7 @@ Steg för Mattias. Det som kräver dig enligt CLAUDE.md punkt 9: allt i Play Con
    - `husloggen-<sha>-osignerad.aab` — filen som går till Play.
    - `husloggen-mapping-<sha>.txt` — ladda upp i Play Console (App-paketutforskaren, Avkoda) så blir kraschrapporter läsbara.
    - `husloggen-release-test-<sha>.apk` — den krympta koden som APK, signerad med felsökningsnyckeln så att den går att installera över felsökningsbygget. Köpet av Pro går inte att prova här, bara i ett testspår i Play.
-3. **Prova den krympta APK:n noga innan du går vidare** (och bara en APK åt gången: avinstallera inte, installera över) (uppgifter och påminnelser, logg med kvittofoto, Mer (planerade kostnader, mätare, dokument), sammanställning med PDF och CSV, säkerhetskopia). Koden är krympt, så fel som inte syns i felsökningsbygget kan dyka upp här.
+3. **Prova den krympta APK:n noga innan du går vidare** (och bara en APK åt gången: avinstallera inte, installera över): uppgifter och påminnelser (obegränsade även utan Pro), logg med kvittofoto (gratisgräns 15 poster totalt), bostadsväljare, Mer (Kommande tolv månader, planerade kostnader, mätare, dokument), Översikt med PDF, CSV och Kommande år, widget, säkerhetskopia. Koden är krympt, så fel som inte syns i felsökningsbygget kan dyka upp här.
 
 ## 3. Signera AAB:n
 
@@ -34,7 +34,7 @@ Spara `upload.jks` och lösenordet säkert (lösenordshanterare plus en kopia p�
 1. Skapa appen: namn, språk (svenska), app, gratis.
 2. **Butiksinformation**: texter och skärmbilder från `butik/sv/` och `butik/en/` (titel, kort beskrivning, lång beskrivning), `butik/skarmbilder/`, `butik/funktionsgrafik-*.png`, `butik/ikon-512.png`.
 3. **Appinnehåll**: integritetspolicy (länken), Data safety enligt `butik/data-safety.md`, målgrupp (inte barn), annonser: nej, kategori (Hus och hem).
-4. **Engångsprodukt** med id `pro`, pris 49 kr.
+4. **Engångsprodukt** med id `pro`, pris 49 kr. Gratisversionen har alla funktioner; Pro tar bara bort gränsen på 15 loggposter (uppgifter, påminnelser, mätare, dokument och bostäder är obegränsade).
 5. **Testspår**: börja med intern testning, ladda upp den signerade AAB:n, lägg till dig själv som testare och prova köpet av Pro (kräver en riktig installation från Play, inte sidladdad APK).
 6. Skicka till produktion när testspåret fungerar. Nya personkonton kan ha krav på ett slutet test (till exempel antal testare under en period); Play Console visar vad som gäller för ditt konto.
 

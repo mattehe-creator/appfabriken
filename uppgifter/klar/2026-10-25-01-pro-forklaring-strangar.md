@@ -31,3 +31,6 @@ gradle :husloggen:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Ändra Pro-logik eller butikstexter.
+
+## Utfall
+Klar. Gjord av Cursor direkt i PR #715 (strängar och Roborazzi). Butikstexten hade redan rättats på main; Claude löste konflikten 2026-10-25.

@@ -61,9 +61,19 @@ Grund, Pro, påminnelser, PDF och butiksmaterial finns. 2026-10-21/22 (Claude): 
 
 2026-10-25: körskriptet kör Aider ett andra varv när en fil som uppgiften kräver är tom eller oförändrad (#695); natten 24-25 underkändes ungefär hälften av första försöken av just det skälet. Workflowet Skript kontrollerar syntaxen i `verktyg/*.ps1` före merge.
 
+## Nu: Röstfångst som Mattias eget verktyg (provapp, publiceras inte)
+
+Mattias 2026-10-25: ett tryck i menyn (snabbinställningarna), tala, ingen väckningsfras; vidare till Home Assistant (både mottagare och styrning) och till klockan (Wear OS).
+
+1. `2026-10-25-rostfangst-home-assistant`: snabbstart med ett tryck, HA-klient (händelse, att-göra-lista, styr hemmet via Assist med bekräftelse), typen HEM. Skickat 2026-10-25.
+2. `uppdrag/vantar/2026-10-25-rostfangst-klocka`: Wear OS-app, Data Layer mot telefonen, tile. Skickas när 1 är mergat.
+3. `uppdrag/vantar/2026-10-25-rostfangst-lokal-ai`: Ollama-tolkare, Whisper på egen dator över Tailscale, val i inställningarna, `verktyg/whisper/` och `rostfangst/LOKAL-AI.md`. Skickas tillsammans med klockan när 1 är mergat.
+4. Mattias: installera APK från `senaste-main`, skapa API-nyckel hos Anthropic, och i HA en long-lived token (Profil → Säkerhet). Rekommendation: exponera aldrig lås, larm eller garageport för Assist.
+5. Fångster per dag, påminnelsens fördröjning, systemprompt och CSV: fyra enhetstestuppgifter i kön sedan 2026-10-25.
+
 ## Pausat (Mattias 2026-10-19)
 
-- Skolinkorgen (`:prov-aviseringar`) och Röstfångst (`:rostfangst`): elva uppgifter ligger i `uppgifter/pausad/`. Del A är mergad (PR #273 och #274), modulerna finns kvar. Återupptas genom att flytta tillbaka uppgifterna till `uppgifter/ny/`.
+- Skolinkorgen (`:prov-aviseringar`): sju uppgifter ligger i `uppgifter/pausad/`. Röstfångst (`:rostfangst`) återupptogs 2026-10-25: fyra uppgifter i kön (testerna saknas, funktionerna finns), uppgift 01 kvar pausad eftersom kod och test redan finns. Del A är mergad (PR #273 och #274), modulerna finns kvar. Återupptas genom att flytta tillbaka uppgifterna till `uppgifter/ny/`.
 - NIS2-paketet: avfört (konkurrerar med Mattias arbete).
 
 ## Senare
