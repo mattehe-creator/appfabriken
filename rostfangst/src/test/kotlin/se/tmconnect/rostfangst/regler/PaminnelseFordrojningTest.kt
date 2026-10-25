@@ -1,7 +1,6 @@
 package se.tmconnect.rostfangst.regler
 
 import java.time.Instant
-import java.time.temporal.ChronoUnit
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
