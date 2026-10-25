@@ -175,7 +175,7 @@ fun HusStartSkarm(
                         icon = {
                             Icon(
                                 imageVector = Icons.Filled.Add,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.fab_ny_uppgift),
                             )
                         },
                         text = { Text(text = stringResource(R.string.fab_ny_uppgift)) },
@@ -188,7 +188,7 @@ fun HusStartSkarm(
                         icon = {
                             Icon(
                                 imageVector = Icons.Filled.Add,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.fab_ny_post),
                             )
                         },
                         text = { Text(text = stringResource(R.string.fab_ny_post)) },
@@ -604,7 +604,7 @@ private fun TomFlikText(
                         icon = {
                             Icon(
                                 imageVector = Icons.Filled.Add,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.fab_ny_uppgift),
                             )
                         },
                         text = { Text(text = stringResource(R.string.fab_ny_uppgift)) },
@@ -619,7 +619,7 @@ private fun TomFlikText(
                         icon = {
                             Icon(
                                 imageVector = Icons.Filled.Add,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.fab_ny_post),
                             )
                         },
                         text = { Text(text = stringResource(R.string.fab_ny_post)) },

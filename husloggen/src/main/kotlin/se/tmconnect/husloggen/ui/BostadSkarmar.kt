@@ -79,7 +79,7 @@ fun BostadValjareRad(
                 }
             },
             confirmButton = {
-                TextButton(onClick = { visaDialog = false }) {
+                TextButton(onClick = { visaDialog = false }, modifier = Modifier.tryckyta48()) {
                     Text(text = stringResource(R.string.bild_stang))
                 }
             },
@@ -133,7 +133,7 @@ fun BostaderInstallningSektion(
                         Text(text = it, style = MaterialTheme.typography.bodySmall)
                     }
                 }
-                TextButton(onClick = { redigeraId = bostad.id }) {
+                TextButton(onClick = { redigeraId = bostad.id }, modifier = Modifier.tryckyta48()) {
                     Text(text = stringResource(R.string.knapp_andra))
                 }
             }
@@ -194,7 +194,7 @@ fun BostaderInstallningSektion(
             title = { Text(text = stringResource(R.string.bostad_ta_bort)) },
             text = { Text(text = stringResource(R.string.bostad_sista_gar_inte)) },
             confirmButton = {
-                TextButton(onClick = { visaSistaVarning = false }) {
+                TextButton(onClick = { visaSistaVarning = false }, modifier = Modifier.tryckyta48()) {
                     Text(text = stringResource(R.string.bild_stang))
                 }
             },
@@ -327,7 +327,7 @@ fun BostaderInstallningSektion(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { bekraftaBorttagning = null }) {
+                TextButton(onClick = { bekraftaBorttagning = null }, modifier = Modifier.tryckyta48()) {
                     Text(text = stringResource(R.string.pro_inte_nu))
                 }
             },
@@ -390,11 +390,11 @@ private fun BostadFormularDialog(
         dismissButton = {
             Row {
                 onTaBort?.let {
-                    TextButton(onClick = it) {
+                    TextButton(onClick = it, modifier = Modifier.tryckyta48()) {
                         Text(text = stringResource(R.string.bostad_ta_bort))
                     }
                 }
-                TextButton(onClick = onDismiss) {
+                TextButton(onClick = onDismiss, modifier = Modifier.tryckyta48()) {
                     Text(text = stringResource(R.string.pro_inte_nu))
                 }
             }

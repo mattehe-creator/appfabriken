@@ -116,6 +116,7 @@ fun UppgiftPaminnelseFalt(
         Switch(
             checked = paminnelsePa,
             onCheckedChange = onPaminnelseAndras,
+            modifier = Modifier.tryckyta48(),
         )
     }
     Text(

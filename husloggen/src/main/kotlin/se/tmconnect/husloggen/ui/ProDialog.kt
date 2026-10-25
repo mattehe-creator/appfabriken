@@ -39,7 +39,7 @@ fun ProDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(onClick = onDismiss, modifier = Modifier.tryckyta48()) {
                 Text(text = stringResource(R.string.pro_inte_nu))
             }
         },
