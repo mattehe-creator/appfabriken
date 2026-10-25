@@ -23,7 +23,9 @@ jobs:
         shell: pwsh
         run: |
           $fel = 0
-          foreach ($fil in Get-ChildItem -Path verktyg -Filter *.ps1 -Recurse) {
+          $skript = @(Get-ChildItem -Path verktyg -Filter *.ps1 -Recurse)
+          if ($skript.Count -eq 0) { Write-Host "::error::Inga .ps1 i verktyg/"; exit 1 }
+          foreach ($fil in $skript) {
             $tokens = $null; $problem = $null
             [System.Management.Automation.Language.Parser]::ParseFile($fil.FullName, [ref]$tokens, [ref]$problem) | Out-Null
             if ($problem.Count -gt 0) {
@@ -35,4 +37,5 @@ jobs:
               Write-Host "OK $($fil.Name)"
             }
           }
+          Write-Host "::notice::$($skript.Count) skript tolkade, $fel med fel: $(($skript | ForEach-Object Name) -join ', ')"
           if ($fel -gt 0) { exit 1 }
