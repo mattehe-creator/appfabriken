@@ -63,7 +63,7 @@ Grund, Pro, påminnelser, PDF och butiksmaterial finns. 2026-10-21/22 (Claude): 
 
 ## Pausat (Mattias 2026-10-19)
 
-- Skolinkorgen (`:prov-aviseringar`) och Röstfångst (`:rostfangst`): elva uppgifter ligger i `uppgifter/pausad/`. Del A är mergad (PR #273 och #274), modulerna finns kvar. Återupptas genom att flytta tillbaka uppgifterna till `uppgifter/ny/`.
+- Skolinkorgen (`:prov-aviseringar`): sju uppgifter ligger i `uppgifter/pausad/`. Röstfångst (`:rostfangst`) återupptogs 2026-10-25: fyra uppgifter i kön (testerna saknas, funktionerna finns), uppgift 01 kvar pausad eftersom kod och test redan finns. Del A är mergad (PR #273 och #274), modulerna finns kvar. Återupptas genom att flytta tillbaka uppgifterna till `uppgifter/ny/`.
 - NIS2-paketet: avfört (konkurrerar med Mattias arbete).
 
 ## Senare
