@@ -1,7 +1,10 @@
 # Uppgift: Påminnelsens fördröjning
 
+## Vad som saknades
+- Filen `rostfangst/src/test/kotlin/se/tmconnect/rostfangst/regler/FangsterPerDagTest.kt` står inte under "Ändra bara dessa filer" (fel sökväg eller fel fil).
+
 uppdrag: uppdrag/2026-10-19-rostfangst-minsta-version.md
-försök: 1
+försök: 2
 beror-på: cursor:r-stf-ngst-modul-344d
 
 ## Ändra bara dessa filer
