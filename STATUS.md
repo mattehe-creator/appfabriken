@@ -59,6 +59,8 @@ Grund, Pro, påminnelser, PDF och butiksmaterial finns. 2026-10-21/22 (Claude): 
 
 ## Lokala modellen
 
+2026-10-25 eftermiddag: reservläge (`CURSOR-PAUS`) tills Cursors kvot förnyas, cirka 9 november. Claude delar upp uppdrag och granskar; spärren avgör mekaniska fel och rena testuppgifter. `2026-10-25-rostfangst-home-assistant` delar Claude upp i uppgifter. Lyften till `:karna` väntar.
+
 2026-10-25: körskriptet kör Aider ett andra varv när en fil som uppgiften kräver är tom eller oförändrad (#695); natten 24-25 underkändes ungefär hälften av första försöken av just det skälet. Workflowet Skript kontrollerar syntaxen i `verktyg/*.ps1` före merge.
 
 ## Nu: Röstfångst som Mattias eget verktyg (provapp, publiceras inte)

@@ -1,0 +1,4 @@
+Reservläge sedan 2026-10-25: Cursors kvot är slut till förnyelsen (cirka 2026-11-09).
+Medan filen finns skickas inga uppdrag eller granskningar till Cursor. Claude delar upp uppdrag
+i uppgifter och granskar det som klarat spärren. Claude tar bort filen när kvoten är förnyad.
+Se ARBETSFLODE.md, "Reservläge".

@@ -39,6 +39,26 @@ datum: ÅÅÅÅ-MM-DD
 - (eller "inga")
 ```
 
+## Spärren
+
+Före all AI-granskning kör `cursor-granskning` skriptet `.github/sparr.sh` på den lokala PR:en. Det kontrollerar det som inte kräver omdöme: bara filerna under "Ändra bara dessa filer" är ändrade, ingen av dem är tom eller oförändrad, högst cirka 250 ändrade rader, inga nya behörigheter eller beroenden, och bygget är grönt.
+
+- Bryter försök 1 mot en regel skriver spärren `granskning/<uppgift>.md` med `beslut: underkänd`, `granskare: spärren` och försök 2, och `cursor-beslut` verkställer som vanligt.
+- Bryter försök 2 mot en regel lämnas PR:en åt Claude.
+- Har bara testfiler ändrats och bygget är grönt godkänner spärren direkt. Claude stickprovar i efterhand.
+- Allt annat går vidare till granskning av kod: Cursor, eller Claude i reservläge.
+
+## Reservläge
+
+När Cursors kvot är slut lägger Claude filen `CURSOR-PAUS` i repots rot på main. Medan den finns:
+
+- skickar `cursor-uppdrag` inga uppdrag. Claude skriver uppgifterna direkt i `uppgifter/ny/` enligt `uppgifter/MALL.md`, med raden `uppdrag:` som pekar på uppdraget.
+- skickar `cursor-granskning` inget till Cursor. PR:er som klarat spärren granskar Claude mot uppgiften och CLAUDE.md punkt 8, skriver beslutsfilen med `granskare: claude` och startar `cursor-beslut`.
+- väntar det som bara Cursor gör (`:karna`, Billing, migrationer, mer än 3 filer per steg) tills kvoten är förnyad, om det inte går att dela upp i uppgifter för den lokala modellen.
+- tar Claude över en uppgift som underkänts två gånger bara om den är liten. Annars väntar den på Cursor.
+
+Claude tar bort filen när kvoten är förnyad.
+
 ## Frågor
 
 Ingen agent kan prata direkt med en annan. Frågor skrivs därför på fasta ställen, där mottagaren alltid tittar.
