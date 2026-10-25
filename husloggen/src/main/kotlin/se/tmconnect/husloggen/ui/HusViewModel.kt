@@ -93,10 +93,23 @@ import se.tmconnect.husloggen.regler.valideraDokument
 import se.tmconnect.husloggen.regler.PlaneradKostnadFel
 import se.tmconnect.husloggen.regler.valideraPlaneradKostnad
 
-// ... (resten av filen är oförändrad)
+class HusViewModel(
+    private val repository: HusRepository,
+    private val installningarLager: InstallningarLager,
+    private val proKalla: ProKalla,
+    private val paminnelseInstallningarLager: PaminnelseInstallningarLager,
+    private val husPaminnelseKalla: HusPaminnelseKalla,
+) : ViewModel() {
+
+    // ... (resten av filen är oförändrad)
 
     /** Poster för exporten, hämtade från databasen när filen skrivs (inte från UI-flödet). */
     private suspend fun posterForExport(bostadId: Long?): List<Post> =
         if (bostadId == null) emptyList() else filtreraPaBostad(repository.allaPoster(), bostadId) { it.bostadId }
 
+    /** Uppgifter för kommande underhåll, hämtade från databasen när filen skrivs (inte från UI-flödet). */
+    private suspend fun uppgifterForKommandeUnderhall(bostadId: Long?): List<Uppgift> =
+        if (bostadId == null) emptyList() else filtreraPaBostad(repository.allaUppgifter(), bostadId) { it.bostadId }
+
     // ... (resten av filen är oförändrad)
+}
