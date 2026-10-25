@@ -1,7 +1,11 @@
 # Uppgift: Test av säkerhetskopians omvandling för bostäder och uppgifter
 
+## Vad som saknades
+- Testfilen `SakerhetskopiaUppgiftBostadTest.kt` skapades inte. PR:en innehåller bara att uppgiftsfilen flyttades till `uppgifter/pagar/`.
+- Uppgiften kräver en ny testklass med JUnit 4-tester mot alla exempel nedan; utan den filen är uppgiften ogjord.
+
 uppdrag: uppdrag/claude/2026-10-25-natt-testtackning.md
-försök: 1
+försök: 2
 beror-på: ingen
 
 ## Ändra bara dessa filer
@@ -11,10 +15,12 @@ beror-på: ingen
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/export/SakerhetskopiaModell.kt (raderna med `bostadTillSakerhetskopia` till `sakerhetskopiaUppgiftTillUppgift`, `arSakerhetskopiaUppgiftLik` och `arSakerhetskopiaUppgiftDubblett`)
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/data/Bostad.kt
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/data/Uppgift.kt
+- husloggen/src/test/kotlin/se/tmconnect/husloggen/export/SakerhetskopiaJsonTest.kt (JUnit 4-imports och paket)
 
 ## Uppgift
-Skriv JUnit 4-tester (`org.junit.Test`, `assertEquals`, `assertTrue`, `assertFalse`, `assertNull`) i paketet `se.tmconnect.husloggen.export` för:
+Skapa klassen `SakerhetskopiaUppgiftBostadTest` i paketet `se.tmconnect.husloggen.export` med JUnit 4 (`org.junit.Test`, `org.junit.Assert.assertEquals`, `assertTrue`, `assertFalse`, `assertNull` — **inte** `kotlin.test`).
 
+Testa dessa funktioner i `SakerhetskopiaModell.kt`:
 - `bostadTillSakerhetskopia(bostad: Bostad): SakerhetskopiaBostad`
 - `sakerhetskopiaBostadTillBostad(export: SakerhetskopiaBostad): Bostad`
 - `uppgiftTillSakerhetskopia(uppgift: Uppgift, bostadIdTillIndex: Map<Long, Int>): SakerhetskopiaUppgift`
@@ -24,7 +30,9 @@ Skriv JUnit 4-tester (`org.junit.Test`, `assertEquals`, `assertTrue`, `assertFal
 
 Importera `se.tmconnect.husloggen.data.Bostad`, `se.tmconnect.husloggen.data.Uppgift` och `java.time.LocalDate`.
 
-`Uppgift` har fältet `skapad = System.currentTimeMillis()`, så jämför aldrig hela `Uppgift`-objekt; jämför fält för fält. `Bostad`, `SakerhetskopiaBostad` och `SakerhetskopiaUppgift` kan jämföras hela.
+`Uppgift` har fältet `skapad = System.currentTimeMillis()`, så jämför **aldrig** hela `Uppgift`-objekt med `assertEquals`; kontrollera fält för fält (särskilt i `sakerhetskopiaUppgiftTillUppgift`). `Bostad`, `SakerhetskopiaBostad` och `SakerhetskopiaUppgift` kan jämföras hela med `assertEquals`.
+
+Lägg minst ett `@Test` per bullet i **Exempel** nedan (namn på svenska eller engelska spelar ingen roll).
 
 ## Exempel
 - `bostadTillSakerhetskopia(Bostad(id = 4, namn = "Villan", adress = "Storgatan 1", anteckning = null))` → `SakerhetskopiaBostad(namn = "Villan", adress = "Storgatan 1", anteckning = null)`
@@ -42,7 +50,11 @@ Importera `se.tmconnect.husloggen.data.Bostad`, `se.tmconnect.husloggen.data.Upp
 gradle :husloggen:testDebugUnitTest --tests "*SakerhetskopiaUppgiftBostadTest"
 
 ## Gör inte
-- Ändra andra filer.
+- Ändra andra filer (inklusive `uppgifter/` — körskriptet hanterar det).
 - Ändra `SakerhetskopiaModell.kt`. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Jämföra hela `Uppgift`-objekt (fältet `skapad` skiljer sig).
+- Lämna testfilen tom eller ute.
 - Lägga till beroenden.
+- Använda `kotlin.test`.
+
+utfall: godkänd 2026-10-25 (hela testfilen — lokal modell levererade ingen kod)

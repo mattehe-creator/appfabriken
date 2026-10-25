@@ -1,8 +1,12 @@
 # Uppgift: Test av säkerhetskopians omvandling för dokument och planerade kostnader
 
 uppdrag: uppdrag/claude/2026-10-25-natt-testtackning.md
-försök: 1
+försök: 2
 beror-på: ingen
+
+## Vad som saknades
+- Filen `husloggen/src/test/kotlin/se/tmconnect/husloggen/export/SakerhetskopiaDokumentPlanTest.kt` skapades inte. PR:en innehöll bara flytt av uppgiftsfilen till `uppgifter/pagar/`.
+- Committa den nya testfilen på grenen `lokal/2026-10-25-04-test-kopia-dokument-plan` (samma gren, ingen ny PR behövs om du fortsätter där).
 
 ## Ändra bara dessa filer
 - husloggen/src/test/kotlin/se/tmconnect/husloggen/export/SakerhetskopiaDokumentPlanTest.kt (ny)
@@ -11,16 +15,19 @@ beror-på: ingen
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/export/SakerhetskopiaModell.kt (raderna med `dokumentTillSakerhetskopia` och nedåt)
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/data/Dokument.kt
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/data/PlaneradKostnad.kt
+- husloggen/src/test/kotlin/se/tmconnect/husloggen/export/SakerhetskopiaJsonTest.kt (JUnit 4-import och stil)
 
 ## Uppgift
-Skriv JUnit 4-tester (`org.junit.Test`, `assertEquals`, `assertNull`) i paketet `se.tmconnect.husloggen.export` för:
+Skriv JUnit 4-tester (`org.junit.Test`, `org.junit.Assert.assertEquals`, `org.junit.Assert.assertNull`) i paketet `se.tmconnect.husloggen.export` för:
 
 - `dokumentTillSakerhetskopia(dokument: Dokument, bostadIdTillIndex: Map<Long, Int>): SakerhetskopiaDokument`
 - `sakerhetskopiaDokumentTillDokument(export: SakerhetskopiaDokument, filnamn: String, bostadId: Long): Dokument`
 - `planeradKostnadTillSakerhetskopia(planeradKostnad: PlaneradKostnad, bostadIdTillIndex: Map<Long, Int>): SakerhetskopiaPlaneradKostnad`
 - `sakerhetskopiaPlaneradKostnadTillPlaneradKostnad(export: SakerhetskopiaPlaneradKostnad, bostadId: Long): PlaneradKostnad`
 
-Importera `se.tmconnect.husloggen.data.Dokument`, `se.tmconnect.husloggen.data.DokumentKategori`, `se.tmconnect.husloggen.data.PlaneradKostnad` och `java.time.LocalDate`. Alla fyra typerna är dataklasser utan tidsstämpel, så hela objekt kan jämföras med `assertEquals`.
+Importera `se.tmconnect.husloggen.data.Dokument`, `se.tmconnect.husloggen.data.DokumentKategori`, `se.tmconnect.husloggen.data.PlaneradKostnad` och `java.time.LocalDate`. Jämför hela förväntade objekt med `assertEquals` där uppgiften anger det; använd `assertNull` när fält ska vara null.
+
+Minst en `@Test`-metod per exempelrad nedan (flera metoder eller parametriserade tester är ok).
 
 ## Exempel
 - `dokumentTillSakerhetskopia(Dokument(id = 4, bostadId = 2, titel = "Ritning", kategori = DokumentKategori.RITNING, anteckning = "Plan 1", filnamn = "abc.pdf", mimeTyp = "application/pdf", tillagd = LocalDate.of(2026, 5, 1)), mapOf(2L to 1))` → `SakerhetskopiaDokument(titel = "Ritning", kategori = "RITNING", anteckning = "Plan 1", filnamn = "abc.pdf", mimeTyp = "application/pdf", tillagd = LocalDate.of(2026, 5, 1), bostadIndex = 1)`
@@ -39,3 +46,4 @@ gradle :husloggen:testDebugUnitTest --tests "*SakerhetskopiaDokumentPlanTest"
 - Ändra andra filer.
 - Ändra `SakerhetskopiaModell.kt`. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Lägga till beroenden.
+- Använda `kotlin.test` — endast JUnit 4 (`org.junit`).
