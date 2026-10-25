@@ -26,7 +26,7 @@ class KlockRubrikTest {
     @Test
     fun paminnelseAnnanDag() {
         val start = Instant.parse("2026-10-27T06:00:00Z")
-        assertEquals("Påminnelse: ring tandläkaren, 27/10 07:00", klockRubrik("PAMINNELSE", "ring tandläkaren", start, zon, idag))
+        assertEquals("Påminnelse: ring Eva, 27/10 07:00", klockRubrik("PAMINNELSE", "ring Eva", start, zon, idag))
     }
 
     @Test
