@@ -22,7 +22,6 @@ import se.tmconnect.husloggen.export.sakerhetskopiaPostTillPost
 import se.tmconnect.husloggen.export.sakerhetskopiaUppgiftTillUppgift
 import se.tmconnect.husloggen.export.uppgiftTillSakerhetskopia
 import se.tmconnect.husloggen.regler.formateraBilder
-import se.tmconnect.husloggen.regler.kanLaggaTillBostad
 import se.tmconnect.husloggen.regler.kanLaggaTillPost
 import se.tmconnect.husloggen.regler.tolkaBilder
 import se.tmconnect.karna.bild.BildLager
@@ -42,8 +41,14 @@ sealed class MarkeraGjordResult {
 
 sealed class SparaBostadResult {
     data class Sparad(val id: Long) : SparaBostadResult()
+}
 
-    data object GransBostaderUtanPro : SparaBostadResult()
+enum class BostadBorttagningSatt {
+    /** Allt innehåll försvinner tillsammans med bostaden (CASCADE). */
+    RADERA_INNEHALL,
+
+    /** Poster, uppgifter m.m. flyttas till en annan bostad innan bostaden tas bort. */
+    FLYTTA_TILL,
 }
 
 sealed class TaBortBostadResult {
@@ -51,6 +56,9 @@ sealed class TaBortBostadResult {
 
     /** Minst en bostad måste finnas kvar. */
     data object SistaBostaden : TaBortBostadResult()
+
+    /** Flytt kräver en annan befintlig bostad. */
+    data object OgiltigFlyttmal : TaBortBostadResult()
 }
 
 data class BostadRaderingInfo(
@@ -87,45 +95,50 @@ class HusRepository(
         return lista.firstOrNull()?.id ?: error("Ingen bostad i databasen")
     }
 
-    suspend fun sparaBostad(bostad: Bostad, arPro: Boolean): SparaBostadResult {
-        if (bostad.id == 0L) {
-            if (!kanLaggaTillBostad(dao.antalBostader(), arPro)) {
-                return SparaBostadResult.GransBostaderUtanPro
-            }
-            return SparaBostadResult.Sparad(
-                dao.infogaBostad(
-                    bostad.copy(
-                        namn = bostad.namn.trim(),
-                        adress = bostad.adress?.trim()?.takeIf { it.isNotEmpty() },
-                        anteckning = bostad.anteckning?.trim()?.takeIf { it.isNotEmpty() },
-                    ),
-                ),
-            )
-        }
-        dao.uppdateraBostad(
+    suspend fun sparaBostad(bostad: Bostad): SparaBostadResult {
+        val trimmad =
             bostad.copy(
                 namn = bostad.namn.trim(),
                 adress = bostad.adress?.trim()?.takeIf { it.isNotEmpty() },
                 anteckning = bostad.anteckning?.trim()?.takeIf { it.isNotEmpty() },
-            ),
-        )
-        return SparaBostadResult.Sparad(bostad.id)
+            )
+        if (trimmad.id == 0L) {
+            return SparaBostadResult.Sparad(dao.infogaBostad(trimmad))
+        }
+        dao.uppdateraBostad(trimmad)
+        return SparaBostadResult.Sparad(trimmad.id)
     }
 
     suspend fun bostadRaderingInfo(bostadId: Long): BostadRaderingInfo =
         BostadRaderingInfo(antalPoster = dao.antalPosterISammanhangForBostad(bostadId))
 
-    suspend fun taBortBostad(bostad: Bostad): TaBortBostadResult {
+    suspend fun taBortBostad(
+        bostad: Bostad,
+        satt: BostadBorttagningSatt,
+        flyttTillId: Long? = null,
+    ): TaBortBostadResult {
         if (dao.antalBostader() <= 1) {
             return TaBortBostadResult.SistaBostaden
         }
-        // Raderna försvinner med bostaden (CASCADE), men filerna måste tas bort för hand,
-        // annars ligger bilder och dokument kvar på telefonen fast användaren raderat dem.
-        val bildfiler = dao.allaPoster().filter { it.bostadId == bostad.id }.flatMap { postFiler(it) }
-        val dokumentfiler = dao.allaDokument().filter { it.bostadId == bostad.id }.map { it.filnamn }
-        dao.taBortBostad(bostad)
-        bildfiler.forEach { bildLager.taBort(it) }
-        dokumentfiler.forEach { dokumentLager.taBort(it) }
+        when (satt) {
+            BostadBorttagningSatt.FLYTTA_TILL -> {
+                val mal = flyttTillId ?: return TaBortBostadResult.OgiltigFlyttmal
+                if (mal == bostad.id || dao.hamtaBostad(mal) == null) {
+                    return TaBortBostadResult.OgiltigFlyttmal
+                }
+                dao.flyttaAlltTillBostad(bostad.id, mal)
+                dao.taBortBostad(bostad)
+            }
+            BostadBorttagningSatt.RADERA_INNEHALL -> {
+                // Raderna försvinner med bostaden (CASCADE), men filerna måste tas bort för hand,
+                // annars ligger bilder och dokument kvar på telefonen fast användaren raderat dem.
+                val bildfiler = dao.allaPoster().filter { it.bostadId == bostad.id }.flatMap { postFiler(it) }
+                val dokumentfiler = dao.allaDokument().filter { it.bostadId == bostad.id }.map { it.filnamn }
+                dao.taBortBostad(bostad)
+                bildfiler.forEach { bildLager.taBort(it) }
+                dokumentfiler.forEach { dokumentLager.taBort(it) }
+            }
+        }
         return TaBortBostadResult.Borttagen
     }
 

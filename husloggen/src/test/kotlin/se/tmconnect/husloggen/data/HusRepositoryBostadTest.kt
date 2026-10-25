@@ -17,6 +17,7 @@ import se.tmconnect.husloggen.export.Sakerhetskopia
 import se.tmconnect.husloggen.export.SakerhetskopiaInnehall
 import se.tmconnect.husloggen.export.lasSakerhetskopiaJson
 import se.tmconnect.husloggen.export.SakerhetskopiaJsonLasResult
+import se.tmconnect.husloggen.regler.filtreraPaBostad
 import se.tmconnect.husloggen.regler.kanLaggaTillPost
 import se.tmconnect.husloggen.regler.summeraPerAr
 
@@ -53,17 +54,69 @@ class HusRepositoryBostadTest {
     @Test
     fun taBortSistaBostadenAvvisas() = runTest {
         val enda = dao.allaBostader().single()
-        assertEquals(TaBortBostadResult.SistaBostaden, repository.taBortBostad(enda))
+        assertEquals(
+            TaBortBostadResult.SistaBostaden,
+            repository.taBortBostad(enda, BostadBorttagningSatt.RADERA_INNEHALL),
+        )
     }
 
     @Test
-    fun fjardeBostadUtanProAvvisas() = runTest {
+    fun filtreringPerBostadMedRenFunktion() = runTest {
+        val a = dao.allaBostader().single().id
+        val b = dao.infogaBostad(Bostad(namn = "B"))
+        dao.infogaPost(
+            Post(bostadId = a, datum = LocalDate.of(2026, 1, 1), vad = "A", typ = PostTyp.UNDERHALL),
+        )
+        dao.infogaPost(
+            Post(bostadId = b, datum = LocalDate.of(2026, 1, 2), vad = "B", typ = PostTyp.UNDERHALL),
+        )
+        val alla = repository.allaPoster()
+        assertEquals(1, filtreraPaBostad(alla, a) { it.bostadId }.size)
+        assertEquals("B", filtreraPaBostad(alla, b) { it.bostadId }.single().vad)
+    }
+
+    @Test
+    fun taBortBostadFlyttarPosterTillAnnanBostad() = runTest {
+        val a = dao.allaBostader().single().id
+        val b = dao.infogaBostad(Bostad(namn = "B"))
+        dao.infogaPost(
+            Post(bostadId = b, datum = LocalDate.of(2026, 3, 1), vad = "Flyttas", typ = PostTyp.UNDERHALL),
+        )
+        val bostadB = dao.hamtaBostad(b)!!
+        assertEquals(
+            TaBortBostadResult.Borttagen,
+            repository.taBortBostad(bostadB, BostadBorttagningSatt.FLYTTA_TILL, flyttTillId = a),
+        )
+        assertEquals(1, repository.antalBostader())
+        assertEquals("Flyttas", repository.posterForBostad(a).first().single().vad)
+    }
+
+    @Test
+    fun taBortBostadRaderarInnehall() = runTest {
+        val a = dao.allaBostader().single().id
+        val b = dao.infogaBostad(Bostad(namn = "B"))
+        dao.infogaPost(
+            Post(bostadId = a, datum = LocalDate.of(2026, 2, 1), vad = "Kvar", typ = PostTyp.UNDERHALL),
+        )
+        dao.infogaPost(
+            Post(bostadId = b, datum = LocalDate.of(2026, 3, 1), vad = "Försvinner", typ = PostTyp.UNDERHALL),
+        )
+        val bostadB = dao.hamtaBostad(b)!!
+        assertEquals(
+            TaBortBostadResult.Borttagen,
+            repository.taBortBostad(bostadB, BostadBorttagningSatt.RADERA_INNEHALL),
+        )
+        assertEquals(1, repository.antalPoster())
+        assertEquals("Kvar", repository.posterForBostad(a).first().single().vad)
+    }
+
+    @Test
+    fun fjardeBostadUtanProTillats() = runTest {
         repeat(2) { dao.infogaBostad(Bostad(namn = "Extra $it")) }
         assertEquals(3, repository.antalBostader())
-        val result =
-            repository.sparaBostad(Bostad(namn = "Fjärde"), arPro = false)
-        assertEquals(SparaBostadResult.GransBostaderUtanPro, result)
-        assertEquals(3, repository.antalBostader())
+        val result = repository.sparaBostad(Bostad(namn = "Fjärde"))
+        assertTrue(result is SparaBostadResult.Sparad)
+        assertEquals(4, repository.antalBostader())
     }
 
     @Test

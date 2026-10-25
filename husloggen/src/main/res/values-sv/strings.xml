@@ -167,7 +167,6 @@
     <string name="pro_du_har">Du har Pro</string>
     <string name="pro_kop_misslyckades">Köpet kunde inte genomföras. Försök igen.</string>
     <string name="pro_grans_nadd">Gränsen är nådd: 15 poster</string>
-    <string name="pro_grans_bostader">Fler än 3 bostäder kräver Pro</string>
     <string name="pro_inte_nu">Inte nu</string>
 
     <!-- Bostäder -->
