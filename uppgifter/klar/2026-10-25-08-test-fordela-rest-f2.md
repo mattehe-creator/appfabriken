@@ -49,3 +49,5 @@ gradle :styrelserummet:test --tests "*FordelaRestTest"
 - Ändra `FordelaVarde.kt`. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Lägga till beroenden.
 - Använd `kotlin.test`; använd JUnit 4 (`org.junit`).
+
+utfall: godkänd 2026-10-25 (hela FordelaRestTest.kt — lokal modell levererade ingen kod)
