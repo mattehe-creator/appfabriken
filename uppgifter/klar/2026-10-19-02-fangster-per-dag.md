@@ -25,3 +25,5 @@ gradle :rostfangst:testDebugUnitTest --tests "*FangsterPerDagTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-25 av Cursor (PR #716). Ersatt av 2026-10-19-02-fangster-per-dag-f2.md
