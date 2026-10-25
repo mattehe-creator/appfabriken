@@ -107,18 +107,10 @@ data class SakerhetskopiaImportResultat(
 )
 
 fun bostadTillSakerhetskopia(bostad: Bostad): SakerhetskopiaBostad =
-    SakerhetskopiaBostad(
-        namn = bostad.namn,
-        adress = bostad.adress,
-        anteckning = bostad.anteckning,
-    )
+    SakerhetskopiaBostad(namn = bostad.namn)
 
 fun sakerhetskopiaBostadTillBostad(export: SakerhetskopiaBostad): Bostad =
-    Bostad(
-        namn = export.namn.trim(),
-        adress = export.adress?.trim()?.takeIf { it.isNotEmpty() },
-        anteckning = export.anteckning?.trim()?.takeIf { it.isNotEmpty() },
-    )
+    Bostad(namn = export.namn.trim())
 
 fun uppgiftTillSakerhetskopia(uppgift: Uppgift, bostadIdTillIndex: Map<Long, Int>): SakerhetskopiaUppgift =
     SakerhetskopiaUppgift(

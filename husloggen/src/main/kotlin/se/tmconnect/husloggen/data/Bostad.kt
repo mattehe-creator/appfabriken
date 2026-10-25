@@ -8,6 +8,5 @@ data class Bostad(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val namn: String,
-    val adress: String? = null,
-    val anteckning: String? = null,
+    val skapad: Long = System.currentTimeMillis(),
 )

@@ -13,10 +13,11 @@ internal fun skapaBostadSeedCallback(context: Context): RoomDatabase.Callback =
     }
 
 internal fun seedForvaldBostad(db: SupportSQLiteDatabase, namn: String) {
+    val skapad = System.currentTimeMillis()
     db.execSQL(
         """
-        INSERT INTO bostad (id, namn, adress, anteckning)
-        VALUES (1, ?, NULL, NULL)
+        INSERT INTO bostad (id, namn, skapad)
+        VALUES (1, ?, $skapad)
         """.trimIndent(),
         arrayOf(namn),
     )

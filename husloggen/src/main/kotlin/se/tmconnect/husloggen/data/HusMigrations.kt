@@ -88,6 +88,29 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
     }
 }
 
+val MIGRATION_7_8 = object : Migration(7, 8) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        val skapad = System.currentTimeMillis()
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS bostad_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                namn TEXT NOT NULL,
+                skapad INTEGER NOT NULL
+            )
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+            INSERT INTO bostad_new (id, namn, skapad)
+            SELECT id, namn, $skapad FROM bostad
+            """.trimIndent(),
+        )
+        db.execSQL("DROP TABLE bostad")
+        db.execSQL("ALTER TABLE bostad_new RENAME TO bostad")
+    }
+}
+
 fun skapaMigration5Till6(context: Context): Migration =
     object : Migration(5, 6) {
         override fun migrate(db: SupportSQLiteDatabase) {
@@ -96,8 +119,7 @@ fun skapaMigration5Till6(context: Context): Migration =
                 CREATE TABLE IF NOT EXISTS bostad (
                     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                     namn TEXT NOT NULL,
-                    adress TEXT,
-                    anteckning TEXT
+                    skapad INTEGER NOT NULL
                 )
                 """.trimIndent(),
             )

@@ -119,12 +119,11 @@ fun BostaderInstallningSektion(
                     selected = bostad.id == valdBostadId,
                     onClick = { onValjBostad(bostad.id) },
                 )
-                Column(modifier = Modifier.weight(1f).padding(start = 8.dp)) {
-                    Text(text = bostad.namn, style = MaterialTheme.typography.bodyLarge)
-                    bostad.adress?.let {
-                        Text(text = it, style = MaterialTheme.typography.bodySmall)
-                    }
-                }
+                Text(
+                    text = bostad.namn,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.weight(1f).padding(start = 8.dp),
+                )
                 TextButton(onClick = { redigeraId = bostad.id }) {
                     Text(text = stringResource(R.string.knapp_andra))
                 }
@@ -143,8 +142,8 @@ fun BostaderInstallningSektion(
         BostadFormularDialog(
             titel = stringResource(R.string.bostad_lagg_till),
             onDismiss = { visaNy = false },
-            onSpara = { namn, adress, anteckning ->
-                onSparaNyBostad(namn, adress, anteckning) { ok ->
+            onSpara = { namn ->
+                onSparaNyBostad(namn, "", "") { ok ->
                     if (ok) visaNy = false
                 }
             },
@@ -154,17 +153,9 @@ fun BostaderInstallningSektion(
         BostadFormularDialog(
             titel = bostad.namn,
             startNamn = bostad.namn,
-            startAdress = bostad.adress.orEmpty(),
-            startAnteckning = bostad.anteckning.orEmpty(),
             onDismiss = { redigeraId = null },
-            onSpara = { namn, adress, anteckning ->
-                onUppdateraBostad(
-                    bostad.copy(
-                        namn = namn,
-                        adress = adress.ifBlank { null },
-                        anteckning = anteckning.ifBlank { null },
-                    ),
-                )
+            onSpara = { namn ->
+                onUppdateraBostad(bostad.copy(namn = namn))
                 redigeraId = null
             },
             onTaBort = if (bostader.size > 1) {
@@ -232,15 +223,11 @@ fun BostaderInstallningSektion(
 private fun BostadFormularDialog(
     titel: String,
     startNamn: String = "",
-    startAdress: String = "",
-    startAnteckning: String = "",
     onDismiss: () -> Unit,
-    onSpara: (String, String, String) -> Unit,
+    onSpara: (String) -> Unit,
     onTaBort: (() -> Unit)? = null,
 ) {
     var namn by rememberSaveable { mutableStateOf(startNamn) }
-    var adress by rememberSaveable { mutableStateOf(startAdress) }
-    var anteckning by rememberSaveable { mutableStateOf(startAnteckning) }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = titel) },
@@ -256,24 +243,11 @@ private fun BostadFormularDialog(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                 )
-                OutlinedTextField(
-                    value = adress,
-                    onValueChange = { adress = it },
-                    label = { Text(text = stringResource(R.string.bostad_adress)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                )
-                OutlinedTextField(
-                    value = anteckning,
-                    onValueChange = { anteckning = it },
-                    label = { Text(text = stringResource(R.string.bostad_anteckning)) },
-                    modifier = Modifier.fillMaxWidth(),
-                )
             }
         },
         confirmButton = {
             Button(
-                onClick = { onSpara(namn.trim(), adress, anteckning) },
+                onClick = { onSpara(namn.trim()) },
                 enabled = namn.isNotBlank(),
                 modifier = Modifier.heightIn(min = 48.dp),
             ) {

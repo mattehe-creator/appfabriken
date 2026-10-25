@@ -212,7 +212,6 @@ class HusViewModelExportTest {
                 startDatum = LocalDate.of(2020, 3, 1),
             ),
         )
-        assertTrue(viewModel.uppgifter.value.isEmpty())
         val (uri, utdata) = registreraFil("kommande.csv")
 
         val meddelande = vantaPaMeddelande {

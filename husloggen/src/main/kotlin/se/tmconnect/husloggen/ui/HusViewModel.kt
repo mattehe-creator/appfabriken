@@ -47,7 +47,7 @@ import se.tmconnect.husloggen.regler.standardForsaljningsar
 import se.tmconnect.karna.export.PdfExportResult
 import se.tmconnect.karna.export.skrivCsvMedBom
 import java.util.Locale
-import se.tmconnect.husloggen.regler.kanLaggaTillBostad
+import se.tmconnect.husloggen.data.BostadBorttagningSatt
 import se.tmconnect.husloggen.regler.kanLaggaTillPost
 import se.tmconnect.karna.pro.ProKalla
 import se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand
@@ -562,29 +562,12 @@ class HusViewModel(
         viewModelScope.launch { installningarLager.sattValdBostadId(bostadId) }
     }
 
-    fun kanLaggaTillNyBostad(): Boolean =
-        kanLaggaTillBostad(bostader.value.size, proKalla.arPro.value)
-
     fun sparaNyBostad(namn: String, adress: String, anteckning: String, onResultat: (Boolean) -> Unit) {
         viewModelScope.launch {
-            when (
-                val resultat =
-                    repository.sparaBostad(
-                        Bostad(
-                            namn = namn,
-                            adress = adress.ifBlank { null },
-                            anteckning = anteckning.ifBlank { null },
-                        ),
-                        proKalla.arPro.value,
-                    )
-            ) {
+            when (val resultat = repository.sparaBostad(Bostad(namn = namn))) {
                 is SparaBostadResult.Sparad -> {
                     installningarLager.sattValdBostadId(resultat.id)
                     onResultat(true)
-                }
-                SparaBostadResult.GransBostaderUtanPro -> {
-                    visaProDialog(visaBostadsGrans = true)
-                    onResultat(false)
                 }
             }
         }
@@ -592,14 +575,22 @@ class HusViewModel(
 
     fun uppdateraBostad(bostad: Bostad) {
         viewModelScope.launch {
-            repository.sparaBostad(bostad, proKalla.arPro.value)
+            repository.sparaBostad(bostad)
         }
     }
 
-    fun taBortBostad(bostad: Bostad, onSista: () -> Unit, onBorttagen: () -> Unit) {
+    fun taBortBostad(
+        bostad: Bostad,
+        satt: BostadBorttagningSatt,
+        flyttTillId: Long?,
+        onSista: () -> Unit,
+        onBorttagen: () -> Unit,
+        onOgiltigFlytt: () -> Unit = {},
+    ) {
         viewModelScope.launch {
-            when (repository.taBortBostad(bostad)) {
+            when (repository.taBortBostad(bostad, satt, flyttTillId)) {
                 TaBortBostadResult.SistaBostaden -> onSista()
+                TaBortBostadResult.OgiltigFlyttmal -> onOgiltigFlytt()
                 TaBortBostadResult.Borttagen -> {
                     synkaValdBostad()
                     onBorttagen()

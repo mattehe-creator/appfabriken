@@ -90,7 +90,7 @@ class HusDatabasMigrationTest {
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
             .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5,
-                        skapaMigration5Till6(context), MIGRATION_6_7)
+                        skapaMigration5Till6(context), MIGRATION_6_7, MIGRATION_7_8)
             .allowMainThreadQueries()
             .build()
 
@@ -165,7 +165,7 @@ class HusDatabasMigrationTest {
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
             .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5,
-                        skapaMigration5Till6(context), MIGRATION_6_7)
+                        skapaMigration5Till6(context), MIGRATION_6_7, MIGRATION_7_8)
             .allowMainThreadQueries()
             .build()
 
@@ -250,7 +250,7 @@ class HusDatabasMigrationTest {
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
             .addMigrations(MIGRATION_3_4, MIGRATION_4_5,
-                        skapaMigration5Till6(context), MIGRATION_6_7)
+                        skapaMigration5Till6(context), MIGRATION_6_7, MIGRATION_7_8)
             .allowMainThreadQueries()
             .build()
 
@@ -358,13 +358,16 @@ class HusDatabasMigrationTest {
         openHelper.close()
 
         val databas = Room.databaseBuilder(context, HusDatabas::class.java, TEST_DB)
-            .addMigrations(MIGRATION_4_5, skapaMigration5Till6(context), MIGRATION_6_7)
+            .addMigrations(MIGRATION_4_5, skapaMigration5Till6(context), MIGRATION_6_7, MIGRATION_7_8)
             .allowMainThreadQueries()
             .build()
 
         val dao = databas.husDao()
         assertEquals(1, dao.antalBostader())
-        val bostadId = dao.allaBostader().single().id
+        val forvald = dao.allaBostader().single()
+        assertEquals(context.getString(se.tmconnect.husloggen.R.string.bostad_forvald_namn), forvald.namn)
+        assertEquals(true, forvald.skapad > 0L)
+        val bostadId = forvald.id
         assertEquals("Fasad", dao.hamtaPost(1)!!.vad)
         assertEquals(bostadId, dao.hamtaPost(1)!!.bostadId)
         assertEquals(bostadId, dao.hamtaMatare(1)!!.bostadId)
@@ -446,6 +449,61 @@ class HusDatabasMigrationTest {
             assertEquals(true, cursor.moveToFirst())
             assertEquals(150L, cursor.getLong(0))
         }
+
+        db.close()
+        openHelper.close()
+        context.deleteDatabase(TEST_DB)
+    }
+
+    @Test
+    fun migration7Till8BevararBostadsnamnOchLaggerTillSkapad() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        context.deleteDatabase(TEST_DB)
+
+        val config = SupportSQLiteOpenHelper.Configuration.builder(context)
+            .name(TEST_DB)
+            .callback(
+                object : SupportSQLiteOpenHelper.Callback(7) {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        db.execSQL(
+                            """
+                            CREATE TABLE IF NOT EXISTS bostad (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                namn TEXT NOT NULL,
+                                adress TEXT,
+                                anteckning TEXT
+                            )
+                            """.trimIndent(),
+                        )
+                        db.execSQL(
+                            """
+                            INSERT INTO bostad (id, namn, adress, anteckning)
+                            VALUES (1, 'Mitt hem', NULL, NULL)
+                            """.trimIndent(),
+                        )
+                    }
+
+                    override fun onUpgrade(
+                        db: SupportSQLiteDatabase,
+                        oldVersion: Int,
+                        newVersion: Int,
+                    ) = Unit
+                },
+            )
+            .build()
+        val openHelper = FrameworkSQLiteOpenHelperFactory().create(config)
+        val db = openHelper.writableDatabase
+        MIGRATION_7_8.migrate(db)
+
+        var namn: String? = null
+        var skapad: Long? = null
+        db.query("SELECT namn, skapad FROM bostad WHERE id = 1").use { cursor ->
+            assertEquals(true, cursor.moveToFirst())
+            namn = cursor.getString(0)
+            skapad = cursor.getLong(1)
+        }
+        assertEquals("Mitt hem", namn)
+        assertEquals(true, skapad != null && skapad!! > 0L)
 
         db.close()
         openHelper.close()

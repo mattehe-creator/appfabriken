@@ -171,7 +171,7 @@
     <string name="pro_inte_nu">Inte nu</string>
 
     <!-- Bostäder -->
-    <string name="bostad_forvald_namn">Min bostad</string>
+    <string name="bostad_forvald_namn">Mitt hem</string>
     <string name="bostad_rubrik">Bostäder</string>
     <string name="bostad_vald">Vald bostad: %1$s</string>
     <string name="bostad_byt">Byt bostad</string>

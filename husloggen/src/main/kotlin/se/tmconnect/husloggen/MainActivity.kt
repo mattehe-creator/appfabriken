@@ -553,7 +553,15 @@ class MainActivity : ComponentActivity() {
                                 onValjBostad = viewModel::valjBostad,
                                 onSparaNyBostad = viewModel::sparaNyBostad,
                                 onUppdateraBostad = viewModel::uppdateraBostad,
-                                onTaBortBostad = viewModel::taBortBostad,
+                                onTaBortBostad = { bostad, onSista, onBorttagen ->
+                                    viewModel.taBortBostad(
+                                        bostad,
+                                        se.tmconnect.husloggen.data.BostadBorttagningSatt.RADERA_INNEHALL,
+                                        flyttTillId = null,
+                                        onSista = onSista,
+                                        onBorttagen = onBorttagen,
+                                    )
+                                },
                                 hamtaRaderingInfo = { id ->
                                     viewModel.bostadRaderingInfo(id).antalPoster
                                 },

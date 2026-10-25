@@ -12,12 +12,9 @@ import se.tmconnect.husloggen.data.Uppgift
 class SakerhetskopiaUppgiftBostadTest {
     @Test
     fun bostadTillSakerhetskopia() {
-        val bostad = Bostad(id = 4, namn = "Villan", adress = "Storgatan 1", anteckning = null)
+        val bostad = Bostad(id = 4, namn = "Villan", skapad = 1L)
         val export = bostadTillSakerhetskopia(bostad)
-        assertEquals(
-            SakerhetskopiaBostad(namn = "Villan", adress = "Storgatan 1", anteckning = null),
-            export,
-        )
+        assertEquals(SakerhetskopiaBostad(namn = "Villan"), export)
     }
 
     @Test
@@ -25,7 +22,8 @@ class SakerhetskopiaUppgiftBostadTest {
         val export =
             SakerhetskopiaBostad(namn = " Villan ", adress = " Storgatan 1 ", anteckning = "")
         val bostad = sakerhetskopiaBostadTillBostad(export)
-        assertEquals(Bostad(id = 0, namn = "Villan", adress = "Storgatan 1", anteckning = null), bostad)
+        assertEquals(0L, bostad.id)
+        assertEquals("Villan", bostad.namn)
     }
 
     @Test
