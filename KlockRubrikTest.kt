@@ -63,7 +63,7 @@ class KlockRubrikTest {
         // Kontrollera att resultatet är exakt 40 tecken
         assertEquals(40, result.length)
         // Kontrollera att titeln är avkortad och att det finns en ellips
-        assertTrue(result.contains("…"))
+        assert(result.contains("…"))
     }
     
     @Test
