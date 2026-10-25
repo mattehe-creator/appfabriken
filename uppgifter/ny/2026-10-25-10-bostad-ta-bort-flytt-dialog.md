@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/2026-10-25-husloggen-flera-bostader.md
 försök: 1
-beror-på: 2026-10-25-09-bostad-pa-oversikt.md
+beror-på: 2026-10-25-09-bostad-pa-oversikt-f2.md
 
 ## Ändra bara dessa filer
 - husloggen/src/main/kotlin/se/tmconnect/husloggen/ui/BostadSkarmar.kt

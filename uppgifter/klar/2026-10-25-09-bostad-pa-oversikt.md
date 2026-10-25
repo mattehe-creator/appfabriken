@@ -33,3 +33,5 @@ gradle :husloggen:testDebugUnitTest --tests "*HusNavigeringTest*"
 - Ändra databasschemat eller `HusRepository`.
 - Lägga till beroenden.
 - Ändra andra filer.
+
+utfall: underkänd 2026-10-25 av Cursor (PR #700). Ersatt av 2026-10-25-09-bostad-pa-oversikt-f2.md
