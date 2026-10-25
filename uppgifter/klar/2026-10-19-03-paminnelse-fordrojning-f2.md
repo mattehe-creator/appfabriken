@@ -28,3 +28,5 @@ gradle :rostfangst:testDebugUnitTest --tests "*PaminnelseFordrojningTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-25
