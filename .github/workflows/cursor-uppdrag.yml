@@ -35,6 +35,10 @@ jobs:
             echo "Inga nya uppdrag i den här pushen."
             exit 0
           fi
+          if [ -f CURSOR-PAUS ]; then
+            echo "::notice::Reservläge (CURSOR-PAUS). Claude delar upp uppdraget själv: $nya"
+            exit 0
+          fi
 
           # Modeller som kontot har (för felsökning och val av modell).
           for v in v1 v0; do
