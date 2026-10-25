@@ -13,12 +13,14 @@ fun fangsterPerDag(
     val antal = (0L..29L).associate { dag ->
         start.plusDays(dag) to 0
     }.toMutableMap()
+    
     for (tid in tider) {
         val dag = tid.atZone(zon).toLocalDate()
         if (!dag.isBefore(start) && !dag.isAfter(idag)) {
             antal[dag] = (antal[dag] ?: 0) + 1
         }
     }
+    
     return (0L..29L).map { offset ->
         val dag = start.plusDays(offset)
         dag to (antal[dag] ?: 0)
