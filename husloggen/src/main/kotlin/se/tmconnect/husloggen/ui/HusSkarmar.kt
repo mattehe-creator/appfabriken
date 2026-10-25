@@ -294,18 +294,39 @@ fun HusStartSkarm(
                 onValjFlik = { valdFlik = it.ordinal },
             )
             HusFlik.SAMMANSTALLNING -> {
-                SammanstallningSkarm(
-                    poster = poster,
-                    kommandeKostnad = kommandeKostnad,
-                    forsaljningsAr = forsaljningsAr,
-                    onForsaljningsArAndras = onForsaljningsArAndras,
-                    locale = locale,
-                    visaSkatteInfo = visaSkatteInfo,
-                    modifier = Modifier.padding(innerPadding),
-                    onExportPdf = onExportHistorikPdf,
-                    onExportCsv = onExportHistorikCsv,
-                    onVisaKommandeAr = onVisaKommandeAr,
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                ) {
+                    BostaderInstallningSektion(
+                        bostader = bostader,
+                        valdBostadId = valdBostad?.id,
+                        onValjBostad = onValjBostad,
+                        onSparaNyBostad = { namn, adress, anteckning, callback ->
+                            onSparaNyBostad(namn, adress, anteckning) { ok ->
+                                callback(ok)
+                            }
+                        },
+                        onUppdateraBostad = onUppdateraBostad,
+                        onTaBortBostad = { bostad, onSista, onBorttagen ->
+                            onTaBortBostad(bostad, onSista, onBorttagen)
+                        },
+                        hamtaRaderingInfo = { id -> hamtaRaderingInfo(id) },
+                    )
+                    SammanstallningSkarm(
+                        poster = poster,
+                        kommandeKostnad = kommandeKostnad,
+                        forsaljningsAr = forsaljningsAr,
+                        onForsaljningsArAndras = onForsaljningsArAndras,
+                        locale = locale,
+                        visaSkatteInfo = visaSkatteInfo,
+                        modifier = Modifier.weight(1f),
+                        onExportPdf = onExportHistorikPdf,
+                        onExportCsv = onExportHistorikCsv,
+                        onVisaKommandeAr = onVisaKommandeAr,
+                    )
+                }
             }
         }
     }
@@ -655,16 +676,6 @@ fun InstallningarSkarm(
             Text(
                 text = stringResource(R.string.installningar_version, BuildConfig.VERSION_NAME),
                 style = MaterialTheme.typography.bodyLarge,
-            )
-
-            BostaderInstallningSektion(
-                bostader = bostader,
-                valdBostadId = valdBostadId,
-                onValjBostad = onValjBostad,
-                onSparaNyBostad = onSparaNyBostad,
-                onUppdateraBostad = onUppdateraBostad,
-                onTaBortBostad = onTaBortBostad,
-                hamtaRaderingInfo = hamtaRaderingInfo,
             )
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
