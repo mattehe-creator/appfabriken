@@ -10,17 +10,24 @@ fun fangsterPerDag(
     zon: ZoneId,
 ): List<Pair<LocalDate, Int>> {
     val start = idag.minusDays(29)
-    val antal = (0L..29L).associate { dag ->
-        start.plusDays(dag) to 0
-    }.toMutableMap()
+    val resultat = mutableMapOf<LocalDate, Int>()
+    
+    // Initiera alla dagar med 0
+    for (i in 0..29) {
+        resultat[start.plusDays(i)] = 0
+    }
+    
+    // Räkna fångster per dag
     for (tid in tider) {
         val dag = tid.atZone(zon).toLocalDate()
         if (!dag.isBefore(start) && !dag.isAfter(idag)) {
-            antal[dag] = (antal[dag] ?: 0) + 1
+            resultat[dag] = (resultat[dag] ?: 0) + 1
         }
     }
-    return (0L..29L).map { offset ->
+    
+    // Returnera som lista av par
+    return (0..29).map { offset ->
         val dag = start.plusDays(offset)
-        dag to (antal[dag] ?: 0)
+        dag to resultat[dag]!!
     }
 }
