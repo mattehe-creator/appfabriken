@@ -1,7 +1,19 @@
 # Uppgift: Använd filtreraPaBostad i ViewModel
 
+## Vad som saknades (försök 1)
+- Ingen kod committades: grenen innehåller bara att uppgiftsfilen flyttats till `pagar/`.
+- `HusViewModel.kt` och `HusViewModelExportTest.kt` är oförändrade mot `main`.
+- Exportvägarna anropar inte `filtreraPaBostad` från `BostadFilter.kt`.
+- Inget test med två bostäder som verifierar att historik-CSV bara innehåller vald bostads poster (exemplet A1/B1).
+
+Gör så här:
+1. Importera `se.tmconnect.husloggen.regler.filtreraPaBostad`.
+2. I `posterForExport(bostadId)`: returnera `filtreraPaBostad(repository.allaPoster(), bostadId) { it.bostadId }` (ersätt anropet till `repository.posterForBostad(...).first()`).
+3. I `sparaKommandeUnderhallCsv`: hämta uppgifter med `filtreraPaBostad(repository.allaUppgifter(), bostadId) { it.bostadId }` i stället för `repository.uppgifterForBostad(bostadId).first()`.
+4. Lägg till `@Test fun exportHistorikCsvTarBaraMedValdBostad()` (eller liknande namn): skapa bostad B via `repository.sparaBostad`, spara post `"A1"` på vald bostad A och `"B1"` på B, kör historik-CSV-export, assert att CSV innehåller `"A1"` och inte `"B1"`. Använd befintlig setup (`registreraFil`, `vantaPaMeddelande`, `sparaHistorikCsv`).
+
 uppdrag: uppdrag/2026-10-25-husloggen-flera-bostader.md
-försök: 1
+försök: 2
 beror-på: cursor:2026-10-25-husloggen-flera-bostader
 
 ## Ändra bara dessa filer
