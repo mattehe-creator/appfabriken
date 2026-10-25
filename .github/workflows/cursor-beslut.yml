@@ -105,10 +105,11 @@ jobs:
                 echo "::warning::Godkänd men uppgiften ligger inte i uppgifter/klar/. Claude får avgöra."; exit 0
               fi
               gh pr ready "$pr" || true
-              gh pr merge "$pr" --squash --subject "Lokal: $namn (#$pr), godkänd av Cursor"
+              granskare=$(grep -m1 '^granskare:' "$fil" | sed 's/^granskare:[[:space:]]*//' | tr -d '\r')
+              gh pr merge "$pr" --squash --subject "Lokal: $namn (#$pr), godkänd av ${granskare:-Cursor}"
               # En merge med GITHUB_TOKEN startar inget bygge på main, så det startas här (APK till telefonen).
               gh workflow run bygg.yml --ref main || true
-              echo "::notice::PR #$pr mergad efter Cursors godkännande."
+              echo "::notice::PR #$pr mergad efter godkännande av ${granskare:-Cursor}."
               ;;
             underkänd|fråga)
               forsok2=$(awk '/^## Vid underkänd: försök 2/{f=1;next} /^## Frågor till Claude/{f=0} f' "$fil" | sed '/^```/d')
