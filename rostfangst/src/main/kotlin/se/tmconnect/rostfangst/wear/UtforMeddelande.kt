@@ -10,10 +10,9 @@ fun kodaUtfor(id: Long): ByteArray {
 fun avkodaUtfor(data: ByteArray): Long? {
     val str = data.toString(StandardCharsets.UTF_8).trim()
     if (str.isEmpty()) return null
-    
     return try {
         val id = str.toLong()
-        if (id > 0) id else null
+        if (id <= 0) null else id
     } catch (e: NumberFormatException) {
         null
     }
