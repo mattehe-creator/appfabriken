@@ -28,3 +28,5 @@ gradle :rostfangst:testDebugUnitTest --tests "*SystempromptTest"
 ## Gör inte
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-25 av spärren (bara tester, grönt bygge)
