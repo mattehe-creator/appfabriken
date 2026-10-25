@@ -1,12 +1,12 @@
 # Data safety — Husloggen (Play Console)
 
-Svar att fylla i i Google Play Console, med motivering utifrån manifestet för `:husloggen`, modulberoenden (`:karna`) och appens beteende. Skrivet av Claude 2026-10-21. Appnamnet i butiken är preliminärt.
+Svar att fylla i i Google Play Console, med motivering utifrån manifestet för `:husloggen`, modulberoenden (`:karna`) och appens beteende. Uppdaterad 2026-10-25. Appnamnet i butiken är preliminärt.
 
 ## Samlad bild
 
 | Källa | Vad den innebär |
 |-------|-----------------|
-| `husloggen/src/main/AndroidManifest.xml` | `POST_NOTIFICATIONS` för lokala påminnelser. `INTERNET` och `ACCESS_NETWORK_STATE` **tas bort** (`tools:node="remove"`). |
+| `husloggen/src/main/AndroidManifest.xml` | `POST_NOTIFICATIONS` för lokala påminnelser. Hemskärmswidget (`KommandeWidget`) läser uppgifter lokalt och öppnar appen vid tryck. `INTERNET` och `ACCESS_NETWORK_STATE` **tas bort** (`tools:node="remove"`). |
 | `:karna` / Play Billing | Google Play Billing Library använder Play Store på enheten för engångsköpet Pro. Ingen egen server finns. |
 | Appdata | Bostäder, uppgifter, loggposter, bilder, dokument, mätare och inställningar lagras lokalt (Room, DataStore, appens privata filer). Export och säkerhetskopia sker **endast** när användaren själv sparar en fil eller väljer en mapp för automatisk säkerhetskopia. |
 
@@ -48,7 +48,8 @@ Markeras **inte** som insamlad, eftersom den aldrig lämnar enheten till utveckl
 | Mätare och avläsningar | Förbrukning | Nej |
 | Planerade kostnader | Översikt framåt | Nej |
 | Inställningar (påminnelser, säkerhetskopia, tema) | Appens funktion | Nej |
-| Pro-status | Tar bort gränserna | Nej (verifieras via Play) |
+| Pro-status | Tar bort gränsen på loggposter | Nej (verifieras via Play) |
+| Widget (kommande uppgifter) | Visar lokalt sparade datum | Nej |
 
 ---
 
@@ -61,7 +62,7 @@ Markeras **inte** som insamlad, eftersom den aldrig lämnar enheten till utveckl
 | `WAKE_LOCK`, `RECEIVE_BOOT_COMPLETED`, `FOREGROUND_SERVICE` | WorkManager (påminnelser, automatisk säkerhetskopia), via sammanslaget manifest | Schemaläggning på enheten |
 | (ingen `INTERNET`) | Medvetet borttagen | Appen kan inte skicka något själv |
 
-Ingen kamera- eller lagringsbehörighet: bilder via systemets fotoväljare och kamera, filer via systemets filväljare (Storage Access Framework). Ingen platsbehörighet.
+Ingen kamera- eller lagringsbehörighet: bilder via systemets fotoväljare och kamera, filer via systemets filväljare (Storage Access Framework). Ingen platsbehörighet. Widgeten behöver ingen extra behörighet och skickar inget nätverksdata.
 
 ---
 
