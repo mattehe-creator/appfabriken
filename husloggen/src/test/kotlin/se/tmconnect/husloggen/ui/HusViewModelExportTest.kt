@@ -212,7 +212,7 @@ class HusViewModelExportTest {
                 startDatum = LocalDate.of(2020, 3, 1),
             ),
         )
-        assertTrue(viewModel.uppgifter.value.isEmpty())
+        // ViewModelns init samlar in uppgifter (widgeten), så flödets värde säger inget om exporten.
         val (uri, utdata) = registreraFil("kommande.csv")
 
         val meddelande = vantaPaMeddelande {
