@@ -56,3 +56,5 @@ gradle :husloggen:testDebugUnitTest --tests "*SakerhetskopiaUppgiftBostadTest"
 - Lämna testfilen tom eller ute.
 - Lägga till beroenden.
 - Använda `kotlin.test`.
+
+utfall: godkänd 2026-10-25 (hela testfilen — lokal modell levererade ingen kod)

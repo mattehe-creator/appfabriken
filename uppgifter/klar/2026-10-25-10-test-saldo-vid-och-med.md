@@ -66,3 +66,5 @@ gradle :flextid:testDebugUnitTest --tests "*SaldoVidOchMedTest"
 - Ändra `ManadsRapport.kt`, `GenvagStampel.kt`, `Arbetstid.kt` eller `TidRegler.kt`. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Lägga till fler dagar i listan `dagar`, särskilt inte på röda dagar eller aftnar (till exempel 31 oktober eller i december). `tillOchMed = 2026-10-31` är bara en gräns och går bra.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-25 av Cursor (PR #683). Ersatt av 2026-10-25-10-test-saldo-vid-och-med-f2.md
