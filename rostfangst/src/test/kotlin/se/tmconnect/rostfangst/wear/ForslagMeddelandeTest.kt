@@ -2,10 +2,7 @@ package se.tmconnect.rostfangst.wear
 
 import org.junit.Assert.*
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class ForslagMeddelandeTest {
 
     @Test
