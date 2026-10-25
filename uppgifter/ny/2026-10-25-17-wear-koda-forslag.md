@@ -17,7 +17,7 @@ Dataklass `ForslagMeddelande(val id: Long, val typ: String, val rubrik: String)`
 - `fun kodaForslag(id: Long, typ: String, rubrik: String): ByteArray` — JSON med nycklarna `id`, `typ`, `rubrik`. Rubriken trimmas; om den är längre än 120 tecken avkortas den till 119 tecken plus tecknet `…` (U+2026).
 - `fun avkodaForslag(data: ByteArray): ForslagMeddelande?` — `null` vid ogiltig JSON, saknade fält, negativt `id`, tom `typ`, eller tom `rubrik` efter trim.
 
-Använd `org.json` (finns redan i modulen).
+Använd `org.json` (Android-plattformen har det). I enhetstest är `org.json` bara en stubb som kastar fel, så testklassen måste ha `@RunWith(RobolectricTestRunner::class)` (Robolectric finns redan som testberoende i modulen). Lägg inte till något beroende.
 
 ## Exempel
 - `kodaForslag(42, "PAMINNELSE", "Ring tandläkaren")` avkodas till samma värden.
