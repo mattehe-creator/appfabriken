@@ -49,6 +49,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import java.time.DayOfWeek
@@ -135,6 +136,7 @@ fun FlextidStartSkarm(
     val vanligSlutMin by viewModel.vanligSlutMin.collectAsState()
     val vanligRastMin by viewModel.vanligRastMin.collectAsState()
     val arbetstid by viewModel.arbetstid.collectAsState()
+    val veckansTommaArbetsdagar by viewModel.veckansTommaArbetsdagar.collectAsState()
     val normaltidUndantag by viewModel.normaltidUndantag.collectAsState()
     var visaArsOversikt by rememberSaveable { mutableStateOf(false) }
     var visaLedighetsperiod by rememberSaveable { mutableStateOf(false) }
@@ -270,6 +272,8 @@ fun FlextidStartSkarm(
                         onDennaVecka = viewModel::gaTillDennaVecka,
                         onDagClick = viewModel::oppnaDagFormular,
                         onLedighetsperiod = { visaLedighetsperiod = true },
+                        tommaArbetsdagar = veckansTommaArbetsdagar,
+                        onFyllVeckan = viewModel::fyllVeckanMedVanligaTider,
                     )
                 flik == FlextidFlik.INSTALLNINGAR ->
                     InstallningarInnehall(
@@ -503,6 +507,8 @@ internal fun VeckaInnehall(
     onDagClick: (LocalDate) -> Unit,
     sammanfattning: PeriodSammanfattning? = null,
     onLedighetsperiod: () -> Unit = {},
+    tommaArbetsdagar: Int = 0,
+    onFyllVeckan: () -> Unit = {},
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val slut = veckaAnkar.plusDays(6)
@@ -575,6 +581,11 @@ internal fun VeckaInnehall(
     }
     OutlinedButton(onClick = onLedighetsperiod, modifier = Modifier.tryckyta48()) {
         Text(stringResource(R.string.ledighet_period_knapp))
+    }
+    if (tommaArbetsdagar > 0) {
+        OutlinedButton(onClick = onFyllVeckan, modifier = Modifier.tryckyta48()) {
+            Text(pluralStringResource(R.plurals.fyll_veckan_knapp, tommaArbetsdagar, tommaArbetsdagar))
+        }
     }
     LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         items(rader) { rad ->

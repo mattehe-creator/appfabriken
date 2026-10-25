@@ -21,6 +21,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -63,6 +64,7 @@ import se.tmconnect.flextid.regler.arbetadeMinuter
 import se.tmconnect.flextid.regler.arbetstid
 import se.tmconnect.flextid.regler.beraknaSaldo
 import se.tmconnect.flextid.regler.dagarForLedighetsperiod
+import se.tmconnect.flextid.regler.dagarAttFyllaMedVanligaTider
 import se.tmconnect.flextid.regler.harArbetsdagar
 import se.tmconnect.flextid.regler.tolkaDagManadText
 import se.tmconnect.flextid.regler.tolkaLangdText
@@ -658,6 +660,46 @@ class FlextidViewModel(
                     forslagSlut = senasteForslag?.slut?.let { formateraTidKort(it) } ?: "",
                     forslagRast = senasteForslag?.rastMin?.toString() ?: "",
                 )
+        }
+    }
+
+    /** Antal tomma arbetsdagar i den visade veckan som kan fyllas med vanliga tider. */
+    val veckansTommaArbetsdagar: StateFlow<Int> =
+        combine(_veckaAnkar, repository.observeraAllaDagar(), arbetstidFlode, _idag) { ankar, alla, at, idag ->
+            dagarAttFyllaMedVanligaTider(
+                ankar,
+                idag,
+                at,
+                alla.map { it.datum }.toSet(),
+                LocalTime.of(8, 0),
+                LocalTime.of(9, 0),
+                0,
+            ).size
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
+
+    /** Fyller veckans tomma arbetsdagar (till och med i dag) med de vanliga tiderna. */
+    fun fyllVeckanMedVanligaTider() {
+        viewModelScope.launch {
+            val inst = repository.hamtaInstallning()
+            val befintliga = repository.hamtaAllaDagar().map { it.datum }.toSet()
+            val dagar =
+                dagarAttFyllaMedVanligaTider(
+                    _veckaAnkar.value,
+                    LocalDate.now(),
+                    hamtaArbetstid(inst),
+                    befintliga,
+                    minuterTillLocalTime(vanligStartMin.value),
+                    minuterTillLocalTime(vanligSlutMin.value),
+                    vanligRastMin.value,
+                )
+            when (val r = repository.sparaLedighetsperiod(dagar, proKalla.arPro.value)) {
+                is FlextidRepository.LedighetsPeriodResult.Sparat -> _meddelanden.emit(FlextidMeddelande.LedighetSparad(r.antal))
+                FlextidRepository.LedighetsPeriodResult.IngaDagar -> _meddelanden.emit(FlextidMeddelande.LedighetIngaDagar)
+                is FlextidRepository.LedighetsPeriodResult.GransUtanPro -> {
+                    visaProDialog()
+                    _meddelanden.emit(FlextidMeddelande.GransUtanPro)
+                }
+            }
         }
     }
 

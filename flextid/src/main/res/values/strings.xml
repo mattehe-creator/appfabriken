@@ -227,4 +227,5 @@
     <string name="ledighet_inga_dagar">No working days without an entry in that period.</string>
     <plurals name="ledighet_sparad"><item quantity="one">Saved %1$d day</item><item quantity="other">Saved %1$d days</item></plurals>
     <plurals name="ledighet_forhandsvisning"><item quantity="one">%1$d working day gets an entry</item><item quantity="other">%1$d working days get an entry</item></plurals>
+    <plurals name="fyll_veckan_knapp"><item quantity="one">Fill %1$d empty working day with usual hours</item><item quantity="other">Fill %1$d empty working days with usual hours</item></plurals>
 </resources>
