@@ -47,3 +47,5 @@ gradle :styrelserummet:test --tests "*ForstaLordagenProcentTest"
 - Ändra andra filer.
 - Ändra `Helgdagar.kt` eller `Formatering.kt`. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-25 (skapade ForstaLordagenProcentTest.kt — lokal modell levererade ingen testkod i försök 2)
