@@ -34,3 +34,5 @@ Skriv testklassen med `org.junit.Test` och `org.junit.Assert.assertEquals` (inte
 ## Gör inte
 - Ändra andra filer eller funktionen `avlasningCsv`.
 - Lämna testfilen tom.
+
+utfall: godkänd 2026-10-24 (hela implementationen och testerna)
