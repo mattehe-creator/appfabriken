@@ -38,6 +38,7 @@ import se.tmconnect.husloggen.export.byggHusHistorik
 import se.tmconnect.husloggen.export.KommandeUnderhallCsvTexter
 import se.tmconnect.husloggen.export.husHistorikCsv
 import se.tmconnect.husloggen.export.kommandeUnderhallCsv
+import se.tmconnect.husloggen.regler.filtreraPaBostad
 import se.tmconnect.husloggen.regler.kommandeUnderhall
 import se.tmconnect.karna.format.formateraDatum
 import se.tmconnect.karna.format.formateraPrisKr
@@ -955,7 +956,7 @@ class HusViewModel(
 
     /** Poster för exporten, hämtade från databasen när filen skrivs (inte från UI-flödet). */
     private suspend fun posterForExport(bostadId: Long?): List<Post> =
-        if (bostadId == null) emptyList() else repository.posterForBostad(bostadId).first()
+        if (bostadId == null) emptyList() else filtreraPaBostad(repository.allaPoster(), bostadId) { it.bostadId }
 
     fun sparaHusHistorikPdf(
         uri: Uri,
@@ -1039,7 +1040,11 @@ class HusViewModel(
             try {
                 val bostadId = bostadIdForExport()
                 val uppgifterNu =
-                    if (bostadId == null) emptyList() else repository.uppgifterForBostad(bostadId).first()
+                    if (bostadId == null) {
+                        emptyList()
+                    } else {
+                        filtreraPaBostad(repository.allaUppgifter(), bostadId) { it.bostadId }
+                    }
                 val grupper =
                     kommandeUnderhall(
                         uppgifter = sorteraUppgifter(uppgifterNu, idag),

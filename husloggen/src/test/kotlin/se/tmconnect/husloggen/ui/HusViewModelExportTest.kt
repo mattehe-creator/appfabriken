@@ -22,6 +22,7 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -30,9 +31,11 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLooper
+import se.tmconnect.husloggen.data.Bostad
 import se.tmconnect.husloggen.data.HusDatabas
 import se.tmconnect.husloggen.data.HusRepository
 import se.tmconnect.husloggen.data.InstallningarLager
+import se.tmconnect.husloggen.data.SparaBostadResult
 import se.tmconnect.husloggen.data.Post
 import se.tmconnect.husloggen.data.PostTyp
 import se.tmconnect.husloggen.data.Uppgift
@@ -177,6 +180,27 @@ class HusViewModelExportTest {
 
         assertEquals(HusUiMeddelande.HistorikCsvSparad, meddelande)
         assertTrue(utdata.toString("UTF-8").contains("Byte av takpannor"))
+    }
+
+    @Test
+    fun exportHistorikCsvTarBaraMedValdBostad() = runBlocking {
+        val bostadBId = (repository.sparaBostad(Bostad(namn = "Bostad B")) as SparaBostadResult.Sparad).id
+        repository.sparaPost(
+            Post(bostadId = bostadId, datum = idag, vad = "A1", typ = PostTyp.OMBYGGNAD),
+            arPro = false,
+        )
+        repository.sparaPost(
+            Post(bostadId = bostadBId, datum = idag, vad = "B1", typ = PostTyp.OMBYGGNAD),
+            arPro = false,
+        )
+        val (uri, utdata) = registreraFil("historik.csv")
+
+        val meddelande = vantaPaMeddelande { sparaHistorikCsv(uri) }
+
+        assertEquals(HusUiMeddelande.HistorikCsvSparad, meddelande)
+        val csvInnehall = utdata.toString("UTF-8")
+        assertTrue(csvInnehall.contains("A1"))
+        assertFalse(csvInnehall.contains("B1"))
     }
 
     @Test
