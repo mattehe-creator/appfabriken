@@ -43,3 +43,5 @@ gradle :styrelserummet:test --tests "*ForstaLordagenProcentTest"
 - Ändra andra filer.
 - Ändra `Helgdagar.kt` eller `Formatering.kt`. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-25 av Cursor (PR #682). Ersatt av 2026-10-25-09-test-forsta-lordag-procent-f2.md
