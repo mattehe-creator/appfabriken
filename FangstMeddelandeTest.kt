@@ -6,33 +6,31 @@ import org.junit.Assert.*
 class FangstMeddelandeTest {
 
     @Test
-    fun testKodaOchAvkoda() {
+    fun testKodaOchAvkodaFangst() {
         val text = "  hej  "
-        val kodad = kodaFangst(text)
-        val avkodad = avkodaFangst(kodad)
-        assertEquals("hej", avkodad)
+        val encoded = FangstMeddelande.kodaFangst(text)
+        val decoded = FangstMeddelande.avkodaFangst(encoded)
+        assertEquals("hej", decoded)
     }
 
     @Test
-    fun testTomStrang() {
-        val kodad = kodaFangst("   ")
-        val avkodad = avkodaFangst(kodad)
-        assertNull(avkodad)
+    fun testAvkodaTomStrang() {
+        val result = FangstMeddelande.avkodaFangst("   ".toByteArray())
+        assertNull(result)
     }
 
     @Test
-    fun testForLangStrang() {
-        val forLang = CharArray(2001) { 'a' }.joinToString("")
-        val kodad = kodaFangst(forLang)
-        val avkodad = avkodaFangst(kodad)
-        assertNull(avkodad)
+    fun testAvkodaForLangStrang() {
+        val longString = "a".repeat(2001)
+        val result = FangstMeddelande.avkodaFangst(longString.toByteArray())
+        assertNull(result)
     }
 
     @Test
     fun testSvenskaTecken() {
         val text = "påminn mig"
-        val kodad = kodaFangst(text)
-        val avkodad = avkodaFangst(kodad)
-        assertEquals(text, avkodad)
+        val encoded = FangstMeddelande.kodaFangst(text)
+        val decoded = FangstMeddelande.avkodaFangst(encoded)
+        assertEquals(text, decoded)
     }
 }
