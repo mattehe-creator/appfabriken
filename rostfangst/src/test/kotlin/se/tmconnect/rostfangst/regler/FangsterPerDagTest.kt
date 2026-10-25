@@ -4,7 +4,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
 
 class FangsterPerDagTest {
 
@@ -17,7 +17,7 @@ class FangsterPerDagTest {
         )
         assertEquals(30, resultat.size)
         resultat.forEach { (dag, antal) ->
-            assertEquals(0, antal, "Dag $dag borde ha 0 fångster")
+            assertEquals(0, antal)
         }
     }
 
@@ -39,7 +39,7 @@ class FangsterPerDagTest {
         assertEquals(igår, resultat[28].first)
         assertEquals(1, resultat[28].second)
         for (i in 0..27) {
-            assertEquals(0, resultat[i].second, "Dag ${resultat[i].first} borde ha 0 fångster")
+            assertEquals(0, resultat[i].second)
         }
     }
 }
