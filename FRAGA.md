@@ -1,1 +1,0 @@
-Vilken typ av bekräftelsedialog bör användas för att låta användaren välja mellan "Flytta till annan bostad" och "Radera allt innehåll" när en bostad med poster tas bort? Skall detta vara en AlertDialog med RadioButton eller något annat UI-element?

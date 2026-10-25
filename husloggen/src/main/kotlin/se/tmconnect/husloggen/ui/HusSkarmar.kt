@@ -61,6 +61,7 @@ import java.util.Locale
 import se.tmconnect.husloggen.BuildConfig
 import se.tmconnect.husloggen.R
 import se.tmconnect.husloggen.data.Bostad
+import se.tmconnect.husloggen.data.BostadBorttagningSatt
 import se.tmconnect.husloggen.data.Dokument
 import se.tmconnect.husloggen.data.Matare
 import se.tmconnect.husloggen.data.PlaneradKostnad
@@ -763,4 +764,3 @@ private fun postTypKortRes(typ: PostTyp): Int =
         PostTyp.REPARATION -> R.string.logg_filter_reparation
         PostTyp.OMBYGGNAD -> R.string.logg_filter_ombyggnad
     }
-}
