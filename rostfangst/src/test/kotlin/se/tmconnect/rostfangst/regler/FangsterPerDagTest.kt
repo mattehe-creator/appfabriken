@@ -24,7 +24,7 @@ class FangsterPerDagTest {
         // Kontrollera att vi får 30 par
         assertEquals(30, resultat.size)
         
-        // Kontrollera att dagarna är korrekt
+        // Kontrollera att dagarna är korrekt (i rätt ordning)
         val forventa = (0L..29L).map { idag.minusDays(it) }
         val faktiskaDagar = resultat.map { it.first }
         assertEquals(forventa.reversed(), faktiskaDagar)
