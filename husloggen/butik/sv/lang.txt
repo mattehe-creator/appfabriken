@@ -1,19 +1,19 @@
 Husloggen håller ordning på husets underhåll: vad som ska göras, vad som är gjort och vad det kostade. Allt på telefonen, utan konto.
 
 Att göra
-Lägg in det som återkommer, till exempel byta filter, rensa hängrännor eller serva värmepumpen, med ett intervall i månader. Appen räknar ut nästa datum och påminner dig i förväg. Färdiga förslag finns att utgå från. Markera som gjord med ett tryck, så hamnar arbetet i loggen och nästa datum flyttas fram. Kommande år visar alla jobb de närmaste tolv månaderna, månad för månad.
+Lägg in det som återkommer, till exempel byta filter, rensa hängrännor eller serva värmepumpen, med ett intervall i månader. Appen räknar ut nästa datum och påminner dig i förväg. Färdiga förslag finns att utgå från. Markera som gjord med ett tryck, så hamnar arbetet i loggen och nästa datum flyttas fram.
 
 Logg och kvitton
 Spara utfört arbete och utgifter med datum, belopp, typ och anteckningar. Fota kvittot eller lägg till bilder, flera per post. Ange rot- eller rutavdraget, så räknas det bort i sammanställningen. Sök i loggen på ord och filtrera på typ. Har en hantverkare gjort jobbet visar posten hur länge du kan reklamera fel enligt konsumenttjänstlagen.
 
 Underlag när du säljer
-Sammanställningen visar utgifterna per år och typ, och skiljer på underhåll och reparation och på ny-, till- och ombyggnad. Skapa en PDF med husets historik att lämna till köparen eller mäklaren, eller exportera som CSV. Appen förklarar hur Skatteverket räknar förbättringsutgifter, med hänvisning till lagen, men ger inga skatteråd.
+Översikten visar utgifterna per år och typ, och skiljer på underhåll och reparation och på ny-, till- och ombyggnad. Skapa en PDF med husets historik att lämna till köparen eller mäklaren, eller exportera som CSV. Kommande år uppskattar kostnader per kalenderår utifrån senast kända pris per uppgift. Appen förklarar hur Skatteverket räknar förbättringsutgifter, med hänvisning till lagen, men ger inga skatteråd.
 
 Mer i appen
-Mätare för el, vatten och värme med förbrukning mellan avläsningarna och jämförelse mot året innan. Dokument som manualer, ritningar och besiktningsprotokoll. Flera bostäder, till exempel hus och fritidshus. Planerade kostnader framåt. Mörkt läge.
+Under Mer: jobben de närmaste tolv månaderna, månad för månad, med uppskattad summa. Planerade kostnader, mätare med förbrukning, jämförelse mot förra året och prognos för hela året, samt dokument som manualer och besiktningsprotokoll. Flera bostäder med val i appfältet, flytt av innehåll eller radering. Hemskärmswidget med de närmaste uppgifterna. Mörkt läge.
 
 Dina uppgifter stannar hos dig
 Husloggen har ingen internetbehörighet, inga konton, ingen reklam och ingen analys. Säkerhetskopiera till en fil eller mapp du själv väljer, manuellt eller automatiskt, och läs tillbaka den på en ny telefon.
 
 Gratis och Pro
-Gratisversionen har alla funktioner. Gränsen är 15 poster i loggen och 3 bostäder. Uppgifter, påminnelser, mätare och dokument är obegränsade. Pro är ett engångsköp som tar bort gränserna. Export, PDF och säkerhetskopia är alltid gratis, och befintliga uppgifter raderas aldrig.
+Gratisversionen har alla funktioner. Gränsen är 15 poster i loggen totalt över alla bostäder. Uppgifter, påminnelser, mätare, dokument och bostäder är obegränsade. Pro är ett engångsköp som tar bort gränsen på loggposter. Export, PDF och säkerhetskopia är alltid gratis, och befintliga uppgifter raderas aldrig.

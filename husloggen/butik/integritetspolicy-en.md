@@ -1,6 +1,6 @@
 # Privacy policy — Husloggen (House Log)
 
-Last updated: 2026-10-21
+Last updated: 2026-10-25
 
 Husloggen is developed by TM Connect. Contact: [contact address added at publication].
 
@@ -17,7 +17,8 @@ The following is stored only locally on your phone, in the app's private storage
 - Recurring tasks and planned costs.
 - Meters and readings.
 - Receipts and photos you take or pick, and documents (such as manuals and drawings) you add.
-- Settings, such as reminders and the backup interval.
+- Settings, such as reminders, theme and the backup interval.
+- The home-screen widget shows the next tasks from the same local data; it does not send anything to us.
 
 ## When data leaves the phone
 
