@@ -7,69 +7,42 @@ import se.tmconnect.rostfangst.regler.ForslagTyp
 
 class HistorikCsvTest {
 
+    private fun rad(titel: String, plats: String? = null, svar: String? = null) = FangstRad(
+        id = 1,
+        originalText = "text",
+        typ = ForslagTyp.PAMINNELSE,
+        titel = titel,
+        plats = plats,
+        svar = svar,
+        skapadIso = "2023-01-01T00:00:00Z"
+    )
+
     @Test
     fun `tom lista ger bara header`() {
-        val resultat = historikSomCsv(emptyList())
-        assertEquals("tid,typ,titel,original,plats,svar\n", resultat)
+        assertEquals("tid,typ,titel,original,plats,svar\n", historikSomCsv(emptyList()))
     }
 
     @Test
     fun `en rad ger header och rad`() {
-        val rad = FangstRad(
-            id = 1,
-            originalText = "text",
-            typ = ForslagTyp.FORSLAG,
-            titel = "titel",
-            plats = "plats",
-            svar = "svar",
-            skapadIso = "2023-01-01T00:00:00Z"
-        )
-        val resultat = historikSomCsv(listOf(rad))
-        assertEquals("tid,typ,titel,original,plats,svar\n2023-01-01T00:00:00Z,FORSLAG,titel,text,plats,svar\n", resultat)
+        val resultat = historikSomCsv(listOf(rad("titel", "plats", "svar")))
+        assertEquals("tid,typ,titel,original,plats,svar\n2023-01-01T00:00:00Z,PAMINNELSE,titel,text,plats,svar\n", resultat)
     }
 
     @Test
-    fun `fält med kommatecken citeras`() {
-        val rad = FangstRad(
-            id = 1,
-            originalText = "text",
-            typ = ForslagTyp.FORSLAG,
-            titel = "Hej, världen",
-            plats = null,
-            svar = null,
-            skapadIso = "2023-01-01T00:00:00Z"
-        )
-        val resultat = historikSomCsv(listOf(rad))
-        assertEquals("tid,typ,titel,original,plats,svar\n2023-01-01T00:00:00Z,FORSLAG,\"Hej, världen\",text,,\n", resultat)
+    fun `falt med kommatecken citeras`() {
+        val resultat = historikSomCsv(listOf(rad("Hej, världen")))
+        assertEquals("tid,typ,titel,original,plats,svar\n2023-01-01T00:00:00Z,PAMINNELSE,\"Hej, världen\",text,,\n", resultat)
     }
 
     @Test
-    fun `fält med citattecken citeras`() {
-        val rad = FangstRad(
-            id = 1,
-            originalText = "text",
-            typ = ForslagTyp.FORSLAG,
-            titel = "Hej \"världen\"",
-            plats = null,
-            svar = null,
-            skapadIso = "2023-01-01T00:00:00Z"
-        )
-        val resultat = historikSomCsv(listOf(rad))
-        assertEquals("tid,typ,titel,original,plats,svar\n2023-01-01T00:00:00Z,FORSLAG,\"Hej \"\"världen\"\"\",text,,\n", resultat)
+    fun `falt med citattecken citeras och dubblas`() {
+        val resultat = historikSomCsv(listOf(rad("Hej \"världen\"")))
+        assertEquals("tid,typ,titel,original,plats,svar\n2023-01-01T00:00:00Z,PAMINNELSE,\"Hej \"\"världen\"\"\",text,,\n", resultat)
     }
 
     @Test
-    fun `fält med radbrytning citeras`() {
-        val rad = FangstRad(
-            id = 1,
-            originalText = "text",
-            typ = ForslagTyp.FORSLAG,
-            titel = "Hej\nvärlden",
-            plats = null,
-            svar = null,
-            skapadIso = "2023-01-01T00:00:00Z"
-        )
-        val resultat = historikSomCsv(listOf(rad))
-        assertEquals("tid,typ,titel,original,plats,svar\n2023-01-01T00:00:00Z,FORSLAG,\"Hej\nvärlden\",text,,\n", resultat)
+    fun `falt med radbrytning citeras`() {
+        val resultat = historikSomCsv(listOf(rad("Hej\nvärlden")))
+        assertEquals("tid,typ,titel,original,plats,svar\n2023-01-01T00:00:00Z,PAMINNELSE,\"Hej\nvärlden\",text,,\n", resultat)
     }
 }
