@@ -1,11 +1,15 @@
 # Uppgift: Test av första lördagen och procenttext i Styrelserummet
 
 uppdrag: uppdrag/claude/2026-10-25-natt-testtackning.md
-försök: 1
+försök: 2
 beror-på: ingen
 
+## Vad som saknades
+- `ForstaLordagenProcentTest.kt` var helt tom efter försök 1. Filen måste innehålla en testklass med `@Test`-metoder som anropar `forstaLordagenFran` och `procent` och jämför resultat med exemplen nedan (`org.junit.Test`, `org.junit.Assert.assertEquals`, `java.time.LocalDate`).
+- CI kräver att kommandot under «Test som ska gå igenom» hittar minst en test i klassen `ForstaLordagenProcentTest`.
+
 ## Ändra bara dessa filer
-- styrelserummet/src/test/kotlin/se/tmconnect/styrelserummet/regler/ForstaLordagenProcentTest.kt (ny)
+- styrelserummet/src/test/kotlin/se/tmconnect/styrelserummet/regler/ForstaLordagenProcentTest.kt (ny eller fyll i befintlig tom fil)
 
 ## Läs som förebild (ändra inte)
 - styrelserummet/src/main/kotlin/se/tmconnect/styrelserummet/regler/Helgdagar.kt (funktionen `forstaLordagenFran`)
@@ -43,3 +47,5 @@ gradle :styrelserummet:test --tests "*ForstaLordagenProcentTest"
 - Ändra andra filer.
 - Ändra `Helgdagar.kt` eller `Formatering.kt`. Om ett exempel inte stämmer med koden: skriv det i PR-beskrivningen och låt testet följa exemplet.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-25 (skapade ForstaLordagenProcentTest.kt — lokal modell levererade ingen testkod i försök 2)

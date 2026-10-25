@@ -52,3 +52,5 @@ gradle :husloggen:testDebugUnitTest --tests "*SakerhetskopiaMatareAvlasningTest"
 - Jämföra hela `Matare`- eller `Avlasning`-objekt (fältet `skapad` skiljer sig).
 - Lägga till beroenden.
 - Använd `kotlin.test` — endast JUnit 4 (`org.junit`).
+
+utfall: godkänd 2026-10-24 (Cursor skrev testfilen; lokal modell levererade ingen kod)
