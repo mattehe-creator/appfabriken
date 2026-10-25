@@ -1,7 +1,10 @@
 # Uppgift: Kort rubrik för förslag på klockan
 
+## Vad som saknades
+- Bygget eller testerna är röda. Kör testet i uppgiften och rätta tills det är grönt. Testerna i appmodulerna använder JUnit 4: import org.junit.Test och import org.junit.Assert.assertEquals (eller assertTrue, assertFalse), inte kotlin.test.
+
 uppdrag: uppdrag/vantar/2026-10-25-rostfangst-klocka.md
-försök: 1
+försök: 2
 beror-på: ingen
 
 ## Ändra bara dessa filer
