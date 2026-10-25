@@ -45,7 +45,10 @@ jobs:
           if [ -z "$BYGGE" ]; then
             BYGGE=$(gh run list --repo "${{ github.repository }}" --branch "$GREN" --workflow Bygg --limit 1 --json conclusion --jq '.[0].conclusion')
           fi
-          utfall=$(bash .github/sparr.sh "$GREN" "$BYGGE" | tee /dev/stderr | tail -1)
+          # Skriptet hämtas från main: grenen kan vara äldre än spärren.
+          git fetch -q origin main
+          git show origin/main:.github/sparr.sh > "$RUNNER_TEMP/sparr.sh"
+          utfall=$(bash "$RUNNER_TEMP/sparr.sh" "$GREN" "$BYGGE" | tee /dev/stderr | tail -1)
           if [ "$utfall" = "AVGJORD" ]; then
             git config user.name "Appfabriken"; git config user.email "actions@users.noreply.github.com"
             git add -A granskning uppgifter

@@ -158,6 +158,9 @@ function SkapaUppgiftsgren([string]$gren, [string]$uppgiftsNamn) {
             }
         }
     }
+    # Ospårade filer i modulernas källträd från en tidigare uppgift följde annars med till nästa gren
+    # (2026-10-25: tester från uppgift 02 och 03 hamnade i PR:erna för 03 och 04). Ignorerade filer rörs inte.
+    & git clean -fdq -- ':(glob)*/src/**' 2>&1 | Out-Null
     $ut = & git checkout -B $gren origin/main 2>&1
     $kod = $LASTEXITCODE
     if ($ut) { $ut | ForEach-Object { Write-Host $_ } }
