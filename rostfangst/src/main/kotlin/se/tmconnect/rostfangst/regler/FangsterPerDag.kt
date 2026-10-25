@@ -14,7 +14,7 @@ fun fangsterPerDag(
     
     // Initiera alla dagar med 0
     for (i in 0..29) {
-        resultat[start.plusDays(i)] = 0
+        resultat[start.plusDays(i.toLong())] = 0
     }
     
     // Räkna fångster per dag
@@ -27,7 +27,7 @@ fun fangsterPerDag(
     
     // Returnera som lista av par
     return (0..29).map { offset ->
-        val dag = start.plusDays(offset)
+        val dag = start.plusDays(offset.toLong())
         dag to resultat[dag]!!
     }
 }
