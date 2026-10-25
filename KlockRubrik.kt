@@ -1,11 +1,9 @@
 package se.tmconnect.rostfangst.wear
 
-import se.tmconnect.rostfangst.regler.ForslagTyp
 import java.time.*
 import java.time.format.DateTimeFormatter
 
 fun klockRubrik(typ: String, titel: String, start: Instant?, zon: ZoneId, idag: LocalDate = LocalDate.now(zon)): String {
-    // Typmappning
     val typPrefix = when (typ) {
         "KALENDER" -> "Kalender"
         "PAMINNELSE" -> "Påminnelse"
@@ -15,70 +13,49 @@ fun klockRubrik(typ: String, titel: String, start: Instant?, zon: ZoneId, idag: 
         "HEM" -> "Hem"
         else -> "Förslag"
     }
-    
-    // Om ingen starttid, returnera bara typ och titel
-    if (start == null) {
-        val rubrik = "$typPrefix: $titel"
-        return if (rubrik.length <= 40) {
-            rubrik
-        } else {
-            // Korta titeln så att hela strängen blir 40 tecken
-            val titelMaxLängd = 40 - typPrefix.length - 2 // -2 för ": "
-            if (titelMaxLängd <= 0) {
-                ""
-            } else {
-                val kortTitel = if (titel.length > titelMaxLängd) {
-                    titel.substring(0, titelMaxLängd - 1) + "…"
-                } else {
-                    titel
-                }
-                "$typPrefix: $kortTitel"
-            }
+
+    val titelDel = if (start != null) {
+        val startTid = start.atZone(zon)
+        val datum = startTid.toLocalDate()
+        val tid = startTid.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"))
+
+        when {
+            datum.isEqual(idag.plusDays(1)) -> "i morgon $tid"
+            datum.isEqual(idag) -> tid
+            else -> "${datum.dayOfMonth}/${datum.monthValue} $tid"
         }
+    } else {
+        ""
     }
-    
-    // Beräkna starttid i lokal tid
-    val startLokal = start.atZone(zon)
-    val startDatum = startLokal.toLocalDate()
-    val startTid = startLokal.toLocalTime()
-    
-    // Formatera tiden baserat på datum
-    val tidStr = when {
-        startDatum.isAfter(idag) -> {
-            if (startDatum.isEqual(idag.plusDays(1))) {
-                "i morgon ${startTid.format(DateTimeFormatter.ofPattern("HH:mm"))}"
-            } else {
-                "${startDatum.dayOfMonth}/${startDatum.monthValue} ${startTid.format(DateTimeFormatter.ofPattern("HH:mm"))}"
-            }
-        }
-        startDatum.isEqual(idag) -> {
-            startTid.format(DateTimeFormatter.ofPattern("HH:mm"))
-        }
-        else -> {
-            // Om startdatum är före idag, använd datumformat
-            "${startDatum.dayOfMonth}/${startDatum.monthValue} ${startTid.format(DateTimeFormatter.ofPattern("HH:mm"))}"
-        }
+
+    val prefixTitel = if (titelDel.isNotEmpty()) {
+        "$typPrefix: $titel, $titelDel"
+    } else {
+        "$typPrefix: $titel"
     }
-    
-    // Skapa basrubrik
-    val basRubrik = "$typPrefix: $titel, $tidStr"
-    
-    // Om basrubriken är för lång, kör avkortning
-    if (basRubrik.length <= 40) {
-        return basRubrik
+
+    if (prefixTitel.length <= 40) {
+        return prefixTitel
     }
-    
+
     // Korta titeln så att hela strängen blir 40 tecken
-    val maxTitelLängd = 40 - typPrefix.length - 2 - 2 - tidStr.length // -2 för ": ", -2 för ", "
+    val maxTitelLängd = 40 - (typPrefix.length + 2 + 1 + titelDel.length) // +2 för ": ", +1 för ","
+
     if (maxTitelLängd <= 0) {
-        return "$typPrefix: …, $tidStr"
+        return prefixTitel.substring(0, 40)
     }
-    
+
     val kortTitel = if (titel.length > maxTitelLängd) {
         titel.substring(0, maxTitelLängd - 1) + "…"
     } else {
         titel
     }
-    
-    return "$typPrefix: $kortTitel, $tidStr"
+
+    val nyPrefixTitel = if (titelDel.isNotEmpty()) {
+        "$typPrefix: $kortTitel, $titelDel"
+    } else {
+        "$typPrefix: $kortTitel"
+    }
+
+    return nyPrefixTitel
 }
