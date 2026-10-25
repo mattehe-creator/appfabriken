@@ -29,3 +29,5 @@ gradle :rostfangst:testDebugUnitTest --tests "*HaAssistSvarTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Göra nätverksanrop eller logga adress eller token.
+
+utfall: underkänd 2026-10-25 av Cursor (PR #739). Ersatt av 2026-10-25-35-ha-assistsvar-f2.md
