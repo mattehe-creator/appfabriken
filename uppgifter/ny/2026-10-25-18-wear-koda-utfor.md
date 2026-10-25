@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/vantar/2026-10-25-rostfangst-klocka.md
 försök: 1
-beror-på: 2026-10-25-15-wear-sokvagar.md
+beror-på: 2026-10-25-17-wear-koda-forslag.md
 
 ## Ändra bara dessa filer
 - rostfangst/src/main/kotlin/se/tmconnect/rostfangst/wear/UtforMeddelande.kt (ny)
