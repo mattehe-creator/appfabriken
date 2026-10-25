@@ -1,0 +1,32 @@
+# Uppgift: Kodning av fångstmeddelande (UTF-8)
+
+uppdrag: uppdrag/vantar/2026-10-25-rostfangst-klocka.md
+försök: 1
+beror-på: 2026-10-25-15-wear-sokvagar-f2.md
+
+## Ändra bara dessa filer
+- rostfangst/src/main/kotlin/se/tmconnect/rostfangst/wear/FangstMeddelande.kt (ny)
+- rostfangst/src/test/kotlin/se/tmconnect/rostfangst/wear/FangstMeddelandeTest.kt (ny)
+
+## Läs som förebild (ändra inte)
+- rostfangst/src/main/kotlin/se/tmconnect/rostfangst/wear/WearSokvagar.kt
+
+## Uppgift
+Implementera rena funktioner (inga Android-import):
+- `fun kodaFangst(text: String): ByteArray` — UTF-8-bytes av `text.trim()`.
+- `fun avkodaFangst(data: ByteArray): String?` — avkodar UTF-8, trimmar, returnerar `null` om resultatet är tomt, längre än 2000 tecken, eller bara blanksteg.
+
+## Exempel
+- `kodaFangst("  hej  ")` och `avkodaFangst(...)` → `"hej"`.
+- `avkodaFangst("   ".toByteArray())` → `null`.
+- `avkodaFangst(ByteArray(2001) { 'a'.code.toByte() })` → `null`.
+- Svenska tecken: `"påminn mig"` roundtrip.
+
+## Test som ska gå igenom
+gradle :rostfangst:testDebugUnitTest --tests "*FangstMeddelandeTest"
+
+## Gör inte
+- Ändra andra filer.
+- Lägga till beroenden.
+
+utfall: underkänd 2026-10-25 av Cursor (PR #740). Ersatt av 2026-10-25-16-wear-koda-fangst-f2.md
