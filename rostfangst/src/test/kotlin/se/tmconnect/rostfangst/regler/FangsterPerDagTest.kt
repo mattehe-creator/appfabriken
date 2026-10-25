@@ -3,8 +3,8 @@ package se.tmconnect.rostfangst.regler
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import org.junit.Test
+import org.junit.Assert.assertEquals
 
 class FangsterPerDagTest {
 
