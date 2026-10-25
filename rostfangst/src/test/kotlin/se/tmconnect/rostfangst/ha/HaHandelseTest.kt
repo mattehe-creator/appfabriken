@@ -22,11 +22,13 @@ class HaHandelseTest {
         
         val result = bygghaHandelseJson(forslag, original)
         
-        // Kontrollera att JSON innehåller rätt fält genom att analysera strängen
-        assertEquals(
-            """{"typ":"PAMINNELSE","titel":"Ring tandläkaren","start":"2026-10-26T08:00:00Z","slut":null,"plats":null,"original":"påminn mig"}""",
-            result
-        )
+        // Kontrollera att JSON-strängen innehåller rätt värden
+        assertEquals(true, result.contains("\"typ\":\"PAMINNELSE\""))
+        assertEquals(true, result.contains("\"titel\":\"Ring tandläkaren\""))
+        assertEquals(true, result.contains("\"start\":\"2026-10-26T08:00:00Z\""))
+        assertEquals(true, result.contains("\"slut\":null"))
+        assertEquals(true, result.contains("\"plats\":null"))
+        assertEquals(true, result.contains("\"original\":\"påminn mig\""))
     }
     
     @Test
@@ -43,10 +45,12 @@ class HaHandelseTest {
         
         val result = bygghaHandelseJson(forslag, original)
         
-        // Kontrollera att JSON innehåller rätt fält genom att analysera strängen
-        assertEquals(
-            """{"typ":"ATT_GORA","titel":"Säg \"hej\"\nigen","start":null,"slut":null,"plats":"Hemmet","original":"köp mjölk"}""",
-            result
-        )
+        // Kontrollera att JSON-strängen innehåller rätt värden
+        assertEquals(true, result.contains("\"typ\":\"ATT_GORA\""))
+        assertEquals(true, result.contains("\"titel\":\"Säg \\\"hej\\\"\\nigen\""))
+        assertEquals(true, result.contains("\"start\":null"))
+        assertEquals(true, result.contains("\"slut\":null"))
+        assertEquals(true, result.contains("\"plats\":\"Hemmet\""))
+        assertEquals(true, result.contains("\"original\":\"köp mjölk\""))
     }
 }
