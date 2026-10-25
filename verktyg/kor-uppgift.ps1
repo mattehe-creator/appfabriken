@@ -442,6 +442,7 @@ $fragaRegel = @"
 Om uppgiften är motsägelsefull, eller pekar på filer eller funktioner som inte finns: skriv ingen kod.
 Skapa i stället filen FRAGA.md i repots rot med din fråga, kort och konkret, och sluta där.
 Lägg alla filer på exakt de sökvägar som står i uppgiften.
+Skriv hela innehållet i varje fil under "Ändra bara dessa filer". En tom eller oförändrad fil räknas som misslyckad.
 "@
 ((Get-Content -Raw -Encoding UTF8 $iPagar) + $fragaRegel) | Set-Content -Encoding UTF8 $meddelande
 $aiderArg = @(
@@ -467,6 +468,40 @@ $env:PYTHONIOENCODING = "utf-8"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
 $aiderKod = KorAider $aider $aiderArg $AiderTimeoutMin
+
+# --- Andra varvet: filer som uppgiften kräver men som är tomma eller oförändrade ---
+# Den lokala modellen lämnar ibland nya filer tomma. Utan detta varv går uppgiften hela vägen
+# via PR, CI och Cursors granskning innan försök 2 startar; med det rättas det direkt.
+function OtillrackligaFiler([string[]]$filer) {
+    $ut = @()
+    foreach ($f in $filer) {
+        if (-not (Test-Path -LiteralPath $f)) { $ut += $f; continue }
+        $text = Get-Content -Raw -Encoding UTF8 -LiteralPath $f -ErrorAction SilentlyContinue
+        if (-not $text -or $text.Trim().Length -lt 20) { $ut += $f; continue }
+        $sparad = git ls-files -- $f
+        if ($sparad) {
+            git diff --quiet main -- $f
+            if ($LASTEXITCODE -eq 0) { $ut += $f }
+        }
+    }
+    return ,$ut
+}
+$andraVarv = "nej"
+$tunna = OtillrackligaFiler $tillatna
+if ($tunna.Count -gt 0 -and -not (Test-Path "FRAGA.md") -and $aiderKod -ne 124) {
+    $andraVarv = "ja ($($tunna -join ', '))"
+    Write-Host "Andra varvet: tomma eller oförändrade filer: $($tunna -join ', ')" -ForegroundColor Yellow
+    Status "kodar" "Andra varvet: $($tunna.Count) fil(er) tomma eller oförändrade."
+    $lista = ($tunna | ForEach-Object { "- $_" }) -join "`n"
+    $varv2 = Join-Path $loggMapp "meddelande-$stampel-varv2.md"
+    $text2 = "Du är inte klar. Dessa filer är tomma eller oförändrade, men uppgiften kräver dem:`n$lista`n`n" +
+        "Skriv hela innehållet i varje fil nu, enligt uppgiften nedan. Ändra inga andra filer. " +
+        "Svara inte med en förklaring, gör ändringen.`n`n---`n`n" + (Get-Content -Raw -Encoding UTF8 $meddelande)
+    $text2 | Set-Content -Encoding UTF8 $varv2
+    $arg2 = $aiderArg.Clone()
+    $arg2[[array]::IndexOf($aiderArg, "--message-file") + 1] = $varv2
+    $aiderKod = KorAider $aider $arg2 $AiderTimeoutMin
+}
 $minuter = [math]::Round(((Get-Date) - $start).TotalMinutes, 1)
 
 # --- Egen kontroll efteråt ---
@@ -520,6 +555,7 @@ Lokal modell körde uppgiften ``$iPagar``.
 - Tester (``$testRad``): $resultat
 - Filer utanför uppgiften: $utanforText
 - Filer som saknas: $saknasText
+- Andra varvet: $andraVarv
 
 Granska mot uppgiften och CLAUDE.md punkt 8.
 "@
