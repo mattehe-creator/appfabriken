@@ -547,23 +547,6 @@ class MainActivity : ComponentActivity() {
                         visaInstallningar -> {
                             InstallningarSkarm(
                                 onTillbaka = { visaInstallningar = false },
-                                bostader = bostader,
-                                valdBostadId = valdBostadId,
-                                onValjBostad = viewModel::valjBostad,
-                                onSparaNyBostad = viewModel::sparaNyBostad,
-                                onUppdateraBostad = viewModel::uppdateraBostad,
-                                onTaBortBostad = { bostad, onSista, onBorttagen ->
-                                    viewModel.taBortBostad(
-                                        bostad,
-                                        se.tmconnect.husloggen.data.BostadBorttagningSatt.RADERA_INNEHALL,
-                                        flyttTillId = null,
-                                        onSista = onSista,
-                                        onBorttagen = onBorttagen,
-                                    )
-                                },
-                                hamtaRaderingInfo = { id ->
-                                    viewModel.bostadRaderingInfo(id).antalPoster
-                                },
                                 temaLage = temaLage,
                                 onTemaLage = viewModel::sattTemaLage,
                                 autoBackup = autoBackup,
@@ -621,6 +604,20 @@ class MainActivity : ComponentActivity() {
                                 bostader = bostader,
                                 valdBostad = valdBostad,
                                 onValjBostad = viewModel::valjBostad,
+                                onSparaNyBostad = viewModel::sparaNyBostad,
+                                onUppdateraBostad = viewModel::uppdateraBostad,
+                                onTaBortBostad = { bostad, onSista, onBorttagen ->
+                                    viewModel.taBortBostad(
+                                        bostad,
+                                        se.tmconnect.husloggen.data.BostadBorttagningSatt.RADERA_INNEHALL,
+                                        flyttTillId = null,
+                                        onSista = onSista,
+                                        onBorttagen = onBorttagen,
+                                    )
+                                },
+                                hamtaRaderingInfo = { id ->
+                                    viewModel.bostadRaderingInfo(id).antalPoster
+                                },
                                 onInstallningar = { visaInstallningar = true },
                                 onNyUppgift = viewModel::visaNyUppgift,
                                 onNyMatare = viewModel::visaNyMatare,

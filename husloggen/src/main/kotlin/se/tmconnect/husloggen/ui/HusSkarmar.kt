@@ -85,6 +85,10 @@ fun HusStartSkarm(
     bostader: List<Bostad> = emptyList(),
     valdBostad: Bostad? = null,
     onValjBostad: (Long) -> Unit = {},
+    onSparaNyBostad: (String, String, String, (Boolean) -> Unit) -> Unit = { _, _, _, _ -> },
+    onUppdateraBostad: (Bostad) -> Unit = {},
+    onTaBortBostad: (Bostad, onSista: () -> Unit, onBorttagen: () -> Unit) -> Unit = { _, _, _ -> },
+    hamtaRaderingInfo: suspend (Long) -> Int = { 0 },
     onInstallningar: () -> Unit,
     onNyUppgift: () -> Unit,
     onNyPost: () -> Unit,
@@ -294,18 +298,33 @@ fun HusStartSkarm(
                 onValjFlik = { valdFlik = it.ordinal },
             )
             HusFlik.SAMMANSTALLNING -> {
-                SammanstallningSkarm(
-                    poster = poster,
-                    kommandeKostnad = kommandeKostnad,
-                    forsaljningsAr = forsaljningsAr,
-                    onForsaljningsArAndras = onForsaljningsArAndras,
-                    locale = locale,
-                    visaSkatteInfo = visaSkatteInfo,
-                    modifier = Modifier.padding(innerPadding),
-                    onExportPdf = onExportHistorikPdf,
-                    onExportCsv = onExportHistorikCsv,
-                    onVisaKommandeAr = onVisaKommandeAr,
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                ) {
+                    BostaderInstallningSektion(
+                        bostader = bostader,
+                        valdBostadId = valdBostad?.id,
+                        onValjBostad = onValjBostad,
+                        onSparaNyBostad = onSparaNyBostad,
+                        onUppdateraBostad = onUppdateraBostad,
+                        onTaBortBostad = onTaBortBostad,
+                        hamtaRaderingInfo = hamtaRaderingInfo,
+                    )
+                    SammanstallningSkarm(
+                        poster = poster,
+                        kommandeKostnad = kommandeKostnad,
+                        forsaljningsAr = forsaljningsAr,
+                        onForsaljningsArAndras = onForsaljningsArAndras,
+                        locale = locale,
+                        visaSkatteInfo = visaSkatteInfo,
+                        modifier = Modifier.weight(1f),
+                        onExportPdf = onExportHistorikPdf,
+                        onExportCsv = onExportHistorikCsv,
+                        onVisaKommandeAr = onVisaKommandeAr,
+                    )
+                }
             }
         }
     }
@@ -612,13 +631,6 @@ private fun TomFlikText(
 fun InstallningarSkarm(
     onTillbaka: () -> Unit,
     modifier: Modifier = Modifier,
-    bostader: List<Bostad> = emptyList(),
-    valdBostadId: Long? = null,
-    onValjBostad: (Long) -> Unit = {},
-    onSparaNyBostad: (String, String, String, (Boolean) -> Unit) -> Unit = { _, _, _, _ -> },
-    onUppdateraBostad: (Bostad) -> Unit = {},
-    onTaBortBostad: (Bostad, onSista: () -> Unit, onBorttagen: () -> Unit) -> Unit = { _, _, _ -> },
-    hamtaRaderingInfo: suspend (Long) -> Int = { 0 },
     temaLage: TemaLage = TemaLage.SYSTEM,
     onTemaLage: (TemaLage) -> Unit = {},
     autoBackup: se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand = se.tmconnect.karna.sakerhetskopia.AutoBackupTillstand(),
@@ -655,16 +667,6 @@ fun InstallningarSkarm(
             Text(
                 text = stringResource(R.string.installningar_version, BuildConfig.VERSION_NAME),
                 style = MaterialTheme.typography.bodyLarge,
-            )
-
-            BostaderInstallningSektion(
-                bostader = bostader,
-                valdBostadId = valdBostadId,
-                onValjBostad = onValjBostad,
-                onSparaNyBostad = onSparaNyBostad,
-                onUppdateraBostad = onUppdateraBostad,
-                onTaBortBostad = onTaBortBostad,
-                hamtaRaderingInfo = hamtaRaderingInfo,
             )
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
