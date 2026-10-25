@@ -23,4 +23,20 @@ class TolkaSvarTest {
         assertEquals(ForslagTyp.ANTECKNING, f.typ)
         assertEquals("min text", f.titel)
     }
+
+    @Test
+    fun giltigtHem() {
+        val json = """{"typ":"HEM","titel":"Tänd lampan i vardagsrummet","start":null,"slut":null,"plats":null,"svar":null}"""
+        val f = tolkaSvar(json, "original")
+        assertEquals(ForslagTyp.HEM, f.typ)
+        assertEquals("Tänd lampan i vardagsrummet", f.titel)
+    }
+
+    @Test
+    fun okandTypBlirAnteckning() {
+        val json = """{"typ":"GARAGE","titel":"Öppna","start":null,"slut":null,"plats":null,"svar":null}"""
+        val f = tolkaSvar(json, "min text")
+        assertEquals(ForslagTyp.ANTECKNING, f.typ)
+        assertEquals("min text", f.titel)
+    }
 }

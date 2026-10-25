@@ -24,6 +24,7 @@
     <string name="typ_att_gora">Att göra</string>
     <string name="typ_anteckning">Anteckning</string>
     <string name="typ_fraga">Fråga</string>
+    <string name="typ_hem">Styr hemmet</string>
     <string name="svar_rubrik">Svar</string>
     <string name="fel_tom_inspelning">Inget hördes.</string>
     <string name="utfor_klar">Klart.</string>

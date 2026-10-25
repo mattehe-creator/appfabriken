@@ -22,5 +22,7 @@ class SystempromptTest {
         Assert.assertTrue(result.contains("Europe/Stockholm"))
         Assert.assertTrue(result.contains("Du tolkar korta svenska röstmemo"))
         Assert.assertTrue(result.contains("Schema:"))
+        Assert.assertTrue(result.contains("FRAGA|HEM"))
+        Assert.assertTrue(result.contains("tänd lampan i köket"))
     }
 }

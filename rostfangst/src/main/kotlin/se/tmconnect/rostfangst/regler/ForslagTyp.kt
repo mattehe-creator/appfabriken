@@ -6,4 +6,5 @@ enum class ForslagTyp {
     ATT_GORA,
     ANTECKNING,
     FRAGA,
+    HEM,
 }

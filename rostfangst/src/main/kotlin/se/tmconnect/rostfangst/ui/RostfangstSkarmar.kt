@@ -291,4 +291,5 @@ private fun ForslagTyp.labelRes(): Int = when (this) {
     ForslagTyp.ATT_GORA -> R.string.typ_att_gora
     ForslagTyp.ANTECKNING -> R.string.typ_anteckning
     ForslagTyp.FRAGA -> R.string.typ_fraga
+    ForslagTyp.HEM -> R.string.typ_hem
 }

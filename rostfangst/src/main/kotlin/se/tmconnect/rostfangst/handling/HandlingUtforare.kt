@@ -33,7 +33,7 @@ object HandlingUtforare {
                     UtforResultat.Klar
                 }
             }
-            ForslagTyp.ATT_GORA, ForslagTyp.ANTECKNING, ForslagTyp.FRAGA -> UtforResultat.Klar
+            ForslagTyp.ATT_GORA, ForslagTyp.ANTECKNING, ForslagTyp.FRAGA, ForslagTyp.HEM -> UtforResultat.Klar
         }
     }
 }

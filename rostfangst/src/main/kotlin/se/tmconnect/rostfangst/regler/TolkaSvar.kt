@@ -35,6 +35,7 @@ private fun parseTyp(raw: String): ForslagTyp? = when (raw) {
     "ATT_GORA" -> ForslagTyp.ATT_GORA
     "ANTECKNING" -> ForslagTyp.ANTECKNING
     "FRAGA" -> ForslagTyp.FRAGA
+    "HEM" -> ForslagTyp.HEM
     else -> null
 }
 
