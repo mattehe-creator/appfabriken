@@ -1,7 +1,11 @@
 # Uppgift: Feltexter för datorn
 
+## Vad som saknades
+- Filen `OllamaFraga.kt` står inte under "Ändra bara dessa filer" (fel sökväg eller fel fil).
+- Filen `OllamaFragaTest.kt` står inte under "Ändra bara dessa filer" (fel sökväg eller fel fil).
+
 uppdrag: uppdrag/vantar/2026-10-25-rostfangst-lokal-ai.md
-försök: 1
+försök: 2
 beror-på: 2026-10-26-07-lokal-val-av-tolkare.md
 
 ## Ändra bara dessa filer
@@ -14,10 +18,8 @@ beror-på: 2026-10-26-07-lokal-val-av-tolkare.md
 ## Uppgift
 Paket `se.tmconnect.rostfangst.lokal`. Ren Kotlin, ingen `android.*`. JUnit 4, utan Robolectric.
 
-```kotlin
 enum class Kalla { TOLKNING, TALIGENKANNING }
 fun lokalFelText(fel: LokalFel, kalla: Kalla): String
-```
 
 Exakta texter:
 - `TOLKNING`, `NATFEL`: `Datorn svarade inte. Kontrollera att den är på och att adressen stämmer.`
