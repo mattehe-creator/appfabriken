@@ -29,3 +29,5 @@ gradle :rostfangst:testDebugUnitTest --tests "*KonverterareTest"
 - Ändra andra filer än testfilen.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-26 av spärren (bara tester, grönt bygge)
