@@ -1,7 +1,11 @@
 # Uppgift: Ollama-förfrågan
 
+## Vad som saknades
+- Filen `OllamaFraga.kt` står inte under "Ändra bara dessa filer" (fel sökväg eller fel fil).
+- Filen `OllamaFragaTest.kt` står inte under "Ändra bara dessa filer" (fel sökväg eller fel fil).
+
 uppdrag: uppdrag/vantar/2026-10-25-rostfangst-lokal-ai.md
-försök: 1
+försök: 2
 beror-på: 2026-10-26-04-lokal-json-hjalp-f2.md
 
 ## Ändra bara dessa filer
