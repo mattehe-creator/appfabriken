@@ -1,10 +1,10 @@
 package se.tmconnect.husloggen.paminnelse
 
 import org.junit.Test
+import org.junit.Assert.assertEquals
+import java.time.LocalDate
 import se.tmconnect.husloggen.data.Uppgift
 import se.tmconnect.karna.paminnelse.PaminnelseFrist
-import java.time.LocalDate
-import kotlin.test.assertEquals
 
 class PaminnelseFristerFranUppgifterTest {
 
