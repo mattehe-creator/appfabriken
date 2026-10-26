@@ -1,5 +1,7 @@
 package se.tmconnect.rostfangst.lokal
 
+import se.tmconnect.rostfangst.lokal.JsonHjalp.lasJsonStrang
+
 fun lasTranskription(json: String): String? {
     val text = lasJsonStrang(json, "text") ?: return null
     val trimmad = text.trim()
