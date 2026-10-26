@@ -20,17 +20,11 @@ class LokalFelTextTest {
     }
 
     @Test
-    fun testAllaTexterNonEmpty() {
-        val texts = listOf(
-            lokalFelText(LokalFel.NATFEL, Kalla.TOLKNING),
-            lokalFelText(LokalFel.TIMEOUT, Kalla.TOLKNING),
-            lokalFelText(LokalFel.OGILTIGT_SVAR, Kalla.TOLKNING),
-            lokalFelText(LokalFel.NATFEL, Kalla.TALIGENKANNING),
-            lokalFelText(LokalFel.TIMEOUT, Kalla.TALIGENKANNING),
-            lokalFelText(LokalFel.OGILTIGT_SVAR, Kalla.TALIGENKANNING)
-        )
-        for (text in texts) {
-            assertFalse("Text should not be empty", text.isEmpty())
+    fun testAllaTexterEjTomma() {
+        for (fel in LokalFel.values()) {
+            for (kalla in Kalla.values()) {
+                assertFalse(lokalFelText(fel, kalla).isEmpty())
+            }
         }
     }
 }
