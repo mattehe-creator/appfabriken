@@ -1,88 +1,59 @@
 package se.tmconnect.rostfangst.lokal
 
-import java.lang.StringBuilder
 import java.util.regex.Pattern
 
 fun jsonCitera(text: String): String {
-    val result = StringBuilder()
-    result.append("\"")
-    
-    for (i in text.indices) {
-        when (val c = text[i]) {
-            '"' -> result.append("\\\"")
-            '\\' -> result.append("\\\\")
-            '\n' -> result.append("\\n")
-            '\r' -> result.append("\\r")
-            '\t' -> result.append("\\t")
-            else -> {
-                if (c < 0x20) {
-                    // För styrtecken under U+0020, använd \uXXXX-format
-                    val hex = Integer.toHexString(c.toInt()).lowercase()
-                    result.append("\\u")
-                    for (j in 1..4 - hex.length) {
-                        result.append("0")
-                    }
-                    result.append(hex)
-                } else {
-                    result.append(c)
-                }
-            }
+    val ut = StringBuilder()
+    ut.append('"')
+    for (c in text) {
+        when {
+            c == '"' -> ut.append("\\\"")
+            c == '\\' -> ut.append("\\\\")
+            c == '\n' -> ut.append("\\n")
+            c == '\r' -> ut.append("\\r")
+            c == '\t' -> ut.append("\\t")
+            c.code < 0x20 -> ut.append("\\u").append(c.code.toString(16).padStart(4, '0'))
+            else -> ut.append(c)
         }
     }
-    
-    result.append("\"")
-    return result.toString()
+    ut.append('"')
+    return ut.toString()
 }
 
 fun lasJsonStrang(json: String, nyckel: String): String? {
-    // Sök efter nyckeln följt av : och ett strängvärde
-    val pattern = Pattern.compile("\"$nyckel\"\\s*:\\s*\"((?:\\\\.|[^\"])*)\"")
-    val matcher = pattern.matcher(json)
-    
-    if (!matcher.find()) {
-        return null
-    }
-    
-    val escapedValue = matcher.group(1) ?: return null
-    
-    // Avkoda escape-sekvenser
-    val result = StringBuilder()
+    val monster = Pattern.compile("\"" + Pattern.quote(nyckel) + "\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"")
+    val traff = monster.matcher(json)
+    if (!traff.find()) return null
+    val rå = traff.group(1) ?: return null
+
+    val ut = StringBuilder()
     var i = 0
-    while (i < escapedValue.length) {
-        val c = escapedValue[i]
-        if (c == '\\' && i + 1 < escapedValue.length) {
-            when (val next = escapedValue[i + 1]) {
-                '"' -> result.append('"')
-                '\\' -> result.append('\\')
-                '/' -> result.append('/')
-                'b' -> result.append('\b')
-                'f' -> result.append('\u000C') // Form feed
-                'n' -> result.append('\n')
-                'r' -> result.append('\r')
-                't' -> result.append('\t')
-                'u' -> {
-                    // Hantera \uXXXX format
-                    if (i + 5 < escapedValue.length) {
-                        try {
-                            val hex = escapedValue.substring(i + 2, i + 6)
-                            val codePoint = Integer.parseInt(hex, 16)
-                            result.append(codePoint.toChar())
-                            i += 4 // Hoppa över de fyra hex-siffrorna
-                        } catch (e: NumberFormatException) {
-                            return null
-                        }
-                    } else {
-                        return null
-                    }
-                }
-                else -> result.append(next)
-            }
-            i += 2 // Hoppa över backslash och nästa tecken
-        } else {
-            result.append(c)
+    while (i < rå.length) {
+        val c = rå[i]
+        if (c != '\\') {
+            ut.append(c)
             i++
+            continue
         }
+        if (i + 1 >= rå.length) return null
+        when (rå[i + 1]) {
+            '"' -> ut.append('"')
+            '\\' -> ut.append('\\')
+            '/' -> ut.append('/')
+            'b' -> ut.append('\b')
+            'f' -> ut.append('\u000C')
+            'n' -> ut.append('\n')
+            'r' -> ut.append('\r')
+            't' -> ut.append('\t')
+            'u' -> {
+                if (i + 6 > rå.length) return null
+                val kod = rå.substring(i + 2, i + 6).toIntOrNull(16) ?: return null
+                ut.append(kod.toChar())
+                i += 4
+            }
+            else -> return null
+        }
+        i += 2
     }
-    
-    return result.toString()
+    return ut.toString()
 }
