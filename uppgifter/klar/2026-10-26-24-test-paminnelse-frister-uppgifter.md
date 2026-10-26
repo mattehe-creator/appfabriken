@@ -30,3 +30,5 @@ gradle :husloggen:testDebugUnitTest --tests "*PaminnelseFristerFranUppgifterTest
 - Ändra produktionskod eller andra filer än den nya testfilen.
 - Lägga till beroenden.
 - Ändra databasschemat.
+
+utfall: godkänd 2026-10-26 av spärren (bara tester, grönt bygge)
