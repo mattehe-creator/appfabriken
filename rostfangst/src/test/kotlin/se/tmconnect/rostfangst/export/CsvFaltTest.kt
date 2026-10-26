@@ -32,7 +32,7 @@ class CsvFaltTest {
 
     @Test
     fun testCarriageReturn() {
-        assertEquals("\"rad1\rbad2\"", csvFalt("rad1\rbad2"))
+        assertEquals("\"rad1\rcarriage return\"", csvFalt("rad1\rcarriage return"))
     }
 
     @Test
