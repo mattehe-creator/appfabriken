@@ -1,83 +1,47 @@
 package se.tmconnect.rostfangst.lokal
 
+import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.junit.Assert.*
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 class WavTest {
 
+    private fun int(b: ByteArray, from: Int): Int =
+        ByteBuffer.wrap(b.copyOfRange(from, from + 4)).order(ByteOrder.LITTLE_ENDIAN).int
+
+    private fun kort(b: ByteArray, from: Int): Int =
+        ByteBuffer.wrap(b.copyOfRange(from, from + 2)).order(ByteOrder.LITTLE_ENDIAN).short.toInt()
+
     @Test
     fun testPcmTillWav() {
-        // Test with 1 second of audio (16000 Hz, 1 channel)
-        val pcm = ByteArray(32000) { it.toByte() } // 32000 bytes of PCM data
+        val pcm = ByteArray(32000) { it.toByte() }
         val wav = pcmTillWav(pcm, 16000, 1)
 
-        // Check header size
         assertEquals(32044, wav.size)
-
-        // Check RIFF header
         assertArrayEquals("RIFF".toByteArray(Charsets.US_ASCII), wav.copyOfRange(0, 4))
-        
-        // Check file size (should be 36 + pcm.size = 32036)
-        val fileSize = ByteBuffer.wrap(wav.copyOfRange(4, 8)).order(ByteOrder.LITTLE_ENDIAN).int
-        assertEquals(32036, fileSize)
-
+        assertEquals(32036, int(wav, 4))
         assertArrayEquals("WAVE".toByteArray(Charsets.US_ASCII), wav.copyOfRange(8, 12))
         assertArrayEquals("fmt ".toByteArray(Charsets.US_ASCII), wav.copyOfRange(12, 16))
-
-        // Check format size
-        val formatSize = ByteBuffer.wrap(wav.copyOfRange(16, 20)).order(ByteOrder.LITTLE_ENDIAN).int
-        assertEquals(16, formatSize)
-
-        // Check audio format (PCM)
-        val audioFormat = ByteBuffer.wrap(wav.copyOfRange(20, 22)).order(ByteOrder.LITTLE_ENDIAN).short
-        assertEquals(1, audioFormat)
-
-        // Check number of channels
-        val channels = ByteBuffer.wrap(wav.copyOfRange(22, 24)).order(ByteOrder.LITTLE_ENDIAN).short
-        assertEquals(1, channels)
-
-        // Check sample rate
-        val sampleRate = ByteBuffer.wrap(wav.copyOfRange(24, 28)).order(ByteOrder.LITTLE_ENDIAN).int
-        assertEquals(16000, sampleRate)
-
-        // Check byte rate
-        val byteRate = ByteBuffer.wrap(wav.copyOfRange(28, 32)).order(ByteOrder.LITTLE_ENDIAN).int
-        assertEquals(32000, byteRate)
-
-        // Check block align
-        val blockAlign = ByteBuffer.wrap(wav.copyOfRange(32, 34)).order(ByteOrder.LITTLE_ENDIAN).short
-        assertEquals(2, blockAlign)
-
-        // Check bits per sample
-        val bitsPerSample = ByteBuffer.wrap(wav.copyOfRange(34, 36)).order(ByteOrder.LITTLE_ENDIAN).short
-        assertEquals(16, bitsPerSample)
-
+        assertEquals(16, int(wav, 16))
+        assertEquals(1, kort(wav, 20))
+        assertEquals(1, kort(wav, 22))
+        assertEquals(16000, int(wav, 24))
+        assertEquals(32000, int(wav, 28))
+        assertEquals(2, kort(wav, 32))
+        assertEquals(16, kort(wav, 34))
         assertArrayEquals("data".toByteArray(Charsets.US_ASCII), wav.copyOfRange(36, 40))
-
-        // Check data size
-        val dataSize = ByteBuffer.wrap(wav.copyOfRange(40, 44)).order(ByteOrder.LITTLE_ENDIAN).int
-        assertEquals(32000, dataSize)
-
-        // Check that PCM data is copied correctly
+        assertEquals(32000, int(wav, 40))
         assertArrayEquals(pcm, wav.copyOfRange(44, wav.size))
     }
 
     @Test
     fun testPcmTillWavEmpty() {
-        val pcm = ByteArray(0)
-        val wav = pcmTillWav(pcm, 16000, 1)
+        val wav = pcmTillWav(ByteArray(0), 16000, 1)
 
-        // Should be exactly 44 bytes (header only)
         assertEquals(44, wav.size)
-
-        // Check file size in header
-        val fileSize = ByteBuffer.wrap(wav.copyOfRange(4, 8)).order(ByteOrder.LITTLE_ENDIAN).int
-        assertEquals(36, fileSize) // 36 + 0
-
-        // Check data size in header
-        val dataSize = ByteBuffer.wrap(wav.copyOfRange(40, 44)).order(ByteOrder.LITTLE_ENDIAN).int
-        assertEquals(0, dataSize)
+        assertEquals(36, int(wav, 4))
+        assertEquals(0, int(wav, 40))
     }
 }
