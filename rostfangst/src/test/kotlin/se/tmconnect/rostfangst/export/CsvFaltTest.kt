@@ -22,21 +22,21 @@ class CsvFaltTest {
 
     @Test
     fun testQuote() {
-        assertEquals("\"säg \\\"hej\\\"\"", csvFalt("säg \"hej\""))
+        assertEquals("\"säg \"\"hej\"\"\"", csvFalt("säg \"hej\""))
     }
 
     @Test
     fun testNewline() {
-        assertEquals("\"rad1\\nrad2\"", csvFalt("rad1\nrad2"))
+        assertEquals("\"rad1\nrad2\"", csvFalt("rad1\nrad2"))
     }
 
     @Test
     fun testCarriageReturn() {
-        assertEquals("\"rad1\\rcarriage return\"", csvFalt("rad1\rcarriage return"))
+        assertEquals("\"rad1\rbad2\"", csvFalt("rad1\rbad2"))
     }
 
     @Test
     fun testNewlineAndQuote() {
-        assertEquals("\"rad1\\n\\\"hej\\\"\"", csvFalt("rad1\n\"hej\""))
+        assertEquals("\"rad1\n\"\"hej\"\"\"", csvFalt("rad1\n\"hej\""))
     }
 }
