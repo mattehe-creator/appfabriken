@@ -11,32 +11,32 @@ class CsvFaltTest {
     }
 
     @Test
-    fun testTextWithComma() {
-        assertEquals("\"a,b\"", csvFalt("a,b"))
-    }
-
-    @Test
-    fun testTextWithQuote() {
-        assertEquals("\"säg \\\"hej\\\"\"", csvFalt("säg \"hej\""))
-    }
-
-    @Test
-    fun testTextWithNewline() {
-        assertEquals("\"rad1\\nrad2\"", csvFalt("rad1\nrad2"))
-    }
-
-    @Test
-    fun testTextWithCarriageReturn() {
-        assertEquals("\"rad1\\rcarriage return\"", csvFalt("rad1\rcarriage return"))
-    }
-
-    @Test
-    fun testEmptyText() {
+    fun testEmptyString() {
         assertEquals("", csvFalt(""))
     }
 
     @Test
-    fun testTextWithBothSpecialCharacters() {
-        assertEquals("\"a,b\\n\\r\"", csvFalt("a,b\n\r"))
+    fun testComma() {
+        assertEquals("\"a,b\"", csvFalt("a,b"))
+    }
+
+    @Test
+    fun testQuote() {
+        assertEquals("\"säg \\\"hej\\\"\"", csvFalt("säg \"hej\""))
+    }
+
+    @Test
+    fun testNewline() {
+        assertEquals("\"rad1\nrad2\"", csvFalt("rad1\nrad2"))
+    }
+
+    @Test
+    fun testCarriageReturn() {
+        assertEquals("\"rad1\rrad2\"", csvFalt("rad1\rbad2"))
+    }
+
+    @Test
+    fun testNewlineAndQuote() {
+        assertEquals("\"rad1\n\"\"hej\"\"\"", csvFalt("rad1\n\"hej\""))
     }
 }
