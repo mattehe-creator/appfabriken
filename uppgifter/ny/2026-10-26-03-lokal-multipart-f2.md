@@ -1,7 +1,12 @@
 # Uppgift: Multipart-kropp
 
+## Vad som saknades
+- Inga filer är ändrade.
+- Filen `rostfangst/src/main/kotlin/se/tmconnect/rostfangst/lokal/Multipart.kt` finns inte.
+- Filen `rostfangst/src/test/kotlin/se/tmconnect/rostfangst/lokal/MultipartTest.kt` finns inte.
+
 uppdrag: uppdrag/vantar/2026-10-25-rostfangst-lokal-ai.md
-försök: 1
+försök: 2
 beror-på: ingen
 
 ## Ändra bara dessa filer
