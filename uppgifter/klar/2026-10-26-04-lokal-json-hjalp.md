@@ -38,3 +38,5 @@ gradle :rostfangst:testDebugUnitTest --tests "*JsonHjalpTest"
 - Använda `org.json` eller andra bibliotek.
 - Ändra andra filer.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-26 av Cursor (PR #752). Ersatt av 2026-10-26-04-lokal-json-hjalp-f2.md
