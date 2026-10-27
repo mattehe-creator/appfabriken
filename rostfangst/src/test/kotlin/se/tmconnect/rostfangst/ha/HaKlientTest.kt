@@ -1,7 +1,7 @@
 package se.tmconnect.rostfangst.ha
 
 import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
 import se.tmconnect.rostfangst.tolking.HttpSvar
 import se.tmconnect.rostfangst.tolking.HttpTransport
 
