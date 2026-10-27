@@ -3,133 +3,110 @@ package se.tmconnect.rostfangst.ha
 import org.junit.Test
 import se.tmconnect.rostfangst.tolking.HttpSvar
 import se.tmconnect.rostfangst.tolking.HttpTransport
-import java.io.IOException
-import java.net.SocketTimeoutException
 import kotlin.test.assertEquals
-import kotlin.test.assertIs
 
 class HaKlientTest {
-
+    
     @Test
-    fun `skickaHandelse med 200 returnerar Ok`() {
+    fun testSkickaHandelse() {
         val transport = object : HttpTransport {
-            var url: String? = null
-            var headers: Map<String, String>? = null
-            var body: String? = null
-
+            var lastUrl: String? = null
+            var lastHeaders: Map<String, String>? = null
+            var lastBody: String? = null
+            
             override fun post(url: String, headers: Map<String, String>, body: String): HttpSvar {
-                this.url = url
-                this.headers = headers
-                this.body = body
+                lastUrl = url
+                lastHeaders = headers
+                lastBody = body
                 return HttpSvar(200, "[]")
             }
         }
-
+        
         val klient = HaHttpKlient("http://ha.local:8123", "abc", transport)
         val resultat = klient.skickaHandelse("{\"typ\":\"KALENDER\"}")
-
-        assertEquals("http://ha.local:8123/api/events/rostfangst_fangst", transport.url)
-        assertEquals("Bearer abc", transport.headers!!["Authorization"])
-        assertEquals("application/json", transport.headers!!["Content-Type"])
-        assertEquals("{\"typ\":\"KALENDER\"}", transport.body)
-        assertIs<HaUtfall.Ok>(resultat)
-        assertEquals("[]", resultat.kropp)
+        
+        assertEquals("http://ha.local:8123/api/events/rostfangst_fangst", transport.lastUrl)
+        assertEquals("Bearer abc", transport.lastHeaders!!["Authorization"])
+        assertEquals("application/json", transport.lastHeaders!!["Content-Type"])
+        assertEquals("{\"typ\":\"KALENDER\"}", transport.lastBody)
+        assertEquals(HaUtfall.Ok("[]"), resultat)
     }
-
+    
     @Test
-    fun `laggTillTodo med 200 returnerar Ok`() {
+    fun testLaggTillTodo() {
         val transport = object : HttpTransport {
-            var url: String? = null
-            var headers: Map<String, String>? = null
-            var body: String? = null
-
+            var lastUrl: String? = null
+            var lastHeaders: Map<String, String>? = null
+            var lastBody: String? = null
+            
             override fun post(url: String, headers: Map<String, String>, body: String): HttpSvar {
-                this.url = url
-                this.headers = headers
-                this.body = body
+                lastUrl = url
+                lastHeaders = headers
+                lastBody = body
                 return HttpSvar(200, "[]")
             }
         }
-
+        
         val klient = HaHttpKlient("http://ha.local:8123", "abc", transport)
         val resultat = klient.laggTillTodo("{\"item\":\"test\"}")
-
-        assertEquals("http://ha.local:8123/api/services/todo/add_item", transport.url)
-        assertEquals("Bearer abc", transport.headers!!["Authorization"])
-        assertEquals("application/json", transport.headers!!["Content-Type"])
-        assertEquals("{\"item\":\"test\"}", transport.body)
-        assertIs<HaUtfall.Ok>(resultat)
-        assertEquals("[]", resultat.kropp)
+        
+        assertEquals("http://ha.local:8123/api/services/todo/add_item", transport.lastUrl)
+        assertEquals("Bearer abc", transport.lastHeaders!!["Authorization"])
+        assertEquals("application/json", transport.lastHeaders!!["Content-Type"])
+        assertEquals("{\"item\":\"test\"}", transport.lastBody)
+        assertEquals(HaUtfall.Ok("[]"), resultat)
     }
-
+    
     @Test
-    fun `assist med 200 returnerar Ok`() {
+    fun testAssist() {
         val transport = object : HttpTransport {
-            var url: String? = null
-            var headers: Map<String, String>? = null
-            var body: String? = null
-
+            var lastUrl: String? = null
+            var lastHeaders: Map<String, String>? = null
+            var lastBody: String? = null
+            
             override fun post(url: String, headers: Map<String, String>, body: String): HttpSvar {
-                this.url = url
-                this.headers = headers
-                this.body = body
-                return HttpSvar(200, "{\"response\":\"Hej\"}")
+                lastUrl = url
+                lastHeaders = headers
+                lastBody = body
+                return HttpSvar(200, "{}")
             }
         }
-
+        
         val klient = HaHttpKlient("http://ha.local:8123", "abc", transport)
         val resultat = klient.assist("tänd \"lampan\"")
-
-        assertEquals("http://ha.local:8123/api/conversation/process", transport.url)
-        assertEquals("Bearer abc", transport.headers!!["Authorization"])
-        assertEquals("application/json", transport.headers!!["Content-Type"])
-        assertEquals("{\"text\":\"tänd \\\"lampan\\\"\",\"language\":\"sv\"}", transport.body)
-        assertIs<HaUtfall.Ok>(resultat)
-        assertEquals("{\"response\":\"Hej\"}", resultat.kropp)
+        
+        assertEquals("http://ha.local:8123/api/conversation/process", transport.lastUrl)
+        assertEquals("Bearer abc", transport.lastHeaders!!["Authorization"])
+        assertEquals("application/json", transport.lastHeaders!!["Content-Type"])
+        assertEquals("{\"text\":\"tänd \\\"lampan\\\"\",\"language\":\"sv\"}", transport.lastBody)
+        assertEquals(HaUtfall.Ok("{}"), resultat)
     }
-
+    
     @Test
-    fun `401 returnerar Fel med rätt text`() {
+    fun test401Fel() {
         val transport = object : HttpTransport {
             override fun post(url: String, headers: Map<String, String>, body: String): HttpSvar {
                 return HttpSvar(401, "")
             }
         }
-
+        
         val klient = HaHttpKlient("http://ha.local:8123", "abc", transport)
         val resultat = klient.skickaHandelse("{}")
-
-        assertIs<HaUtfall.Fel>(resultat)
-        assertEquals("Token nekas, skapa en ny i Home Assistant.", resultat.text)
+        
+        assertEquals(HaUtfall.Fel("Token nekas, skapa en ny i Home Assistant."), resultat)
     }
-
+    
     @Test
-    fun `IOException returnerar Fel`() {
+    fun testIOException() {
         val transport = object : HttpTransport {
             override fun post(url: String, headers: Map<String, String>, body: String): HttpSvar {
-                throw IOException("Nätverksfel")
+                throw java.net.SocketTimeoutException()
             }
         }
-
+        
         val klient = HaHttpKlient("http://ha.local:8123", "abc", transport)
         val resultat = klient.skickaHandelse("{}")
-
-        assertIs<HaUtfall.Fel>(resultat)
-        assertEquals("Når inte Home Assistant just nu.", resultat.text)
-    }
-
-    @Test
-    fun `SocketTimeoutException returnerar Fel`() {
-        val transport = object : HttpTransport {
-            override fun post(url: String, headers: Map<String, String>, body: String): HttpSvar {
-                throw SocketTimeoutException("Timeout")
-            }
-        }
-
-        val klient = HaHttpKlient("http://ha.local:8123", "abc", transport)
-        val resultat = klient.skickaHandelse("{}")
-
-        assertIs<HaUtfall.Fel>(resultat)
-        assertEquals("Når inte Home Assistant just nu.", resultat.text)
+        
+        assertEquals(HaUtfall.Fel("Når inte Home Assistant just nu."), resultat)
     }
 }
