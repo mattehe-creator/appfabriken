@@ -24,6 +24,9 @@ class InstallningarLagerHaTest {
 
     @Test
     fun testInitialValues() = runBlocking {
+        // Clear any existing data first
+        installningarLager.sparaHa("", "", "")
+        
         assertEquals("", installningarLager.haAdress.first())
         assertEquals("", installningarLager.haToken.first())
         assertEquals("", installningarLager.haTodo.first())
@@ -31,6 +34,9 @@ class InstallningarLagerHaTest {
 
     @Test
     fun testSparaHa() = runBlocking {
+        // Clear any existing data first
+        installningarLager.sparaHa("", "", "")
+        
         installningarLager.sparaHa(" http://ha.local:8123 ", " abc ", " todo.x ")
         assertEquals("http://ha.local:8123", installningarLager.haAdress.first())
         assertEquals("abc", installningarLager.haToken.first())
@@ -39,6 +45,9 @@ class InstallningarLagerHaTest {
 
     @Test
     fun testSparaHaDoesNotChangeApiNyckel() = runBlocking {
+        // Clear any existing data first
+        installningarLager.sparaHa("", "", "")
+        
         installningarLager.sparaApiNyckel("k")
         installningarLager.sparaHa(" http://ha.local:8123 ", " abc ", " todo.x ")
         assertEquals("k", installningarLager.apiNyckel.first())
@@ -46,6 +55,9 @@ class InstallningarLagerHaTest {
 
     @Test
     fun testSparaHaWithEmptyValues() = runBlocking {
+        // Clear any existing data first
+        installningarLager.sparaHa("", "", "")
+        
         installningarLager.sparaHa("", "", "")
         assertEquals("", installningarLager.haAdress.first())
         assertEquals("", installningarLager.haToken.first())
