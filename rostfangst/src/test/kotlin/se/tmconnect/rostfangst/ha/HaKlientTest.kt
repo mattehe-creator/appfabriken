@@ -1,9 +1,9 @@
 package se.tmconnect.rostfangst.ha
 
 import org.junit.Test
+import kotlin.test.assertEquals
 import se.tmconnect.rostfangst.tolking.HttpSvar
 import se.tmconnect.rostfangst.tolking.HttpTransport
-import kotlin.test.assertEquals
 
 class HaKlientTest {
 
