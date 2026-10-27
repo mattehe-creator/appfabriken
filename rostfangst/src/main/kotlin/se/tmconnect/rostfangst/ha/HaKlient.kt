@@ -2,6 +2,7 @@ package se.tmconnect.rostfangst.ha
 
 import se.tmconnect.rostfangst.tolking.HttpSvar
 import se.tmconnect.rostfangst.tolking.HttpTransport
+import se.tmconnect.rostfangst.tolking.HttpURLConnectionTransport
 
 sealed interface HaUtfall {
     data class Ok(val kropp: String) : HaUtfall
