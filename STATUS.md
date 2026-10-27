@@ -1,6 +1,6 @@
 # Status
 
-Uppdaterad 2026-10-25 morgon.
+Uppdaterad 2026-10-27 kväll.
 
 ## Klart: Grundplattan (2026-10-08–09)
 
@@ -61,13 +61,15 @@ Grund, Pro, påminnelser, PDF och butiksmaterial finns. 2026-10-21/22 (Claude): 
 
 2026-10-25 eftermiddag: reservläge (`CURSOR-PAUS`) tills Cursors kvot förnyas, cirka 9 november. Claude delar upp uppdrag och granskar; spärren avgör mekaniska fel och rena testuppgifter. `2026-10-25-rostfangst-home-assistant` delar Claude upp i uppgifter. Lyften till `:karna` väntar.
 
+2026-10-27 kväll: kön var tom sedan 26 oktober 11:34. Claude lade 14 uppgifter: Röstfångst Del A delad i steg om högst tre filer (`2026-10-27-01` till `-08`) och testtäckning för Styrelserummet (`-09` till `-14`, varav `-12` rättar sitemap.xml). Kvar för Cursor efter förnyelsen: HA-status per fångst och "Skicka igen" (kräver migration), klockan, lokal AI, lyften till `:karna`.
+
 2026-10-25: körskriptet kör Aider ett andra varv när en fil som uppgiften kräver är tom eller oförändrad (#695); natten 24-25 underkändes ungefär hälften av första försöken av just det skälet. Workflowet Skript kontrollerar syntaxen i `verktyg/*.ps1` före merge.
 
 ## Nu: Röstfångst som Mattias eget verktyg (provapp, publiceras inte)
 
 Mattias 2026-10-25: ett tryck i menyn (snabbinställningarna), tala, ingen väckningsfras; vidare till Home Assistant (både mottagare och styrning) och till klockan (Wear OS).
 
-1. `2026-10-25-rostfangst-home-assistant`: snabbstart med ett tryck, HA-klient (händelse, att-göra-lista, styr hemmet via Assist med bekräftelse), typen HEM. Skickat 2026-10-25.
+1. `2026-10-25-rostfangst-home-assistant`: snabbstart med ett tryck, HA-klient (händelse, att-göra-lista, styr hemmet via Assist med bekräftelse), typen HEM. Skickat 2026-10-25. Del A delad av Claude i reservläget 2026-10-27 (`uppdrag/claude/2026-10-27-rostfangst-ha-reserv.md`, uppgifter 01-08); "Skicka igen" väntar på Cursor.
 2. `uppdrag/vantar/2026-10-25-rostfangst-klocka`: Wear OS-app, Data Layer mot telefonen, tile. Skickas när 1 är mergat.
 3. `uppdrag/vantar/2026-10-25-rostfangst-lokal-ai`: Ollama-tolkare, Whisper på egen dator över Tailscale, val i inställningarna, `verktyg/whisper/` och `rostfangst/LOKAL-AI.md`. Skickas tillsammans med klockan när 1 är mergat.
 4. Mattias: installera APK från `senaste-main`, skapa API-nyckel hos Anthropic, och i HA en long-lived token (Profil → Säkerhet). Rekommendation: exponera aldrig lås, larm eller garageport för Assist.

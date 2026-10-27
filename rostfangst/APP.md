@@ -11,12 +11,16 @@ Mattias säger vad han behöver i stunden och får det gjort: påminnelse, kalen
 - **INTERNET** finns för tolkning via Anthropics Messages API. Ljud lämnar aldrig telefonen; bara transkriberad text skickas.
 - API-nyckel och modell anges i inställningar och sparas i DataStore, aldrig i repot.
 - Standardmodell: `claude-haiku-5-5`.
+- **Home Assistant** (beslut 2026-10-25): adress, long-lived token och att-göra-lista anges i inställningarna och sparas i DataStore, aldrig i repot eller loggar. Utan adress och token görs inga anrop. Fångster skickas som händelsen `rostfangst_fangst`, ATT_GORA även till vald `todo`-lista, och typen HEM skickas till Assist (`conversation/process`) först efter tryck på Utför. HA får bara text, aldrig ljud.
+- **`usesCleartextTraffic`** är på, så att HA på hemnätet nås över `http://`. Gäller bara provappen.
+- Rekommendation: exponera aldrig lås, larm eller garageport för Assist i HA (Inställningar → Röstassistenter → Exponera).
+- Token skapas i HA: Profil → Säkerhet → Long-lived access tokens.
 
 ## Tal och tolkning
 
 - Tal till text: Android `SpeechRecognizer`, språk `sv-SE`. På enheten när `SpeechRecognizer.isOnDeviceRecognitionAvailable` (API 31+), annars molnigenkänning via samma API.
 - `RECORD_AUDIO` frågas första gången inspelning behövs.
-- Tolkning: gränssnitt `Tolkare` med implementation mot Anthropic. JSON-schema för handlingstyper: KALENDER, PAMINNELSE, ATT_GORA, ANTECKNING, FRAGA.
+- Tolkning: gränssnitt `Tolkare` med implementation mot Anthropic. JSON-schema för handlingstyper: KALENDER, PAMINNELSE, ATT_GORA, ANTECKNING, FRAGA, HEM.
 
 ## Handlingar
 
