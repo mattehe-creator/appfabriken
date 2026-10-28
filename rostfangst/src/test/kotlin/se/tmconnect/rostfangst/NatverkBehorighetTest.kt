@@ -18,4 +18,14 @@ class NatverkBehorighetTest {
         val behorigheter = info.requestedPermissions?.toList().orEmpty()
         assertTrue("INTERNET krävs för tolkning", "android.permission.INTERNET" in behorigheter)
     }
+
+    @Test
+    fun klartextTillatsForHemmanatet() {
+        val context = ApplicationProvider.getApplicationContext<android.content.Context>()
+        val flaggor = context.applicationInfo.flags
+        assertTrue(
+            "usesCleartextTraffic krävs för Home Assistant över http",
+            flaggor and android.content.pm.ApplicationInfo.FLAG_USES_CLEARTEXT_TRAFFIC != 0,
+        )
+    }
 }
