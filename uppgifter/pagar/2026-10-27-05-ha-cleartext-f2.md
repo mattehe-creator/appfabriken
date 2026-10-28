@@ -37,5 +37,3 @@ gradle :rostfangst:testDebugUnitTest --tests "*NatverkBehorighetTest"
 ## Gör inte
 - Ändra andra filer eller andra attribut i manifestet.
 - Lägga till behörigheter eller beroenden.
-
-utfall: godkänd 2026-10-28 (Claude tog över, reservläge)
