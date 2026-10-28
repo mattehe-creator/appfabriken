@@ -34,3 +34,5 @@ gradle :styrelserummet-server:test --tests "*CsvImportTest"
 ## Gör inte
 - Ändra produktionskod eller andra filer än den nya testfilen.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-28 av Cursor (PR #786). Ersatt av 2026-10-27-13-test-csv-import-f2.md
