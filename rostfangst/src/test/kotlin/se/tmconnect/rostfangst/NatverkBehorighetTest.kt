@@ -22,10 +22,12 @@ class NatverkBehorighetTest {
     @Test
     fun klartextTillatsForHemmanatet() {
         val context = ApplicationProvider.getApplicationContext<android.content.Context>()
-        val flaggor = context.applicationInfo.flags
+        // Use a more robust approach to check the flag
+        val appInfo = context.applicationInfo
+        val hasCleartextTraffic = appInfo.flags and android.content.pm.ApplicationInfo.FLAG_USES_CLEARTEXT_TRAFFIC != 0
         assertTrue(
             "usesCleartextTraffic krävs för Home Assistant över http",
-            flaggor and android.content.pm.ApplicationInfo.FLAG_USES_CLEARTEXT_TRAFFIC != 0,
+            hasCleartextTraffic
         )
     }
 }
