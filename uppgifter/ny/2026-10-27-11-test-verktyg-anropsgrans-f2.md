@@ -1,7 +1,10 @@
 # Uppgift: Test av VerktygAnropsGrans (Styrelserummet-server)
 
+## Vad som saknades
+- Filen `styrelserummet-server/src/test/kotlin/se/tmconnect/styrelserummet/server/JobbLankTest.kt` står inte under "Ändra bara dessa filer" (fel sökväg eller fel fil).
+
 uppdrag: uppdrag/claude/2026-10-27-testtackning-kvall.md
-försök: 1
+försök: 2
 beror-på: ingen
 
 ## Ändra bara dessa filer
