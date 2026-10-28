@@ -27,3 +27,5 @@ gradle :styrelserummet:test --tests "*DelaUppTest"
 ## Gör inte
 - Ändra produktionskod eller andra filer än den nya testfilen.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-28 av spärren (bara tester, grönt bygge)
