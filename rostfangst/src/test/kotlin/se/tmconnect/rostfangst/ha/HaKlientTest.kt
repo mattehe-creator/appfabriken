@@ -1,9 +1,10 @@
 package se.tmconnect.rostfangst.ha
 
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Test
 import se.tmconnect.rostfangst.tolking.HttpSvar
 import se.tmconnect.rostfangst.tolking.HttpTransport
-import kotlin.test.assertEquals
 
 class HaKlientTest {
     
@@ -94,6 +95,7 @@ class HaKlientTest {
         val resultat = klient.skickaHandelse("{}")
         
         assertEquals(HaUtfall.Fel("Token nekas, skapa en ny i Home Assistant."), resultat)
+        assertFalse((resultat as HaUtfall.Fel).text.contains("abc"))
     }
     
     @Test
