@@ -23,11 +23,21 @@ class NatverkBehorighetTest {
     fun klartextTillatsForHemmanatet() {
         val context = ApplicationProvider.getApplicationContext<android.content.Context>()
         // Use a more robust approach to check the flag
-        val appInfo = context.applicationInfo
-        val hasCleartextTraffic = appInfo.flags and android.content.pm.ApplicationInfo.FLAG_USES_CLEARTEXT_TRAFFIC != 0
-        assertTrue(
-            "usesCleartextTraffic krävs för Home Assistant över http",
-            hasCleartextTraffic
-        )
+        try {
+            val appInfo = context.applicationInfo
+            val hasCleartextTraffic = appInfo.flags and android.content.pm.ApplicationInfo.FLAG_USES_CLEARTEXT_TRAFFIC != 0
+            assertTrue(
+                "usesCleartextTraffic krävs för Home Assistant över http",
+                hasCleartextTraffic
+            )
+        } catch (e: Exception) {
+            // If direct access fails, check via manifest parsing as fallback
+            val manifest = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_META_DATA)
+            val usesCleartext = manifest.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_USES_CLEARTEXT_TRAFFIC != 0
+            assertTrue(
+                "usesCleartextTraffic krävs för Home Assistant över http",
+                usesCleartext
+            )
+        }
     }
 }
