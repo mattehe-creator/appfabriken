@@ -91,3 +91,4 @@ Rader skrivs av `verktyg/kor-alla.ps1` när den lokala körningen stannat upprep
 2026-10-21T09:47:01 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
 2026-10-25T15:03:21 Lokal körning stannade efter omförsök. Felkod 1, källa: okänd.
 2026-10-26T02:56:25 Lokal körning stannade efter omförsök. Felkod 1, källa: git. git push -u origin lokal/2026-10-26-03-lokal-multipart gav felkod 1
+2026-10-28T02:00:09 Lokal körning stannade efter omförsök. Felkod 1, källa: git. git checkout main gav felkod 1
