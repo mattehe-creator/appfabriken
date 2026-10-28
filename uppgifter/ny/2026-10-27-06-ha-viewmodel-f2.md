@@ -1,7 +1,10 @@
 # Uppgift: Koppla in Home Assistant i RostfangstViewModel (Röstfångst)
 
+## Vad som saknades
+- Inga filer är ändrade.
+
 uppdrag: uppdrag/claude/2026-10-27-rostfangst-ha-reserv.md
-försök: 1
+försök: 2
 beror-på: 2026-10-27-04-ha-installningar-lager.md
 
 Kräver att uppgifterna 01–04 är mergade (`HaKlient`, `HaHttpKlient`, `HaKonfig`, `haKonfig`, `haSteg`, `korHaSteg`, `InstallningarLager.haAdress/haToken/haTodo/sparaHa`).
