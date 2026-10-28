@@ -16,7 +16,7 @@ class SeoTest {
         val result = sitemapXml("https://x.se")!!
         assertEquals(HttpStatusCode.OK, result.first)
         val content = result.second
-        assertTrue(content.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset"))
+        assertTrue(content.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"))
         assertTrue(content.endsWith("</urlset>\n"))
         
         // Check that the content contains all expected URLs
