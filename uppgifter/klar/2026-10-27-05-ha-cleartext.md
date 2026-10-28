@@ -36,3 +36,5 @@ gradle :rostfangst:testDebugUnitTest --tests "*NatverkBehorighetTest"
 ## Gör inte
 - Ändra andra filer eller andra attribut i manifestet.
 - Lägga till behörigheter eller beroenden.
+
+utfall: underkänd 2026-10-28 av Cursor (PR #779). Ersatt av 2026-10-27-05-ha-cleartext-f2.md
