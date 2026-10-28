@@ -33,13 +33,13 @@ fun sitemapXml(basUrl: String?): Pair<HttpStatusCode, String>? {
         val loc = if (sida == "/") basUrl else "$basUrl$sida"
         "  <url><loc>$loc</loc></url>"
     }
-    val xml =
-        """
-        <?xml version="1.0" encoding="UTF-8"?>
-        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-        $urlar
-        </urlset>
-        """.trimIndent() + "\n"
+    val xml = buildString {
+        appendLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+        appendLine("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">")
+        append(urlar)
+        appendLine()
+        appendLine("</urlset>")
+    }
     return HttpStatusCode.OK to xml
 }
 
