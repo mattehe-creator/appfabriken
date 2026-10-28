@@ -38,3 +38,5 @@ gradle :rostfangst:testDebugUnitTest --tests "*InstallningarLagerHaTest"
 - Ändra andra filer.
 - Lägga till beroenden.
 - Skriva token i loggar.
+
+utfall: godkänd 2026-10-28 (Claude, reservläge)
