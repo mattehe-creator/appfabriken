@@ -39,3 +39,5 @@ gradle :styrelserummet-server:test --tests "*CsvImportTest"
 ## Gör inte
 - Ändra produktionskod eller andra filer än den nya testfilen.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-28 (Claude, reservläge)
