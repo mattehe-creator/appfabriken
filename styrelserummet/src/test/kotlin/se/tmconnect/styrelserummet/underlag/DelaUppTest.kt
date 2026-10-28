@@ -17,7 +17,7 @@ class DelaUppTest {
     }
 
     @Test
-    fun testVarjeSidaEnDel() {
+    fun testVarjeSidaSeparat() {
         val sidor = listOf("aa", "bb", "cc")
         val resultat = delaUpp(sidor, 4)
         assertEquals(3, resultat.size)
@@ -30,7 +30,7 @@ class DelaUppTest {
     }
 
     @Test
-    fun testExaktPlats() {
+    fun testSidaPrecisInomGrans() {
         val sidor = listOf("aa", "bb")
         val resultat = delaUpp(sidor, 6)
         assertEquals(1, resultat.size)
@@ -39,7 +39,7 @@ class DelaUppTest {
     }
 
     @Test
-    fun testForLangeSida() {
+    fun testForLangSida() {
         val sidor = listOf("a", "xxxxxx", "b")
         val resultat = delaUpp(sidor, 5)
         assertEquals(3, resultat.size)
