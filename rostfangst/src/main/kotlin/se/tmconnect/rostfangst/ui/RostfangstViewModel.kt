@@ -25,12 +25,6 @@ import se.tmconnect.rostfangst.data.InstallningarLager
 import se.tmconnect.rostfangst.data.RostfangstRepository
 import se.tmconnect.rostfangst.handling.HandlingUtforare
 import se.tmconnect.rostfangst.handling.UtforResultat
-import se.tmconnect.rostfangst.ha.HaKonfig
-import se.tmconnect.rostfangst.ha.HaKlient
-import se.tmconnect.rostfangst.ha.HaKlientFabrik
-import se.tmconnect.rostfangst.ha.HaHttpKlient
-import se.tmconnect.rostfangst.ha.haSteg
-import se.tmconnect.rostfangst.ha.korHaSteg
 import se.tmconnect.rostfangst.regler.Forslag
 import se.tmconnect.rostfangst.regler.ForslagTyp
 import se.tmconnect.rostfangst.regler.byggSystemprompt
@@ -62,7 +56,6 @@ class RostfangstViewModel(
     private val tolkareFabrik: (String, String) -> Tolkare = { nyckel, modell ->
         AnthropicTolkare(nyckel, modell)
     },
-    private val haKlientFabrik: (HaKonfig) -> HaKlient = { HaHttpKlient(it.adress, it.token) },
     private val zon: ZoneId = ZoneId.of("Europe/Stockholm"),
 ) : ViewModel() {
     private val _inspelning = MutableStateFlow(InspelningsTillstand())
@@ -185,18 +178,17 @@ class RostfangstViewModel(
         viewModelScope.launch {
             when (val result = HandlingUtforare.utfor(appContext, id, forslag)) {
                 UtforResultat.Klar -> {
-                    val meddelandeText = skickaTillHa(forslag, original) ?: "klar"
+                    // Ersätt med en enkel hantering utan HA-koppling
                     if (forslag.typ == ForslagTyp.ATT_GORA) {
                         repository.markeraKlar(id, false)
                     }
-                    _meddelande.value = meddelandeText
+                    _meddelande.value = "klar"
                     _inspelning.value = InspelningsTillstand()
                 }
                 UtforResultat.IngenHandling -> _meddelande.value = "saknar_tid"
                 is UtforResultat.Kalender -> {
                     onKalender(result.intent)
-                    val meddelandeText = skickaTillHa(forslag, original)
-                    _meddelande.value = meddelandeText ?: "kalender"
+                    _meddelande.value = "kalender"
                     _inspelning.value = InspelningsTillstand()
                 }
             }
@@ -228,38 +220,10 @@ class RostfangstViewModel(
                 return@launch
             }
             
-            val konfig = haKonfig(adress, token, todo)
-            if (konfig == null) {
-                _meddelande.value = "ha_adress"
-                return@launch
-            }
-            
-            installningar.sparaHa(konfig.adress, konfig.token, konfig.todoEntity)
+            // Ersätt med en enkel hantering utan HA-koppling
+            installningar.sparaHa(adress, token, todo)
             _meddelande.value = "sparad"
         }
-    }
-
-    private suspend fun skickaTillHa(forslag: Forslag, original: String): String? {
-        val adress = installningar.haAdress.first()
-        val token = installningar.haToken.first()
-        val todo = installningar.haTodo.first()
-        
-        val konfig = haKonfig(adress, token, todo)
-        
-        if (forslag.typ == ForslagTyp.HEM && konfig == null) {
-            return "ha_saknas"
-        }
-        
-        val steg = haSteg(forslag.typ, konfig)
-        if (steg.isEmpty()) {
-            return null
-        }
-        
-        val res = withContext(Dispatchers.IO) {
-            korHaSteg(steg, haKlientFabrik(konfig!!), konfig, forslag, original)
-        }
-        
-        return res.svar ?: res.fel.firstOrNull()
     }
 
     fun uppdateraFangsterPerDag() {
