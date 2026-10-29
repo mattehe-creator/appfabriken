@@ -7,100 +7,75 @@ import org.junit.Assert.assertFalse
 class VerktygAnropsGransTest {
     
     @Test
-    fun testFarAnropaNyIP() {
+    fun testNyGrans() {
         val grans = VerktygAnropsGrans()
         val nuMs = 0L
-        
-        // En ny IP bör kunna anropa
-        assertTrue(grans.farAnropa("1.2.3.4", nuMs))
+        assertTrue("Ny gräns ska tillåta anrop", grans.farAnropa("1.2.3.4", nuMs))
     }
     
     @Test
-    fun testFarAnropaInomGrans() {
+    fun testUnderGrans() {
         val grans = VerktygAnropsGrans()
-        val nuMs = 0L
+        val nuMs = 100L
         
-        // Registrera 59 anrop
+        // Gör 59 anrop
         for (i in 0 until 59) {
-            grans.registreraAnrop("1.2.3.4", nuMs + i)
+            grans.registreraAnrop("1.2.3.4", i.toLong())
         }
         
-        // Borde fortfarande vara tillåtet
-        assertTrue(grans.farAnropa("1.2.3.4", nuMs + 100))
+        assertTrue("Under gränsen ska tillåta anrop", grans.farAnropa("1.2.3.4", nuMs))
     }
     
     @Test
-    fun testFarAnropaOverGrans() {
+    fun testOverGrans() {
         val grans = VerktygAnropsGrans()
-        val nuMs = 0L
+        val nuMs = 100L
         
-        // Registrera 60 anrop (max tillåtna)
+        // Gör 60 anrop
         for (i in 0 until 60) {
-            grans.registreraAnrop("1.2.3.4", nuMs + i)
+            grans.registreraAnrop("1.2.3.4", i.toLong())
         }
         
-        // Borde inte längre vara tillåtet
-        assertFalse(grans.farAnropa("1.2.3.4", nuMs + 100))
+        assertFalse("Över gränsen ska inte tillåta anrop", grans.farAnropa("1.2.3.4", nuMs))
     }
     
     @Test
-    fun testFarAnropaDifferentIP() {
+    fun testOlikaIp() {
         val grans = VerktygAnropsGrans()
-        val nuMs = 0L
+        val nuMs = 100L
         
-        // Registrera 60 anrop på en IP
+        // Gör 60 anrop från en IP
         for (i in 0 until 60) {
-            grans.registreraAnrop("1.2.3.4", nuMs + i)
+            grans.registreraAnrop("1.2.3.4", i.toLong())
         }
         
-        // Samma antal anrop på en annan IP bör fortfarande vara tillåtet
-        assertTrue(grans.farAnropa("5.6.7.8", nuMs + 100))
+        // Anrop från en annan IP ska tillåtas
+        assertTrue("Anrop från olika IP ska tillåtas", grans.farAnropa("5.6.7.8", nuMs))
     }
     
     @Test
-    fun testFarAnropaTimmeGone() {
+    fun testGamlaAnrop() {
         val grans = VerktygAnropsGrans()
-        val nuMs = 0L
+        val nuMs = 3_600_000L // 1 timme senare
         
-        // Registrera 60 anrop, men låt dem bli för gamla (en timme)
+        // Gör 60 anrop från början av timmen
         for (i in 0 until 60) {
-            grans.registreraAnrop("1.2.3.4", nuMs + i)
+            grans.registreraAnrop("1.2.3.4", i.toLong())
         }
         
-        // Efter en timme (3_600_000 ms) bör gamla anrop räknas bort
-        assertTrue(grans.farAnropa("1.2.3.4", nuMs + 3_600_000))
+        assertTrue("Gamla anrop ska räknas inte längre", grans.farAnropa("1.2.3.4", nuMs))
     }
     
     @Test
-    fun testFarAnropaTimmeGonePartial() {
+    fun testNarGransOverskrids() {
         val grans = VerktygAnropsGrans()
-        val nuMs = 0L
+        val nuMs = 3_599_999L // En millisekund innan en timme
         
-        // Registrera 60 anrop, men bara några av dem är gamla
-        for (i in 0 until 50) {
-            grans.registreraAnrop("1.2.3.4", nuMs + i)
+        // Gör 60 anrop
+        for (i in 0 until 60) {
+            grans.registreraAnrop("1.2.3.4", i.toLong())
         }
         
-        // Låt de första 10 anropen bli gamla
-        for (i in 50 until 60) {
-            grans.registreraAnrop("1.2.3.4", nuMs + 3_600_000 + i)
-        }
-        
-        // Borde vara tillåtet eftersom bara gamla anrop räknas bort
-        assertTrue(grans.farAnropa("1.2.3.4", nuMs + 3_600_000 + 100))
-    }
-    
-    @Test
-    fun testFarAnropaExactLimit() {
-        val grans = VerktygAnropsGrans()
-        val nuMs = 0L
-        
-        // Registrera exakt 60 anrop
-        for (i in 0 until MAX_VERKTYG_ANROP_PER_IP_TIMME) {
-            grans.registreraAnrop("1.2.3.4", nuMs + i)
-        }
-        
-        // Borde inte vara tillåtet efter max antal
-        assertFalse(grans.farAnropa("1.2.3.4", nuMs + 100))
+        assertFalse("När gränsen är nådd ska det inte tillåtas", grans.farAnropa("1.2.3.4", nuMs))
     }
 }
