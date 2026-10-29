@@ -63,6 +63,8 @@ Grund, Pro, påminnelser, PDF och butiksmaterial finns. 2026-10-21/22 (Claude): 
 
 2026-10-27 kväll: kön var tom sedan 26 oktober 11:34. Claude lade 14 uppgifter: Röstfångst Del A delad i steg om högst tre filer (`2026-10-27-01` till `-08`) och testtäckning för Styrelserummet (`-09` till `-14`, varav `-12` rättar sitemap.xml). Kvar för Cursor efter förnyelsen: HA-status per fångst och "Skicka igen" (kräver migration), klockan, lokal AI, lyften till `:karna`.
 
+2026-10-29 kväll (Claude): fyra lokala PR:er granskade. #775 (HaKlient) och #778 (HaKonfig) godkända och mergas av `cursor-beslut`; #784 (test av `VerktygAnropsGrans`) städades men krockade med main och körs om; #790 (ViewModel) underkändes eftersom den bygger på uppgift 03 som inte är mergad, `-06-ha-viewmodel-f3` väntar på 03. Kön för lördag är medvetet kort: testluckorna är i stort sett tömda. Ny uppgift `2026-10-29-01-sakerhetshuvuden` (HSTS, `base-uri`, `frame-ancestors`). Cursors prioritering efter förnyelsen: `uppdrag/vantar/2026-11-09-cursor-forsta-dagen.md`.
+
 2026-10-25: körskriptet kör Aider ett andra varv när en fil som uppgiften kräver är tom eller oförändrad (#695); natten 24-25 underkändes ungefär hälften av första försöken av just det skälet. Workflowet Skript kontrollerar syntaxen i `verktyg/*.ps1` före merge.
 
 ## Nu: Röstfångst som Mattias eget verktyg (provapp, publiceras inte)
