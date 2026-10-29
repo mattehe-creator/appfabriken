@@ -3,7 +3,6 @@ package se.tmconnect.rostfangst.ha
 import org.junit.Test
 import se.tmconnect.rostfangst.regler.Forslag
 import se.tmconnect.rostfangst.regler.ForslagTyp
-import java.time.Instant
 
 class HaKorningTest {
     
