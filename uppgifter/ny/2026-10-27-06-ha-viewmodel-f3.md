@@ -1,11 +1,13 @@
 # Uppgift: Koppla in Home Assistant i RostfangstViewModel (Röstfångst)
 
 ## Vad som saknades
-- Inga filer är ändrade.
+- `haKonfig`, `skickaTillHa` och `korHaSteg` användes aldrig: `sparaHaInstallningar` sparade rått och hade platshållarkommentaren "Ersätt med en enkel hantering utan HA-koppling". Utforandet skickade ingenting till Home Assistant.
+- Bygget var rött. `HaKlient`, `HaKonfig` och `korHaSteg` var inte mergade när uppgiften kördes (beror-på pekade bara på 04). Uppgiften väntar nu på 03, och 01 och 02 är mergade före den.
+- Inga platshållarkommentarer, inga `TODO`. Gör punkterna 1–5 fullt ut.
 
 uppdrag: uppdrag/claude/2026-10-27-rostfangst-ha-reserv.md
-försök: 2
-beror-på: 2026-10-27-04-ha-installningar-lager.md
+försök: 3
+beror-på: 2026-10-27-03-ha-korning.md
 
 Kräver att uppgifterna 01–04 är mergade (`HaKlient`, `HaHttpKlient`, `HaKonfig`, `haKonfig`, `haSteg`, `korHaSteg`, `InstallningarLager.haAdress/haToken/haTodo/sparaHa`).
 
