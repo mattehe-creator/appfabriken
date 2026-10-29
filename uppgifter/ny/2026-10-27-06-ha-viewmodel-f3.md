@@ -7,7 +7,7 @@
 
 uppdrag: uppdrag/claude/2026-10-27-rostfangst-ha-reserv.md
 försök: 3
-beror-på: 2026-10-27-03-ha-korning.md
+beror-på: 2026-10-27-03-ha-korning-f2.md
 
 Kräver att uppgifterna 01–04 är mergade (`HaKlient`, `HaHttpKlient`, `HaKonfig`, `haKonfig`, `haSteg`, `korHaSteg`, `InstallningarLager.haAdress/haToken/haTodo/sparaHa`).
 
