@@ -31,3 +31,5 @@ gradle :styrelserummet-server:test --tests "*VerktygAnropsGransTest"
 ## Gör inte
 - Ändra produktionskod eller andra filer än den nya testfilen.
 - Lägga till beroenden eller använda `Thread.sleep`.
+
+utfall: godkänd 2026-10-29
