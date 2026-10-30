@@ -1,8 +1,11 @@
 package se.tmconnect.rostfangst.ha
 
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import se.tmconnect.rostfangst.regler.Forslag
-import java.time.Instant
+import se.tmconnect.rostfangst.regler.ForslagTyp
 
 class HaKorningTest {
     
@@ -17,8 +20,8 @@ class HaKorningTest {
         val resultat = korHaSteg(emptyList(), klient, HaKonfig("http://localhost", "token", "todo.x"), 
             Forslag(ForslagTyp.ATT_GORA, "test"), "original")
         
-        assert(resultat.svar == null)
-        assert(resultat.fel.isEmpty())
+        assertNull(resultat.svar)
+        assertTrue(resultat.fel.isEmpty())
     }
     
     @Test
@@ -44,10 +47,10 @@ class HaKorningTest {
             HaKonfig("http://localhost", "token", "todo.x"), 
             Forslag(ForslagTyp.ATT_GORA, "test"), "original")
         
-        assert(antalHandelse == 1)
-        assert(antalTodo == 1)
-        assert(resultat.svar == null)
-        assert(resultat.fel.isEmpty())
+        assertEquals(1, antalHandelse)
+        assertEquals(1, antalTodo)
+        assertNull(resultat.svar)
+        assertTrue(resultat.fel.isEmpty())
     }
     
     @Test
@@ -65,8 +68,8 @@ class HaKorningTest {
             HaKonfig("http://localhost", "token", "todo.x"), 
             Forslag(ForslagTyp.ATT_GORA, "test"), "original")
         
-        assert(resultat.svar == "Lampan är tänd")
-        assert(resultat.fel.isEmpty())
+        assertEquals("Lampan är tänd", resultat.svar)
+        assertTrue(resultat.fel.isEmpty())
     }
     
     @Test
@@ -84,8 +87,8 @@ class HaKorningTest {
             HaKonfig("http://localhost", "token", "todo.x"), 
             Forslag(ForslagTyp.ATT_GORA, "test"), "original")
         
-        assert(resultat.svar == "Klart.")
-        assert(resultat.fel.isEmpty())
+        assertEquals("Klart.", resultat.svar)
+        assertTrue(resultat.fel.isEmpty())
     }
     
     @Test
@@ -103,9 +106,9 @@ class HaKorningTest {
             HaKonfig("http://localhost", "token", "todo.x"), 
             Forslag(ForslagTyp.ATT_GORA, "test"), "original")
         
-        assert(resultat.svar == null)
-        assert(resultat.fel.size == 1)
-        assert(resultat.fel[0] == "Når inte Home Assistant just nu.")
+        assertNull(resultat.svar)
+        assertEquals(1, resultat.fel.size)
+        assertEquals("Når inte Home Assistant just nu.", resultat.fel[0])
     }
     
     @Test
@@ -126,8 +129,8 @@ class HaKorningTest {
             HaKonfig("http://localhost", "token", ""), 
             Forslag(ForslagTyp.ATT_GORA, "test"), "original")
         
-        assert(antalHandelse == 1)
-        assert(resultat.svar == null)
-        assert(resultat.fel.isEmpty())
+        assertEquals(1, antalHandelse)
+        assertNull(resultat.svar)
+        assertTrue(resultat.fel.isEmpty())
     }
 }
