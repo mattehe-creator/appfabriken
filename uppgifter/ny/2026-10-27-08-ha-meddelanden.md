@@ -2,7 +2,7 @@
 
 uppdrag: uppdrag/claude/2026-10-27-rostfangst-ha-reserv.md
 försök: 1
-beror-på: 2026-10-27-07-ha-installningar-skarm-f2.md
+beror-på: 2026-10-27-07-ha-installningar-skarm-f3.md
 
 ## Ändra bara dessa filer
 - rostfangst/src/main/kotlin/se/tmconnect/rostfangst/MainActivity.kt

@@ -46,3 +46,5 @@ gradle :rostfangst:testDebugUnitTest --tests "*StringsNycklarTest"
 - Ändra andra filer eller andra delar av skärmarna.
 - Hårdkoda text i Kotlin.
 - Lägga till beroenden.
+
+utfall: underkänd 2026-10-30 av Cursor (PR #798). Ersatt av 2026-10-27-07-ha-installningar-skarm-f3.md
