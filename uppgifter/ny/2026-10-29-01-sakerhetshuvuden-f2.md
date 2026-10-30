@@ -1,7 +1,10 @@
 # Uppgift: Skärp säkerhetshuvudena i Styrelserummet (HSTS, base-uri, frame-ancestors)
 
+## Vad som saknades
+- Filen `styrelserummet-server/src/test/kotlin/se/tmconnect/styrelserummet/server/SvarshuvudenSkarpningTest.kt` är tom.
+
 uppdrag: uppdrag/claude/2026-10-29-sakerhet-och-aterstart.md
-försök: 1
+försök: 2
 beror-på: ingen
 
 ## Ändra bara dessa filer
