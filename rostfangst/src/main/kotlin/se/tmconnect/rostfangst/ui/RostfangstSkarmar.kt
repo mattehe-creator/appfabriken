@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import java.time.Instant
 import java.time.ZoneId
@@ -165,7 +166,7 @@ private fun ForslagKort(
                         typ = valt
                         onAndra(forslag.copy(typ = valt, titel = titel))
                     },
-                    label = { Text(stringResource(typ.labelRes())) },
+                    label = { Text(stringResource(valt.labelRes())) },
                 )
             }
         }
@@ -260,6 +261,9 @@ private fun InstallningarSkarm(viewModel: RostfangstViewModel, onExporteraCsv: (
     val perDag by viewModel.fangsterPerDag.collectAsStateWithLifecycle()
     var nyckel by remember(ui) { mutableStateOf(ui.apiNyckel) }
     var modell by remember(ui) { mutableStateOf(ui.modell) }
+    var haAdress by remember(ui) { mutableStateOf(ui.haAdress) }
+    var haToken by remember(ui) { mutableStateOf(ui.haToken) }
+    var haTodo by remember(ui) { mutableStateOf(ui.haTodo) }
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         OutlinedTextField(
             value = nyckel,
@@ -274,6 +278,30 @@ private fun InstallningarSkarm(viewModel: RostfangstViewModel, onExporteraCsv: (
             modifier = Modifier.fillMaxWidth(),
         )
         Button(onClick = { viewModel.sparaInstallningar(nyckel, modell) }) {
+            Text(stringResource(R.string.spara))
+        }
+        Text(stringResource(R.string.ha_rubrik))
+        OutlinedTextField(
+            value = haAdress,
+            onValueChange = { haAdress = it },
+            label = { Text(stringResource(R.string.ha_adress)) },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        OutlinedTextField(
+            value = haToken,
+            onValueChange = { haToken = it },
+            label = { Text(stringResource(R.string.ha_token)) },
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        OutlinedTextField(
+            value = haTodo,
+            onValueChange = { haTodo = it },
+            label = { Text(stringResource(R.string.ha_todo)) },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Text(stringResource(R.string.ha_hjalp))
+        Button(onClick = { viewModel.sparaHaInstallningar(haAdress, haToken, haTodo) }) {
             Text(stringResource(R.string.spara))
         }
         Text(stringResource(R.string.fangster_per_dag_rubrik))

@@ -36,4 +36,9 @@
     <string name="shortcut_sag_det">Säg det</string>
     <string name="shortcut_sag_det_lang">Starta röstfångst</string>
     <string name="tile_label">Säg det</string>
+    <string name="ha_rubrik">Home Assistant</string>
+    <string name="ha_adress">Adress (http://… eller https://…)</string>
+    <string name="ha_token">Long-lived access token</string>
+    <string name="ha_todo">Att göra-lista (t.ex. todo.shopping_list)</string>
+    <string name="ha_hjalp">Skapa token i Home Assistant: Profil → Säkerhet → Long-lived access tokens. Lämna allt tomt för att stänga av.</string>
 </resources>
