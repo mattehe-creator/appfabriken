@@ -55,3 +55,5 @@ gradle :rostfangst:testDebugUnitTest
 - Anropa HA på huvudtråden.
 - Skriva token i meddelanden eller loggar.
 - Lägga till beroenden.
+
+utfall: godkänd 2026-10-30
