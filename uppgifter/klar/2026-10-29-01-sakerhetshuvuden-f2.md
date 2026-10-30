@@ -39,3 +39,5 @@ gradle :styrelserummet-server:test --tests "*SvarshuvudenSkarpningTest" --tests 
 - Ändra andra filer än de två ovan.
 - Lägga till beroenden.
 - Ändra `SvarshuvudenTest.kt` eller `ApiTest.kt`.
+
+utfall: godkänd 2026-10-30
