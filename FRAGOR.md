@@ -4,6 +4,14 @@ Claude skriver här när något kräver Mattias (se ARBETSFLODE.md). Mattias sva
 
 ## Öppna
 
+- (2026-10-29) **Fredag, i den här ordningen** (det som tar publicering och intäkter framåt; resten nedan kan vänta):
+  1. Prova Garantivalvet och Husloggen på telefonen, cirka 30 minuter (APK från releasen `senaste-main`). Utan det publiceras ingenting. Skriv vad som är fel, så blir det uppgifter över helgen.
+  2. Slå på GitHub Pages (steg 1 i frågan 2026-10-21 nedan, en minut). Play kräver en publik länk till integritetspolicyn.
+  3. Skicka en kontaktadress för policyerna (steg 2 i frågan 2026-10-21).
+  4. Play Console: kontot, internt testspår och produkten `pro` (frågan 2026-10-11).
+  5. Flextid-gränsen: 15 poster, 60 dagar eller senaste 30 dagarna (frågan 2026-10-24).
+  Styrelserummet (värd, nyckel, bolagsuppgifter) och Formspree väntar tills 1-4 är gjorda.
+
 - (2026-10-24) Flextid och gratisgränsen 15 poster: i Flextid är en post en dag, så gratisversionen räcker i tre arbetsveckor. Förslag: gränsen i Flextid räknas som 60 dagar (ungefär tre månader) i stället, eller att bara de senaste 30 dagarna går att ändra utan Pro. Säg vilket, eller att 15 ska gälla.
 
 - (2026-10-23) Valfritt, och inget annat väntar på det: du kan provköra Styrelserummet på din egen dator med en riktig API-nyckel (låg utgiftsgräns) och en påhittad eller riktig underhållsplan. Steg för steg i `styrelserummet/PROVKORNING.md`, cirka 15 minuter. Det är det snabbaste sättet att se om AI:ns läsning av handlingar håller, innan något läggs ute. Gratisverktygen (avgift, fondplan, nyckeltal, protokoll, räntor, stämmotidplan) behöver ingen nyckel.
