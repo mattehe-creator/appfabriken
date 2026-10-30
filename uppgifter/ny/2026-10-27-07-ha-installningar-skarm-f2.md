@@ -1,7 +1,10 @@
 # Uppgift: HA-fälten i inställningarna och rätt etikett på typ-knapparna (Röstfångst)
 
+## Vad som saknades
+- Inga filer är ändrade.
+
 uppdrag: uppdrag/claude/2026-10-27-rostfangst-ha-reserv.md
-försök: 1
+försök: 2
 beror-på: 2026-10-27-06-ha-viewmodel-f3.md
 
 ## Ändra bara dessa filer
