@@ -27,6 +27,7 @@ import se.tmconnect.rostfangst.handling.HandlingUtforare
 import se.tmconnect.rostfangst.handling.UtforResultat
 import se.tmconnect.rostfangst.ha.HaKlient
 import se.tmconnect.rostfangst.ha.HaKonfig
+import se.tmconnect.rostfangst.ha.HaHttpKlient
 import se.tmconnect.rostfangst.ha.haKonfig
 import se.tmconnect.rostfangst.ha.haSteg
 import se.tmconnect.rostfangst.ha.korHaSteg
