@@ -34,3 +34,4 @@ gradle :rostfangst:testDebugUnitTest --tests "*StringsNycklarTest"
 ## Gör inte
 - Ändra något annat i `MainActivity`.
 - Lägga till beroenden.
+utfall: godkänd 2026-10-31
