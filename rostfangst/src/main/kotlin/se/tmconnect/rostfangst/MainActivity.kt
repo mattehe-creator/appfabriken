@@ -89,6 +89,8 @@ class MainActivity : ComponentActivity() {
                         "kalender" -> getString(R.string.utfor_kalender)
                         "saknar_tid" -> getString(R.string.fel_saknar_tid)
                         "sparad" -> getString(R.string.installningar_sparade)
+                        "ha_adress" -> getString(R.string.fel_ha_adress)
+                        "ha_saknas" -> getString(R.string.fel_ha_saknas)
                         else -> key
                     }
                     snackbar.showSnackbar(text)

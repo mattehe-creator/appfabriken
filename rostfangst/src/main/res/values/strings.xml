@@ -41,4 +41,6 @@
     <string name="ha_token">Long-lived access token</string>
     <string name="ha_todo">To-do list (e.g. todo.shopping_list)</string>
     <string name="ha_hjalp">Create the token in Home Assistant: Profile → Security → Long-lived access tokens. Leave everything empty to turn it off.</string>
+    <string name="fel_ha_adress">Check the Home Assistant address and token. The address must start with http:// or https://.</string>
+    <string name="fel_ha_saknas">Add Home Assistant in Settings to control your home.</string>
 </resources>
