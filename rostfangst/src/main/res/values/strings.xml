@@ -36,4 +36,9 @@
     <string name="shortcut_sag_det">Say it</string>
     <string name="shortcut_sag_det_lang">Start voice capture</string>
     <string name="tile_label">Say it</string>
+    <string name="ha_rubrik">Home Assistant</string>
+    <string name="ha_adress">Address (http://… or https://…)</string>
+    <string name="ha_token">Long-lived access token</string>
+    <string name="ha_todo">To-do list (e.g. todo.shopping_list)</string>
+    <string name="ha_hjalp">Create the token in Home Assistant: Profile → Security → Long-lived access tokens. Leave everything empty to turn it off.</string>
 </resources>
